@@ -1,2 +1,2 @@
 # PlackettLuce
-Plackett-Luce models
+R package for Plackett-Luce models under development
