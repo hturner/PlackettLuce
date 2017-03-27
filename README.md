@@ -1,0 +1,2 @@
+# PlackettLuce
+Plackett-Luce models
