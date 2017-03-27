@@ -1,0 +1,10 @@
+Package: PlackettLuce
+Type: Package
+Title: Plackett-Luce Models for Rankings
+Version: 0.0.0000
+Author: Heather Turner
+Maintainer: Heather Turner <ht@heatherturner.net>
+Description: Specify and fit Plackett-Luce models for rankings data.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
