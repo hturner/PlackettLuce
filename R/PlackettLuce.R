@@ -1,31 +1,33 @@
 ##' Fit Plackett-Luce Model
 ##'
-##' @param rankings
+##' @param rankings a matrix of dense rankings (rankings by objects)
+##' @param maxit the maximum number of iterations
 ##'
 ##' @return
 ##' @export
 ##'
 ##' @examples
 ##' @import Matrix
-plackettLuce <- function(rankings){
+PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
     N <- ncol(rankings)
     M <- t(Matrix(rankings, sparse = TRUE))
 
     ## max nsets
     J <- apply(M, 2, max)
 
-    ## highest degree of ranking
+    ## highest degree of ties
     ## (specific to dense ranking - need to check and convert other rankings)
     n <- diff(M@p)
     ties0 <- n - J
     D <- max(ties0) + 1
 
     ## nontrivial nsets (excluding untied last place)
-    J <- J - as.numeric(colSums(M == J) == 1)
+    J <- J - as.numeric(rowSums(t(M) == J) == 1)
 
     ## sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- M
-    S@x <- 1/as.double(unlist(apply(M, 2, function(x) tabulate(x)[x])))
+    S[t(t(M) > J)] <- 0
+    S@x <- 1/as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
 
     ## sufficient statistics
 
@@ -44,8 +46,8 @@ plackettLuce <- function(rankings){
         ind <- match(pattern, pattern[uniq])
         if (rep){
             rep <- tabulate(ind)
-            structure(M[, uniq], rep = rep)
-        } else structure(M[, uniq], ind = ind)
+            structure(M[, uniq, drop = FALSE], rep = rep)
+        } else structure(M[, uniq, drop = FALSE], ind = ind)
     }
 
     ## get unique sets and reps
@@ -56,26 +58,23 @@ plackettLuce <- function(rankings){
     rep <- unlist(lapply(pattern, attr, "rep"))
     pattern <- uniquecol(do.call("cBind", pattern), rep = FALSE)
     rep <- c(rowsum(rep, attr(pattern, "ind")))
+    S <- length(rep)
 
     ## starting values
     alpha <- rep.int(1, N)
     delta <- rep.int(0.1, D)
     delta[1] <- 1
-    theta <- rep.int(1, length(rep))
+    theta <- rep.int(1, S)
 
     ## iterative scaling
+    expectation <- function(par){
+        n <- switch(par,
+                    "alpha" = N,
+                    "beta" = D,
+                    "theta" = S)
+        res <- numeric(n)
 
-    for (iter in seq_len(maxit)){
-        ## set expectations to zero
-        ## per object (sum of combinations including that object; all orders)
-        EA <- numeric(N)
-        ## per tie order (sum of all object combinations)
-        EB <- numeric(D)
-        ## per (unique) set
-        ET <- numeric(length(rep))
-
-        ## compute expectations
-        for (k in seq_along(rep)){
+        for (k in seq_len(S)){
             ## objects in set
             w <- which(pattern[, k])
             nobj <- length(w)
@@ -86,30 +85,41 @@ plackettLuce <- function(rankings){
                 ## loop through all combinations of objects in set
                 repeat{
                     x <- theta[k] * rep[k] * delta[d] * prod(alpha[w[i]])^(1/d)
-                    EA[w[i]] <- EA[w[i]] + x
-                    if (d > 1) EB[d] <- EB[d] + x
-                    ET[k] <- ET[k] + x
+                    ## add to sums for all objects in set
+                    if (par == "alpha") res[w[i]] <- res[w[i]] + x
+                    ## add to sum for current order
+                    if (par == "beta") res[d] <- res[d] + x
+                    ## add to sum for current set
+                    if (par == "theta") res[k] <- res[k] + x
                     if (i[1] == maxi[1]) break
                     id <- max(which(maxi - i > 0))
                     i[id:d] <- i[id] + seq_len(d - id + 1)
                 }
             }
         }
+        res
+    }
 
+    for (iter in seq_len(maxit)){
         ## update all alphas
         old <- alpha
-        alpha <- alpha*A/EA
+        alpha <- alpha*A/expectation("alpha")
         ## scale alphas to mean 1
         alpha <- alpha/mean(alpha)
         ## update all deltas
-        delta[-1] <- delta[-1] * B[-1]/EB[-1]
-        ## scale all multinomial totals to 1
-        theta <- theta/ET
+        if (D > 1) delta[-1] <- delta[-1] * B[-1]/expectation("beta")[-1]
+        ## scale all multinomial totals to rep
+        theta <- theta * rep/expectation("theta")
 
+        if (trace){
+            message("iter ", iter, "\n")
+            message(capture.output(print(alpha)))
+        }
         ## simple stopping rule just based on alphas for now
-        if (isTRUE(all.equal(old, alpha))) break
+        if (isTRUE(all.equal(log(old), log(alpha)))) break
     }
 
-    structure(list(alpha = alpha, beta = beta[-1]),
-              theta = theta)
+    list(coefficients = structure(c(alpha, delta[-1]),
+                                  eliminated = theta),
+         iter = iter)
 }

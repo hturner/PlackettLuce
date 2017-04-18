@@ -8,3 +8,6 @@ Description: Specify and fit Plackett-Luce models for rankings data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Imports:
+    Matrix
+RoxygenNote: 5.0.1
