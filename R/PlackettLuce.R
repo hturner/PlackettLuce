@@ -37,11 +37,17 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
     B <- tabulate(1/S@x)
 
     ## unique columns with >= 1 element for logical matrix
-    ## only good for ~1000 obj, else need to iterate across columns
     uniquecol <- function(M, rep = TRUE){
         min2 <- colSums(M) > 1
         if (!any(min2)) return(NULL)
-        pattern <- drop(2^(nrow(M):1) %*% M)
+        for (i in seq_len(nrow(M))){
+            if (i == 1) {
+                pattern <- M[1,]
+            } else {
+                pattern <- 2*pattern + M[i,]
+                pattern <- match(pattern, unique(pattern))
+            }
+        }
         uniq <- !duplicated(pattern) & min2
         ind <- match(pattern, pattern[uniq])
         if (rep){
@@ -110,10 +116,9 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         if (D > 1) delta[-1] <- delta[-1] * B[-1]/expectation("beta")[-1]
         ## scale all multinomial totals to rep
         theta <- theta * rep/expectation("theta")
-
+        ## trace
         if (trace){
             message("iter ", iter, "\n")
-            message(capture.output(print(alpha)))
         }
         ## simple stopping rule just based on alphas for now
         if (isTRUE(all.equal(log(old), log(alpha)))) break

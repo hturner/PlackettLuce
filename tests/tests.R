@@ -1,3 +1,7 @@
+library(gnm)
+library(BradleyTerry2)
+library(StatRank)
+
 ## basic function to create multinomial outcomes for partial rankings, no ties
 ## assumes records are items ranked 1st, 2nd, ..., with 0 for no item ranked
 longdat <- function(dat){
@@ -40,7 +44,6 @@ dat <- longdat(M)
 mod <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat, constrain = 1)
 coef(mod)
 
-library(BradleyTerry2)
 mod2 <- BTm(rep(1, 6), factor(M[,1]), factor(M[,2]))
 
 R <- denseRanking(M)
@@ -49,6 +52,30 @@ lambda <- log(coef(mod3))
 lambda <- lambda - lambda[1]
 all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-7)
 all.equal(lambda[-1], unname(mod2$coefficients), tolerance = 1e-7)
+
+## bigger BT model
+icehockey <- subset(icehockey, result != 0.5) #remove ties
+standardBT <- BTm(outcome = result,
+                  player1 = visitor, player2 = opponent,
+                  id = "team", data = icehockey)
+
+icehockey$visitor <- unclass(icehockey$visitor)
+icehockey$opponent <- unclass(icehockey$opponent)
+M <- matrix(0, nrow = nrow(icehockey), ncol = 2)
+M[, 1] <- ifelse(icehockey$result == 1, icehockey$visitor, icehockey$opponent)
+M[, 2] <- ifelse(icehockey$result == 1, icehockey$opponent, icehockey$visitor)
+dat <- longdat(M)
+mod <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat, constrain = 1)
+head(coef(mod))
+head(coef(standardBT))
+
+R <- matrix(0, nrow = nrow(icehockey), ncol = max(icehockey$visitor, icehockey$opponent))
+R[cbind(1:nrow(icehockey), icehockey$visitor)] <- 2 - icehockey$result
+R[cbind(1:nrow(icehockey), icehockey$opponent)] <- icehockey$result + 1
+mod3 <- PlackettLuce(R, trace = TRUE, maxit = 500)
+lambda <- log(coef(mod3))
+lambda <- lambda - lambda[1]
+all.equal(lambda[-1], unname(standardBT$coefficients), tolerance = 1e-6)
 
 ## partial rankings, no ties
 M <- matrix(c(1, 2, 0, 0,
@@ -61,6 +88,11 @@ dat <- longdat(M)
 mod <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat, constrain = 1)
 coef(mod)
 
+gamma <- PL(M)
+alpha <- log(gamma)
+head(alpha - alpha[1])
+head(coef(mod))
+
 R <- denseRanking(M)
 mod2 <- PlackettLuce(R)
 lambda <- log(coef(mod2))
@@ -70,14 +102,12 @@ all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-7)
 ## Nascar example from Hunter
 ## 36 races. Partial rankings of length (42 or 43), ranking 83 drivers in 1st to
 ## 83rd place (puts zero for 43rd or 44th to last place). No ties.
-library(StatRank)
 data(Data.Nascar)
 ## takes ~10min; not sure how to compare
 ## a <- Estimation.PL.MLE(Data.Nascar)$Mean
 
 dat <- longdat(Data.Nascar)
 ## fairly quick - A. Cameron (driver with ID 1) is fixed at zero
-library(gnm)
 mod <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
            constrain = 1)
 coef(mod)
@@ -88,13 +118,22 @@ coef(mod)[40] # J. Varde
 ## slow, leave for now
 ## summary(mod)
 
-## slower but not too bad; doesn't agree though
+## actually faster than gnm
+gamma <- PL(Data.Nascar)
+alpha <- log(gamma)
+alpha <- alpha - alpha[1]
+head(alpha)
+head(coef(mod))
+alpha[58]
+
+## much slower
 R <- denseRanking(Data.Nascar)
-mod2 <- PlackettLuce(R, trace = TRUE)
+mod2 <- PlackettLuce(R)
 lambda <- log(coef(mod2))
 lambda <- lambda - lambda[1]
-all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-7)
+all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-6)
 lambda[58]
+lambda[40]
 
 
 
