@@ -68,8 +68,9 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
 
     ## starting values
     alpha <- rep.int(1/N, N)
-    delta <- rep.int(0.1, D)
-    delta[1] <- 1
+    #delta <- rep.int(0.1, D)
+    #delta[1] <- 1
+    delta <- c(1, (2*B[2])/(sum(rep) - B[2]))
     theta <- rep.int(1, S)
 
     ## iterative scaling
@@ -78,30 +79,43 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
                     "alpha" = N,
                     "beta" = D,
                     "theta" = S)
-        res <- tmp <- numeric(n)
+        res <- numeric(n)
 
         for (k in seq_len(S)){
             ## objects in set
             w <- which(pattern[, k])
             nobj <- length(w)
             ## ties of order d
+            y1 <- numeric(n)
             for (d in seq_len(min(D, nobj))){
                 i <- seq_len(d)
                 maxi <- rev(nobj - seq_len(d) + 1)
-                ## loop through all combinations of objects in set
+                ## loop through all subsets of size d in set
+                if (par == "alpha")
+                    y2 <- numeric(n)
+                else y2 <- 0
                 repeat{
-                    x <- theta[k] * rep[k] * delta[d] * prod(alpha[w[i]])^(1/d)
+                    x <- prod(alpha[w[i]])^(1/d)
                     ## add to sums for all objects in set
-                    if (par == "alpha") res[w[i]] <- res[w[i]] + x/d
+                    if (par == "alpha")
+                        y2[w[i]] <- y2[w[i]] + theta[k] * rep[k] * x/d
                     ## add to sum for current order
-                    if (par == "beta") res[d] <- res[d] + x
+                    if (par == "beta")
+                        y2 <- y2 + theta[k] * rep[k] * x
                     ## add to sum for current set
-                    if (par == "theta") res[k] <- res[k] + x
+                    if (par == "theta") y2 <- y2 + x
                     if (i[1] == maxi[1]) break
                     id <- max(which(maxi - i > 0))
                     i[id:d] <- i[id] + seq_len(d - id + 1)
                 }
+                if (par == "alpha")
+                    y1 <- y1 + y2*delta[d]
+                if (par == "beta")
+                    y1[d] <- y2*delta[d]
+                if (par == "theta")
+                    y1[k] <- y1[k] + y2*delta[d]
             }
+            res <- res + y1
         }
         res
     }
@@ -111,11 +125,11 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         old <- alpha
         alpha <- alpha*A/expectation("alpha")
         ## scale alphas to mean 1
-        alpha <- alpha/mean(alpha)
+        alpha <- alpha/sum(alpha)#alpha/mean(alpha)
         ## update all deltas
         if (D > 1) delta[-1] <- delta[-1] * B[-1]/expectation("beta")[-1]
         ## update thetas again
-        theta <- theta * rep/expectation("theta")
+        theta <- 1/expectation("theta")
         ## trace
         if (trace){
             message("iter ", iter)
