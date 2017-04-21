@@ -112,8 +112,6 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         alpha <- alpha*A/expectation("alpha")
         ## scale alphas to mean 1
         alpha <- alpha/mean(alpha)
-        ## scale all multinomial totals to rep
-        theta <- theta * rep/expectation("theta")
         ## update all deltas
         if (D > 1) delta[-1] <- delta[-1] * B[-1]/expectation("beta")[-1]
         ## update thetas again
