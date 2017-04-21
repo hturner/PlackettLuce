@@ -34,7 +34,7 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
     ## for alpha i, sum over all sets of object i is in selected set/size of selected set
     A <- rowSums(S)
     ## for delta d, number of sets with cardinality d
-    B <- tabulate(1/S@x)
+    B <- tabulate(1/S@x)/(1:D)
 
     ## unique columns with >= 1 element for logical matrix
     uniquecol <- function(M, rep = TRUE){
@@ -67,7 +67,7 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
     S <- length(rep)
 
     ## starting values
-    alpha <- rep.int(1, N)
+    alpha <- rep.int(1/N, N)
     delta <- rep.int(0.1, D)
     delta[1] <- 1
     theta <- rep.int(1, S)
@@ -78,7 +78,7 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
                     "alpha" = N,
                     "beta" = D,
                     "theta" = S)
-        res <- numeric(n)
+        res <- tmp <- numeric(n)
 
         for (k in seq_len(S)){
             ## objects in set
@@ -92,7 +92,7 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
                 repeat{
                     x <- theta[k] * rep[k] * delta[d] * prod(alpha[w[i]])^(1/d)
                     ## add to sums for all objects in set
-                    if (par == "alpha") res[w[i]] <- res[w[i]] + x
+                    if (par == "alpha") res[w[i]] <- res[w[i]] + x/d
                     ## add to sum for current order
                     if (par == "beta") res[d] <- res[d] + x
                     ## add to sum for current set
@@ -112,13 +112,15 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         alpha <- alpha*A/expectation("alpha")
         ## scale alphas to mean 1
         alpha <- alpha/mean(alpha)
+        ## scale all multinomial totals to rep
+        theta <- theta * rep/expectation("theta")
         ## update all deltas
         if (D > 1) delta[-1] <- delta[-1] * B[-1]/expectation("beta")[-1]
-        ## scale all multinomial totals to rep
+        ## update thetas again
         theta <- theta * rep/expectation("theta")
         ## trace
         if (trace){
-            message("iter ", iter, "\n")
+            message("iter ", iter)
         }
         ## simple stopping rule just based on alphas for now
         if (isTRUE(all.equal(log(old), log(alpha)))) break

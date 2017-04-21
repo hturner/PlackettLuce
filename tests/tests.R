@@ -54,24 +54,24 @@ all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-7)
 all.equal(lambda[-1], unname(mod2$coefficients), tolerance = 1e-7)
 
 ## bigger BT model
-icehockey <- subset(icehockey, result != 0.5) #remove ties
+icehockey2 <- subset(icehockey, result != 0.5) #remove ties
 standardBT <- BTm(outcome = result,
                   player1 = visitor, player2 = opponent,
-                  id = "team", data = icehockey)
+                  id = "team", data = icehockey2)
 
-icehockey$visitor <- unclass(icehockey$visitor)
-icehockey$opponent <- unclass(icehockey$opponent)
-M <- matrix(0, nrow = nrow(icehockey), ncol = 2)
-M[, 1] <- ifelse(icehockey$result == 1, icehockey$visitor, icehockey$opponent)
-M[, 2] <- ifelse(icehockey$result == 1, icehockey$opponent, icehockey$visitor)
+icehockey2$visitor <- unclass(icehockey2$visitor)
+icehockey2$opponent <- unclass(icehockey2$opponent)
+M <- matrix(0, nrow = nrow(icehockey2), ncol = 2)
+M[, 1] <- ifelse(icehockey2$result == 1, icehockey2$visitor, icehockey2$opponent)
+M[, 2] <- ifelse(icehockey2$result == 1, icehockey2$opponent, icehockey2$visitor)
 dat <- longdat(M)
 mod <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat, constrain = 1)
 head(coef(mod))
 head(coef(standardBT))
 
-R <- matrix(0, nrow = nrow(icehockey), ncol = max(icehockey$visitor, icehockey$opponent))
-R[cbind(1:nrow(icehockey), icehockey$visitor)] <- 2 - icehockey$result
-R[cbind(1:nrow(icehockey), icehockey$opponent)] <- icehockey$result + 1
+R <- matrix(0, nrow = nrow(icehockey2), ncol = max(icehockey2$visitor, icehockey2$opponent))
+R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
+R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
 mod3 <- PlackettLuce(R, trace = TRUE, maxit = 500)
 lambda <- log(coef(mod3))
 lambda <- lambda - lambda[1]
@@ -135,6 +135,34 @@ all.equal(lambda[-1], unname(mod$coefficients[-1]), tolerance = 1e-6)
 lambda[58]
 lambda[40]
 
+## simple BT model with ties (Davidson)
 
+## pudding data (Example 2, Davidson 1970) is in sysdata.rda
+## to match paper
+Dav <- with(pudding, Davidson(i, j, r_ij, w_ij, w_ji, t_ij, maxit = 7))
+## more precise
+Dav <- with(pudding, Davidson(i, j, r_ij, w_ij, w_ji, t_ij))
 
-## later look at Davidson model example to test ties
+## inefficient representation here...
+R <- with(pudding,
+     {
+         R <- list()
+         n <- max(i, j)
+         for (r in seq_len(nrow(pudding))){
+             R[[r]] <- matrix(0, nrow = r_ij[r], ncol = n)
+             a <- rep(c(1, 2, 1), c(w_ij[r], w_ji[r], t_ij[r]))
+             b <- rep(c(2, 1, 1), c(w_ij[r], w_ji[r], t_ij[r]))
+             R[[r]][, c(i[r], j[r])] <- c(a, b)
+         }
+         do.call("rbind", R)
+     })
+mod <- PlackettLuce(R)
+alpha <- coef(mod)
+# tie parameter
+n <- length(alpha)
+all.equal(Dav[1], alpha[n])
+# abilities
+all.equal(Dav[-1], alpha[-n]/sum(alpha[-n]), tol = 1e-7)
+
+## MM algorithm - tie parameter not right
+mod2 <- BTties(R)
