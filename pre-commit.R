@@ -4,8 +4,9 @@
 #' Author: Seth S Wenchel <wenchel@gmail.com>, github.com/restonslacker
 #'
 #' This is an R script associated with a pre-commit hook that checks whether
-#' there are files to be committed and if there are, will increment the package
-#' version and set today's date in the DESCRIPTION file.
+#' there are files to be committed. If there are and the minor version is
+#' formatted as four digits (signalling a devellopment version), the script
+#' increments the package version and sets today's date in the DESCRIPTION file.
 #'
 #' To install it, simply copy this into the top level directory of your git
 #' repository. Then, edit the ".git/hooks/pre-commit" file of your git repo to
@@ -21,17 +22,20 @@
 # define path to DESCRIPTION
 DESCRIPTION <- "DESCRIPTION"
 
+# check if development version
+currDCF <- read.dcf(DESCRIPTION)
+currVersion <- currDCF[1,"Version"]
+splitVersion <- strsplit(currVersion, ".", fixed=TRUE)[[1]]
+nVer <- length(splitVersion)
+currEndVersion <- splitVersion[nVer]
+
 # check that there are files that will be committed
 # - don't want to increment version if there won't be a commit
 fileDiff <- system("git diff HEAD --name-only", intern=TRUE)
 
-if ((length(fileDiff) > 0) && doIncrement){
-    currDCF <- read.dcf(DESCRIPTION)
-    currVersion <- currDCF[1,"Version"]
-    splitVersion <- strsplit(currVersion, ".", fixed=TRUE)[[1]]
-    nVer <- length(splitVersion)
-    currEndVersion <- as.integer(splitVersion[nVer])
-    newEndVersion <- as.character(currEndVersion + 1)
+if ((length(fileDiff) > 0) & nchar(currEndVersion) == 4){
+    currEndVersion <- as.integer(currEndVersion)
+    newEndVersion <- sprintf("%04d", currEndVersion + 1)
     splitVersion[nVer] <- newEndVersion
     newVersion <- paste(splitVersion, collapse=".")
     currDCF[1,"Version"] <- newVersion

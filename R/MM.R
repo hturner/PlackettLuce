@@ -1,6 +1,7 @@
-## MM algorithm for simple BT
+# MM algorithm for simple BT
+#' @importFrom stats model.matrix
 BT <- function(M, maxit = 500){
-    ## number of players
+    # number of players
     N <- max(M)
     gamma <- rep.int(1/N, N)
     X <- model.matrix(~as.factor(M[,1]) - 1)
@@ -15,7 +16,7 @@ BT <- function(M, maxit = 500){
     structure(gamma2, iter = i)
 }
 
-## MM algorithm for simple PL
+# MM algorithm for simple PL
 PL <- function(M, maxit = 500){
     M <- as.matrix(M)
     N <- max(M)
@@ -34,21 +35,15 @@ PL <- function(M, maxit = 500){
             }
         }
         gamma2 <- wins/gamma2
-        if (k == 1){
-            wins <<- wins
-            gamma1 <<- gamma
-            gamma2 <<- gamma2
-            J <<- J
-        }
         if (isTRUE(all.equal(log(gamma), log(gamma2)))) break
         gamma <- gamma2
     }
-    gamma2
+    structure(gamma2, iter = i)
 }
 
-## MM algorithm for BT model with ties (Davidson) - not right
+# MM algorithm for BT model with ties (Davidson) - not right
 BTties <- function(R, maxit = 500){
-    ## number of players
+    # number of players
     N <- ncol(R)
     tie <- apply(R, 1, max) == 1
     wins <- colSums(R[!tie,] == 1)
@@ -67,9 +62,9 @@ BTties <- function(R, maxit = 500){
         denom[obji] <- rowsum(g, i)
         denom[objj] <- denom[objj] + rowsum(g, j)
         gamma2 <- (2*wins + ties)/denom
-        ## normalize
+        # normalize
         gamma2 <- gamma2/sum(gamma2)
-        ## ?? 4*t* produces silly answer, 4*t/ still not MLE
+        # ?? 4*t* produces silly answer, 4*t/ still not MLE
         theta2 <- 4*t/sum((2-tie)*(gamma2[i] + gamma2[j])/(
             gamma2[i] + gamma2[j] + theta*sqrt(gamma2[i]*gamma2[j])))
         if (isTRUE(all.equal(log(gamma), log(gamma2)))) break

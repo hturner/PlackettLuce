@@ -4,12 +4,37 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings)
+PlackettLuce(rankings, maxit = 100, trace = FALSE)
 }
 \arguments{
-\item{rankings}{}
+\item{rankings}{a matrix of dense rankings, see examples.}
+
+\item{maxit}{the maximum number of iterations.}
+
+\item{trace}{logical, if \code{TRUE} show trace of iterations.}
+}
+\value{
+A list with the following elements:
+\item{coefficients}{The model coefficients.}
+\item{iter}{The number of iterations run.}
 }
 \description{
-Fit Plackett-Luce Model
+Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
+(not all objects ranked) and include ties of any order.
 }
+\examples{
+# Six partial rankings of four objects, 1 is top rank, e.g
+# first ranking: item 1, item 2
+# second ranking: item 2, item 3, item 4, item 1
+# third ranking: items 2, 3, 4 tie for first place, item 1 second
+R <- matrix(c(1, 2, 0, 0,
+              4, 1, 2, 3,
+              2, 1, 1, 1,
+              1, 2, 3, 0,
+              2, 1, 1, 0,
+              1, 0, 3, 2), nrow = 6, byrow = TRUE)
+colnames(R) <- c("apple", "banana", "orange", "pear")
 
+mod <- PlackettLuce(R)
+coef(mod)
+}

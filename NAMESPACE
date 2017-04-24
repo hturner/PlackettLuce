@@ -2,3 +2,5 @@
 
 export(PlackettLuce)
 import(Matrix)
+importFrom(stats,model.matrix)
+importFrom(utils,combn)

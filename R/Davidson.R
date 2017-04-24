@@ -22,16 +22,9 @@ Davidson <- function(i, j, r_ij, w_ij, w_ji, t_ij, maxit = 500){
         for (obj in 1:n){
             gamma2[obj] <- s[obj]/(sum(resi[i == obj]) + sum(resj[j == obj]))
         }
-        if (k == 1){
-            g1 <<- gamma2
-            g2 <<- gamma2/sum(gamma2)
-        }
         gamma2 <- gamma2/sum(gamma2)
         theta2 <- nt/sum(r_ij*sqrt(gamma2[i]*gamma2[j])/(
             gamma2[i] + gamma2[j] + theta*sqrt(gamma2[i]*gamma2[j])))
-        if (k == 1){
-            t1 <<- theta2
-        }
         if (isTRUE(all.equal(log(gamma), log(gamma2)))) break
         gamma <- gamma2
         theta <- theta2
