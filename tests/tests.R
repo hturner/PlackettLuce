@@ -47,7 +47,7 @@ if (require(BradleyTerry2)){
     mod3 <- PlackettLuce(R, maxit = 500)
     lambda <- log(coef(mod3))
     lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(standardBT$coefficients), tolerance = 1e-5)
+    all.equal(unname(c(lambda[-1], mod3$loglik)), unname(c(standardBT$coefficients, logLik(standardBT))), tolerance = 1e-5)
 }
 
 ## partial rankings, no ties
