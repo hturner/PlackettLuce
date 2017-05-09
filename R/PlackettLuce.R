@@ -138,9 +138,8 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         res
     }
 
-    # log-likelihood
-    # Within optim or nlminb use
-    # function(par) { al <- exp(par[1:N]); de <- c(1, exp(par[-c(1:N)])); -loglik(c(al, de)) }
+    # log-likelihood and score functions
+    # Within optim or nlminb use obj and gr wrappers below
     loglik <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
@@ -176,9 +175,21 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         b_contr - c_contr
     }
 
-    ## Alternative optimization via
-    ## obj <- function(par) { al <- exp(par[1:N]); de <- c(1, exp(par[-c(1:N)])); -loglik(c(al, de)) }
-    ## res <- nlminb(log(c(alpha, delta[-1])), obj)
+    # Log-likelihood derivatives
+    score <- function(par) {
+        alpha <- par[1:N]
+        delta <- par[-c(1:N)]
+        c(A/alpha - expectation("alpha")/alpha,
+          B/delta - expectation("beta"))
+    }
+
+    ## # Alternative optimization via
+    ## obj <- function(par) {
+    ##     al <- exp(par[1:N])
+    ##     de <- c(1, exp(par[-c(1:N)]))
+    ##     -loglik(c(al, de))
+    ## }
+    ## res <- optim(log(c(alpha, delta[-1])), obj, method = "BFGS")
 
     for (iter in seq_len(maxit)){
         # update all alphas
