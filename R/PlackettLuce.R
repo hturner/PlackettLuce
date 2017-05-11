@@ -7,9 +7,12 @@
 #' @param maxit the maximum number of iterations.
 #' @param trace logical, if \code{TRUE} show trace of iterations.
 #'
-#' @return A list with the following elements:
-#' \item{coefficients}{The model coefficients.}
-#' \item{iter}{The number of iterations run.}
+#' @return An object of class "PlackettLuce", which is a list containing the
+#' following elements:
+#' \item{call}{ The matched call. }
+#' \item{coefficients}{ The model coefficients. }
+#' \item{loglik}{ The log-likelihood. }
+#' \item{iter}{ The number of iterations run. }
 #'
 #' @examples
 #' # Six partial rankings of four objects, 1 is top rank, e.g
@@ -29,6 +32,8 @@
 #' @import Matrix
 #' @export
 PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
+    call <- match.call()
+
     N <- ncol(rankings)
     M <- t(Matrix(rankings, sparse = TRUE))
 
@@ -209,7 +214,10 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
 
     if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
     delta <- structure(delta, names = paste0("tie", 1:D))
-    list(coefficients = c(alpha, delta[-1]),
-         iter = iter,
-         loglik = loglik(c(alpha, delta)))
+    fit <- list(call = call,
+                coefficients = c(alpha, delta[-1]),
+                loglik = loglik(c(alpha, delta)),
+                iter = iter)
+    class(fit) <- "PlackettLuce"
+    fit
 }

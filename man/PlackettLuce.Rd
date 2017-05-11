@@ -14,9 +14,12 @@ PlackettLuce(rankings, maxit = 100, trace = FALSE)
 \item{trace}{logical, if \code{TRUE} show trace of iterations.}
 }
 \value{
-A list with the following elements:
-\item{coefficients}{The model coefficients.}
-\item{iter}{The number of iterations run.}
+An object of class "PlackettLuce", which is a list containing the
+following elements:
+\item{call}{ The matched call. }
+\item{coefficients}{ The model coefficients. }
+\item{loglik}{ The log-likelihood. }
+\item{iter}{ The number of iterations run. }
 }
 \description{
 Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
