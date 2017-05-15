@@ -217,7 +217,8 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 loglik = loglik(c(alpha, delta)),
-                iter = iter)
+                iter = iter,
+                rankings = rankings, maxTied = D)   ##  Maybe we'll want to include these differently?
     class(fit) <- "PlackettLuce"
     fit
 }
