@@ -4,10 +4,16 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, maxit = 100, trace = FALSE)
+PlackettLuce(rankings, ref = NULL, epsilon = 1e-07, maxit = 100,
+  trace = FALSE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
+
+\item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
+
+\item{epsilon}{the maximum absolute difference between the observed and
+expected sufficient statistics for the ability parameters.}
 
 \item{maxit}{the maximum number of iterations.}
 

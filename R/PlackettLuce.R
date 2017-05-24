@@ -4,6 +4,9 @@
 #' (not all objects ranked) and include ties of any order.
 #'
 #' @param rankings a matrix of dense rankings, see examples.
+#' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
+#' @param epsilon the maximum absolute difference between the observed and
+#' expected sufficient statistics for the ability parameters.
 #' @param maxit the maximum number of iterations.
 #' @param trace logical, if \code{TRUE} show trace of iterations.
 #'
@@ -31,7 +34,8 @@
 #' coef(mod)
 #' @import Matrix
 #' @export
-PlackettLuce <- function(rankings, epsilon = 1e-7, maxit = 100, trace = FALSE){
+PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
+                         trace = FALSE){
     call <- match.call()
 
     N <- ncol(rankings)
@@ -216,6 +220,8 @@ PlackettLuce <- function(rankings, epsilon = 1e-7, maxit = 100, trace = FALSE){
     delta <- structure(delta, names = paste0("tie", 1:D))
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
+                ref = if (is.null(ref)) 1 else ref,
+                contrasts = contrasts,
                 loglik = loglik(c(alpha, delta)),
                 iter = iter,
                 rankings = rankings, maxTied = D)   ##  Maybe we'll want to include these differently?
