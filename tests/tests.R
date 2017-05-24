@@ -19,7 +19,7 @@ if (require(gnm)){
     ## compare coef
     lambda <- log(coef(mod))
     lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(coef(mod2)[-1]), tolerance = 1e-7)
+    all.equal(unname(lambda[-1]), unname(coef(mod2)[-1]), tolerance = 1e-6)
 }
 
 if (require(BradleyTerry2)){
@@ -28,7 +28,7 @@ if (require(BradleyTerry2)){
     ## compare coef
     lambda <- log(coef(mod))
     lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(coef(mod3)), tolerance = 1e-7)
+    all.equal(unname(lambda[-1]), unname(coef(mod3)), tolerance = 1e-6)
 }
 
 ## bigger BT model (data from BradleyTerry2)
@@ -44,7 +44,7 @@ if (require(BradleyTerry2)){
     R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
     R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
     ## needs 295 iterations, slow
-    mod3 <- PlackettLuce(R, maxit = 500)
+    mod3 <- PlackettLuce(R, maxit = 500, epsilon = 1e-5)
     lambda <- log(coef(mod3))
     lambda <- lambda - lambda[1]
     all.equal(unname(c(lambda[-1], mod3$loglik)), unname(c(standardBT$coefficients, logLik(standardBT))), tolerance = 1e-5)
@@ -119,11 +119,6 @@ Dav <- with(pudding, PlackettLuce:::Davidson(i, j, r_ij, w_ij, w_ji, t_ij, maxit
 ## more precise
 Dav <- with(pudding, PlackettLuce:::Davidson(i, j, r_ij, w_ij, w_ji, t_ij))
 
-## MM algorithm - tie parameter not right (so all wrong)
-mod <- PlackettLuce:::BTties(R)
-mod
-isTRUE(all.equal(Dav, mod)) #should be FALSE!
-
 ## inefficient representation here...
 R <- with(pudding,
      {
@@ -144,6 +139,11 @@ n <- length(alpha)
 all.equal(Dav[1], unname(alpha[n]))
 # abilities
 all.equal(Dav[-1], unname(alpha[-n]/sum(alpha[-n])), tol = 1e-7)
+
+## MM algorithm - tie parameter not right (so all wrong)
+mod <- PlackettLuce:::BTties(R)
+mod
+isTRUE(all.equal(Dav, mod)) #should be FALSE!
 
 if (require(gnm)){
     dat <- PlackettLuce:::longdat2(R)

@@ -31,7 +31,7 @@
 #' coef(mod)
 #' @import Matrix
 #' @export
-PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
+PlackettLuce <- function(rankings, epsilon = 1e-7, maxit = 100, trace = FALSE){
     call <- match.call()
 
     N <- ncol(rankings)
@@ -198,8 +198,8 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
 
     for (iter in seq_len(maxit)){
         # update all alphas
-        old <- alpha
-        alpha <- alpha*A/expectation("alpha")
+        expA <- expectation("alpha")
+        alpha <- alpha*A/expA
         # scale alphas to sum 1
         alpha <- alpha/sum(alpha)
         # update all deltas
@@ -208,8 +208,8 @@ PlackettLuce <- function(rankings, maxit = 100, trace = FALSE){
         if (trace){
             message("iter ", iter)
         }
-        # simple stopping rule just based on alphas for now
-        if (isTRUE(all.equal(log(old), log(alpha)))) break
+        # stopping rule: compare observed & expected sufficient stats for alphas
+        if (all(abs(A - expA) < epsilon)) break
     }
 
     if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
