@@ -221,9 +221,11 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 ref = if (is.null(ref)) 1 else ref,
-                loglik = loglik(c(alpha, delta)),
+                loglik = unname(loglik(c(alpha, delta))),
+                rank = N + D + sum(rep) - 2,
                 iter = iter,
-                rankings = rankings, maxTied = D)   ##  Maybe we'll want to include these differently?
+                rankings = rankings,
+                maxTied = D)   ##  Maybe we'll want to include these differently?
     class(fit) <- "PlackettLuce"
     fit
 }

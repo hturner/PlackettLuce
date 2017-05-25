@@ -35,12 +35,13 @@ qvcalc.default <- function(object, factorname = NULL, coef.indices = NULL,
     eval(call)
 }
 
+#' @importFrom stats vcov
 #' @rdname qvcalc
 qvcalc.PlackettLuce <- function(object, ref = NULL, ...) {
   qv <- requireNamespace("qvcalc")
   if (!qv) stop("qvcalc package required to compute quasivariances")
   coefs <- coef(object, ref = ref)
-  vc <- vcov.PlackettLuce(object, ref = ref)
+  vc <- vcov(object, ref = ref)
   nobj <- length(coefs) - object$maxTied + 1
   # qvcalc does not accept Matrix objects
   qvcalc::qvcalc(as.matrix(vc[1:nobj, 1:nobj]), estimates = coefs[1:nobj])

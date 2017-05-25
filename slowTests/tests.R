@@ -17,18 +17,14 @@ if (require(gnm)){
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     ## compare coef
-    lambda <- log(coef(mod))
-    lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(coef(mod2)[-1]), tolerance = 1e-6)
+    all.equal(unname(coef(mod)[-1]), unname(coef(mod2)[-1]), tolerance = 1e-6)
 }
 
 if (require(BradleyTerry2)){
     ## fit loglinear model via BTm
     mod3 <- BTm(rep(1, 6), factor(M[,1]), factor(M[,2]))
     ## compare coef
-    lambda <- log(coef(mod))
-    lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(coef(mod3)), tolerance = 1e-6)
+    all.equal(unname(coef(mod)[-1]), unname(coef(mod3)), tolerance = 1e-6)
 }
 
 ## bigger BT model (data from BradleyTerry2)
@@ -45,9 +41,7 @@ if (require(BradleyTerry2)){
     R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
     ## needs 295 iterations, slow
     mod3 <- PlackettLuce(R, maxit = 500, epsilon = 1e-5)
-    lambda <- log(coef(mod3))
-    lambda <- lambda - lambda[1]
-    all.equal(unname(c(lambda[-1], mod3$loglik)), unname(c(standardBT$coefficients, logLik(standardBT))), tolerance = 1e-5)
+    all.equal(unname(c(coef(mod3)[-1], mod3$loglik)), unname(c(standardBT$coefficients, logLik(standardBT))), tolerance = 1e-5)
 }
 
 ## partial rankings, no ties
@@ -64,7 +58,9 @@ gamma <- PlackettLuce:::PL(M)
 ## via PlackettLuce
 R <- PlackettLuce:::denseRanking(M)
 mod <- PlackettLuce(R)
-all.equal(c(gamma/sum(gamma)), unname(coef(mod)))
+lambda <- log(c(gamma/sum(gamma)))
+lambda <- lambda - lambda[1]
+all.equal(unname(lambda), c(unname(coef(mod))))
 
 if (require(gnm)){
     ## fit loglinear model
@@ -72,9 +68,7 @@ if (require(gnm)){
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     ## compare coef
-    lambda <- log(coef(mod))
-    lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(coef(mod2)[-1]), tolerance = 1e-7)
+    all.equal(unname(coef(mod)[-1]), unname(coef(mod2)[-1]), tolerance = 1e-7)
 }
 
 ## Nascar example from Hunter
@@ -105,9 +99,7 @@ if (require(StatRank)){
     ## much slower
     R <- PlackettLuce:::denseRanking(Data.Nascar)
     mod2 <- PlackettLuce(R)
-    lambda <- log(coef(mod2))
-    lambda <- lambda - lambda[1]
-    all.equal(unname(lambda[-1]), unname(mod$coefficients[-1]), tolerance = 1e-6)
+    all.equal(unname(coef(mod)[-1]), unname(mod$coefficients[-1]), tolerance = 1e-6)
 }
 
 ## simple BT model with ties (Davidson)
@@ -136,26 +128,18 @@ mod <- PlackettLuce(R)
 alpha <- coef(mod)
 # tie parameter
 n <- length(alpha)
-all.equal(Dav[1], unname(alpha[n]))
+all.equal(log(Dav[1]), unname(alpha[n]))
 # abilities
-all.equal(Dav[-1], unname(alpha[-n]/sum(alpha[-n])), tol = 1e-7)
-
-## MM algorithm - tie parameter not right (so all wrong)
-mod <- PlackettLuce:::BTties(R)
-mod
-isTRUE(all.equal(Dav, mod)) #should be FALSE!
+lambda <- log(Dav[-1])
+lambda <- lambda - lambda[1]
+all.equal(lambda, unname(alpha[-n]), tol = 1e-6)
 
 if (require(gnm)){
     dat <- PlackettLuce:::longdat2(R)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     coef(mod2)
-    # tie parameter
-    all.equal(unname(coef(mod2)[n]), unname(log(alpha[n])), tolerance = 1e-7)
-    ## abilities
-    lambda <- log(alpha[-n])
-    lambda <- lambda - lambda[1]
-    all.equal(unname(coef(mod2)[-c(1,n)]), unname(lambda[-1]), tol = 1e-6)
+   all.equal(unname(coef(mod2)[-1]), unname(coef(mod)[-1]), tol = 1e-6)
 }
 
 ## partial rankings, three-way ties
@@ -174,11 +158,6 @@ if (require(gnm)){
                 constrain = 1)
     coef(mod2)
     n <- ncol(R)
-    # tie parameter
-    all.equal(unname(coef(mod2)[-(1:n)]), unname(log(coef(mod)[-(1:n)])),
+    all.equal(unname(coef(mod2)[-1]), unname(coef(mod)[-1]),
               tolerance = 1e-7)
-    ## abilities
-    lambda <- log(coef(mod)[1:n])
-    lambda <- lambda - lambda[1]
-    all.equal(unname(coef(mod2)[2:n]), unname(lambda[2:n]), tol = 1e-6)
 }
