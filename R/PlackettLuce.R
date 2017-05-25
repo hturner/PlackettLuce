@@ -221,7 +221,6 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 ref = if (is.null(ref)) 1 else ref,
-                contrasts = contrasts,
                 loglik = loglik(c(alpha, delta)),
                 iter = iter,
                 rankings = rankings, maxTied = D)   ##  Maybe we'll want to include these differently?

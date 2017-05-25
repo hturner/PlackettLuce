@@ -20,6 +20,6 @@ coef.PlackettLuce <- function(object, ref = NULL, type = "all", ...){
 
   switch(type,
          "ties" = return(coefs[-id]),
-         "abilities" = return(coefs[id]),
-         "all" = return(coefs))
+         "abilities" = return(structure(coefs[id], ref = ref)),
+         "all" = return(structure(coefs, ref = ref)))
 }
