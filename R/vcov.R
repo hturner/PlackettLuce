@@ -33,5 +33,5 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   theContrasts[ref, 1:nobj] <- theContrasts[ref, 1:nobj] - 1
   result <- crossprod(theContrasts, result) %*% theContrasts
   rownames(result) <- colnames(result) <- coefnames
-  return(result)
+  return(as.matrix(result))
 }

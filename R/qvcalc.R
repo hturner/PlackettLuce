@@ -43,6 +43,5 @@ qvcalc.PlackettLuce <- function(object, ref = NULL, ...) {
   coefs <- coef(object, ref = ref)
   vc <- vcov(object, ref = ref)
   nobj <- length(coefs) - object$maxTied + 1
-  # qvcalc does not accept Matrix objects
-  qvcalc::qvcalc(as.matrix(vc[1:nobj, 1:nobj]), estimates = coefs[1:nobj])
+  qvcalc::qvcalc(vc[1:nobj, 1:nobj], estimates = coefs[1:nobj])
 }

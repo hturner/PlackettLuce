@@ -147,6 +147,15 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         res
     }
 
+    # count possible choices from sets up to size D
+    count <- function(pattern, rep, D){
+        # set sizes and frequencies
+        freq <- rowsum(rep, colSums(pattern))
+        size <- as.numeric(rownames(freq))
+        # number of possible selections overall
+        sum(sapply(size, choose, seq(D)) %*% freq)
+    }
+
     # log-likelihood and score functions
     # Within optim or nlminb use obj and gr wrappers below
     loglik <- function(par) {
@@ -218,11 +227,13 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
 
     if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
     delta <- structure(delta, names = paste0("tie", 1:D))
+    rank <- N + D + sum(rep) - 2
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 ref = if (is.null(ref)) 1 else ref,
                 loglik = unname(loglik(c(alpha, delta))),
-                rank = N + D + sum(rep) - 2,
+                df.residual = count(pattern, rep, D) - rank,
+                rank = rank,
                 iter = iter,
                 rankings = rankings,
                 maxTied = D)   ##  Maybe we'll want to include these differently?
