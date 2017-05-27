@@ -74,11 +74,26 @@ denseRanking <- function(M){
     t(apply(M, 1, function(x) match(1:max(M), x, nomatch = 0)))
 }
 
-## coerce a matrix of rankings to a list of choices, alternatives, and
-## rankings. The choices and the corresponding alternatives is the
-## exchangeable bit of the Plackett-Luce with ties.
-
-## We can allow computation of weights for each choice/alternatives combination
+#' Choices and alternatives
+#'
+#' coerce a matrix of rankings to a list of choices, alternatives, and
+#' rankings. The choices and the corresponding alternatives is the
+#' exchangeable bit of the Plackett-Luce with ties.
+#'
+#' @examples
+#' R <- matrix(c(1, 2, 0, 0,
+#'               4, 1, 2, 3,
+#'               2, 1, 1, 1,
+#'               1, 2, 3, 0,
+#'               2, 1, 1, 0,
+#'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
+#' colnames(R) <- c("apple", "banana", "orange", "pear")
+#' actual_choices <- as.choices(R, names = TRUE)
+#' coded_choices <- as.choices(R, names = FALSE)
+#' attr(coded_choices, "objects")
+#'
+#' ## Coercion to tibble is straightforwards
+#' tibble::as.tibble(coded_choices)
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
     M <- t(Matrix(rankings, sparse = TRUE))
@@ -101,10 +116,9 @@ as.choices <- function(rankings, names = FALSE) {
     out <- list(choices = choices[ii], alternatives = alternatives[ii], rankings = rankings[ii])
     attr(out, "nchoices") <- length(choices)
     attr(out, "objects") <- matrix(c(seq_len(N), onames), ncol = 2)
-    ## Use tibbles?
-    ## out <- tibble::tibble(choice = choices[ii], alternatives = alternatives[ii], ranking = rankings[ii])
     class(out) <- c("choices", class(out))
     out
+    ## Alow weights per choice/alternatives combination?
 }
 
 print.choices <- function(x, ...) {
@@ -121,3 +135,4 @@ print.choices <- function(x, ...) {
         }
     }
 }
+
