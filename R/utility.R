@@ -73,3 +73,49 @@ longdat2 <- function(R){
 denseRanking <- function(M){
     t(apply(M, 1, function(x) match(1:max(M), x, nomatch = 0)))
 }
+
+## coerce a matrix of rankings to a list of choices, alternatives, and
+## rankings. The choices and the corresponding alternatives is the
+## exchangeable bit of the Plackett-Luce with ties.
+
+## We can allow computation of weights for each choice/alternatives combination
+as.choices <- function(rankings) {
+    N <- ncol(rankings)
+    M <- t(Matrix(rankings, sparse = TRUE))
+    J <- apply(M, 2, max)
+    opt <- colnames(rankings)
+    if (is.null(opt)) {
+        opt <- seq_len(N)
+    }
+    choices <- alternatives <-  list()
+    rankings <- c()
+    for (j in seq_len(max(J))) {
+        ## j-th choices
+        choices <- c(choices, as.list(apply((M == j)[, J >= j, drop = FALSE], 2, function(z) opt[z])))
+        ## j-th alternatives
+        alternatives <- c(alternatives, as.list(apply((M > j - 1)[, J >= j, drop = FALSE], 2, function(z) opt[z])))
+        rankings <- c(rankings, which(J >= j))
+    }
+    ii <- order(rankings)
+    out <- list(choices = choices[ii], alternatives = alternatives[ii], rankings = rankings[ii])
+    attr(out, "nchoices") <- length(choices)
+    ## Use tibbles?
+    ## out <- tibble::tibble(choice = choices[ii], alternatives = alternatives[ii], ranking = rankings[ii])
+    class(out) <- c("choices", class(out))
+    out
+}
+
+print.choices <- function(x, ...) {
+    rankings <- x$rankings
+    for (i in unique(rankings)) {
+        cat("Ranking:", i, "\n")
+        cat("-------------- \n")
+        ccho <- x$choices[rankings == i]
+        calt <- x$alternatives[rankings == i]
+        for (j in seq_along(ccho)) {
+            ch <- paste0("{", paste(ccho[[j]], collapse = ", "), "}")
+            al <- paste0("{", paste(calt[[j]], collapse = ", "), "}")
+            cat(ch, "from", al, "\n")
+        }
+    }
+}
