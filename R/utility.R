@@ -79,13 +79,14 @@ denseRanking <- function(M){
 ## exchangeable bit of the Plackett-Luce with ties.
 
 ## We can allow computation of weights for each choice/alternatives combination
-as.choices <- function(rankings) {
+as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
     M <- t(Matrix(rankings, sparse = TRUE))
     J <- apply(M, 2, max)
-    opt <- colnames(rankings)
-    if (is.null(opt)) {
-        opt <- seq_len(N)
+    onames <- colnames(rankings)
+    opt <- seq_len(N)
+    if (names & !is.null(onames)) {
+        opt <- onames
     }
     choices <- alternatives <-  list()
     rankings <- c()
@@ -99,6 +100,7 @@ as.choices <- function(rankings) {
     ii <- order(rankings)
     out <- list(choices = choices[ii], alternatives = alternatives[ii], rankings = rankings[ii])
     attr(out, "nchoices") <- length(choices)
+    attr(out, "objects") <- matrix(c(seq_len(N), onames), ncol = 2)
     ## Use tibbles?
     ## out <- tibble::tibble(choice = choices[ii], alternatives = alternatives[ii], ranking = rankings[ii])
     class(out) <- c("choices", class(out))
