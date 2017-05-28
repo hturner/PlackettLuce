@@ -113,7 +113,7 @@ as.choices <- function(rankings, names = FALSE) {
         rankings <- c(rankings, which(J >= j))
     }
     ii <- order(rankings)
-    out <- list(choices = choices[ii], alternatives = alternatives[ii], rankings = rankings[ii])
+    out <- list(choices = choices[ii], alternatives = alternatives[ii], ranking = rankings[ii])
     attr(out, "nchoices") <- length(choices)
     attr(out, "objects") <- matrix(c(seq_len(N), onames), ncol = 2)
     class(out) <- c("choices", class(out))
@@ -122,7 +122,7 @@ as.choices <- function(rankings, names = FALSE) {
 }
 
 print.choices <- function(x, ...) {
-    rankings <- x$rankings
+    rankings <- x$ranking
     for (i in unique(rankings)) {
         cat("Ranking:", i, "\n")
         cat("-------------- \n")
@@ -133,6 +133,6 @@ print.choices <- function(x, ...) {
             al <- paste0("{", paste(calt[[j]], collapse = ", "), "}")
             cat(ch, "from", al, "\n")
         }
+        cat("============== \n")
     }
 }
-
