@@ -156,12 +156,10 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         sum(sapply(size, choose, seq(D)) %*% freq)
     }
 
-    # log-likelihood and score functions
-    # Within optim or nlminb use obj and gr wrappers below
-    loglik <- function(par) {
+    key_quantities <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
-        c_contr <- b_contr <- 0
+        cs <- numeric(S)
         ## denominators
         for (k in seq_len(S)) {
             w <- which(pattern[, k])
@@ -182,8 +180,22 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
                 }
                 z1 <- z1 + delta[d]*z2
             }
-            c_contr <- c_contr + log(z1) * rep[k]
+            cs[k] <- z1
         }
+        list(alpha = alpha, delta = delta, normalising_constants = cs)
+    }
+
+    ## Design loglik as brglm2::brglmFit
+    # log-likelihood and score functions
+    # Within optim or nlminb use obj and gr wrappers below
+    loglik <- function(par, fit = NULL) {
+        if (is.null(fit)) {
+            fit <- key_quantities(par)
+        }
+        alpha <- fit$alpha
+        delta <- fit$delta
+        c_contr <- sum(log(fit$normalising_constants) * rep)
+        b_contr <- 0
         ## nominators
         for(k in seq_len(D)) {
             w <- J >= k
@@ -228,15 +240,21 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
     delta <- structure(delta, names = paste0("tie", 1:D))
     rank <- N + D + sum(rep) - 2
+
+    key_q <- key_quantities(c(alpha, delta))
+    logl <- loglik(c(alpha, delta), fit = key_q)
+
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 ref = if (is.null(ref)) 1 else ref,
-                loglik = unname(loglik(c(alpha, delta))),
+                loglik = unname(logl),
                 df.residual = count(pattern, rep, D) - rank,
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
-                maxTied = D)   ##  Maybe we'll want to include these differently?
+                maxTied = D, ##  Maybe we'll want to include these differently?
+                patterns = pattern, ##  Useful for fitted values
+                constants = key_q$normalising_constants)
     class(fit) <- "PlackettLuce"
     fit
 }
