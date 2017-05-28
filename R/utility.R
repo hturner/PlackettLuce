@@ -94,6 +94,7 @@ denseRanking <- function(M){
 #'
 #' ## Coercion to tibble is straightforwards
 #' tibble::as.tibble(coded_choices)
+#' @export
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
     M <- t(Matrix(rankings, sparse = TRUE))
@@ -136,3 +137,4 @@ print.choices <- function(x, ...) {
         cat("============== \n")
     }
 }
+
