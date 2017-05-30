@@ -10,7 +10,7 @@ as.edgelist <- function(x, ...){
 #' @importFrom matrixStats colMaxs
 as.edgelist.rankings <- function(x, ...){
     maxRank <- max(x)
-    colnames(x)c
+    colnames(x)
     res <- list()
     for (i in seq_len(maxRank)){
         res[[i]] <- list()
