@@ -37,6 +37,7 @@ qvcalc.default <- function(object, factorname = NULL, coef.indices = NULL,
 
 #' @importFrom stats vcov
 #' @rdname qvcalc
+#' @export
 qvcalc.PlackettLuce <- function(object, ref = NULL, ...) {
   qv <- requireNamespace("qvcalc")
   if (!qv) stop("qvcalc package required to compute quasivariances")
