@@ -36,9 +36,17 @@ as.choices <- function(rankings, names = FALSE) {
     rankings <- c()
     for (j in seq_len(max(J))) {
         ## j-th choices
-        choices <- c(choices, as.list(apply((M == j)[, J >= j, drop = FALSE], 2, function(z) opt[z])))
+        cho <- apply((M == j)[, J >= j, drop = FALSE], 2, function(z) opt[z])
+        if (is.matrix(cho)) {
+            cho <- split(cho, col(cho))
+        }
+        choices <- c(choices, cho)
         ## j-th alternatives
-        alternatives <- c(alternatives, as.list(apply((M > j - 1)[, J >= j, drop = FALSE], 2, function(z) opt[z])))
+        alt <- apply((M > j - 1)[, J >= j, drop = FALSE], 2, function(z) opt[z])
+        if (is.matrix(alt)) {
+            alt <- split(alt, col(alt))
+        }
+        alternatives <- c(alternatives, alt)
         rankings <- c(rankings, which(J >= j))
     }
     ii <- order(rankings)
