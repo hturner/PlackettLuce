@@ -52,6 +52,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
 
     # nontrivial nsets (excluding untied last place)
     J <- J - as.numeric(rowSums(t(M) == J) == 1)
+    Jmax <- max(J)
 
     # sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- M
@@ -185,7 +186,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         list(alpha = alpha, delta = delta, normalising_constants = cs)
     }
 
-    ## Design loglik as brglm2::brglmFit
+    # Design loglik as brglm2::brglmFit
     # log-likelihood and score functions
     # Within optim or nlminb use obj and gr wrappers below
     loglik <- function(par, fit = NULL) {
@@ -197,7 +198,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         c_contr <- sum(log(fit$normalising_constants) * rep)
         b_contr <- 0
         ## nominators
-        for(k in seq_len(D)) {
+        for(k in seq_len(Jmax)) {
             w <- J >= k
             x <- sum(log(delta[ties0[w]]) + apply((T == k)[, w, drop = FALSE], 2, function(z) sum(log(alpha[z])))/ties0[w])
             b_contr <- b_contr + x
@@ -205,7 +206,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         b_contr - c_contr
     }
 
-    # Log-likelihood derivatives
+    # log-likelihood derivatives
     score <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
@@ -213,14 +214,18 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
           B/delta - expectation("beta"))
     }
 
-    ## # Alternative optimization via
+    # Alternative optimization via
     ## obj <- function(par) {
     ##     al <- exp(par[1:N])
     ##     de <- c(1, exp(par[-c(1:N)]))
     ##     -loglik(c(al, de))
     ## }
-    ## res <- optim(log(c(alpha, delta[-1])), obj, method = "BFGS")
-
+    ## gr <- function(par) {
+    ##     al <- exp(par[1:N])
+    ##     de <- c(1, exp(par[-c(1:N)]))
+    ##     -score(c(al, de))[-(N + 1)] * c(al, de[-1])
+    ## }
+    ## res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
     for (iter in seq_len(maxit)){
         # update all alphas
         expA <- expectation("alpha")
