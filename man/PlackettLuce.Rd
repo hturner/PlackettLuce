@@ -5,7 +5,7 @@
 \title{Fit Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, ref = NULL, epsilon = 1e-07, maxit = 100,
-  trace = FALSE)
+  trace = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
@@ -18,6 +18,8 @@ expected sufficient statistics for the ability parameters.}
 \item{maxit}{the maximum number of iterations.}
 
 \item{trace}{logical, if \code{TRUE} show trace of iterations.}
+
+\item{verbose}{logical, if \code{TRUE} show messages from validity checks.}
 }
 \value{
 An object of class "PlackettLuce", which is a list containing the

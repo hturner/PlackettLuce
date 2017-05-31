@@ -9,6 +9,7 @@
 #' expected sufficient statistics for the ability parameters.
 #' @param maxit the maximum number of iterations.
 #' @param trace logical, if \code{TRUE} show trace of iterations.
+#' @param verbose logical, if \code{TRUE} show messages from validity checks.
 #'
 #' @return An object of class "PlackettLuce", which is a list containing the
 #' following elements:
@@ -249,6 +250,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     ##     -score(c(al, de))[-(N + 1)] * c(al, de[-1])
     ## }
     ## res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
+    conv <- FALSE
     for (iter in seq_len(maxit)){
         # update all alphas
         expA <- expectation("alpha")
@@ -262,7 +264,10 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
             message("iter ", iter)
         }
         # stopping rule: compare observed & expected sufficient stats for alphas
-        if (all(abs(A - expA) < epsilon)) break
+        if (all(abs(A - expA) < epsilon)) {
+            conv <- TRUE
+            break
+        }
     }
 
     if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
@@ -272,7 +277,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     key_q <- key_quantities(c(alpha, delta))
     logl <- loglik(c(alpha, delta), fit = key_q)
 
-    if (verbose && iter == maxit)
+    if (!conv)
         warning("Iterations have not converged.")
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
