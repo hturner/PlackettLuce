@@ -25,7 +25,7 @@
 #' @export
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
-    M <- t(Matrix(rankings, sparse = TRUE))
+    M <- t(Matrix(unclass(rankings), sparse = TRUE))
     J <- apply(M, 2, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)

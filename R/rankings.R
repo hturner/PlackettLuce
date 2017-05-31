@@ -66,7 +66,6 @@
 #'               2, 4, 0, 0), ncol = 4, byrow = TRUE)
 #'               R <- as.rankings(X)
 #' R
-#' attr(R, "singleton")
 #' attr(R, "recoded")
 #' attr(R, "membership")
 #' @aliases rankings
@@ -119,8 +118,7 @@ checkDense <- function(x){
             x
         }))
     }
-    # note any "ranking" of one object, but leave for now
-    structure(x, singleton = nRank == 1, recoded = bad)
+    structure(x, recoded = bad)
 }
 
 #' @method print rankings

@@ -38,8 +38,26 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
                          trace = FALSE){
     call <- match.call()
 
-    N <- ncol(rankings)
-    M <- t(Matrix(rankings, sparse = TRUE))
+    # check rankings
+    if (!inherits(rankings, "rankings")){
+        rankings <- as.rankings(rankings)
+    }
+    # if disconnected, fit model to largest cluster
+    if (attr(rankings, "no") > 1){
+        id <- which.max(attr(rankings, "csize"))
+        size <- attr(rankings, "csize")[id]
+        if (size == 1) {
+            stop("All items are weakly connected, cannot estimate item abilities.")
+        } else{
+            warning("The network of items is split into weakly connected clusters\n",
+                    "Analysing the largest cluster, with ", size, " items")
+            # drop items not in largest cluster and recode
+            rankings <- rankings[, attr(rankings, "membership") == id]
+            rankings <- suppressWarnings(checkDense(rankings))
+        }
+    }
+
+    M <- t(Matrix(unclass(rankings), sparse = TRUE))
 
     # max nsets
     J <- apply(M, 2, max)
@@ -53,6 +71,12 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     # nontrivial nsets (excluding untied last place)
     J <- J - as.numeric(rowSums(t(M) == J) == 1)
     Jmax <- max(J)
+
+    # remove singletons
+    singleton <- J == 0
+    M <- M[, !singleton]
+    J <- J[!singleton]
+    ties0 <- ties0[!singleton]
 
     # sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- M
@@ -100,6 +124,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     S <- length(rep)
 
     # starting values
+    N <- ncol(rankings)
     alpha <- rep.int(1/N, N)
     delta <- rep.int(0.1, D)
     delta[1] <- 1

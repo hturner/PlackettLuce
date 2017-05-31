@@ -85,7 +85,6 @@ X <- matrix(c(1, 2, 3, 4,
               2, 4, 0, 0), ncol = 4, byrow = TRUE)
               R <- as.rankings(X)
 R
-attr(R, "singleton")
 attr(R, "recoded")
 attr(R, "membership")
 }
