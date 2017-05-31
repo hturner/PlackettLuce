@@ -35,12 +35,12 @@
 #' @import Matrix
 #' @export
 PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
-                         trace = FALSE){
+                         trace = FALSE, verbose = TRUE){
     call <- match.call()
 
     # check rankings
     if (!inherits(rankings, "rankings")){
-        rankings <- as.rankings(rankings)
+        rankings <- as.rankings(rankings, verbose = verbose)
     }
     # if disconnected, fit model to largest cluster
     if (attr(rankings, "no") > 1){
@@ -53,7 +53,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
                     "Analysing the largest cluster, with ", size, " items")
             # drop items not in largest cluster and recode
             rankings <- rankings[, attr(rankings, "membership") == id]
-            rankings <- suppressWarnings(checkDense(rankings))
+            rankings <- suppressMessages(checkDense(rankings))
         }
     }
 
@@ -61,12 +61,6 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
 
     # max nsets
     J <- apply(M, 2, max)
-
-    # highest degree of ties
-    # (specific to dense ranking - need to check and convert other rankings)
-    n <- diff(M@p)
-    ties0 <- n - J + 1
-    D <- max(ties0)
 
     # nontrivial nsets (excluding untied last place)
     J <- J - as.numeric(rowSums(t(M) == J) == 1)
@@ -76,7 +70,6 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     singleton <- J == 0
     M <- M[, !singleton]
     J <- J[!singleton]
-    ties0 <- ties0[!singleton]
 
     # sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- M
@@ -90,7 +83,9 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     # for alpha i, sum over all sets of object i is in selected set/size of selected set
     A <- rowSums(S)
     # for delta d, number of sets with cardinality d
-    B <- tabulate(1/S@x)/(1:D)
+    B <- tabulate(1/S@x)
+    D <- length(B)
+    B <- B/seq(D)
 
     # unique columns with >= 1 element for logical matrix
     uniquecol <- function(M, rep = TRUE){
@@ -225,8 +220,11 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         ## nominators
         for(k in seq_len(Jmax)) {
             w <- J >= k
-            x <- sum(log(delta[ties0[w]]) + apply((T == k)[, w, drop = FALSE], 2, function(z) sum(log(alpha[z])))/ties0[w])
-            b_contr <- b_contr + x
+            x <- apply((T == k)[, w, drop = FALSE], 2, function(z){
+                ties0 <- sum(z)
+                sum(log(delta[ties0])) + sum(log(alpha[z]))/ties0
+            })
+            b_contr <- b_contr + sum(x)
         }
         b_contr - c_contr
     }
@@ -274,6 +272,8 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     key_q <- key_quantities(c(alpha, delta))
     logl <- loglik(c(alpha, delta), fit = key_q)
 
+    if (verbose && iter == maxit)
+        warning("Iterations have not converged.")
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
                 ref = if (is.null(ref)) 1 else ref,

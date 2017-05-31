@@ -93,15 +93,15 @@
 #' @importFrom stats na.omit
 #' @export
 rankings <- function(data, id, item, rank, verbose = TRUE, ...){
-    x <- x[c(id, item, rank)]
-    if (ncol(x) != 3) stop("id, item and rank must specify columns in x")
+    data <- data[c(id, item, rank)]
+    if (ncol(data) != 3) stop("id, item and rank must specify columns in data")
     # remove records with unknown id, item or rank
-    x <- na.omit(x)
-    if (verbose && inherits(x, "omit")){
+    data <- na.omit(data)
+    if (verbose && inherits(data, "omit")){
         message("Removed records with unknown id, item or rank")
     }
     # id duplicated items
-    id <- paste(x[[1]], x[[2]], sep = ":")
+    id <- paste(data[[1]], data[[2]], sep = ":")
     dup <- duplicated(id)
     if (any(dup)){
         if (verbose) {
@@ -112,28 +112,28 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
         ndups <- length(dups)
         keep <- logical(ndups)
         for (i in seq(ndups)){
-            ranks <- x[[3]][id == dups[i]]
+            ranks <- data[[3]][id == dups[i]]
             # keep first if equal/consecutive ranks, else drop all (inconsistent)
             keep[i] <- diff(range(ranks)) < 2
         }
         include <- !id %in% dups
         first <- !include & !dup
         first[first] <- keep
-        x <- x[include | first,]
+        data <- data[include | first,]
     }
     # remove rankings with less than 2 items
-    n <- rowsum(as.numeric(x[[3]] > 0), x[[1]], na.rm = TRUE)
+    n <- rowsum(as.numeric(data[[3]] > 0), data[[1]], na.rm = TRUE)
     id <- rownames(n)[n < 2]
     if (length(id)){
         if (verbose) message("Removed rankings with less than 2 items.")
-        x <- x[!as.character(x[[1]]) %in% id, , drop = FALSE]
+        data <- data[!as.character(data[[1]]) %in% id, , drop = FALSE]
     }
     # create rankings matrix (do not assume any form of ranking)
-    lev1 <- sort(unique(x[[1]]))
-    lev2 <- sort(unique(x[[2]]))
+    lev1 <- sort(unique(data[[1]]))
+    lev2 <- sort(unique(data[[2]]))
     R <- matrix(0, nrow = length(lev1), ncol = length(lev2),
                 dimnames = list(lev1, lev2))
-    R[cbind(match(x[[1]], lev1), match(x[[2]], lev2))] <- x[[3]]
+    R[cbind(match(data[[1]], lev1), match(data[[2]], lev2))] <- data[[3]]
     # convert to dense rankings and check connectivity
     as.rankings.matrix(R, verbose = verbose)
 }
@@ -167,8 +167,9 @@ as.rankings.matrix <- function(x, verbose = TRUE, ...){
     if (clus$no > 1){
         warning("Network of items is not strongly connected")
     }
+    id <- match(colnames(x), names(clus$membership))
     structure(x,
-              membership = clus$membership,
+              membership = clus$membership[id],
               csize = clus$csize,
               no = clus$no,
               class = "rankings")
