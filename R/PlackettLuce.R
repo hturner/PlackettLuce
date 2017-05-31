@@ -52,6 +52,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
 
     # nontrivial nsets (excluding untied last place)
     J <- J - as.numeric(rowSums(t(M) == J) == 1)
+    Jmax <- max(J)
 
     # sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- M
@@ -197,9 +198,10 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         c_contr <- sum(log(fit$normalising_constants) * rep)
         b_contr <- 0
         ## nominators
-        for(k in seq_len(D)) {
+        for(k in seq_len(Jmax)) {
             w <- J >= k
             x <- sum(log(delta[ties0[w]]) + apply((T == k)[, w, drop = FALSE], 2, function(z) sum(log(alpha[z])))/ties0[w])
+
             b_contr <- b_contr + x
         }
         b_contr - c_contr
