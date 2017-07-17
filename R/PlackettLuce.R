@@ -329,7 +329,9 @@ estfun.PlackettLuce <- function(x) {
         })
     }
     # ignore column corresponding to fixed ref
-    res <- t(A[-x$ref, , drop = FALSE])
+    ref <- x$ref
+    if (ref %in% names(lambda)) ref <- which(names(lambda) == ref)
+    res <- t(A[-ref, , drop = FALSE])
     if (D > 1){
         for (j in seq_len(max(J))){
             B <- B - sapply(seq_len(ncol(M)), function(i){
