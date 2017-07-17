@@ -197,3 +197,31 @@ checkDense <- function(x, verbose = TRUE){
 print.rankings <- function(x, ...){
     print(x[seq(nrow(x)), seq(ncol(x))])
 }
+
+#' @method as.data.frame rankings
+#' @export
+as.data.frame.rankings <-
+    function(x, row.names = NULL, optional = FALSE, ...,
+             nm = paste(deparse(substitute(x), width.cutoff = 20L),
+                        collapse = " ")){
+    value <- list(x)
+    if (!optional) {
+        names(value) <- nm
+    } else names(value) <- make.names(nm)
+    if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
+    if (is.null(row.names)) {
+        row.names <- .set_row_names(nrow(x))
+    } else {
+        if (is.object(row.names) || !is.integer(row.names))
+            row.names <- as.character(row.names)
+        if (anyNA(row.names))
+            stop("row names contain missing values")
+        if (anyDuplicated(row.names))
+            stop(paste("duplicate row.names: ",
+                       paste(unique(row.names[duplicated(row.names)]),
+                             collapse = ", ")))
+    }
+    attr(value, "row.names") <- row.names
+    class(value) <- "data.frame"
+    value
+}
