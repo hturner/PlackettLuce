@@ -159,6 +159,8 @@ as.rankings.matrix <- function(x, verbose = TRUE, ...){
         stop("Rankings should consist of integers between 0 and ", ncol(x))
     # check rankings are dense rankings
     x <- checkDense(x, verbose = verbose)
+    # add names if necessary
+    if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
     # check network is strongly connected
     # (win and loss connection between all subgroups)
     net <- graph_from_edgelist(as.edgelist.rankings(x))
