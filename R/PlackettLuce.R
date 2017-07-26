@@ -310,9 +310,12 @@ PlackettLuce <- function(rankings, ref = NULL,
         expA <- expectation("alpha")
         if (pseudo){
             alpha[-1] <- alpha[-1]*A[-1]/expA[-1]
-        } else alpha <- alpha*A/expA
-        # scale alphas to sum 1
-        alpha <- alpha/sum(alpha)
+            # no need to scale as alpha[1] fixed
+        } else {
+            alpha <- alpha*A/expA
+            # scale alphas to sum 1
+            alpha <- alpha/sum(alpha)
+        }
         # update all deltas
         if (D > 1) delta[-1] <- B[-1]/expectation("beta")[-1]
         # trace
@@ -327,15 +330,25 @@ PlackettLuce <- function(rankings, ref = NULL,
     }
 
     delta <- structure(delta, names = paste0("tie", 1:D))
+
+    if (pseudo) {
+        # drop hypothetical object
+        alpha <- alpha[-1]
+        N <- N - 1
+        # drop extra rankings
+        extra <- seq_len(2*npseudo*nobj)
+        rankings <- rankings[-extra, -1]
+        T <- T[-1, -extra]
+        J <- J[-extra]
+        # drop extra patterns
+        pattern <- pattern[-1, -seq_len(nobj)]
+        rep <- rep[-seq_len(nobj)]
+        S <- S - nobj
+    }
     rank <- N + D + sum(rep) - 2
 
     key_q <- key_quantities(c(alpha, delta))
     logl <- loglik(c(alpha, delta), fit = key_q)
-
-    if (pseudo) {
-        alpha <- alpha[-1]
-        rankings <- rankings[-seq_len(2*npseudo*nobj), -1]
-    }
 
     if (!conv)
         warning("Iterations have not converged.")
