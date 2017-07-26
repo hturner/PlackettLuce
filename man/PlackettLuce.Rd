@@ -4,13 +4,23 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, ref = NULL, epsilon = 1e-07, maxit = 100,
+PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
+  "connected", "cluster"), npseudo = 1, epsilon = 1e-07, maxit = 100,
   trace = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
 
 \item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
+
+\item{network}{the network of rankings on which to base the model:
+\code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
+\code{"pseudodata"} (rankings plus pseudodata),
+\code{"connected"} (rankings if network strongly connected, fail otherwise),
+\code{"cluster"} (the largest strongly connected cluster).}
+
+\item{npseudo}{when using pseudodata: the number of wins and losses to add
+between each object and a hypothetical reference object.}
 
 \item{epsilon}{the maximum absolute difference between the observed and
 expected sufficient statistics for the ability parameters.}
@@ -32,6 +42,25 @@ following elements:
 \description{
 Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 (not all objects ranked) and include ties of any order.
+}
+\details{
+In order for the maximum likelihood estimate of an object's ability to be
+defined, the network of rankings must be strongly connected. This means that
+in every possible partition of the objects into two nonempty subsets, some
+object in the second set is ranked higher than some objects in the first set
+at least once.
+
+If the network of rankings is not strongly connected, or the network is
+sparse, then pseudodata may be used to connect the network and reduce the
+bias in the ability estimates. This approach posits a hypothetical object
+with log-ability 0 and adds \code{npseudo} wins and \code{npseudo} losses
+to the set of rankings.
+
+The paramater \code{npseudo} is the prior strength.  With \code{npseudo = 0}
+we have the MLE as the posterior mode.  As \code{npseudo} approaches
+infinity the log-ability estimates all shrink towards 0. The default,
+\code{npseudo = 1}, is sufficient to connect the network and has a weak
+shrinkage effect.
 }
 \examples{
 # Six partial rankings of four objects, 1 is top rank, e.g
