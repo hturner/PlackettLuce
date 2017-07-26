@@ -15,6 +15,7 @@ coef.PlackettLuce <- function(object, ref = NULL, type = "all", ...){
   if (is.null(ref)) ref <- object$ref
   if (ref %in% object_names) ref <- which(object_names == ref)
   if (ref %in% id) {
+      if (is.na(coefs[ref])) stop("Reference ability inestimable")
       coefs[id] <- coefs[id] - coefs[ref]
   } else stop("Invalid value for the 'ref' argument")
 

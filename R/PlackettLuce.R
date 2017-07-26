@@ -74,6 +74,7 @@ PlackettLuce <- function(rankings, ref = NULL,
     if (!inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
+    items <- colnames(rankings)
     # if pseudodata or (adaptive and disconnected) add pseudodata
     if (network == "pseudodata" ||
         (network == "adaptive" & attr(rankings, "no") > 1)){
@@ -105,11 +106,12 @@ PlackettLuce <- function(rankings, ref = NULL,
                 if ((is.character(ref) && !ref %in% colnames(rankings)) ||
                     !ref %in% id){
                     warning("re-setting `ref` to first object in largest cluster")
-                    ref <- 1
+                    ref <- id[1]
                 }
             }
         }
     }
+    if (is.null(ref)) ref <- 1
 
     M <- t(Matrix(unclass(rankings), sparse = TRUE))
 
@@ -350,11 +352,18 @@ PlackettLuce <- function(rankings, ref = NULL,
     key_q <- key_quantities(c(alpha, delta))
     logl <- loglik(c(alpha, delta), fit = key_q)
 
+    if (length(alpha) < length(items)){
+        out <- rep.int(NA_real_, length(items))
+        names(out) <- items
+        out[names(alpha)] <- alpha
+        alpha <- out
+    }
+
     if (!conv)
         warning("Iterations have not converged.")
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
-                ref = if (is.null(ref)) 1 else ref,
+                ref = ref,
                 loglik = unname(logl),
                 df.residual = count(pattern, rep, D) - rank,
                 rank = rank,
