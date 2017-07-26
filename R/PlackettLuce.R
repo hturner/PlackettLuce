@@ -3,8 +3,33 @@
 #' Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 #' (not all objects ranked) and include ties of any order.
 #'
+#' In order for the maximum likelihood estimate of an object's ability to be
+#' defined, the network of rankings must be strongly connected. This means that
+#' in every possible partition of the objects into two nonempty subsets, some
+#' object in the second set is ranked higher than some objects in the first set
+#' at least once.
+#'
+#' If the network of rankings is not strongly connected, or the network is
+#' sparse, then pseudodata may be used to connect the network and reduce the
+#' bias in the ability estimates. This approach posits a hypothetical object
+#' with log-ability 0 and adds \code{npseudo} wins and \code{npseudo} losses
+#' to the set of rankings.
+#'
+#' The paramater \code{npseudo} is the prior strength.  With \code{npseudo = 0}
+#' we have the MLE as the posterior mode.  As \code{npseudo} approaches
+#' infinity the log-ability estimates all shrink towards 0. The default,
+#' \code{npseudo = 1}, is sufficient to connect the network and has a weak
+#' shrinkage effect.
+#'
 #' @param rankings a matrix of dense rankings, see examples.
 #' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
+#' @param network the network of rankings on which to base the model:
+#' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
+#' \code{"pseudodata"} (rankings plus pseudodata),
+#' \code{"connected"} (rankings if network strongly connected, fail otherwise),
+#' \code{"cluster"} (the largest strongly connected cluster).
+#' @param npseudo when using pseudodata: the number of wins and losses to add
+#' between each object and a hypothetical reference object.
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters.
 #' @param maxit the maximum number of iterations.
@@ -35,16 +60,38 @@
 #' coef(mod)
 #' @import Matrix
 #' @export
-PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
+PlackettLuce <- function(rankings, ref = NULL,
+                         network = c("adaptive", "pseudodata", "connected",
+                                     "cluster"),
+                         npseudo = 1,
+                         epsilon = 1e-7, maxit = 100,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
+    network <- match.arg(network, c("adaptive", "pseudodata", "connected",
+                                    "cluster"))
 
     # check rankings
     if (!inherits(rankings, "rankings")){
-        rankings <- as.rankings(rankings, verbose = verbose)
+        rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
+    items <- colnames(rankings)
+    # if pseudodata or (adaptive and disconnected) add pseudodata
+    if (network == "pseudodata" ||
+        (network == "adaptive" & attr(rankings, "no") > 1)){
+        nobj <- ncol(rankings)
+        rankings <- cbind(0, rankings)
+        pseudo <- matrix(0, nrow = 2*npseudo*nobj,
+                         ncol = ncol(rankings))
+        pseudo[, 1] <- 1:2
+        pseudo[cbind(seq_len(nrow(pseudo)),
+                     rep(seq_len(nobj) + 1, each = 2))] <- 2:1
+        rankings <- rbind(pseudo, rankings)
+        pseudo <- TRUE
+    } else pseudo <- FALSE
     # if disconnected, fit model to largest cluster
-    if (attr(rankings, "no") > 1){
+    if (!is.null(attr(rankings, "no")) && attr(rankings, "no") > 1){
+        if (network == "connected")
+            stop("Network is not strongly connected.")
         id <- which.max(attr(rankings, "csize"))
         size <- attr(rankings, "csize")[id]
         if (size == 1) {
@@ -55,8 +102,16 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
             # drop items not in largest cluster and recode
             rankings <- rankings[, attr(rankings, "membership") == id]
             rankings <- suppressMessages(checkDense(rankings))
+            if (!is.null(ref)){
+                if ((is.character(ref) && !ref %in% colnames(rankings)) ||
+                    !ref %in% id){
+                    warning("re-setting `ref` to first object in largest cluster")
+                    ref <- id[1]
+                }
+            }
         }
     }
+    if (is.null(ref)) ref <- 1
 
     M <- t(Matrix(unclass(rankings), sparse = TRUE))
 
@@ -122,6 +177,7 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     # starting values
     N <- ncol(rankings)
     alpha <- rep.int(1/N, N)
+    if (pseudo) alpha[1] <- 1
     delta <- rep.int(0.1, D)
     delta[1] <- 1
     #delta <- c(1, (2*B[2])/(sum(rep) - B[2]))
@@ -254,9 +310,14 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
     for (iter in seq_len(maxit)){
         # update all alphas
         expA <- expectation("alpha")
-        alpha <- alpha*A/expA
-        # scale alphas to sum 1
-        alpha <- alpha/sum(alpha)
+        if (pseudo){
+            alpha[-1] <- alpha[-1]*A[-1]/expA[-1]
+            # no need to scale as alpha[1] fixed
+        } else {
+            alpha <- alpha*A/expA
+            # scale alphas to sum 1
+            alpha <- alpha/sum(alpha)
+        }
         # update all deltas
         if (D > 1) delta[-1] <- B[-1]/expectation("beta")[-1]
         # trace
@@ -270,18 +331,39 @@ PlackettLuce <- function(rankings, ref = NULL, epsilon = 1e-7, maxit = 100,
         }
     }
 
-    if (is.null(names(alpha))) names(alpha) <- paste0("alpha", seq_along(alpha))
     delta <- structure(delta, names = paste0("tie", 1:D))
+
+    if (pseudo) {
+        # drop hypothetical object
+        alpha <- alpha[-1]
+        N <- N - 1
+        # drop extra rankings
+        extra <- seq_len(2*npseudo*nobj)
+        rankings <- rankings[-extra, -1]
+        T <- T[-1, -extra]
+        J <- J[-extra]
+        # drop extra patterns
+        pattern <- pattern[-1, -seq_len(nobj)]
+        rep <- rep[-seq_len(nobj)]
+        S <- S - nobj
+    }
     rank <- N + D + sum(rep) - 2
 
     key_q <- key_quantities(c(alpha, delta))
     logl <- loglik(c(alpha, delta), fit = key_q)
 
+    if (length(alpha) < length(items)){
+        out <- rep.int(NA_real_, length(items))
+        names(out) <- items
+        out[names(alpha)] <- alpha
+        alpha <- out
+    }
+
     if (!conv)
         warning("Iterations have not converged.")
     fit <- list(call = call,
                 coefficients = c(alpha, delta[-1]),
-                ref = if (is.null(ref)) 1 else ref,
+                ref = ref,
                 loglik = unname(logl),
                 df.residual = count(pattern, rep, D) - rank,
                 rank = rank,

@@ -2,17 +2,19 @@
 #' @method summary PlackettLuce
 #' @export
 summary.PlackettLuce <- function(object,
+                                 ref = NULL,
                                  ...) {
-    coefs <- coef(object)
-    se <- sqrt(diag(vcov(object)))
-    ref <- attr(coefs, "ref")
-    if (is.numeric(ref)) se[ref] <- NA
-    tvalue <- coefs/se
-    pvalue <- 2 * pnorm(-abs(tvalue))
-    coefficients <- cbind(coefs, se, tvalue, pvalue)
-    dimnames(coefficients) <- list(names(coefs),
-                                   c("Estimate", "Std. Error",
-                                     "z value", "Pr(>|z|)"))
+    coefs <- coef(object, ref = ref)
+    coefficients <- matrix(NA, nrow = length(coefs), ncol = 4,
+                           dimnames = list(names(coefs),
+                                           c("Estimate", "Std. Error",
+                                             "z value", "Pr(>|z|)")))
+    coefficients[,1] <- coefs
+    se <- sqrt(diag(vcov(object, ref = ref)))
+    coefficients[names(se), 2] <- se
+    coefficients[attr(coefs, "ref"), 2] <- NA
+    coefficients[,3] <- coefficients[,1]/coefficients[,2]
+    coefficients[,4] <- 2 * pnorm(-abs(coefficients[, 3]))
     structure(list(call = object$call,
                    deviance = deviance(object),
                    aic = AIC(object),

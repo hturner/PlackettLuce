@@ -6,13 +6,14 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   ##
   theLongData <- longdat2(object$rankings)
   coefs <- coef(object, ref = ref)
-  coefnames <- names(object$coefficients)
-  ncoefs <- length(coefs)
+  na <- is.na(coefs)
+  coefnames <- names(coefs[!na])
+  ncoefs <- sum(!na)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
   ##  Compute the fitted values:
-  fit <- as.vector(exp(X %*% coefs))
+  fit <- as.vector(exp(X %*% coefs[!na]))
   fit <- fit  *  as.vector(tapply(y, z, sum)[z] / tapply(fit, z, sum)[z])
   ##  Compute the vcov matrix
   WX <- fit * X
@@ -28,6 +29,7 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   nobj <- ncoefs - object$maxTied + 1
   # ref already checked in coef method (with error if invalid)
   ref <- attr(coefs, "ref")
+  ref <- which((seq_along(coefs) == ref)[!na])
   # Can be done more economically?
   theContrasts <- Diagonal(ncoefs)
   theContrasts[ref, 1:nobj] <- theContrasts[ref, 1:nobj] - 1

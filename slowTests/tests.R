@@ -161,3 +161,25 @@ if (require(gnm)){
     all.equal(unname(coef(mod2)[-1]), unname(coef(mod)[-1]),
               tolerance = 1e-7)
 }
+
+## disconnected networks
+
+## simple BT model
+R <- matrix(c(1, 2, 0, 0,
+              2, 0, 1, 0,
+              1, 0, 0, 2,
+              2, 1, 0, 0,
+              0, 1, 2, 0,
+              0, 0, 2, 0), byrow = TRUE, ncol = 4,
+            dimnames = list(NULL, letters[1:4]))
+
+## error
+mod <- PlackettLuce(R, network = "connected")
+## first 3 items only
+mod <- PlackettLuce(R, network = "cluster")
+coef(mod)
+summary(mod)
+## with pseudodata (same as network = "pseudodata")
+mod <- PlackettLuce(R, network = "adaptive")
+coef(mod)
+summary(mod)
