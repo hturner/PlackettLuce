@@ -23,10 +23,7 @@ as.grouped_rankings.paircomp <- function(x, verbose = TRUE, ...){
     rankings[cbind(seq_len(ncomp), pairs[,1][id[,2]])] <- ifelse(x == -1, 2, 1)
     rankings[cbind(seq_len(ncomp), pairs[,2][id[,2]])] <- ifelse(x == 1, 2, 1)
     rankings <- as.rankings.matrix(rankings, verbose = verbose)
-    attr(rankings, "index") <- id[,1]
-    id  <- split(seq_len(ncomp), id[,1])
-    submatrix  <- function(M, i) M[i, , drop = FALSE]
-    rankings  <- lapply(id, submatrix, M = rankings)
+    rankings <- structure(seq_len(max(id[,1])), rankings = rankings, index = id[,1])
     class(rankings) <- "grouped_rankings"
     rankings
 }
@@ -40,7 +37,7 @@ as.data.frame.grouped_rankings <-
     value <- list(x)
     if (!optional) {
         names(value) <- nm
-    } else names(value) <- make.names(nm)
+    }
     if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
     if (is.null(row.names)) {
         row.names <- .set_row_names(length(x))
@@ -57,4 +54,19 @@ as.data.frame.grouped_rankings <-
     attr(value, "row.names") <- row.names
     class(value) <- "data.frame"
     value
+}
+
+#' @method [ grouped_rankings
+#' @export
+"[.grouped_rankings" <- function(x, i, ...) {
+    # subset subjects
+    value <- unclass(x)[i]
+    keep <- attr(x, "index") %in% value
+    # check if reduced rankings connected
+    rankings <- suppressWarnings(
+        as.rankings(attr(x, "rankings")[keep, , drop = FALSE]))
+    structure(value,
+              index = attr(x, "index")[keep],
+              rankings = rankings,
+              class = "grouped_rankings")
 }

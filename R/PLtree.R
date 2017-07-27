@@ -9,7 +9,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
                 paste(c("x"[x], "weights"[weights], "offset"[offset]),
                       collapse = ","))
     # y is grouped_rankings object
-    R <- as.rankings(do.call("rbind", y), verbose = FALSE)
+    R <- attr(y, "rankings")
     # return null result if network not strongly connected
     if (attr(R, "no") > 1){
         return(list(coefficients = NA, objfun = Inf,
@@ -19,8 +19,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
     # returns with rownames - possible to avoid?
     if (estfun) {
         percomp <- estfun.PlackettLuce(res)
-        estfun <- rowsum(as.matrix(percomp),
-                         rep(seq_len(length(y)), sapply(y, nrow)))
+        estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
     list(coefficients = coef(res), objfun = -res$loglik,
          estfun = estfun,
@@ -32,17 +31,13 @@ pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...)
 {
     m <- match.call(expand.dots = TRUE)
     control_args <- names(m) %in% names(formals(mob_control))
-    # treating rankings response as data.frame
-    # => index correctly by mob; else need to add indexing method to treat as vector
-    args <- as.list(m)[control_args]
-    args$ytype <- "vector"
-    control <- do.call("mob_control", args)
+    control <- do.call("mob_control", as.list(m)[control_args])
     m <- m[!control_args]
     m$control <- control
-    m$fit <- plfit
+    m$fit <- as.name("plfit")
     m[[1L]] <- as.name("mob")
     rval <- eval(m, parent.frame())
     rval$info$call <- m
-    class(rval) <- c("pltree", class(rval))
+    class(rval) <- c("pltree", "bttree", class(rval))
     return(rval)
 }
