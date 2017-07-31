@@ -71,6 +71,10 @@ pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
     return(rval)
 }
 
+#' @importFrom partykit mob
+#' @export
+partykit::mob
+
 #' @method predict pltree
 #' @export
 predict.pltree <- function(object, ...){
