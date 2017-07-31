@@ -5,6 +5,7 @@
 \alias{as.rankings}
 \alias{as.rankings.Matrix}
 \alias{as.rankings.matrix}
+\alias{format.rankings}
 \title{Rankings Objects}
 \usage{
 rankings(data, id, item, rank, verbose = TRUE, ...)
@@ -14,6 +15,8 @@ as.rankings(x, verbose = TRUE, ...)
 \method{as.rankings}{Matrix}(x, verbose = TRUE, ...)
 
 \method{as.rankings}{matrix}(x, verbose = TRUE, ...)
+
+\method{format}{rankings}(x, width = 40, ...)
 }
 \arguments{
 \item{data}{a data frame with columns specified by \code{id}, \code{item} and
@@ -33,7 +36,11 @@ to rankings data.}
 
 \item{...}{further arguments passed to/from methods.}
 
-\item{x}{a matrix with one column per item and one row per ranking.}
+\item{x}{for \code{as.rankings}, a matrix with one column per item and one
+row per ranking; for \code{format}, a \code{"rankings"} object.}
+
+\item{width}{the width in number of characters to format each ranking -
+rankings that are too wide will be truncated.}
 }
 \value{
 a \code{"rankings"} object, which is a matrix of rankings with
@@ -112,7 +119,7 @@ X <- matrix(c(1, 2, 3, 4,
               2, 2, 0, 4,
               0, 0, 3, 0,
               2, 4, 0, 0), ncol = 4, byrow = TRUE)
-              R <- as.rankings(X)
+R <- as.rankings(X)
 R
 attr(R, "recoded")
 attr(R, "membership")

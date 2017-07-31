@@ -1,6 +1,7 @@
 # PlackettLuce 0.2
 
-* implement pseudo-data approach
+* Add pltree function for use with partykit::mob
+* Implement pseudo-data approach
 
 # PlackettLuce 0.1
 

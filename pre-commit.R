@@ -5,8 +5,11 @@
 #'
 #' This is an R script associated with a pre-commit hook that checks whether
 #' there are files to be committed. If there are and the minor version is
-#' formatted as four digits (signalling a devellopment version), the script
+#' formatted as four digits (signalling a development version), the script
 #' increments the package version and sets today's date in the DESCRIPTION file.
+#' Under the convention that master development versions start with 0, master
+#' development versions are not incremented when on a branch (allowing version
+#' to be set before merging back to master).
 #'
 #' To install it, simply copy this into the top level directory of your git
 #' repository. Then, edit the ".git/hooks/pre-commit" file of your git repo to
@@ -29,11 +32,17 @@ splitVersion <- strsplit(currVersion, ".", fixed=TRUE)[[1]]
 nVer <- length(splitVersion)
 currEndVersion <- splitVersion[nVer]
 
+# don't increment master development version on branch
+# must have path to git.exe on Windows PATH
+branch <- system("git branch", intern = TRUE)
+doIncrement <- nchar(currEndVersion) == 4 &
+    (("* master" %in% branch) | substring(currEndVersion, 1, 1) != "0")
+
 # check that there are files that will be committed
 # - don't want to increment version if there won't be a commit
 fileDiff <- system("git diff HEAD --name-only", intern=TRUE)
 
-if ((length(fileDiff) > 0) & nchar(currEndVersion) == 4){
+if ((length(fileDiff) > 0) & doIncrement){
     currEndVersion <- as.integer(currEndVersion)
     newEndVersion <- sprintf("%04d", currEndVersion + 1)
     splitVersion[nVer] <- newEndVersion

@@ -31,9 +31,12 @@
 #' IDs,
 #' @param rank an index of \code{data} specifying the column containing item
 #' ranks.
-#' @param x a matrix with one column per item and one row per ranking.
+#' @param x for \code{as.rankings}, a matrix with one column per item and one
+#' row per ranking; for \code{format}, a \code{"rankings"} object.
 #' @param verbose logical; if \code{TRUE} print messages when changes are made
 #' to rankings data.
+#' @param width the width in number of characters to format each ranking -
+#' rankings that are too wide will be truncated.
 #' @param ... further arguments passed to/from methods.
 #'
 #' @return a \code{"rankings"} object, which is a matrix of rankings with
@@ -86,7 +89,7 @@
 #'               2, 2, 0, 4,
 #'               0, 0, 3, 0,
 #'               2, 4, 0, 0), ncol = 4, byrow = TRUE)
-#'               R <- as.rankings(X)
+#' R <- as.rankings(X)
 #' R
 #' attr(R, "recoded")
 #' attr(R, "membership")
@@ -194,8 +197,81 @@ checkDense <- function(x, verbose = TRUE){
     structure(x, recoded = bad)
 }
 
+#' @method as.data.frame rankings
+#' @export
+as.data.frame.rankings <-
+    function(x, row.names = NULL, optional = FALSE, ...,
+             nm = paste(deparse(substitute(x), width.cutoff = 20L),
+                        collapse = " ")){
+    value <- list(x)
+    if (!optional) {
+        names(value) <- nm
+    } else names(value) <- make.names(nm)
+    if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
+    if (is.null(row.names)) {
+        row.names <- .set_row_names(nrow(x))
+    } else {
+        if (is.object(row.names) || !is.integer(row.names))
+            row.names <- as.character(row.names)
+        if (anyNA(row.names))
+            stop("row names contain missing values")
+        if (anyDuplicated(row.names))
+            stop(paste("duplicate row.names: ",
+                       paste(unique(row.names[duplicated(row.names)]),
+                             collapse = ", ")))
+    }
+    attr(value, "row.names") <- row.names
+    class(value) <- "data.frame"
+    value
+    }
+
+#' @method length rankings
+#' @export
+length.rankings <- function(x) {
+   nrow(x)
+}
+
+#' @importFrom utils str
+#' @export
+utils::str
+
+#' @method str rankings
+str.rankings <- function(object, ...) {
+    str(unclass(object))
+}
+
+
+#' @method [ rankings
+#' @export
+"[.rankings" <- function(x, i, ...) {
+    # subset rankings
+    value <- unclass(x)[i, , drop = FALSE]
+    # validate as rankings (check if connected etc)
+    suppressWarnings(as.rankings.matrix(value))
+}
+
 #' @method print rankings
 #' @export
 print.rankings <- function(x, ...){
-    print(x[seq(nrow(x)), seq(ncol(x))])
+    print.default(format(x, ...))
+}
+
+#' @method format rankings
+#' @rdname rankings
+#' @export
+format.rankings <- function(x, width = 40, ...){
+    f <- function(i, items) {
+        obj <- items[i != 0]
+        i <- i[i != 0]
+        ord <- order(i)
+        if (length(obj) > 1){
+            op <- ifelse(diff(i[ord]) == 0, " = ", " > ")
+            paste(obj[ord], c(op, ""), sep = "", collapse = "")
+        } else obj
+    }
+    value <- apply(x, 1, f, colnames(x))
+    nc <- nchar(value)
+    trunc <- nc > width
+    value[trunc] <- paste(strtrim(value[trunc], width - 4), "...")
+    value
 }

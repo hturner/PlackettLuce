@@ -42,10 +42,8 @@ as.edgelist.rankings <- function(x, ...){
     }
     res <- unlist(res, recursive = FALSE)
     rep <- lengths(res)
-    nr <- nrow(x)
-    np <- nr * maxRank
-    cbind(from = unlist(mapply(rep, res[seq(np - nr)],
-                               each = rep[-seq_len(nr)])),
-          to = unlist(mapply(rep, res[(nr + 1):np],
-                             rep[seq_len(np - nr)])))
+    n <- nrow(x)
+    m <- length(res)
+    cbind(from = unlist(rep(res[seq(m - n)], rep[-seq(n)])),
+          to = unlist(rep(res[-seq(n)], rep[seq(m - n)])))
 }

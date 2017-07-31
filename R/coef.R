@@ -12,15 +12,23 @@ coef.PlackettLuce <- function(object, ref = NULL, type = "all", ...){
   ncoefs <- length(coefs)
   id <- seq_len(ncoefs - object$maxTied + 1)
   object_names <- names(coefs)[id]
-  if (is.null(ref)) ref <- object$ref
+  # allow ref = TRUE to enable use of psychotools::node_btplot
+  if (is.null(ref) || isTRUE(ref)) ref <- object$ref
   if (ref %in% object_names) ref <- which(object_names == ref)
   if (ref %in% id) {
       if (is.na(coefs[ref])) stop("Reference ability inestimable")
       coefs[id] <- coefs[id] - coefs[ref]
   } else stop("Invalid value for the 'ref' argument")
 
+  cls <- c("coef.PlackettLuce", "numeric")
   switch(type,
          "ties" = return(coefs[-id]),
-         "abilities" = return(structure(coefs[id], ref = ref)),
-         "all" = return(structure(coefs, ref = ref)))
+         "abilities" = return(structure(coefs[id], ref = ref, class = cls)),
+         "all" = return(structure(coefs, ref = ref, class = cls)))
+}
+
+#' @method print coef.PlackettLuce
+#' @export
+print.coef.PlackettLuce <- function (x, ...) {
+    print.default(c(x))
 }

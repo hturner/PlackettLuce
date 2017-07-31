@@ -122,9 +122,9 @@ PlackettLuce <- function(rankings, ref = NULL,
     J <- J - as.numeric(rowSums(t(M) == J) == 1)
     Jmax <- max(J)
 
-    # remove singletons
+    # remove singletons - is this needed now rankings are checked?
     singleton <- J == 0
-    M <- M[, !singleton]
+    M <- M[, !singleton, drop = FALSE]
     J <- J[!singleton]
 
     # sizes of selected sets (not particularly efficient - could all be == 1!)
@@ -183,47 +183,6 @@ PlackettLuce <- function(rankings, ref = NULL,
     #delta <- c(1, (2*B[2])/(sum(rep) - B[2]))
 
     # iterative scaling
-    expectation <- function(par){
-        n <- switch(par,
-                    "alpha" = N,
-                    "beta" = D)
-        res <- numeric(n)
-        for (k in seq_len(S)){
-            # objects in set
-            w <- which(pattern[, k])
-            nobj <- length(w)
-            # ties of order d
-            y1 <- numeric(n)
-            z1 <- 0
-            for (d in seq_len(min(D, nobj))){
-                i <- seq_len(d)
-                maxi <- rev(nobj - seq_len(d) + 1)
-                # loop through all subsets of size d in set
-                if (par == "alpha")
-                    y2 <- numeric(n)
-                z2 <- 0
-                repeat{
-                    x <- prod(alpha[w[i]])^(1/d)
-                    # add to sums for all objects in set
-                    if (par == "alpha")
-                        y2[w[i]] <- y2[w[i]] + x
-                    # add to sum for current order
-                    if (par == "beta")
-                        y1[d] <- y1[d] + x
-                    # add to sum for current set
-                    z2 <- z2 + x
-                    if (i[1] == maxi[1]) break
-                    id <- max(which(maxi - i > 0))
-                    i[id:d] <- i[id] + seq_len(d - id + 1)
-                }
-                if (par == "alpha")
-                    y1 <- y1 + delta[d]/d*y2
-                z1 <- z1 + delta[d]*z2
-            }
-            res <- res + rep[k]*y1/z1
-        }
-        res
-    }
 
     # count possible choices from sets up to size D
     count <- function(pattern, rep, D){
@@ -309,7 +268,7 @@ PlackettLuce <- function(rankings, ref = NULL,
     conv <- FALSE
     for (iter in seq_len(maxit)){
         # update all alphas
-        expA <- expectation("alpha")
+        expA <- expectation("alpha", alpha, delta, pattern, rep, N, D, S)
         if (pseudo){
             alpha[-1] <- alpha[-1]*A[-1]/expA[-1]
             # no need to scale as alpha[1] fixed
@@ -319,7 +278,8 @@ PlackettLuce <- function(rankings, ref = NULL,
             alpha <- alpha/sum(alpha)
         }
         # update all deltas
-        if (D > 1) delta[-1] <- B[-1]/expectation("beta")[-1]
+        if (D > 1) delta[-1] <- B[-1]/expectation("delta", alpha, delta,
+                                                  pattern, rep, N, D, S)[-1]
         # trace
         if (trace){
             message("iter ", iter)
@@ -374,4 +334,98 @@ PlackettLuce <- function(rankings, ref = NULL,
                 constants = key_q$normalising_constants)
     class(fit) <- "PlackettLuce"
     fit
+}
+
+# function to compute expectations of the sufficient statistics of the alphas/deltas
+expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
+                        D = length(delta), S = ncol(pattern)){
+    n <- switch(par,
+                "alpha" = N,
+                "delta" = D)
+    res <- numeric(n)
+    for (k in seq_len(S)){
+        # objects in set
+        w <- which(pattern[, k])
+        nobj <- length(w)
+        # ties of order d
+        y1 <- numeric(n)
+        z1 <- 0
+        for (d in seq_len(min(D, nobj))){
+            i <- seq_len(d)
+            maxi <- rev(nobj - seq_len(d) + 1)
+            # loop through all subsets of size d in set
+            if (par == "alpha")
+                y2 <- numeric(n)
+            z2 <- 0
+            repeat{
+                x <- prod(alpha[w[i]])^(1/d)
+                # add to sums for all objects in set
+                if (par == "alpha")
+                    y2[w[i]] <- y2[w[i]] + x
+                # add to sum for current order
+                if (par == "delta")
+                    y1[d] <- y1[d] + x
+                # add to sum for current set
+                z2 <- z2 + x
+                if (i[1] == maxi[1]) break
+                id <- max(which(maxi - i > 0))
+                i[id:d] <- i[id] + seq_len(d - id + 1)
+            }
+            if (par == "alpha")
+                y1 <- y1 + delta[d]/d*y2
+            z1 <- z1 + delta[d]*z2
+        }
+        res <- res + rep[k]*y1/z1
+    }
+    res
+}
+
+# log-likelihood derivatives (score function)
+#' @method estfun PlackettLuce
+#' @importFrom sandwich estfun
+#' @export
+estfun.PlackettLuce <- function(x) {
+    D <- x$maxTied
+    N <- length(coef(x)) - D + 1
+    # coefs on log-scale here
+    lambda <- coef(x)[1:N]
+    gamma <- c(0, coef(x)[-c(1:N)])
+    # get sizes of selected sets for each observation (as in main function)
+    M <- t(Matrix(unclass(x$rankings), sparse = TRUE))
+    J <- apply(M, 2, max) # max nsets
+    J <- J - as.numeric(rowSums(t(M) == J) == 1) # nontrivial nsets
+    # derivative wrt to lambda, first 1/(size of selected sets)
+    A <- M
+    A[t(t(M) > J)] <- 0
+    A@x <- 1/as.double(unlist(apply(A, 2, function(x) tabulate(x)[x])))
+    # for derivative wrt gamma, first 1 where select set of corresponding size
+    if (D > 1){
+        B <- matrix(nrow = D - 1, ncol = ncol(M))
+        for (d in 2:D){
+            B[d - 1, ] <- apply(A == 1/d, 2, any)
+        }
+    }
+    # subtract expectation of alpha per set to choose from
+    for (j in seq_len(max(J))){
+        A <- A - sapply(seq_len(ncol(M)), function(i){
+            expectation("alpha", exp(lambda), exp(gamma), M[,i, drop = FALSE] >= j,
+                        1, N, D, 1)
+        })
+    }
+    # ignore column corresponding to fixed ref
+    ref <- x$ref
+    if (ref %in% names(lambda)) ref <- which(names(lambda) == ref)
+    res <- t(A[-ref, , drop = FALSE])
+    if (D > 1){
+        for (j in seq_len(max(J))){
+            B <- B - sapply(seq_len(ncol(M)), function(i){
+                # N.B. expectation should include delta*, but cancelled out in
+                # in iterative scaling so omitted!
+                exp(gamma)[-1]*expectation("delta", exp(lambda), exp(gamma),
+                                           M[,i, drop = FALSE] >= j,
+                                           1, N, D, 1)[-1]
+            })
+        }
+      cbind(res, t(B))
+    } else res
 }
