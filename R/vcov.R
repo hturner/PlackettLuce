@@ -4,7 +4,7 @@
 vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##
-  theLongData <- longdat2(object$rankings)
+  theLongData <- longdat2(unclass(object$rankings))
   coefs <- coef(object, ref = ref)
   na <- is.na(coefs)
   coefnames <- names(coefs[!na])

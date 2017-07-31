@@ -381,6 +381,8 @@ expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
 }
 
 # log-likelihood derivatives (score function)
+#' @method estfun PlackettLuce
+#' @importFrom sandwich estfun
 #' @export
 estfun.PlackettLuce <- function(x) {
     D <- x$maxTied
