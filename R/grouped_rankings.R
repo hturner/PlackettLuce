@@ -23,10 +23,10 @@
 #' @examples
 #'
 #' # ungrouped rankings (5 rankings, 4 items)
-#' R <- as.rankings(matrix(c(1, 2, 0, 0
-#'                           0, 2, 1, 0
-#'                           0, 0, 1, 2
-#'                           2, 1, 0, 0
+#' R <- as.rankings(matrix(c(1, 2, 0, 0,
+#'                           0, 2, 1, 0,
+#'                           0, 0, 1, 2,
+#'                           2, 1, 0, 0,
 #'                           0, 1, 2, 3), ncol = 4, byrow = TRUE))
 #' length(R)
 #' R

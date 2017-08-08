@@ -5,8 +5,8 @@
 \title{Fit Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
-  "connected", "cluster"), npseudo = 1, epsilon = 1e-07, maxit = 100,
-  trace = FALSE, verbose = TRUE)
+  "connected", "cluster"), npseudo = 1, epsilon = 1e-07,
+  steffensen = 1e-04, maxit = 100, trace = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
@@ -23,7 +23,10 @@ PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
 between each object and a hypothetical reference object.}
 
 \item{epsilon}{the maximum absolute difference between the observed and
-expected sufficient statistics for the ability parameters.}
+expected sufficient statistics for the ability parameters at convergence.}
+
+\item{steffensen}{a threshold defined as for \code{epsilon} after which to
+apply Steffensen acceleration to the iterative scaling updates.}
 
 \item{maxit}{the maximum number of iterations.}
 

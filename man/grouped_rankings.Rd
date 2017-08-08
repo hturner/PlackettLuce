@@ -46,17 +46,17 @@ model-based recursive partitioning, see \code{\link{pltree}}.
 }
 \examples{
 
-# ungrouped rankings
-R <- as.rankings(matrix(c(1, 2, 0, 0, 0,
-                          0, 2, 1, 0, 0,
-                          0, 0, 1, 2, 0,
-                          2, 1, 0, 0, 0,
-                          0, 1, 2, 3, 0), ncol = 5, byrow = TRUE))
+# ungrouped rankings (5 rankings, 4 items)
+R <- as.rankings(matrix(c(1, 2, 0, 0,
+                          0, 2, 1, 0,
+                          0, 0, 1, 2,
+                          2, 1, 0, 0,
+                          0, 1, 2, 3), ncol = 4, byrow = TRUE))
 length(R)
 R
 
-# grouped rankings
-G <- grouped_rankings(R, rep(1:2, c(3, 2)))
+# grouped rankings (1st 3 from subject 1, next 2 from subject 2)
+G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
 length(G)
 ## by default up to 2 rankings are shown per subject, "..." indicates if
 ## there are further rankings

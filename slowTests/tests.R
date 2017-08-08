@@ -27,6 +27,14 @@ if (require(BradleyTerry2)){
     all.equal(unname(coef(mod)[-1]), unname(coef(mod3)), tolerance = 1e-6)
 }
 
+if (require(BradleyTerryScalable)){
+    mod4 <- btfit(btdata(as.data.frame(cbind(M, 1))), 1, epsilon = 1e-7)
+    pi <- mod4$pi[[1]]
+    (pi/sum(pi))[dat$components$`1`]
+    all.equal((pi/sum(pi))[dat$components$`1`], mod$coefficients,
+              tolerance = 1e-7)
+}
+
 ## bigger BT model (data from BradleyTerry2)
 if (require(BradleyTerry2)){
     ## loglinear model with BTm
@@ -39,7 +47,7 @@ if (require(BradleyTerry2)){
                 ncol = nlevels(icehockey2$visitor))
     R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
     R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
-    ## needs 295 iterations, slow
+    ## needs 170 iterations, slow
     mod3 <- PlackettLuce(R, maxit = 500, epsilon = 1e-5)
     all.equal(unname(c(coef(mod3)[-1], mod3$loglik)), unname(c(standardBT$coefficients, logLik(standardBT))), tolerance = 1e-5)
 }
@@ -60,7 +68,7 @@ R <- PlackettLuce:::denseRanking(M)
 mod <- PlackettLuce(R)
 lambda <- log(c(gamma/sum(gamma)))
 lambda <- lambda - lambda[1]
-all.equal(unname(lambda), c(unname(coef(mod))))
+all.equal(unname(lambda), c(unname(coef(mod))), tol = 1e-7)
 
 if (require(gnm)){
     ## fit loglinear model
