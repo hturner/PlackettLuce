@@ -31,7 +31,9 @@
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param epsilon the maximum absolute difference between the observed and
-#' expected sufficient statistics for the ability parameters.
+#' expected sufficient statistics for the ability parameters at convergence.
+#' @param steffensen a threshold defined as for \code{epsilon} after which to
+#' apply Steffensen acceleration to the iterative scaling updates.
 #' @param maxit the maximum number of iterations.
 #' @param trace logical, if \code{TRUE} show trace of iterations.
 #' @param verbose logical, if \code{TRUE} show messages from validity checks.
@@ -59,12 +61,14 @@
 #' mod <- PlackettLuce(R)
 #' coef(mod)
 #' @import Matrix
+#' @importFrom igraph as_adj graph_from_edgelist
+#' @importFrom rARPACK eigs
 #' @export
 PlackettLuce <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
                                      "cluster"),
                          npseudo = 1,
-                         epsilon = 1e-7, maxit = 100,
+                         epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
     network <- match.arg(network, c("adaptive", "pseudodata", "connected",
@@ -79,13 +83,13 @@ PlackettLuce <- function(rankings, ref = NULL,
     if (network == "pseudodata" ||
         (network == "adaptive" & attr(rankings, "no") > 1)){
         nobj <- ncol(rankings)
-        rankings <- cbind(0, rankings)
+        rankings <- cbind("NULL" = 0, rankings)
         pseudo <- matrix(0, nrow = 2*npseudo*nobj,
                          ncol = ncol(rankings))
         pseudo[, 1] <- 1:2
         pseudo[cbind(seq_len(nrow(pseudo)),
                      rep(seq_len(nobj) + 1, each = 2))] <- 2:1
-        rankings <- rbind(pseudo, rankings)
+        rankings <- as.rankings(rbind(pseudo, rankings))
         pseudo <- TRUE
     } else pseudo <- FALSE
     # if disconnected, fit model to largest cluster
@@ -176,8 +180,14 @@ PlackettLuce <- function(rankings, ref = NULL,
 
     # starting values
     N <- ncol(rankings)
-    alpha <- rep.int(1/N, N)
-    if (pseudo) alpha[1] <- 1
+    ## (scaled, un-damped) PageRank based on underlying paired comparisons
+    X <- as_adj(graph_from_edgelist(as.edgelist(rankings)))[colnames(rankings),
+                                                            colnames(rankings)]
+    alpha <- drop(abs(eigs(X/colSums(X), 1,
+                           opts = list(ncv = min(nrow(X), 10)))$vectors))
+    if (pseudo) {
+        alpha <- alpha/alpha[1]
+    } else alpha/sum(alpha)
     delta <- rep.int(0.1, D)
     delta[1] <- 1
     #delta <- c(1, (2*B[2])/(sum(rep) - B[2]))
@@ -249,53 +259,74 @@ PlackettLuce <- function(rankings, ref = NULL,
     score <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
-        c(A/alpha - expectation("alpha")/alpha,
-          B/delta - expectation("beta"))
+        c(A/alpha - expectation("alpha", alpha, delta, pattern, rep, N, D, S)/alpha,
+          B/delta - expectation("delta", alpha, delta, pattern, rep, N, D, S))
     }
 
     # Alternative optimization via
-    ## obj <- function(par) {
-    ##     al <- exp(par[1:N])
-    ##     de <- c(1, exp(par[-c(1:N)]))
-    ##     -loglik(c(al, de))
-    ## }
-    ## gr <- function(par) {
-    ##     al <- exp(par[1:N])
-    ##     de <- c(1, exp(par[-c(1:N)]))
-    ##     -score(c(al, de))[-(N + 1)] * c(al, de[-1])
-    ## }
-    ## res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
+    obj <- function(par) {
+        al <- exp(par[1:N])
+        de <- c(1, exp(par[-c(1:N)]))
+        -loglik(c(al, de))
+    }
+    gr <- function(par) {
+        al <- exp(par[1:N])
+        de <- c(1, exp(par[-c(1:N)]))
+        -score(c(al, de))[-(N + 1)] * c(al, de[-1])
+    }
+    #res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
+    #res2 <- lbfgs(obj, gr, log(c(alpha, delta[-1])))
     conv <- FALSE
-    for (iter in seq_len(maxit)){
+    par <- list(alpha = alpha, delta = delta)
+    oneUpdate <- function(par){
         # update all alphas
-        expA <- expectation("alpha", alpha, delta, pattern, rep, N, D, S)
+        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
         if (pseudo){
-            alpha[-1] <- alpha[-1]*A[-1]/expA[-1]
-            # no need to scale as alpha[1] fixed
+            par$alpha[-1] <- par$alpha[-1]*A[-1]/expA[-1]
         } else {
-            alpha <- alpha*A/expA
-            # scale alphas to sum 1
-            alpha <- alpha/sum(alpha)
+            par$alpha <- par$alpha*A/expA
         }
         # update all deltas
-        if (D > 1) delta[-1] <- B[-1]/expectation("delta", alpha, delta,
-                                                  pattern, rep, N, D, S)[-1]
+        if (D > 1) par$delta[-1] <- B[-1]/
+                expectation("delta", par$alpha, par$delta,
+                            pattern, rep, N, D, S)[-1]
+        par
+    }
+    accelerate <- function(p, p1, p2){
+        p - (p1 - p)^2 / (p2 - 2 * p1 + p)
+    }
+    eps <- 1
+    doSteffensen <- FALSE
+    for (iter in seq_len(maxit)){
+        par <- oneUpdate(par)
+        # steffensen
+        if (doSteffensen){
+            par1 <- oneUpdate(par)
+            par2 <- oneUpdate(par1)
+            if (pseudo){
+                par$alpha[-1] <- accelerate(par$alpha, par1$alpha, par2$alpha)[-1]
+            } else par$alpha <- accelerate(par$alpha, par1$alpha, par2$alpha)
+            par$delta[-1] <- accelerate(par$delta, par1$delta, par2$delta)[-1]
+        }
+        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
         # trace
         if (trace){
             message("iter ", iter)
         }
         # stopping rule: compare observed & expected sufficient stats for alphas
-        if (all(abs(A - expA) < epsilon)) {
+        eps <- abs(A - expA)
+        if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
+        if (all(eps < epsilon)) {
             conv <- TRUE
             break
         }
     }
 
-    delta <- structure(delta, names = paste0("tie", 1:D))
+    par$delta <- structure(par$delta, names = paste0("tie", 1:D))
 
     if (pseudo) {
         # drop hypothetical object
-        alpha <- alpha[-1]
+        par$alpha <- par$alpha[-1]
         N <- N - 1
         # drop extra rankings
         extra <- seq_len(2*npseudo*nobj)
@@ -307,22 +338,23 @@ PlackettLuce <- function(rankings, ref = NULL,
         rep <- rep[-seq_len(nobj)]
         S <- S - nobj
     }
+    par$alpha <- par$alpha/sum(par$alpha)
     rank <- N + D + sum(rep) - 2
 
-    key_q <- key_quantities(c(alpha, delta))
-    logl <- loglik(c(alpha, delta), fit = key_q)
+    key_q <- key_quantities(unlist(par))
+    logl <- loglik(unlist(par), fit = key_q)
 
-    if (length(alpha) < length(items)){
+    if (length(par$alpha) < length(items)){
         out <- rep.int(NA_real_, length(items))
         names(out) <- items
-        out[names(alpha)] <- alpha
-        alpha <- out
-    }
+        out[colnames(rankings)] <- par$alpha
+        par$alpha <- out
+    } else names(par$alpha) <- items
 
     if (!conv)
         warning("Iterations have not converged.")
     fit <- list(call = call,
-                coefficients = c(alpha, delta[-1]),
+                coefficients = c(par$alpha, par$delta[-1]),
                 ref = ref,
                 loglik = unname(logl),
                 df.residual = count(pattern, rep, D) - rank,

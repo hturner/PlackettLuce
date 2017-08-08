@@ -243,9 +243,9 @@ str.rankings <- function(object, ...) {
 
 #' @method [ rankings
 #' @export
-"[.rankings" <- function(x, i, ...) {
+"[.rankings" <- function(x, i, j, ...) {
     # subset rankings
-    value <- unclass(x)[i, , drop = FALSE]
+    value <- unclass(x)[i, j, drop = FALSE]
     # validate as rankings (check if connected etc)
     suppressWarnings(as.rankings.matrix(value))
 }

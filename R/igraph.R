@@ -29,6 +29,7 @@ as.edgelist <- function(x, ...){
 
 #' @export
 as.edgelist.rankings <- function(x, ...){
+    x <- unclass(x)
     maxRank <- max(x)
     nm <- colnames(x)
     res <- list()
