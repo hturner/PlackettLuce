@@ -370,7 +370,7 @@ PlackettLuce <- function(rankings, ref = NULL,
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
 expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
-                        D = length(delta), S = ncol(pattern)){
+                         D = length(delta), S = ncol(pattern)){
     n <- switch(par,
                 "alpha" = N,
                 "delta" = D)
@@ -384,51 +384,65 @@ expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
         z1 <- sum(y1)
         # ties of order d > 1
         if (par == "delta") y1 <- numeric(n)
-        for (d in seq_len(min(D, nobj))[-1]){
+        d <- min(D, nobj)
+        if (d > 1){
+            # index up to d items: start with 1:n
             i <- seq_len(d)
-            maxi <- rev(nobj - seq_len(d) + 1)
+            # id = index to chnage next; id2 = first index changed
             if (d == nobj) {
-                id <- d - 1
+                id <- nobj - 1
             } else id <- d
-            # loop through all subsets of size d in set
-            if (par == "alpha")
-                y2 <- numeric(nobj)
-            z2 <- 0
+            id2 <- 1
             repeat{
-                x <- prod(alpha[w[i]])^(1/d)
-                # add to sums for all objects in set
-                if (par == "alpha")
-                    y2[i] <- y2[i] + x
-                # add to sum for current order
-                if (par == "delta")
-                    y1[d] <- y1[d] + x
-                # add to sum for current set
-                z2 <- z2 + x
+                # work along index vector from 1 to end/first index = nobj
+                x1 <- alpha[w][i[1]]
+                last <- i[id] == nobj
+                if (last) {
+                    end <- id
+                } else end <- min(d, id + 1)
+                for (j in 2:end){
+                    # product of first j alphas indexed by i
+                    x1 <- (x1 * alpha[w][i[j]])
+                    # ignore if already recorded
+                    if (j < id2) next
+                    # add to relevant numerator/denominator
+                    if (par == "alpha"){
+                        x2 <- delta[j]*x1^(1/j)
+                        # add to numerators for all objects in set
+                        y1[i[1:j]] <- y1[i[1:j]] + x2/j
+                        # add to denominator for current set
+                        z1 <- z1 + x2
+                    } else{
+                        x2 <- x1^(1/j)
+                        # add to numerator for current order
+                        if (par == "delta")
+                            y1[j] <- y1[j] + x2
+                        # add to denominator for current set
+                        z1 <- z1 + delta[j]*x2
+                    }
+                }
                 # update index
-                if (i[1] == maxi[1]) break
-                if (i[id] == maxi[id]){
+                if (i[1] == (nobj - 1)) break
+                if (last){
                     id2 <- id - 1
                     v <- i[id2]
-                    if (v == maxi[id2] - 1){
-                        i[id2] <- i[id2] + 1
-                        id <- id2 - 1
-                    } else {
-                        len <- d - id2
-                        i[id2:d] <- v + seq_len(len + 1)
-                        id <- d
-                    }
-                } else i[id] <- i[id] + 1
+                    len <- min(nobj - 2 - v, d - id2)
+                    id <- id2 + len
+                    i[id2:id] <- v + seq_len(len + 1)
+                } else {
+                    id2 <- id
+                    i[id] <- i[id] + 1
+                }
             }
-            if (par == "alpha")
-                y1 <- y1 + delta[d]/d*y2
-            z1 <- z1 + delta[d]*z2
         }
+        # add contribution for set to expectation
         if (par == "alpha"){
             res[w] <- res[w] + rep[k]*y1/z1
         } else res <- res + rep[k]*y1/z1
     }
     res
 }
+
 # log-likelihood derivatives (score function)
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
