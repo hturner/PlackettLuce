@@ -379,39 +379,56 @@ expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
         # objects in set
         w <- which(pattern[, k])
         nobj <- length(w)
-        # ties of order d
-        y1 <- numeric(n)
-        z1 <- 0
-        for (d in seq_len(min(D, nobj))){
+        # single winner (tie with d = 1)
+        y1 <- alpha[w]
+        z1 <- sum(y1)
+        # ties of order d > 1
+        if (par == "delta") y1 <- numeric(n)
+        for (d in seq_len(min(D, nobj))[-1]){
             i <- seq_len(d)
             maxi <- rev(nobj - seq_len(d) + 1)
+            if (d == nobj) {
+                id <- d - 1
+            } else id <- d
             # loop through all subsets of size d in set
             if (par == "alpha")
-                y2 <- numeric(n)
+                y2 <- numeric(nobj)
             z2 <- 0
             repeat{
                 x <- prod(alpha[w[i]])^(1/d)
                 # add to sums for all objects in set
                 if (par == "alpha")
-                    y2[w[i]] <- y2[w[i]] + x
+                    y2[i] <- y2[i] + x
                 # add to sum for current order
                 if (par == "delta")
                     y1[d] <- y1[d] + x
                 # add to sum for current set
                 z2 <- z2 + x
+                # update index
                 if (i[1] == maxi[1]) break
-                id <- max(which(maxi - i > 0))
-                i[id:d] <- i[id] + seq_len(d - id + 1)
+                if (i[id] == maxi[id]){
+                    id2 <- id - 1
+                    v <- i[id2]
+                    if (v == maxi[id2] - 1){
+                        i[id2] <- i[id2] + 1
+                        id <- id2 - 1
+                    } else {
+                        len <- d - id2
+                        i[id2:d] <- v + seq_len(len + 1)
+                        id <- d
+                    }
+                } else i[id] <- i[id] + 1
             }
             if (par == "alpha")
                 y1 <- y1 + delta[d]/d*y2
             z1 <- z1 + delta[d]*z2
         }
-        res <- res + rep[k]*y1/z1
+        if (par == "alpha"){
+            res[w] <- res[w] + rep[k]*y1/z1
+        } else res <- res + rep[k]*y1/z1
     }
     res
 }
-
 # log-likelihood derivatives (score function)
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
