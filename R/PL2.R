@@ -1,8 +1,4 @@
 ## N.B. current version computes expA twice when not doing Steffensen!
-library(igraph)
-library(Matrix)
-library(rARPACK)
-
 PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     M <- t(Matrix(R, sparse = TRUE))
 
@@ -49,47 +45,33 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     # item indices
     nz <- rowSums(R == 0)
     K <- apply(R, 1, sort)
-    grp <- apply(K[-ncol(R), ], 2, diff)
+    grp <- apply(rbind(0, K[-ncol(R), ]), 2, diff)
     K <- apply(R, 1, order)
     K[cbind(sequence(nz), rep.int(1:nrow(R), nz))] <- 0
 
-    expectation <- function(par, alpha, delta, M, N, D, J, Jmax, trace = FALSE){
+    # set sizes to consider
+    S <- which(rowSums(K[-ncol(R),]) > 0)
+
+    expectation <- function(par, alpha, delta, K, N, D, S, trace = FALSE){
         n <- switch(par,
                     "alpha" = N,
                     "delta" = D - 1)
+        if (trace) message("par: ", par)
         res <- numeric(n)
-        for (j in seq_len(Jmax)){
+        for (s in S){
+            # number of objects to select from
+            nobj <- N - s + 1
             # D == 1
             ## numerators (for par == "alpha", else just to compute z1)
-            y1 <- drop0(M[, J >= j, drop = FALSE] > (j - 1)) * alpha
+            y1 <- matrix(alpha[as.vector(K[s:N, grp[s,] == 1])],
+                         nrow = nobj, ncol = sum(grp[s,]))
             ## denominators
             z1 <- colSums(y1)
-            if (trace){
-                message("items: ")
-                nobj <- diff(y1@p[1:2])
-                dp <- rep.int(nobj, ncol(y1)) # diff(y1@p) assuming all same size
-                K <- sparseMatrix(i = rep(seq_along(dp), dp), j = sequence(dp),
-                                  x = (M * drop0(M > (j - 1)))[, J >= j, drop = FALSE]@i + 1)
-                print(K)
-                message("y1: ")
-                print(y1)
-                message("z1: ")
-                print(z1)
-            }
             # D > 1
-            ## assume at current j all obs have same nitems to select from
-            ## (will require competition rankings for total items > 3)
-            nobj <- diff(y1@p[1:2])
             d <- min(D, nobj)
             if (d > 1){
                 if (par == "delta")
-                    y1 <- matrix(0, nrow = n, ncol = sum(J >= j))
-                # get indices for current set
-                ## (this part might be more efficient with competition rankings)
-                dp <- rep.int(nobj, ncol(y1)) # diff(y1@p) assuming all same size
-                K <- sparseMatrix(i = rep(seq_along(dp), dp), j = sequence(dp),
-                                  x = (M * drop0(M > (j - 1)))[, J >= j, drop = FALSE]@i + 1)
-                r <- seq(ncol(y1))
+                    y1 <- matrix(0, nrow = n, ncol = sum(grp[s,]))
                 # index up to d items: start with 1:n
                 i <- seq_len(d)
                 # id = index to change next; id2 = first index changed
@@ -99,29 +81,28 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                 id2 <- 1
                 repeat{
                     # work along index vector from 1 to end/first index = nobj
-                    x1 <- alpha[K[,i[1]]] # ability for first item in set
+                    x1 <- alpha[K[(s:N)[i[1]], grp[s,] == 1]] # ability for first ranked item
                     last <- i[id] == nobj
                     if (last) {
                         end <- id
                     } else end <- min(d, id + 1)
                     for (k in 2:end){
                         # product of first k alphas indexed by i
-                        x1 <- (x1 * alpha[K[,i[k]]])
+                        x1 <- (x1 * alpha[K[(s:N)[i[k]], grp[s,] == 1]])
                         # ignore if already recorded
                         if (k < id2) next
-                        if (trace) message("i: ", paste(i, collapse = ", "))
+                       # if (trace) message("i: ", paste(i, collapse = ", "))
                         # add to numerators/denominators for sets of order nobj
                         if (par == "alpha") {
                             x2 <- delta[k]*x1^(1/k)
                             # add to numerators for objects in sets
-                            y1[cbind(as.vector(K[,i[1:k]]), r)] <-
-                                y1[cbind(as.vector(K[,i[1:k]]), r)] + x2/k
-                            if (trace)
-                                message("x2/k: ", paste(round(x2/k, 7), collapse = ", "))
+                            y1[i[1:k], ] <- y1[i[1:k], ] + rep(x2/k, each = k)
+                        #    if (trace)
+                         #       message("x2/k: ", paste(round(x2/k, 7), collapse = ", "))
                             # add to denominators for sets
                             z1 <- z1 + x2
-                            if (trace)
-                                message("x2: ", x2)
+                          #  if (trace)
+                           #     message("x2: ", x2)
                         } else {
                             x2 <- x1^(1/k)
                             # add to numerator for current tie order for sets
@@ -146,24 +127,37 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                 }
             }
             # add contribution for sets of size nobj to expectation
-            res <- res + colSums(t(y1)/z1)
+            if (trace){
+                message("items: ")
+                print(K[s:N, grp[s,] == 1])
+                message("y1: ")
+                print(y1)
+                message("z1: ")
+                print(z1)
+            }
+            if (par == "alpha"){
+                # K[s:N, grp[s,] == 1] may only index some alphas
+                add <- drop(rowsum(as.vector(t(y1)/z1),
+                            as.vector(t(K[s:N, grp[s,] == 1]))))
+                res[as.numeric(names(add))] <- res[as.numeric(names(add))] + add
+            } else res <- res + colSums(t(y1)/z1)
         }
         res
     }
 
-    expA <- expectation("alpha", alpha, delta, M, N, D, J, Jmax, trace = trace)
+    expA <- expectation("alpha", alpha, delta, K, N, D, S, trace = trace)
     for (iter in seq_len(maxit)){
         # update all alphas
         alpha <- alpha*A/expA
-        # update all deltas``
+        # update all deltas
         if (D > 1) delta[-1] <- B[-1]/
-                expectation("delta", alpha, delta, M, N, D, J, Jmax)
+                expectation("delta", alpha, delta, K, N, D, S, trace = trace)
         # trace
         if (trace){
             message("iter ", iter)
         }
         # stopping rule: compare observed & expected sufficient stats for alphas
-        expA <- expectation("alpha", alpha, delta, M, N, D, J, Jmax)
+        expA <- expectation("alpha", alpha, delta, K, N, D, S)
         eps <- abs(A - expA)
         if (all(eps < epsilon)) {
             conv <- TRUE
