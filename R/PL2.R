@@ -45,9 +45,23 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     # item indices
     nz <- rowSums(R == 0)
     K <- apply(R, 1, sort)
-    grp <- apply(rbind(0, K[-ncol(R), ]), 2, diff)
+    grp <- t(apply(rbind(0, K[-ncol(R), ]), 2, diff))
+    grp <- Matrix(grp, sparse = TRUE)
     K <- t(apply(R, 1, order))
     K[cbind(rep.int(1:nrow(R), nz), sequence(nz))] <- 0
+
+    # order last two columns
+    # (only go down to sets of size 2, so order of last 2 items doesn't matter)
+    K[, (ncol(K) - 1):ncol(K)] <- t(apply(K[, (ncol(K) - 1):ncol(K)], 1, sort))
+
+    # aggregate
+    ord <- do.call(order, as.data.frame(K))
+    K <- K[ord,]
+    dup <- duplicated(K)
+    rep <- diff(c(which(!dup), nrow(K) + 1))
+    K <- K[!dup,]
+    grp <- grp[ord[!dup],] * rep
+    K <- Matrix(K, sparse = TRUE)
 
     # set sizes to consider
     S <- which(colSums(K[,-ncol(R)]) > 0)
@@ -63,15 +77,15 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             nobj <- N - s + 1
             # D == 1
             ## numerators (for par == "alpha", else just to compute z1)
-            y1 <- matrix(alpha[as.vector(K[grp[s,] == 1, s:N])],
-                         nrow = sum(grp[s,]), ncol = nobj)
+            y1 <- matrix(alpha[as.vector(K[grp[,s] > 0, s:N])],
+                         nrow = sum(grp[,s] > 0), ncol = nobj)
             ## denominators
             z1 <- rowSums(y1)
             # D > 1
             d <- min(D, nobj)
             if (d > 1){
                 if (par == "delta")
-                    y1 <- matrix(0, nrow = sum(grp[s,]), ncol = n)
+                    y1 <- matrix(0, nrow = sum(grp[,s] > 0), ncol = n)
                 # index up to d items: start with 1:n
                 i <- seq_len(d)
                 # id = index to change next; id2 = first index changed
@@ -81,14 +95,14 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                 id2 <- 1
                 repeat{
                     # work along index vector from 1 to end/first index = nobj
-                    x1 <- alpha[K[grp[s,] == 1, (s:N)[i[1]]]] # ability for first ranked item
+                    x1 <- alpha[K[grp[,s] > 0, (s:N)[i[1]]]] # ability for first ranked item
                     last <- i[id] == nobj
                     if (last) {
                         end <- id
                     } else end <- min(d, id + 1)
                     for (k in 2:end){
                         # product of first k alphas indexed by i
-                        x1 <- (x1 * alpha[K[grp[s,] == 1, (s:N)[i[k]]]])
+                        x1 <- (x1 * alpha[K[grp[,s] > 0, (s:N)[i[k]]]])
                         # ignore if already recorded
                         if (k < id2) next
                        # if (trace) message("i: ", paste(i, collapse = ", "))
@@ -129,18 +143,18 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             # add contribution for sets of size nobj to expectation
             if (trace){
                 message("items: ")
-                print(K[grp[s,] == 1, s:N])
+                print(K[grp[,s] > 0, s:N])
                 message("y1: ")
                 print(y1)
                 message("z1: ")
                 print(z1)
             }
             if (par == "alpha"){
-                # K[s:N, grp[s,] == 1] may only index some alphas
-                add <- drop(rowsum(as.vector(y1/z1),
-                                   as.vector(K[grp[s,] == 1, s:N])))
+                # K[s:N, grp[,s] > 0] may only index some alphas
+                add <- drop(rowsum(as.vector(grp[,s][grp[,s] > 0] * y1/z1),
+                                   as.vector(K[grp[,s] > 0, s:N])))
                 res[as.numeric(names(add))] <- res[as.numeric(names(add))] + add
-            } else res <- res + colSums(y1/z1)
+            } else res <- res + colSums(grp[,s][grp[,s] > 0] * y1/z1)
         }
         res
     }
