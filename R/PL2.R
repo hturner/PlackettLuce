@@ -77,15 +77,18 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             nobj <- N - s + 1
             # D == 1
             ## numerators (for par == "alpha", else just to compute z1)
-            y1 <- matrix(alpha[as.vector(K[grp[,s] > 0, s:N])],
-                         nrow = sum(grp[,s] > 0), ncol = nobj)
+            r <- grp[,s] > 0
+            set <- s:N
+            nr <- sum(r)
+            y1 <- matrix(alpha[as.vector(K[r, set])],
+                         nrow = nr, ncol = nobj)
             ## denominators
             z1 <- rowSums(y1)
             # D > 1
             d <- min(D, nobj)
             if (d > 1){
                 if (par == "delta")
-                    y1 <- matrix(0, nrow = sum(grp[,s] > 0), ncol = n)
+                    y1 <- matrix(0, nrow = nr, ncol = n)
                 # index up to d items: start with 1:n
                 i <- seq_len(d)
                 # id = index to change next; id2 = first index changed
@@ -95,14 +98,14 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                 id2 <- 1
                 repeat{
                     # work along index vector from 1 to end/first index = nobj
-                    x1 <- alpha[K[grp[,s] > 0, (s:N)[i[1]]]] # ability for first ranked item
+                    x1 <- alpha[K[r, set[i[1]]]] # ability for first ranked item
                     last <- i[id] == nobj
                     if (last) {
                         end <- id
                     } else end <- min(d, id + 1)
                     for (k in 2:end){
                         # product of first k alphas indexed by i
-                        x1 <- (x1 * alpha[K[grp[,s] > 0, (s:N)[i[k]]]])
+                        x1 <- (x1 * alpha[K[r, set[i[k]]]])
                         # ignore if already recorded
                         if (k < id2) next
                        # if (trace) message("i: ", paste(i, collapse = ", "))
@@ -143,7 +146,7 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             # add contribution for sets of size nobj to expectation
             if (trace){
                 message("items: ")
-                print(K[grp[,s] > 0, s:N])
+                print(K[r, set])
                 message("y1: ")
                 print(y1)
                 message("z1: ")
@@ -151,10 +154,10 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             }
             if (par == "alpha"){
                 # K[s:N, grp[,s] > 0] may only index some alphas
-                add <- drop(rowsum(as.vector(grp[,s][grp[,s] > 0] * y1/z1),
-                                   as.vector(K[grp[,s] > 0, s:N])))
+                add <- drop(rowsum(as.vector(grp[r,s] * y1/z1),
+                                   as.vector(K[r, set])))
                 res[as.numeric(names(add))] <- res[as.numeric(names(add))] + add
-            } else res <- res + colSums(grp[,s][grp[,s] > 0] * y1/z1)
+            } else res <- res + colSums(grp[r,s] * y1/z1)
         }
         res
     }
