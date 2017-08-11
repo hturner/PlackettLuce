@@ -35,7 +35,7 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     B <- B/seq(D)
 
     # starting values
-    N <- ncol(rankings)
+    N <- ncol(R)
     ## (scaled, un-damped) PageRank based on underlying paired comparisons
     if (is.null(colnames(R))) colnames(R) <- 1:ncol(R)
     X <- as_adj(graph_from_edgelist(as.edgelist.rankings(R)))[colnames(R),
@@ -46,47 +46,128 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     delta <- rep.int(0.1, D)
     delta[1] <- 1
 
-    # item indices (specific to pairs for now)
-    n <- length(M@i)
-    i <- (M@i + 1)[seq(1, n, by = 2)]
-    j <- (M@i + 1)[seq(2, n, by = 2)]
-    r <- rep_len(seq(nrow(M)), length(i) + length(j))
+    # item indices
+    nz <- rowSums(R == 0)
+    K <- apply(R, 1, sort)
+    grp <- apply(K[-ncol(R), ], 2, diff)
+    K <- apply(R, 1, order)
+    K[cbind(sequence(nz), rep.int(1:nrow(R), nz))] <- 0
 
-    expectation <- function(par, alpha, delta, M){
-        # numerators
-        if (par == "alpha") {
-            y1 <- (M > 0) * alpha
-        } else y1 <- numeric(D)
-        if (D == 2){ # just D == 2 for now
-            p <- (alpha[i]*alpha[j])^(1/2)
-            if (par == "alpha") {
-                y1[cbind(r, c(i, j))] <- y1 + delta[D]/D*p
-            } else y1[D] <- p
+    expectation <- function(par, alpha, delta, M, N, D, J, Jmax, trace = FALSE){
+        n <- switch(par,
+                    "alpha" = N,
+                    "delta" = D - 1)
+        res <- numeric(n)
+        for (j in seq_len(Jmax)){
+            # D == 1
+            ## numerators (for par == "alpha", else just to compute z1)
+            y1 <- drop0(M[, J >= j, drop = FALSE] > (j - 1)) * alpha
+            ## denominators
+            z1 <- colSums(y1)
+            if (trace){
+                message("items: ")
+                nobj <- diff(y1@p[1:2])
+                dp <- rep.int(nobj, ncol(y1)) # diff(y1@p) assuming all same size
+                K <- sparseMatrix(i = rep(seq_along(dp), dp), j = sequence(dp),
+                                  x = (M * drop0(M > (j - 1)))[, J >= j, drop = FALSE]@i + 1)
+                print(K)
+                message("y1: ")
+                print(y1)
+                message("z1: ")
+                print(z1)
+            }
+            # D > 1
+            ## assume at current j all obs have same nitems to select from
+            ## (will require competition rankings for total items > 3)
+            nobj <- diff(y1@p[1:2])
+            d <- min(D, nobj)
+            if (d > 1){
+                if (par == "delta")
+                    y1 <- matrix(0, nrow = n, ncol = sum(J >= j))
+                # get indices for current set
+                ## (this part might be more efficient with competition rankings)
+                dp <- rep.int(nobj, ncol(y1)) # diff(y1@p) assuming all same size
+                K <- sparseMatrix(i = rep(seq_along(dp), dp), j = sequence(dp),
+                                  x = (M * drop0(M > (j - 1)))[, J >= j, drop = FALSE]@i + 1)
+                r <- seq(ncol(y1))
+                # index up to d items: start with 1:n
+                i <- seq_len(d)
+                # id = index to change next; id2 = first index changed
+                if (d == nobj) {
+                    id <- nobj - 1
+                } else id <- d
+                id2 <- 1
+                repeat{
+                    # work along index vector from 1 to end/first index = nobj
+                    x1 <- alpha[K[,i[1]]] # ability for first item in set
+                    last <- i[id] == nobj
+                    if (last) {
+                        end <- id
+                    } else end <- min(d, id + 1)
+                    for (k in 2:end){
+                        # product of first k alphas indexed by i
+                        x1 <- (x1 * alpha[K[,i[k]]])
+                        # ignore if already recorded
+                        if (k < id2) next
+                        if (trace) message("i: ", paste(i, collapse = ", "))
+                        # add to numerators/denominators for sets of order nobj
+                        if (par == "alpha") {
+                            x2 <- delta[k]*x1^(1/k)
+                            # add to numerators for objects in sets
+                            y1[cbind(as.vector(K[,i[1:k]]), r)] <-
+                                y1[cbind(as.vector(K[,i[1:k]]), r)] + x2/k
+                            if (trace)
+                                message("x2/k: ", paste(round(x2/k, 7), collapse = ", "))
+                            # add to denominators for sets
+                            z1 <- z1 + x2
+                            if (trace)
+                                message("x2: ", x2)
+                        } else {
+                            x2 <- x1^(1/k)
+                            # add to numerator for current tie order for sets
+                            if (par == "delta")
+                                y1[k - 1, ] <- y1[k - 1,] + x2
+                            # add to denominators for sets
+                            z1 <- z1 + delta[k]*x2
+                        }
+                    }
+                    # update index
+                    if (i[1] == (nobj - 1)) break
+                    if (last){
+                        id2 <- id - 1
+                        v <- i[id2]
+                        len <- min(nobj - 2 - v, d - id2)
+                        id <- id2 + len
+                        i[id2:id] <- v + seq_len(len + 1)
+                    } else {
+                        id2 <- id
+                        i[id] <- i[id] + 1
+                    }
+                }
+            }
+            # add contribution for sets of size nobj to expectation
+            res <- res + colSums(t(y1)/z1)
         }
-        # denominators
-        z1 <- alpha[i] + alpha[j] #rowSums(M)
-        if (D == 2){
-            z1 <- z1 + delta[2]*p
-        }
-        colSums(t(y1)/z1)
+        res
     }
 
+    expA <- expectation("alpha", alpha, delta, M, N, D, J, Jmax, trace = trace)
     for (iter in seq_len(maxit)){
         # update all alphas
-        expA <- expectation("alpha", alpha, delta, M)
+        alpha <- alpha*A/expA
+        # update all deltas``
+        if (D > 1) delta[-1] <- B[-1]/
+                expectation("delta", alpha, delta, M, N, D, J, Jmax)
+        # trace
+        if (trace){
+            message("iter ", iter)
+        }
         # stopping rule: compare observed & expected sufficient stats for alphas
+        expA <- expectation("alpha", alpha, delta, M, N, D, J, Jmax)
         eps <- abs(A - expA)
         if (all(eps < epsilon)) {
             conv <- TRUE
             break
-        }
-        alpha <- alpha*A/expA
-        # update all deltas
-        if (D > 1) delta[-1] <- B[-1]/
-                expectation("delta", par$alpha, par$delta, M)[-1]
-        # trace
-        if (trace){
-            message("iter ", iter)
         }
     }
     structure(c(alpha/sum(alpha), delta[-1]), iter = iter)
