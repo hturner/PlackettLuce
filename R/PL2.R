@@ -50,21 +50,47 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     K <- t(apply(R, 1, order, decreasing = TRUE))
     K[cbind(rep.int(1:nrow(R), nz), ncol(R) + 1 - sequence(nz))] <- 0
 
-    # order first two columns
-    # (only go down to sets of size 2, so order of last 2 items doesn't matter)
-    #K[, 1:2] <- t(apply(K[, 1:2], 1, sort))
-
-    # aggregate
-    ord <- do.call(order, as.data.frame(K))
-    K <- K[ord,]
-    dup <- duplicated(K)
-    rep <- diff(c(which(!dup), nrow(K) + 1))
-    K <- K[!dup,]
-    grp <- grp[ord[!dup],] * rep
-    K <- Matrix(K, sparse = TRUE)
-
     # set sizes to consider
     S <- which(colSums(K[, -1, drop = FALSE]) > 0) + 1
+
+    # aggregate by set size
+    # unique rows with >= 1 element for logical matrix
+    uniquerow <- function(M, rep = TRUE){
+        for (i in seq_len(ncol(M))){
+            if (i == 1) {
+                pattern <- M[,1]
+            }
+            else {
+                pattern <- 2*pattern + M[,i]
+                pattern <- match(pattern, unique(pattern))
+            }
+        }
+        pattern
+    }
+    for (i in S){
+        r <- which(grp[,i] > 0)
+        nr <- length(r)
+        if (i == N) {
+            grp[,i][grp[,i] > 0] <- c(nr, numeric(nr - 1)) # always 1 group
+            next
+        }
+        # (one of the) item(s) in i'th from last place
+        minrank <- R[cbind(r, K[r, i])]
+        # items in final set of size i
+        pattern <- R[r,] >= minrank
+        # find unique sets and select representative ranking to compute on
+        g <- uniquerow(pattern)
+        ng <- tabulate(g)
+        grp[r,i] <- 0
+        grp[r,i][!duplicated(g)] <- ng
+    }
+
+    # multiply by rankings weights here
+
+    # drop any completely replicated rankings
+    keep <- unique(grp@i + 1)
+    K <- K[keep,]
+    grp <- grp[keep,]
 
     expectation <- function(par, alpha, delta, K, N, D, S, trace = FALSE){
         n <- switch(par,

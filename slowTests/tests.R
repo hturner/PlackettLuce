@@ -8,6 +8,7 @@ M <- matrix(c(1, 2,
               2, 3,
               4, 3), nrow = 6, byrow = TRUE)
 
+R <- PlackettLuce:::denseRanking(M)
 mod <- PlackettLuce(R)
 
 if (require(gnm)){
