@@ -278,9 +278,10 @@ PlackettLuce <- function(rankings, ref = NULL,
     #res2 <- lbfgs(obj, gr, log(c(alpha, delta[-1])))
     conv <- FALSE
     par <- list(alpha = alpha, delta = delta)
-    oneUpdate <- function(par){
+    oneUpdate <- function(par, trace = FALSE){
         # update all alphas
-        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
+        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S,
+                            trace = trace)
         if (pseudo){
             par$alpha[-1] <- par$alpha[-1]*A[-1]/expA[-1]
         } else {
@@ -289,7 +290,8 @@ PlackettLuce <- function(rankings, ref = NULL,
         # update all deltas
         if (D > 1) par$delta[-1] <- B[-1]/
                 expectation("delta", par$alpha, par$delta,
-                            pattern, rep, N, D, S)[-1]
+                            pattern, rep, N, D, S,
+                            trace = trace)[-1]
         par
     }
     accelerate <- function(p, p1, p2){
@@ -298,7 +300,7 @@ PlackettLuce <- function(rankings, ref = NULL,
     eps <- 1
     doSteffensen <- FALSE
     for (iter in seq_len(maxit)){
-        par <- oneUpdate(par)
+        par <- oneUpdate(par, trace = trace)
         # steffensen
         if (doSteffensen){
             par1 <- oneUpdate(par)
@@ -370,10 +372,11 @@ PlackettLuce <- function(rankings, ref = NULL,
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
 expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
-                         D = length(delta), S = ncol(pattern)){
+                         D = length(delta), S = ncol(pattern), trace = FALSE){
     n <- switch(par,
                 "alpha" = N,
                 "delta" = D)
+    if (trace) message("par: ", par)
     res <- numeric(n)
     for (k in seq_len(S)){
         # objects in set
@@ -405,13 +408,18 @@ expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
                     x1 <- (x1 * alpha[w][i[j]])
                     # ignore if already recorded
                     if (j < id2) next
+                    if (trace) message("i: ", paste(w[i], collapse = ", "))
                     # add to relevant numerator/denominator
                     if (par == "alpha"){
                         x2 <- delta[j]*x1^(1/j)
                         # add to numerators for all objects in set
                         y1[i[1:j]] <- y1[i[1:j]] + x2/j
+                        if (trace)
+                            message("x2/j: ", paste(round(x2/j, 7), collapse = ", "))
                         # add to denominator for current set
                         z1 <- z1 + x2
+                        if (trace)
+                            message("x2: ", x2)
                     } else{
                         x2 <- x1^(1/j)
                         # add to numerator for current order
@@ -435,8 +443,18 @@ expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
                 }
             }
         }
+        if (trace){
+            message("items: ", paste(w, collapse = ", "))
+            message("y1: ", paste(round(y1, 7), collapse = ", "))
+            message("z1: ", z1)
+        }
         # add contribution for set to expectation
         if (par == "alpha"){
+            if (trace) {
+                message("y1/z1:", paste(round(y1/z1, 7), collapse = ", "))
+                message("rep[k]:", paste(round(rep[k]), collapse = ", "))
+                message("add to:", round(res[w], 7))
+            }
             res[w] <- res[w] + rep[k]*y1/z1
         } else res <- res + rep[k]*y1/z1
     }

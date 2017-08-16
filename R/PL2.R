@@ -44,15 +44,15 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
 
     # item indices
     nz <- rowSums(R == 0)
-    K <- apply(R, 1, sort)
-    grp <- t(apply(rbind(0, K[-ncol(R), ]), 2, diff))
-    grp <- Matrix(grp, sparse = TRUE)
-    K <- t(apply(R, 1, order))
-    K[cbind(rep.int(1:nrow(R), nz), sequence(nz))] <- 0
+    K <- apply(R, 1, sort, decreasing = TRUE)
+    grp <- -1 * t(apply(rbind(K[-1, ], 0), 2, diff))
+    grp <- Matrix(cbind(0, grp), sparse = TRUE)
+    K <- t(apply(R, 1, order, decreasing = TRUE))
+    K[cbind(rep.int(1:nrow(R), nz), ncol(R) + 1 - sequence(nz))] <- 0
 
-    # order last two columns
+    # order first two columns
     # (only go down to sets of size 2, so order of last 2 items doesn't matter)
-    K[, (ncol(K) - 1):ncol(K)] <- t(apply(K[, (ncol(K) - 1):ncol(K)], 1, sort))
+    #K[, 1:2] <- t(apply(K[, 1:2], 1, sort))
 
     # aggregate
     ord <- do.call(order, as.data.frame(K))
@@ -64,7 +64,7 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     K <- Matrix(K, sparse = TRUE)
 
     # set sizes to consider
-    S <- which(colSums(K[,-ncol(R)]) > 0)
+    S <- which(colSums(K[, -1, drop = FALSE]) > 0) + 1
 
     expectation <- function(par, alpha, delta, K, N, D, S, trace = FALSE){
         n <- switch(par,
@@ -73,53 +73,50 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
         if (trace) message("par: ", par)
         res <- numeric(n)
         for (s in S){
-            # number of objects to select from
-            nobj <- N - s + 1
             # D == 1
             ## numerators (for par == "alpha", else just to compute z1)
             r <- grp[,s] > 0
-            set <- s:N
             nr <- sum(r)
-            y1 <- matrix(alpha[as.vector(K[r, set])],
-                         nrow = nr, ncol = nobj)
+            y1 <- matrix(alpha[as.vector(K[r, 1:s])],
+                         nrow = nr, ncol = s)
             ## denominators
             z1 <- rowSums(y1)
             # D > 1
-            d <- min(D, nobj)
+            d <- min(D, s)
             if (d > 1){
                 if (par == "delta")
                     y1 <- matrix(0, nrow = nr, ncol = n)
                 # index up to d items: start with 1:n
                 i <- seq_len(d)
                 # id = index to change next; id2 = first index changed
-                if (d == nobj) {
-                    id <- nobj - 1
+                if (d == s) {
+                    id <- s - 1
                 } else id <- d
                 id2 <- 1
                 repeat{
-                    # work along index vector from 1 to end/first index = nobj
-                    x1 <- alpha[K[r, set[i[1]]]] # ability for first ranked item
-                    last <- i[id] == nobj
+                    # work along index vector from 1 to end/first index = s
+                    x1 <- alpha[K[r, i[1]]] # ability for first ranked item
+                    last <- i[id] == s
                     if (last) {
                         end <- id
                     } else end <- min(d, id + 1)
                     for (k in 2:end){
                         # product of first k alphas indexed by i
-                        x1 <- (x1 * alpha[K[r, set[i[k]]]])
+                        x1 <- x1 * alpha[K[r, i[k]]]
                         # ignore if already recorded
                         if (k < id2) next
-                       # if (trace) message("i: ", paste(i, collapse = ", "))
-                        # add to numerators/denominators for sets of order nobj
+                       if (trace) message("i: ", paste(i, collapse = ", "))
+                        # add to numerators/denominators for sets of order s
                         if (par == "alpha") {
                             x2 <- delta[k]*x1^(1/k)
                             # add to numerators for objects in sets
                             y1[, i[1:k]] <- y1[, i[1:k]] + x2/k
-                        #    if (trace)
-                         #       message("x2/k: ", paste(round(x2/k, 7), collapse = ", "))
+                            if (trace)
+                                message("x2/k: ", paste(round(x2/k, 7), collapse = ", "))
                             # add to denominators for sets
                             z1 <- z1 + x2
-                          #  if (trace)
-                           #     message("x2: ", x2)
+                            if (trace)
+                                message("x2: ", x2)
                         } else {
                             x2 <- x1^(1/k)
                             # add to numerator for current tie order for sets
@@ -130,11 +127,11 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                         }
                     }
                     # update index
-                    if (i[1] == (nobj - 1)) break
+                    if (i[1] == (s - 1)) break
                     if (last){
                         id2 <- id - 1
                         v <- i[id2]
-                        len <- min(nobj - 2 - v, d - id2)
+                        len <- min(s - 2 - v, d - id2)
                         id <- id2 + len
                         i[id2:id] <- v + seq_len(len + 1)
                     } else {
@@ -143,10 +140,10 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                     }
                 }
             }
-            # add contribution for sets of size nobj to expectation
+            # add contribution for sets of size s to expectation
             if (trace){
                 message("items: ")
-                print(K[r, set])
+                print(K[r, 1:s])
                 message("y1: ")
                 print(y1)
                 message("z1: ")
@@ -155,7 +152,7 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             if (par == "alpha"){
                 # K[s:N, grp[,s] > 0] may only index some alphas
                 add <- drop(rowsum(as.vector(grp[r,s] * y1/z1),
-                                   as.vector(K[r, set])))
+                                   as.vector(K[r, 1:s])))
                 res[as.numeric(names(add))] <- res[as.numeric(names(add))] + add
             } else res <- res + colSums(grp[r,s] * y1/z1)
         }
@@ -181,5 +178,6 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
             break
         }
     }
+
     structure(c(alpha/sum(alpha), delta[-1]), iter = iter)
 }
