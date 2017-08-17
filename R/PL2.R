@@ -1,59 +1,55 @@
 ## N.B. current version computes expA twice when not doing Steffensen!
 PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
-    M <- t(Matrix(R, sparse = TRUE))
-
-    # max nsets
-    J <- apply(M, 2, max)
+    # sparse matrix of dense rankings (rankings object should be sparse already)
+    R <- Matrix(R, sparse = TRUE)
 
     # nontrivial nsets (excluding untied last place)
-    J <- J - as.numeric(rowSums(t(M) == J) == 1)
-    Jmax <- max(J)
+    J <- apply(R, 1, max)
+    J <- J - as.numeric(rowSums(R == J) == 1)
 
-    # remove singletons - is this needed now rankings are checked?
-    singleton <- J == 0
-    M <- M[, !singleton, drop = FALSE]
-    J <- J[!singleton]
-
-    # sizes of selected sets (not particularly efficient - could all be == 1!)
-    S <- M
-    S[t(t(M) > J)] <- 0
-    # S is copied onto T here to be used by loglik
-    T <- S
+    # size of selected sets
+    S <- R
+    S[which(R > J)] <- 0
+    S <- t(S)
     S@x <- 1/as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
+    S <- t(S)
 
     # sufficient statistics
 
-    # for alpha i, sum over all sets of object i is in selected set/size of selected set
-    A <- rowSums(S)
-    # for delta d, number of sets with cardinality d
-    B <- tabulate(1/S@x)
+    # for alpha i, sum over all sets st object i is in selected set/size of selected set
+    A <- colSums(S)
+    # for delta d, number of sets with cardinality d/cardinality
+    S@x <- 1/S@x
+    B <- tabulate(S@x)
     D <- length(B)
     B <- B/seq(D)
 
-    # starting values
-    N <- ncol(R)
-    ## (scaled, un-damped) PageRank based on underlying paired comparisons
+    # starting values - as.edgelist.rankings doesn't currently work for Matrix
+
+    # (scaled, un-damped) PageRank based on underlying paired comparisons
     if (is.null(colnames(R))) colnames(R) <- 1:ncol(R)
-    X <- as_adj(graph_from_edgelist(as.edgelist.rankings(R)))[colnames(R),
-                                                              colnames(R)]
+    X <- as_adj(graph_from_edgelist(as.edgelist.rankings(as.matrix(R))))[colnames(R),
+                                                                         colnames(R)]
     alpha <- drop(abs(eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
     # alpha <- alpha/sum(alpha) current version doesnt divide by alpha
     delta <- rep.int(0.1, D)
     delta[1] <- 1
 
-    # item indices
-    nz <- rowSums(R == 0)
-    K <- apply(R, 1, sort, decreasing = TRUE)
-    grp <- -1 * t(apply(rbind(K[-1, ], 0), 2, diff))
-    grp <- Matrix(cbind(0, grp), sparse = TRUE)
-    K <- t(apply(R, 1, order, decreasing = TRUE))
-    K[cbind(rep.int(1:nrow(R), nz), ncol(R) + 1 - sequence(nz))] <- 0
+    # pre-process rankings so easier to compute on
 
-    # set sizes to consider
-    S <- which(colSums(K[, -1, drop = FALSE]) > 0) + 1
+    # update S so cols are potential set sizes and value > 0 indicates ranking
+    # selects from that set size
+    S <- apply(R, 1, sort, decreasing = TRUE)
+    S <- as(-1*t(apply(rbind(S, 0), 2, diff)), "dgCMatrix")
 
-    # aggregate by set size
+    # set sizes present in rankings
+    P <- which(colSums(S[, -1, drop = FALSE]) > 0) + 1
+
+    # max number of objects
+    N <- ncol(S)
+
+    # aggregate partial rankings by set size
     # unique rows with >= 1 element for logical matrix
     uniquerow <- function(M, rep = TRUE){
         for (i in seq_len(ncol(M))){
@@ -67,72 +63,81 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
         }
         pattern
     }
-    for (i in S){
-        r <- which(grp[,i] > 0)
+
+    for (i in P){
+        r <- which(S[,i] > 0)
         nr <- length(r)
         if (i == N) {
-            grp[,i][grp[,i] > 0] <- c(nr, numeric(nr - 1)) # always 1 group
+            S[,i][S[,i] > 0] <- c(nr, numeric(nr - 1)) # always 1 group
             next
         }
         # (one of the) item(s) in i'th from last place
-        minrank <- R[cbind(r, K[r, i])]
+        minrank <- rowSums(S[r,i:N])
         # items in final set of size i
         pattern <- R[r,] >= minrank
         # find unique sets and select representative ranking to compute on
         g <- uniquerow(pattern)
         ng <- tabulate(g)
-        grp[r,i] <- 0
-        grp[r,i][!duplicated(g)] <- ng
+        if (any(ng > 1)){
+            dup <- duplicated(g)
+            S[r[dup], i] <- 0
+            S[r[!dup], i] <- ng
+        }
     }
 
     # multiply by rankings weights here
 
-    # drop any completely replicated rankings
-    keep <- unique(grp@i + 1)
-    K <- K[keep,]
-    grp <- grp[keep,]
+    # replace rankings with items ordered by ranking (all that is needed now)
+    R <- t(apply(R, 1, order, decreasing = TRUE))
 
-    expectation <- function(par, alpha, delta, K, N, D, S, trace = FALSE){
+    # drop any completely replicated rankings
+    keep <- diff(S@p) != 0
+    if (length(keep) < N){
+        R <- R[,keep]
+        S <- S[,keep]
+    }
+
+    expectation <- function(par, alpha, delta, R, S, N, D, P, trace = FALSE){
         n <- switch(par,
                     "alpha" = N,
                     "delta" = D - 1)
         if (trace) message("par: ", par)
         res <- numeric(n)
-        for (s in S){
+        for (p in P){
             # D == 1
             ## numerators (for par == "alpha", else just to compute z1)
-            r <- grp[,s] > 0
+            r <- S[, p] > 0
             nr <- sum(r)
-            y1 <- matrix(alpha[as.vector(K[r, 1:s])],
-                         nrow = nr, ncol = s)
+            y1 <- matrix(alpha[as.vector(R[r, 1:p])],
+                         nrow = nr, ncol = p)
             ## denominators
             z1 <- rowSums(y1)
             # D > 1
-            d <- min(D, s)
+            d <- min(D, p)
             if (d > 1){
                 if (par == "delta")
                     y1 <- matrix(0, nrow = nr, ncol = n)
                 # index up to d items: start with 1:n
                 i <- seq_len(d)
                 # id = index to change next; id2 = first index changed
-                if (d == s) {
-                    id <- s - 1
+                if (d == p) {
+                    id <- p - 1
                 } else id <- d
                 id2 <- 1
                 repeat{
-                    # work along index vector from 1 to end/first index = s
-                    x1 <- alpha[K[r, i[1]]] # ability for first ranked item
-                    last <- i[id] == s
+                    # work along index vector from 1 to end/first index = p
+                    x1 <- alpha[R[r, i[1]]] # ability for first ranked item
+                    last <- i[id] == p
                     if (last) {
                         end <- id
                     } else end <- min(d, id + 1)
                     for (k in 2:end){
                         # product of first k alphas indexed by i
-                        x1 <- x1 * alpha[K[r, i[k]]]
+                        x1 <- x1 * alpha[R[r, i[k]]]
                         # ignore if already recorded
                         if (k < id2) next
                        if (trace) message("i: ", paste(i, collapse = ", "))
-                        # add to numerators/denominators for sets of order s
+                        # add to numerators/denominators for sets of order p
                         if (par == "alpha") {
                             x2 <- delta[k]*x1^(1/k)
                             # add to numerators for objects in sets
@@ -153,11 +158,11 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                         }
                     }
                     # update index
-                    if (i[1] == (s - 1)) break
+                    if (i[1] == (p - 1)) break
                     if (last){
                         id2 <- id - 1
                         v <- i[id2]
-                        len <- min(s - 2 - v, d - id2)
+                        len <- min(p - 2 - v, d - id2)
                         id <- id2 + len
                         i[id2:id] <- v + seq_len(len + 1)
                     } else {
@@ -166,38 +171,38 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
                     }
                 }
             }
-            # add contribution for sets of size s to expectation
+            # add contribution for sets of size p to expectation
             if (trace){
                 message("items: ")
-                print(K[r, 1:s])
+                print(R[r, 1:p])
                 message("y1: ")
                 print(y1)
                 message("z1: ")
                 print(z1)
             }
             if (par == "alpha"){
-                # K[s:N, grp[,s] > 0] may only index some alphas
-                add <- drop(rowsum(as.vector(grp[r,s] * y1/z1),
-                                   as.vector(K[r, 1:s])))
+                # R[r, 1:p] may only index some alphas
+                add <- drop(rowsum(as.vector(S[r, p] * y1/z1),
+                                   as.vector(R[r, 1:p])))
                 res[as.numeric(names(add))] <- res[as.numeric(names(add))] + add
-            } else res <- res + colSums(grp[r,s] * y1/z1)
+            } else res <- res + colSums(S[r, p] * y1/z1)
         }
         res
     }
 
-    expA <- expectation("alpha", alpha, delta, K, N, D, S, trace = trace)
+    expA <- expectation("alpha", alpha, delta, R, S, N, D, P, trace = trace)
     for (iter in seq_len(maxit)){
         # update all alphas
         alpha <- alpha*A/expA
         # update all deltas
         if (D > 1) delta[-1] <- B[-1]/
-                expectation("delta", alpha, delta, K, N, D, S, trace = trace)
+                expectation("delta", alpha, delta, R, S, N, D, P, trace = trace)
         # trace
         if (trace){
             message("iter ", iter)
         }
         # stopping rule: compare observed & expected sufficient stats for alphas
-        expA <- expectation("alpha", alpha, delta, K, N, D, S)
+        expA <- expectation("alpha", alpha, delta, R, S, N, D, P)
         eps <- abs(A - expA)
         if (all(eps < epsilon)) {
             conv <- TRUE
