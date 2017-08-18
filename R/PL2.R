@@ -11,15 +11,13 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     S <- R
     S[which(R > J)] <- 0
     S <- t(S)
-    S@x <- 1/as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
-    S <- t(S)
+    S@x <- as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
 
     # sufficient statistics
 
     # for alpha i, sum over all sets st object i is in selected set/size of selected set
-    A <- colSums(S)
+    A <- unname(rowsum(1/S@x, S@i)[,1])
     # for delta d, number of sets with cardinality d/cardinality
-    S@x <- 1/S@x
     B <- tabulate(S@x)
     D <- length(B)
     B <- B/seq(D)
@@ -91,10 +89,10 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
     R <- t(apply(R, 1, order, decreasing = TRUE))
 
     # drop any completely replicated rankings
-    keep <- diff(S@p) != 0
-    if (length(keep) < N){
-        R <- R[,keep]
-        S <- S[,keep]
+    keep <- unique(S@i + 1)
+    if (length(keep) < nrow(R)){
+        R <- R[keep,]
+        S <- S[keep,]
     }
 
     expectation <- function(par, alpha, delta, R, S, N, D, P, trace = FALSE){
