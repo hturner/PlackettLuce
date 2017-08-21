@@ -68,6 +68,7 @@ PlackettLuce2 <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
                                      "cluster"),
                          npseudo = 1,
+                         method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
@@ -230,56 +231,86 @@ PlackettLuce2 <- function(rankings, ref = NULL,
         de <- exp(par[-c(1:N)])
         -score(c(al, de)) * c(al, de)
     }
-    #res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
-    #res2 <- lbfgs(obj, gr, log(c(alpha, delta[-1])))
 
-    # iterative scaling
+    method <- match.arg(method, c("iterative scaling", "BFGS", "L-BFGS"))
 
-    conv <- FALSE
-    res <- list(alpha = alpha, delta = delta,
-                expA = expectation2("alpha", alpha, delta,  R, S, N, D, P)$expA)
-    oneUpdate <- function(res){
-        # update all alphas
-        if (pseudo){
-            res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
-        } else {
-            res$alpha <- res$alpha*A/res$expA
-        }
-        # update all deltas
-        if (D > 1) res$delta[-1] <- B[-1]/
-                expectation2("delta", res$alpha, res$delta, R, S, N, D, P)$expB
-        res$expA <- expectation2("alpha", res$alpha, res$delta, R, S, N, D, P)$expA
-        res
-    }
-    accelerate <- function(p, p1, p2){
-        p - (p1 - p)^2 / (p2 - 2 * p1 + p)
-    }
-    eps <- 1
-    doSteffensen <- FALSE
-    for (iter in seq_len(maxit)){
-        res <- oneUpdate(res)
-        # steffensen
-        if (doSteffensen){
-            res1 <- oneUpdate(res)
-            res2 <- oneUpdate(res1)
+    if (method == "BFGS"){
+        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
+        conv <- res$convergence == 0
+        iter <- res$counts
+        res <- list(alpha = exp(res$par[1:N]),
+                    delta = c(1, exp(res$par[-(1:N)])))
+
+    } else if (method == "L-BFGS"){
+        ok <- requireNamespace("lbfgs", quietly = TRUE)
+        if (!ok) stop('`method = "lbfgs"` requires lbfgs package')
+        res <- lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1)
+        conv <- res$convergence == 0
+        iter <- NULL
+        res <- list(alpha = exp(res$par[1:N]),
+                    delta = c(1, exp(res$par[-(1:N)])))
+    } else {
+        res <- list(alpha = alpha, delta = delta)
+        res[c("expA", "expB")] <-
+            expectation2("all", alpha, delta,  R, S, N, D, P)[c("expA", "expB")]
+        oneUpdate <- function(res){
+            updateIter()
+            # update all alphas
             if (pseudo){
-                res$alpha[-1] <- accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
-            } else res$alpha <- accelerate(res$alpha, res1$alpha, res2$alpha)
-            res$delta[-1] <- accelerate(res$delta, res1$delta, res2$delta)[-1]
+                res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
+            } else {
+                res$alpha <- res$alpha*A/res$expA
+            }
+            # update all deltas
+            if (D > 1) res$delta[-1] <- B[-1]/
+                    expectation2("delta", res$alpha, res$delta, R, S, N, D, P)$expB
+            res[c("expA", "expB")] <-
+                expectation2("all", res$alpha, res$delta, R, S, N, D, P)[c("expA", "expB")]
+            res
         }
-        # trace
-        if (trace){
-            message("iter ", iter)
+        accelerate <- function(p, p1, p2){
+            # only accelerate if parameter has changed in last iteration
+            d <- p2 != p1
+            p2[d] <- p[d] - (p1[d] - p[d])^2 / (p2[d] - 2 * p1[d] + p[d])
+            p2
         }
-        # stopping rule: compare observed & expected sufficient stats for alphas
-        eps <- abs(A - res$expA)
-        if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
-        if (all(eps < epsilon)) {
-            conv <- TRUE
-            break
+        # stopping rule: compare observed & expected sufficient stats
+        checkConv <- function(res){
+            assign("eps", abs(c(A, B[-1]) - c(res$expA, res$delta[-1]*res$expB)),
+                   envir = parent.env(environment()))
+            all(eps < epsilon)
+        }
+        if (conv <- checkConv(res)) {
+            maxit <- iter <- 0
+        } else iter <- 1
+        updateIter <- function(){
+            if (trace) message("iter: ", iter)
+            assign("iter", iter + 1,
+                   envir = parent.env(environment()))
+        }
+        doSteffensen <- FALSE
+        while(iter < maxit){
+            res <- oneUpdate(res)
+            if (conv <- checkConv(res)) break
+            if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
+            # steffensen
+            if (doSteffensen){
+                res1 <- oneUpdate(res)
+                if (conv <- checkConv(res1)) break
+                res2 <- oneUpdate(res1)
+                if (conv <- checkConv(res2)) break
+                updateIter()
+                if (pseudo){
+                    res$alpha[-1] <- accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
+                } else res$alpha <- accelerate(res$alpha, res1$alpha, res2$alpha)
+                res$delta[-1] <- accelerate(res$delta, res1$delta, res2$delta)[-1]
+                res[c("expA", "expB")] <-
+                    expectation2("all", res$alpha, res$delta,
+                                 R, S, N, D, P)[c("expA", "expB")]
+                if (conv <- checkConv(res)) break
+            }
         }
     }
-
     res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
 
     if (pseudo) {

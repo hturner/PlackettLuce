@@ -311,12 +311,12 @@ PlackettLuce <- function(rankings, ref = NULL,
             par$delta[-1] <- accelerate(par$delta, par1$delta, par2$delta)[-1]
         }
         expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
+        eps <- abs(A - expA)
         # trace
         if (trace){
             message("iter ", iter)
         }
         # stopping rule: compare observed & expected sufficient stats for alphas
-        eps <- abs(A - expA)
         if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
         if (all(eps < epsilon)) {
             conv <- TRUE
