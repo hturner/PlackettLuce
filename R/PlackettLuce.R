@@ -61,7 +61,7 @@
 #'
 #' mod <- PlackettLuce(R)
 #' coef(mod)
-#' @import Matrix
+#' @import Matrix lbfgs
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
 #' @export
