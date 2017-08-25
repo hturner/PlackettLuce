@@ -14,10 +14,11 @@ for (file0 in source_files) {
 coef_tol <- 1e-06
 loglik_tol <- 1e-12
 
-## Extractor for the log-likelihood of poisson gnm's adjusting for the fixed part (-mu) due to the extra nuisance parameters
+## Extractor for the log-likelihood of poisson gnm's adjusting for the -mu part which is fixed due to the parameter space restriction to match row totals
 logLik_poisson.gnm <- function(x) {
     logLik(x) + nlevels(x$eliminate)
 }
+
 
 ## The artificial example in ?PlackettLuce
 R <- matrix(c(1, 2, 0, 0,
@@ -39,6 +40,7 @@ if (require("Matrix") & require("igraph") & require("rARPACK")) {
         expect_equal(logLik(model0), logLik(model1), tolerance = loglik_tol)
     })
 }
+
 
 ## simple BT model
 M <- matrix(c(1, 2,
@@ -125,6 +127,7 @@ if (require(gnm)){
         expect_equal(logLik(mod1), logLik_poisson.gnm(mod2), check.attributes = FALSE, tolerance = loglik_tol)
     })
 }
+
 
 ## Nascar example from Hunter
 if (require(StatRank)){
