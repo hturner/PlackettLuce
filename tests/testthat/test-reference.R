@@ -1,4 +1,4 @@
-context("ref argument in PlackettLuce")
+context("implementation [ref argument in PlackettLuce]")
 
 ## Using the artificial example in ?PlackettLuce
 R <- matrix(c(1, 2, 0, 0,
