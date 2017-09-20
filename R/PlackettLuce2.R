@@ -196,7 +196,7 @@ PlackettLuce2 <- function(rankings, ref = NULL,
         delta <- par[-c(1:N)] # includes delta1
         res <- expectation2("all", alpha, c(1, delta), R, S, N, D, P)
         # sum of (log(normalising_constants_per_set) * rep)
-        c_contr <- sum(res$logtheta)
+        c_contr <- sum(res$theta)
         list(alpha = alpha, delta = delta, c_contr = c_contr,
              expA = res$expA, expB = res$expB)
     }
@@ -361,10 +361,11 @@ PlackettLuce2 <- function(rankings, ref = NULL,
 expectation2 <- function(par, alpha, delta, R, S, N, D, P){
     keepAlpha <- par %in% c("alpha", "all")
     keepDelta <- par %in% c("delta", "all") & D > 1
-    expA <- expB <- logtheta <- NULL
+    keepTheta <- par %in% c("theta", "all")
+    expA <- expB <- theta <- NULL
     if (keepAlpha) expA <- numeric(N)
     if (keepDelta) expB <- numeric(D - 1)
-    if (par == "all") logtheta <- numeric(length(S[, P, drop = FALSE]@x))
+    if (keepTheta) theta <- numeric(length(S[, P, drop = FALSE]@x))
     z <- 1
     for (p in P){
         # D == 1
@@ -437,12 +438,17 @@ expectation2 <- function(par, alpha, delta, R, S, N, D, P){
         if (keepDelta){
             expB <- expB + colSums(S[r, p] * y1/z1)
         }
-        if (par == "all"){
-            logtheta[z:(z + nr - 1)] <- S[r, p] * log(z1)
+        if (keepTheta){
+            if (par == "all"){
+                # return logtheta
+                theta[z:(z + nr - 1)] <- S[r, p] * log(z1)
+            } else {
+                theta[z:(z + nr - 1)] <- S[r, p] * z1
+            }
             z <- z + nr
         }
     }
-    list(expA = expA, expB = expB, logtheta = logtheta)
+    list(expA = expA, expB = expB, theta = theta)
 }
 
 # aggregate weights to combine sets within rankings
@@ -472,15 +478,15 @@ aggregate_weights <- function(R, S, N, P, method = c("winners_and_losers", "all"
             next
         }
         # (one of the) item(s) in i'th from last place
-        minrank <- rowSums(S[r,i:N])
+        minrank <- rowSums(S[r, i:N, drop = FALSE])
         # items in final set of size i
-        pattern <- R[r,] >= minrank
+        pattern <- R[r, , drop = FALSE] >= minrank
         # find unique sets and select representative ranking to compute on
         g <- rowpattern(pattern)
         if (method == "winners_and_losers"){
-            h <- rowpattern(R[r,] == minrank)
+            h <- rowpattern(R[r, , drop = FALSE] == minrank)
             g <- paste(g, h, sep = ":")
-            g <- match(g, unique(g))
+            return(list(minrank = minrank, g = match(g, unique(g))))
         }
         ng <- tabulate(g)
         if (any(ng > 1)){
