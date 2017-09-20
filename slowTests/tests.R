@@ -107,7 +107,7 @@ if (require(StatRank)){
     ## much slower
     R <- PlackettLuce:::denseRanking(Data.Nascar)
     mod2 <- PlackettLuce(R)
-    all.equal(unname(coef(mod)[-1]), unname(mod$coefficients[-1]), tolerance = 1e-6)
+    all.equal(unname(coef(mod2)[-1]), unname(mod$coefficients[-1]), tolerance = 1e-6)
 }
 
 ## simple BT model with ties (Davidson)

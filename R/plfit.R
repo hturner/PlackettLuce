@@ -65,3 +65,54 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
          estfun = estfun,
          object = if (object) res else NULL)
 }
+
+
+# log-likelihood derivatives (score function)
+#' @method estfun PlackettLuce
+#' @importFrom sandwich estfun
+#' @export
+estfun.PlackettLuce <- function(x) {
+    D <- x$maxTied
+    N <- length(coef(x)) - D + 1
+    # coefs on log-scale here
+    lambda <- coef(x)[1:N]
+    gamma <- c(0, coef(x)[-c(1:N)])
+    # get sizes of selected sets for each observation (as in main function)
+    M <- t(Matrix(unclass(x$rankings), sparse = TRUE))
+    J <- apply(M, 2, max) # max nsets
+    J <- J - as.numeric(rowSums(t(M) == J) == 1) # nontrivial nsets
+    # derivative wrt to lambda, first 1/(size of selected sets)
+    A <- M
+    A[t(t(M) > J)] <- 0
+    A@x <- 1/as.double(unlist(apply(A, 2, function(x) tabulate(x)[x])))
+    # for derivative wrt gamma, first 1 where select set of corresponding size
+    if (D > 1){
+        B <- matrix(nrow = D - 1, ncol = ncol(M))
+        for (d in 2:D){
+            B[d - 1, ] <- apply(A == 1/d, 2, any)
+        }
+    }
+    # subtract expectation of alpha per set to choose from
+    for (j in seq_len(max(J))){
+        A <- A - sapply(seq_len(ncol(M)), function(i){
+            expectation("alpha", exp(lambda), exp(gamma), M[,i, drop = FALSE] >= j,
+                        1, N, D, 1)
+        })
+    }
+    # ignore column corresponding to fixed ref
+    ref <- x$ref
+    if (ref %in% names(lambda)) ref <- which(names(lambda) == ref)
+    res <- t(A[-ref, , drop = FALSE])
+    if (D > 1){
+        for (j in seq_len(max(J))){
+            B <- B - sapply(seq_len(ncol(M)), function(i){
+                # N.B. expectation should include delta*, but cancelled out in
+                # in iterative scaling so omitted!
+                exp(gamma)[-1]*expectation("delta", exp(lambda), exp(gamma),
+                                           M[,i, drop = FALSE] >= j,
+                                           1, N, D, 1)[-1]
+            })
+        }
+      cbind(res, t(B))
+    } else res
+}

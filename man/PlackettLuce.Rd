@@ -5,8 +5,9 @@
 \title{Fit Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
-  "connected", "cluster"), npseudo = 1, epsilon = 1e-07,
-  steffensen = 1e-04, maxit = 100, trace = FALSE, verbose = TRUE)
+  "connected", "cluster"), npseudo = 1, method = c("iterative scaling",
+  "BFGS", "L-BFGS"), epsilon = 1e-07, steffensen = 1e-04, maxit = 100,
+  trace = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
@@ -21,6 +22,8 @@ PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
 
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
+
+\item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link{lbfgs}} package).}
 
 \item{epsilon}{the maximum absolute difference between the observed and
 expected sufficient statistics for the ability parameters at convergence.}
