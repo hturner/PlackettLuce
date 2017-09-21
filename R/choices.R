@@ -38,26 +38,29 @@ as.choices <- function(rankings, names = FALSE) {
         ## j-th choices
         cho <- apply((M == j)[, J >= j, drop = FALSE], 2, function(z) opt[z])
         if (is.matrix(cho)) {
-            cho <- split(cho, col(cho))
+            cho <- unname(split(cho, col(cho)))
         }
         choices <- c(choices, cho)
         ## j-th alternatives
-        alt <- apply((M > j - 1)[, J >= j, drop = FALSE], 2, function(z) opt[z])
+        alt <- apply((M > j - 1)[, J >= j, drop = FALSE], 2,
+                     function(z) opt[z])
         if (is.matrix(alt)) {
-            alt <- split(alt, col(alt))
+            alt <- unname(split(alt, col(alt)))
         }
         alternatives <- c(alternatives, alt)
         rankings <- c(rankings, which(J >= j))
     }
     ii <- order(rankings)
-    out <- list(choices = choices[ii], alternatives = alternatives[ii], ranking = rankings[ii])
+    out <- list(choices = choices[ii], alternatives = alternatives[ii],
+                ranking = rankings[ii])
     attr(out, "nchoices") <- length(choices)
-    attr(out, "objects") <- matrix(c(seq_len(N), onames), ncol = 2)
+    attr(out, "objects") <- onames
     class(out) <- c("choices", class(out))
     out
     ## Alow weights per choice/alternatives combination?
 }
 
+## extend to print subset?
 print.choices <- function(x, ...) {
     rankings <- x$ranking
     for (i in unique(rankings)) {
