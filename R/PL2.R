@@ -1,5 +1,5 @@
 ## N.B. current version computes expA twice when not doing Steffensen!
-PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
+PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE, alpha = NULL){
     # sparse matrix of dense rankings (rankings object should be sparse already)
     R <- Matrix(R, sparse = TRUE)
 
@@ -26,28 +26,16 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
 
     # (scaled, un-damped) PageRank based on underlying paired comparisons
     if (is.null(colnames(R))) colnames(R) <- 1:ncol(R)
-    X <- as_adj(graph_from_edgelist(as.edgelist.rankings(as.matrix(R))))[colnames(R),
-                                                                         colnames(R)]
-    alpha <- drop(abs(eigs(X/colSums(X), 1,
-                           opts = list(ncv = min(nrow(X), 10)))$vectors))
+    #X <- as_adj(graph_from_edgelist(as.edgelist.rankings(as.matrix(R))))[colnames(R),
+    #                                                                     colnames(R)]
+    #alpha <- drop(abs(eigs(X/colSums(X), 1,
+    #                       opts = list(ncv = min(nrow(X), 10)))$vectors))
     # alpha <- alpha/sum(alpha) current version doesnt divide by alpha
     delta <- rep.int(0.1, D)
     delta[1] <- 1
 
     # pre-process rankings so easier to compute on
 
-    # update S so cols are potential set sizes and value > 0 indicates ranking
-    # selects from that set size
-    S <- apply(R, 1, sort, decreasing = TRUE)
-    S <- as(-1*t(apply(rbind(S, 0), 2, diff)), "dgCMatrix")
-
-    # set sizes present in rankings
-    P <- which(colSums(S[, -1, drop = FALSE]) > 0) + 1
-
-    # max number of objects
-    N <- ncol(S)
-
-    # aggregate partial rankings by set size
     # unique rows with >= 1 element for logical matrix
     uniquerow <- function(M, rep = TRUE){
         for (i in seq_len(ncol(M))){
@@ -62,38 +50,39 @@ PL2 <- function(R, epsilon = 1e-7, maxit = 100, trace = FALSE){
         pattern
     }
 
-    for (i in P){
-        r <- which(S[,i] > 0)
-        nr <- length(r)
-        if (i == N) {
-            S[,i][S[,i] > 0] <- c(nr, numeric(nr - 1)) # always 1 group
-            next
-        }
-        # (one of the) item(s) in i'th from last place
-        minrank <- rowSums(S[r,i:N])
-        # items in final set of size i
-        pattern <- R[r,] >= minrank
-        # find unique sets and select representative ranking to compute on
-        g <- uniquerow(pattern)
+    # max number of objects in set
+    P <- max(rowSums(R > 0))
+
+    # number of rankings
+    n <- nrow(R)
+
+    # create S so cols are potential set sizes and value > 0 indicates ranking
+    # aggregate common sets
+    # - incorporate ranking weights by weighted count vs simple tabulate
+    S <- as(sparseMatrix(dims = c(n, P), i = {}, j = {}), "dgCMatrix")
+    minrank <- rep.int(1, n)
+    for (i in seq_len(P - 1)){
+        p <- (P - i + 1)
+        pattern <- drop0(R >= minrank)
+        size <- rowSums(pattern)
+        r <- size == p
+        if (!any(r)) next
+        g <- uniquerow(pattern[r, , drop = FALSE])
         ng <- tabulate(g)
-        if (any(ng > 1)){
-            dup <- duplicated(g)
-            S[r[dup], i] <- 0
-            S[r[!dup], i] <- ng
-        }
+        S[r, , drop = FALSE][!duplicated(g), p] <- ng
+        minrank[r] <- minrank[r] + 1
     }
+
+    # set sizes present in rankings
+    P <- unique(t(S)@i) + 1
+
+    # total number of objects
+    N <- ncol(R)
 
     # multiply by rankings weights here
 
     # replace rankings with items ordered by ranking (all that is needed now)
     R <- t(apply(R, 1, order, decreasing = TRUE))
-
-    # drop any completely replicated rankings
-    keep <- unique(S@i + 1)
-    if (length(keep) < nrow(R)){
-        R <- R[keep,]
-        S <- S[keep,]
-    }
 
     expectation <- function(par, alpha, delta, R, S, N, D, P, trace = FALSE){
         n <- switch(par,

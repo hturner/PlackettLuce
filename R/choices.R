@@ -21,7 +21,9 @@
 #' attr(coded_choices, "objects")
 #'
 #' ## Coercion to tibble is straightforwards
-#' tibble::as.tibble(coded_choices)
+#' if (require(tibble)){
+#'     as.tibble(coded_choices)
+#' }
 #' @export
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
