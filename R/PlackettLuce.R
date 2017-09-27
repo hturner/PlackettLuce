@@ -118,84 +118,107 @@ PlackettLuce <- function(rankings, ref = NULL,
         }
     }
     if (is.null(ref)) ref <- 1
+    R <- unclass(rankings)
 
-    # sparse matrix of dense rankings
-    # rankings object should probably be sparse, but some methods may need update
-    R <- Matrix(unclass(rankings), sparse = TRUE)
-
-    # nontrivial nsets (excluding untied last place)
-    J <- apply(R, 1, max)
-    J <- J - as.numeric(rowSums(R == J) == 1)
-
-    # sizes of selected sets (not particularly efficient - could all be == 1!)
-    S <- R
-    S[which(R > J)] <- 0
-    S <- t(S)
-    S@x <- as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
+    # sizes of selected sets
+    S <- apply(R, 1, function(x){
+        last <- which(x == max(x))
+        ind <- which(x > 0)
+        # exclude untied last place
+        if (length(last) == 1) ind <- setdiff(ind, last)
+        list(x = tabulate(x[ind])[x[ind]], ind = ind)
+    })
+    ind <- unlist(lapply(S, `[[`, "ind"))
+    S <- unlist(lapply(S, `[[`, "x"))
 
     # sufficient statistics
-
     # for alpha i, sum over all sets st object i is in selected set/size of selected set
-    A <- unname(rowsum(1/S@x, S@i)[,1])
+    A <- unname(rowsum(1/S, ind)[,1])
     # for delta d, number of sets with cardinality d/cardinality
-    B <- tabulate(S@x)
+    B <- tabulate(S)
     D <- length(B)
     B <- B/seq(D)
 
-    # starting values - as.edgelist.rankings doesn't currently work for Matrix
+    # total number of objects
+    N <- ncol(R)
+    nset <- apply(R, 1, max)
+
+    # adjacency matrix: wins over rest
+    m <- max(R)
+    X <- matrix(0, N, N)
+    for (i in 1:m){
+        r <- which(nset >= (i + 1))
+        for(j in r) {
+            one <- R[j,] == i
+            two <- R[j,] > i # > gives rest; == i + 1 gives next best
+            X[one, two] <- X[one, two] + 1
+        }
+    }
 
     # (scaled, un-damped) PageRank based on underlying paired comparisons
-    if (is.null(colnames(R))) colnames(R) <- 1:ncol(R)
-    X <- as_adj(graph_from_edgelist(as.edgelist.rankings(as.matrix(R))))[colnames(R),
-                                                                         colnames(R)]
     alpha <- drop(abs(eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
     # alpha <- alpha/sum(alpha) current version doesnt divide by alpha
     delta <- rep.int(0.1, D)
     delta[1] <- 1
 
-    # pre-process rankings so easier to compute on
+    # unique rows with >= 1 element for logical matrix
+    # case where p is fixed
+    uniquerow <- function(M){
+        len <- ncol(M)
+        if (len == 1) return(1)
+        pattern <- M[,1]
+        max_exp <- .Machine$double.digits
+        for (k in seq_len(len - 1)){
+            pattern <- 2*pattern + M[,k]
+            if (k == len - 1 ||
+                k %% max_exp == (max_exp - 1)){
+                pattern <- match(pattern, unique(pattern))
+                max_exp <- .Machine$double.digits - ceiling(log2(max(pattern)))
+            }
+        }
+        pattern
+    }
 
-    # update S so cols are potential set sizes and value = 1 indicates ranking
-    # selects from that set size
-    S <- apply(R, 1, sort, decreasing = TRUE)
-    S <- as(-1*t(apply(rbind(S, 0), 2, diff)), "dgCMatrix")
+    # max number of objects in set
+    nc <- max(rowSums(R > 0))
 
-    # set sizes present in rankings
-    P <- which(colSums(S[, -1, drop = FALSE]) > 0) + 1
+    # number of rankings
+    nr <- nrow(R)
 
-    # max number of objects
-    N <- ncol(S)
-
-    # for log-likelihood want method = "winners_and_losers"
-    S <- aggregate_weights(R, S, N, P, "all")
+    # create S so cols are potential set sizes and value > 0 indicates ranking
+    # aggregate common sets
+    # - incorporate ranking weights by weighted count vs simple tabulate
+    S <- ind <- list()
+    R <- as.matrix(R)
+    nc <- max(rowSums(R > 0))
+    P <- logical(nc)  # set sizes present in rankings
+    minrank <- rep.int(1, nr)
+    for (i in seq_len(nc)){
+        p <- (nc - i + 1)
+        pattern <- R >= minrank
+        r <- which(rowSums(pattern) == p)
+        P[p] <- p != 1 && length(r)
+        if (!P[p] ) next
+        g <- uniquerow(pattern[r, , drop = FALSE])
+        S[[p]] <- tabulate(g)
+        ind[[p]] <- r[!duplicated(g)]
+        minrank[r] <- minrank[r] + 1
+    }
+    P <- which(P)
+    S <- structure(S, ind = ind)
 
     # multiply by rankings weights here
 
     # replace rankings with items ordered by ranking (all that is needed now)
     R <- t(apply(R, 1, order, decreasing = TRUE))
 
-    # drop any completely replicated rankings
-    keep <- unique(S@i + 1)
-    if (length(keep) < nrow(R)){
-        R <- R[keep,]
-        S <- S[keep,]
-    }
-
     # quasi-newton methods ---
-
-    # count possible choices from sets up to size D
-    count <- function(S, D){
-        # frequencies of sets selected from, for sizes 2 to max observed
-        freq <- colSums(S[,-1])
-        # number of possible selections overall
-        sum(sapply(2:ncol(S), choose, seq(D)) %*% freq)
-    }
 
     key_quantities <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)] # includes delta1
-        res <- expectation2("all", alpha, c(1, delta), R, S, N, D, P)
+        res <- expectation("all", alpha, c(1, delta), R, S, N, D, P)
         # sum of (log(normalising_constants_per_set) * rep)
         c_contr <- sum(res$theta)
         list(alpha = alpha, delta = delta, c_contr = c_contr,
@@ -253,9 +276,8 @@ PlackettLuce <- function(rankings, ref = NULL,
     } else {
         res <- list(alpha = alpha, delta = delta)
         res[c("expA", "expB")] <-
-            expectation2("all", alpha, delta,  R, S, N, D, P)[c("expA", "expB")]
+            expectation("all", alpha, delta,  R, S, N, D, P)[c("expA", "expB")]
         oneUpdate <- function(res){
-            updateIter()
             # update all alphas
             if (pseudo){
                 res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
@@ -264,9 +286,9 @@ PlackettLuce <- function(rankings, ref = NULL,
             }
             # update all deltas
             if (D > 1) res$delta[-1] <- B[-1]/
-                    expectation2("delta", res$alpha, res$delta, R, S, N, D, P)$expB
+                    expectation("delta", res$alpha, res$delta, R, S, N, D, P)$expB
             res[c("expA", "expB")] <-
-                expectation2("all", res$alpha, res$delta, R, S, N, D, P)[c("expA", "expB")]
+                expectation("all", res$alpha, res$delta, R, S, N, D, P)[c("expA", "expB")]
             res
         }
         accelerate <- function(p, p1, p2){
@@ -290,7 +312,7 @@ PlackettLuce <- function(rankings, ref = NULL,
                    envir = parent.env(environment()))
         }
         doSteffensen <- FALSE
-        while(iter < maxit){
+        while(iter <= maxit){
             res <- oneUpdate(res)
             if (conv <- checkConv(res)) break
             if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
@@ -306,15 +328,17 @@ PlackettLuce <- function(rankings, ref = NULL,
                 } else res$alpha <- accelerate(res$alpha, res1$alpha, res2$alpha)
                 res$delta[-1] <- accelerate(res$delta, res1$delta, res2$delta)[-1]
                 res[c("expA", "expB")] <-
-                    expectation2("all", res$alpha, res$delta,
+                    expectation("all", res$alpha, res$delta,
                                  R, S, N, D, P)[c("expA", "expB")]
                 if (conv <- checkConv(res)) break
+            } else{
+                updateIter()
             }
         }
     }
     res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
 
-    if (pseudo) {
+    if (pseudo) { ## needs fixing up, based on od patterns approach
         # drop hypothetical object
         res$alpha <- res$alpha[-1]
         N <- N - 1
@@ -329,29 +353,38 @@ PlackettLuce <- function(rankings, ref = NULL,
         S <- S - nobj
     }
     res$alpha <- res$alpha/sum(res$alpha)
-    rank <- N + D + sum(S[, -1]) - 2
+    rank <- N + D + sum(unlist(S)) - 2
+
+    # count possible choices from sets up to size D
+    count <- function(S, P, D){
+        # frequencies of sets selected from, for sizes 2 to max observed
+        freq <- vapply(S[P], sum, 1)
+        # number of possible selections overall
+        sum(sapply(P, choose, seq(D)) %*% freq)
+    }
+    df.residual <- count(S, P, D) - rank
 
     logl <- loglik(unlist(res[c("alpha", "delta")]))
 
     if (length(res$alpha) < length(items)){
         out <- rep.int(NA_real_, length(items))
         names(out) <- items
-        out[colnames(rankings)] <- res$alpha
+        out[colnames(R)] <- res$alpha
         res$alpha <- out
     } else names(res$alpha) <- items
 
     if (!conv)
         warning("Iterations have not converged.")
+
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),
                 ref = ref,
                 loglik = unname(logl),
-                df.residual = count(S, D) - rank,
+                df.residual = df.residual,
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
                 maxTied = D#, ##  Maybe we'll want to include these differently?
-                #patterns = pattern, ##  Useful for fitted values
                 #constants = key_q$normalising_constants
                 )
     class(fit) <- "PlackettLuce"
@@ -359,21 +392,21 @@ PlackettLuce <- function(rankings, ref = NULL,
 }
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
-expectation2 <- function(par, alpha, delta, R, S, N, D, P){
+expectation <- function(par, alpha, delta, R, S, N, D, P){
     keepAlpha <- par %in% c("alpha", "all")
     keepDelta <- par %in% c("delta", "all") & D > 1
     keepTheta <- par %in% c("theta", "all")
     expA <- expB <- theta <- NULL
     if (keepAlpha) expA <- numeric(N)
     if (keepDelta) expB <- numeric(D - 1)
-    if (keepTheta) theta <- numeric(length(S[, P, drop = FALSE]@x))
+    if (keepTheta) theta <- numeric(sum(lengths(S[P])))
     z <- 1
     for (p in P){
         # D == 1
         ## numerators (for expA, else just to compute denominators)
-        r <- S[, p] > 0
-        nr <- sum(r)
-        x1 <- matrix(alpha[as.vector(R[r, 1:p])],
+        r <- attr(S, "ind")[[p]]
+        nr <- length(r)
+        x1 <- matrix(alpha[R[r, 1:p]],
                      nrow = nr, ncol = p)
         ## denominators
         z1 <- rowSums(x1)
@@ -432,69 +465,23 @@ expectation2 <- function(par, alpha, delta, R, S, N, D, P){
         # add contribution for sets of size p to expectation
         if (keepAlpha){
             # R[r, 1:p] may only index some alphas
-            add <- drop(rowsum(as.vector(S[r, p] * x1/z1),
-                               as.vector(R[r, 1:p])))
-            expA[as.numeric(names(add))] <- expA[as.numeric(names(add))] + add
+            id <- unique(as.integer(R[r, 1:p]))
+            add <- drop(rowsum(as.vector(S[[p]] * x1/z1),
+                               c(R[r, 1:p]), reorder = FALSE))
+            expA[id] <- expA[id] + add
         }
         if (keepDelta){
-            expB <- expB + colSums(S[r, p] * y1/z1)
+            expB <- expB + colSums(S[[p]] * y1/z1)
         }
         if (keepTheta){
             if (par == "all"){
                 # return logtheta
-                theta[z:(z + nr - 1)] <- S[r, p] * log(z1)
+                theta[z:(z + nr - 1)] <- S[[p]] * log(z1)
             } else {
-                theta[z:(z + nr - 1)] <- S[r, p] * z1
+                theta[z:(z + nr - 1)] <- S[[p]] * z1
             }
             z <- z + nr
         }
     }
     list(expA = expA, expB = expB, theta = theta)
-}
-
-# aggregate weights to combine sets within rankings
-# - either combine sets that contain the same items ("all"),
-# or sets where the winning set and the losing set are the same ("winners_and_losers")
-aggregate_weights <- function(R, S, N, P, method = c("winners_and_losers", "all")){
-    # create index for row patterns with >= 1 element in a logical matrix
-    rowpattern <- function(M){
-        for (i in seq_len(ncol(M))){
-            if (i == 1) {
-                pattern <- M[,1]
-            }
-            else {
-                pattern <- 2*pattern + M[,i]
-                pattern <- match(pattern, unique(pattern))
-            }
-        }
-        pattern
-    }
-
-    # aggregate partial rankings by set size
-    for (i in P){
-        r <- which(S[,i] > 0)
-        nr <- length(r)
-        if (i == N & method == "all") { # only 1 possible group
-            S[,i][S[,i] > 0] <- c(nr, numeric(nr - 1))
-            next
-        }
-        # (one of the) item(s) in i'th from last place
-        minrank <- rowSums(S[r, i:N, drop = FALSE])
-        # items in final set of size i
-        pattern <- R[r, , drop = FALSE] >= minrank
-        # find unique sets and select representative ranking to compute on
-        g <- rowpattern(pattern)
-        if (method == "winners_and_losers"){
-            h <- rowpattern(R[r, , drop = FALSE] == minrank)
-            g <- paste(g, h, sep = ":")
-            return(list(minrank = minrank, g = match(g, unique(g))))
-        }
-        ng <- tabulate(g)
-        if (any(ng > 1)){
-            dup <- duplicated(g)
-            S[r[dup], i] <- 0
-            S[r[!dup], i] <- ng
-        }
-    }
-    S
 }

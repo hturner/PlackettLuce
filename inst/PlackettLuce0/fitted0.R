@@ -14,6 +14,7 @@
 #' @seealso as.choices
 #' @importFrom tibble as.tibble
 #' @export
+library(tibble)
 fitted.PlackettLuce0 <- function(object, ...) {
     patterns <- object$patterns
     choices <- as.choices(object$rankings, names = FALSE)

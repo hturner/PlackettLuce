@@ -64,6 +64,9 @@
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
 #' @export
+library(Matrix)
+library(igraph)
+library(rARPACK)
 PlackettLuce0 <- function(rankings, ref = NULL,
                           network = c("adaptive", "pseudodata", "connected",
                                       "cluster"),
@@ -371,6 +374,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
 }
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
+#' @export
 expectation0 <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
                          D = length(delta), S = ncol(pattern), trace = FALSE){
     n <- switch(par,
