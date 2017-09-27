@@ -65,7 +65,7 @@
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
 #' @export
-PlackettLuce <- function(rankings, ref = NULL,
+PlackettLucee <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
                                      "cluster"),
                          npseudo = 1,
@@ -409,12 +409,13 @@ expectation2e <- function(par, alpha, delta, R, S, N, D, P){
     if (keepDelta) expB <- numeric(D - 1)
     if (keepTheta) theta <- numeric(sum(lengths(S[P])))
     z <- 1
+    n <- nrow(R)
     for (p in P){
         # D == 1
         ## numerators (for expA, else just to compute denominators)
         r <- attr(S, "ind")[[p]]
         nr <- length(r)
-        x1 <- A <- matrix(alpha[R[r, 1:p]],
+        x1 <- matrix(alpha[R[r, 1:p]],
                      nrow = nr, ncol = p)
         ## denominators
         z1 <- rowSums(x1)
@@ -432,14 +433,14 @@ expectation2e <- function(par, alpha, delta, R, S, N, D, P){
             id2 <- 1
             repeat{
                 # work along index vector from 1 to end/first index = p
-                v1 <- A[, i[1]] # ability for first ranked item
+                v1 <- alpha[R[r, i[1]]] # ability for first ranked item
                 last <- i[id] == p
                 if (last) {
                     end <- id
                 } else end <- min(d, id + 1)
                 for (k in 2:end){
                     # product of first k alphas indexed by i
-                    v1 <- v1 * A[, i[k]]
+                    v1 <- v1 * alpha[R[r, i[k]]]
                     # ignore if already recorded
                     if (k < id2) next
                     # add to numerators/denominators for sets of order p
@@ -473,9 +474,10 @@ expectation2e <- function(par, alpha, delta, R, S, N, D, P){
         # add contribution for sets of size p to expectation
         if (keepAlpha){
             # R[r, 1:p] may only index some alphas
+            id <- unique(as.integer(R[r, 1:p]))
             add <- drop(rowsum(as.vector(S[[p]] * x1/z1),
-                               c(A)))
-            expA[as.numeric(names(add))] <- expA[as.numeric(names(add))] + add
+                               c(R[r, 1:p]), reorder = FALSE))
+            expA[id] <- expA[id] + add
         }
         if (keepDelta){
             expB <- expB + colSums(S[[p]] * y1/z1)

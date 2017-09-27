@@ -63,8 +63,8 @@ teste <- function(rankings, ref = NULL,
     J <- J - as.numeric(rowSums(R == J) == 1)
     # sizes of selected sets (not particularly efficient - could all be == 1!)
     S <- R
-    S[which(R > J)] <- 0
-    S <- t(S)
+    S@x[R@x > J[R@i + 1]] <- 0
+    S <- t(drop0(S))
     S@x <- as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
     # sufficient statistics
     # for alpha i, sum over all sets st object i is in selected set/size of selected set
@@ -89,19 +89,23 @@ teste <- function(rankings, ref = NULL,
     # pre-process rankings so easier to compute on
 
     # unique rows with >= 1 element for logical matrix
-    uniquerow <- function(M, rep = TRUE){
-        for (i in seq_len(ncol(M))){
-            if (i == 1) {
-                pattern <- M[,1]
-            }
-            else {
-                pattern <- 2*pattern + M[,i]
+    # case where p is fixed
+    uniquecol <- function(M){
+        len <- ncol(M)
+        if (len == 1) return(1)
+        j <- rep(seq_len(len), each = p)
+        pattern <- numeric(len)
+        pattern[j[M@i == 0]] <- 1
+        for (k in seq_len(len - 1)){
+            pattern <- 2*pattern
+            id2 <- j[M@i == k]
+            pattern[id2] <- pattern[id2] + 1
+            if (k == len - 1 ||
+                i %% .Machine$double.digits == (.Machine$double.digits - 1))
                 pattern <- match(pattern, unique(pattern))
-            }
         }
         pattern
     }
-
 
     # total number of objects
     N <- ncol(R)
@@ -115,38 +119,45 @@ teste <- function(rankings, ref = NULL,
     # create S so cols are potential set sizes and value > 0 indicates ranking
     # aggregate common sets
     # - incorporate ranking weights by weighted count vs simple tabulate
-    S <- as(sparseMatrix(dims = c(nr, nc), i = {}, j = {}), "dgCMatrix")
-    T <- sparseMatrix(dims = c(nr, N), i = {}, j = {})
+    S <- ind <- list()
+    #T <- sparseMatrix(dims = c(nr, N), i = {}, j = {})
+    R <- t(R)
+    rep <- diff(R@p)
+    nc <- max(rep)
     P <- logical(nc)  # set sizes present in rankings
-    minrank <- rep.int(1, nr)
+    j <- rep(seq_len(nr), rep)
+    minrank <- rep.int(1, sum(rep))
+    pattern <- as(R, "lgCMatrix")
+    id <- which(pattern)
     for (i in seq_len(nc)){
         p <- (nc - i + 1)
-        pattern <- R >= minrank
-        r <- rowSums(pattern) == p
-        tied <- !r & minrank != 1
-        if (any(tied)) T[tied, p] <- TRUE
-        P[p] <- p != 1 && any(r)
+        pattern[id] <- R@x >= minrank
+        r <- which(diff(pattern@p) == p)
+        #tied <- !r & minrank != 1
+        #if (any(tied)) T[tied, p] <- TRUE
+        P[p] <- p != 1 && length(r)
         if (!P[p] ) next
-        g <- uniquerow(pattern[r, , drop = FALSE])
-        ng <- tabulate(g)
-        S[r, , drop = FALSE][!duplicated(g), p] <- ng
-        minrank[r] <- minrank[r] + 1
+        update <- j %in% r
+        g <- uniquecol(pattern[, r, drop = FALSE])
+        S[[p]] <- tabulate(g)
+        ind[[p]] <- r[!duplicated(g)]
+        minrank[update] <- minrank[update] + 1
     }
     P <- which(P)
+    S <- structure(S, ind = ind)
 
+    R <- as(R, "dgTMatrix")
+    # find ties by ranking
+    T <- tapply(R@x, R@j, function(x) which(!diff(sort(x, decreasing = TRUE))))
 
     # multiply by rankings weights here
 
     # replace rankings with items ordered by ranking (all that is needed now)
-    R <- as(t(R), "dgTMatrix")
+    #R <- as(t(R), "dgTMatrix")
     R@x <- R@i[do.call(order, list(R@j, R@x, decreasing = c(FALSE, TRUE),
                                    method = "radix"))] + 1
     R@i <- sequence(colSums(R > 0)) - 1L
     R <- t(R)
-
-    grp <- rep(1:nc, diff(S@p))
-    ind <- lapply(1:nc, function(p) S@i[grp == p] + 1)
-    S <- structure(lapply(1:nc, function(p) S@x[grp == p]), ind = ind)
 
     R <- as.matrix(R)
 
@@ -236,4 +247,5 @@ teste <- function(rankings, ref = NULL,
     for (i in 1:10){
         res <- oneUpdate(res)
     }
+    res
 }

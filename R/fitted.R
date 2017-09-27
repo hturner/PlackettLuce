@@ -11,14 +11,24 @@
 #' @export
 fitted.PlackettLuce <- function(object, aggregate = TRUE, ...) {
     # get choices and alternatives for each ranking
-    choices <- as.choices(object$rankings, names = FALSE)
+    #choices <- as.choices(object$rankings, names = FALSE)
+    choices <- list()
+    choices$choices <- unlist(object$choices, recursive = FALSE)
+    choices$alternatives <- unlist(lapply(object$choices,function(x) {
+        n <- length(x)
+        lapply(rev(seq(n)), function(i){
+            unlist(x[seq(i)])
+        })
+    }), recursive = FALSE)
+    choices$ranking <- rep(seq_along(object$choices), lengths(object$choices))
+
     # get parameters
     id <- seq(length(object$coefficients) - object$maxTied + 1)
     alpha <- object$coefficients[id]
     delta <- c(1, unname(mod$coefficients[-id]))
     # id unique choices
-    unique_choices <- unique(choices$choices)
-    g <- match(choices$choices, unique_choices)
+    unique_choices <- unique(unlist(object$choices))
+    g <- match(unlist(object$choices), unique_choices)
     # compute numerators
     n <- lengths(unique_choices)
     numerator <- (delta[n] *

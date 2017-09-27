@@ -65,7 +65,7 @@
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
 #' @export
-PlackettLuce <- function(rankings, ref = NULL,
+PlackettLuced <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
                                      "cluster"),
                          npseudo = 1,
