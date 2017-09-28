@@ -1,8 +1,8 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.2.1031
-Date: 2017-09-27
+Version: 0.2.1032
+Date: 2017-09-28
 Authors@R: c(person("Heather", "Turner", email =
         "ht@heatherturner.net", role = c("aut", "cre")),
         person("Ioannis", "Kosmidis", role = "aut"), person("David",

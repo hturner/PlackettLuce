@@ -27,24 +27,24 @@
 #' @export
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
-    M <- t(Matrix(unclass(rankings), sparse = TRUE))
-    J <- apply(M, 2, max)
+    M <- unclass(rankings)
+    J <- apply(R, 1, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)
     if (names & !is.null(onames)) {
         opt <- onames
     }
-    choices <- alternatives <-  list()
+    choices <- alternatives <- list()
     rankings <- c()
     for (j in seq_len(max(J))) {
         ## j-th choices
-        cho <- apply((M == j)[, J >= j, drop = FALSE], 2, function(z) opt[z])
+        cho <- apply((M == j)[J >= j, , drop = FALSE], 1, function(z) opt[z])
         if (is.matrix(cho)) {
             cho <- unname(split(cho, col(cho)))
         }
         choices <- c(choices, cho)
         ## j-th alternatives
-        alt <- apply((M > j - 1)[, J >= j, drop = FALSE], 2,
+        alt <- apply((M > j - 1)[J >= j, , drop = FALSE], 1,
                      function(z) opt[z])
         if (is.matrix(alt)) {
             alt <- unname(split(alt, col(alt)))
