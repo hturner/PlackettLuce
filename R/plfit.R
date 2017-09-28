@@ -73,46 +73,51 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
 #' @export
 estfun.PlackettLuce <- function(x) {
     D <- x$maxTied
-    N <- length(coef(x)) - D + 1
-    # coefs on log-scale here
-    lambda <- coef(x)[1:N]
-    gamma <- c(0, coef(x)[-c(1:N)])
-    # get sizes of selected sets for each observation (as in main function)
-    M <- t(Matrix(unclass(x$rankings), sparse = TRUE))
-    J <- apply(M, 2, max) # max nsets
-    J <- J - as.numeric(rowSums(t(M) == J) == 1) # nontrivial nsets
-    # derivative wrt to lambda, first 1/(size of selected sets)
-    A <- M
-    A[t(t(M) > J)] <- 0
-    A@x <- 1/as.double(unlist(apply(A, 2, function(x) tabulate(x)[x])))
-    # for derivative wrt gamma, first 1 where select set of corresponding size
+    # get coefficients (unconstrained)
+    coef <- x$coefficients
+    N <- length(coef) - D + 1
+    alpha <- coef[1:N]
+    delta <- c(1, coef[-c(1:N)])
+    # derivative wrt to alpha part 1: 1/(size of selected set)
+    R <- unclass(x$rankings)
+    S <- apply(R, 1, function(x){
+        last <- which(x == max(x))
+        ind <- which(x > 0)
+        # exclude untied last place
+        x[ind] <- 1/(tabulate(x[ind])[x[ind]])
+        if (length(last) == 1) x[last] <- 0
+        x
+    })
+    A <- t(S)
+    # derivative wrt delta part 1: row TRUE where selected set has cardinality d
     if (D > 1){
-        B <- matrix(nrow = D - 1, ncol = ncol(M))
+        B <- matrix(nrow = nrow(R), ncol = D - 1,
+                    dimnames = list(NULL, names(delta[-1])))
         for (d in 2:D){
-            B[d - 1, ] <- apply(A == 1/d, 2, any)
+            B[, d - 1] <- apply(A == 1/d, 1, any)
         }
     }
-    # subtract expectation of alpha per set to choose from
-    for (j in seq_len(max(J))){
-        A <- A - sapply(seq_len(ncol(M)), function(i){
-            expectation("alpha", exp(lambda), exp(gamma), M[,i, drop = FALSE] >= j,
-                        1, N, D, 1)
-        })
+    # derivatives part 2: expectation of alpha | delta per set to choose from
+    nr <- nrow(R)
+    nc <- ncol(R)
+    R <- t(apply(R, 1, order, decreasing = TRUE))
+    S <- t(vapply(seq_len(nr), function(i) {
+        x <- unclass(x$rankings)[i, R[i,]]
+        rev(diff(c(0, rev(x))))
+    }, numeric(nc), USE.NAMES = FALSE))
+    P <- setdiff(which(as.logical(colSums(S) > 0)), 1)
+    for (i in seq_len(nr)) {
+        res <- expectation("all", alpha, delta, R[r, , drop = FALSE],
+                           structure(as.list(S[r,]),
+                                     ind = as.list(rep.int(1, nc))),
+                           N, D, P)[c("expA", "expB")]
+        A[i,] <- A[i,] - res$expA
+        # N.B. expectation of delta should include delta*, but cancelled out in
+        # in iterative scaling so omitted!
+        B[i,] <- B[i,] - delta[-1]*res$expB
     }
     # ignore column corresponding to fixed ref
     ref <- x$ref
-    if (ref %in% names(lambda)) ref <- which(names(lambda) == ref)
-    res <- t(A[-ref, , drop = FALSE])
-    if (D > 1){
-        for (j in seq_len(max(J))){
-            B <- B - sapply(seq_len(ncol(M)), function(i){
-                # N.B. expectation should include delta*, but cancelled out in
-                # in iterative scaling so omitted!
-                exp(gamma)[-1]*expectation("delta", exp(lambda), exp(gamma),
-                                           M[,i, drop = FALSE] >= j,
-                                           1, N, D, 1)[-1]
-            })
-        }
-      cbind(res, t(B))
-    } else res
+    if (ref %in% names(alpha)) ref <- which(names(alpha) == ref)
+    cbind(A[, -ref, drop = FALSE], B)
 }
