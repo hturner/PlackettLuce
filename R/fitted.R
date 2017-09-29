@@ -37,11 +37,10 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     R <- matrix(0, nrow = length(na), ncol = max(na))
     R[cbind(rep(seq_along(unique_alternatives), na),
             sequence(na))] <- unlist(unique_alternatives)
-    S <- lapply(seq_len(max(na)), function(i) rep.int(1, sum(na == i)))
-    ind <- seq_along(unique_alternatives)
-    attr(S, "ind") <- lapply(seq_len(max(na)), function(i) ind[na == i])
-    theta <- expectation("theta", alpha, delta, R, S,
-                         N = 4, D = object$maxTied, P = unique(na))$theta
+    G <- seq_along(unique_alternatives)
+    G <- lapply(seq_len(max(na)), function(i) G[na == i])
+    S <- setdiff(unique(na), 1)
+    theta <- expectation("theta", alpha, delta, N, D, S, R, G)$theta
     denominator <- numeric(length(numerator))
     h <- match(choices$alternatives, unique_alternatives)
     denominator <- theta[h]

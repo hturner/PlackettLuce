@@ -28,7 +28,7 @@
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
     M <- unclass(rankings)
-    J <- apply(R, 1, max)
+    J <- apply(M, 1, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)
     if (names & !is.null(onames)) {

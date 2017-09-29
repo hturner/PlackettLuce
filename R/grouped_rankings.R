@@ -45,7 +45,61 @@ grouped_rankings <- function(rankings, index, ...){
     if (!(is.vector(index) & length(index) == nrow(rankings)))
         stop("index must be a vector with length equal to rankings")
     index <- as.numeric(index)
-    structure(seq_len(max(index)), rankings = rankings, index = index,
+    do.call("structure",
+            c(list(seq_len(max(index)), rankings = rankings, index = index),
+              ranking_stats(rankings),
+              list(class = "grouped_rankings")))
+}
+
+# ranking stats - summaries used in model fitting, compute once for all
+ranking_stats <- function(rankings){
+    rankings <- unclass(rankings)
+    nr <- nrow(rankings)
+    nc <- ncol(rankings)
+    R <- S <- matrix(0, nr, nc)
+    id <- list()
+    for (i in seq_len(nr)){
+        x <- rankings[i,]
+        ind <- which(as.logical(x))
+        ord <- order(x[ind], decreasing = TRUE)
+        j <- seq_along(ind)
+        # items ranked from last to 1st place
+        R[i, j] <- ind[ord]
+        # 1 in column s if ranking includes choice from set of size |s|
+        x <- x[R[i, j]]
+        # size of chosen set at each rank (ignore "choice" of one from one)
+        size <- tabulate(x)[x]
+        if (size[1] == 1) size[1] <- 0
+        S[i, j] <- size
+        # contribution to adjacency matrix
+        if (x[1] < 2) next # x[1] gives max rank
+        add <- list()
+        for (s in seq_len(x[1] - 1)){
+            one <- which(rankings[i,] == s)
+            two <- which(rankings[i,] > s) # > gives rest; == s + 1 gives next best
+            add[[s]] <- kronecker(one, (two - 1)*nc, "+")
+        }
+        id[[i]] <- unlist(add)
+    }
+    list(R = R, S = S, id = id)
+}
+
+#' @method [ grouped_rankings
+#' @export
+"[.grouped_rankings" <- function(x, i, ...) {
+    # subset subjects
+    value <- unclass(x)[i]
+    keep <- attr(x, "index") %in% value # or match(value, x)
+    # renumber indices to match rows of new object
+    index <- match(attr(x, "index")[keep], value)
+    value <- match(value, value)
+    # create subsetted object
+    structure(value,
+              rankings = unclass(attr(x, "rankings"))[keep, , drop = FALSE],
+              index = index,
+              R = attr(x, "R")[keep, , drop = FALSE],
+              S = attr(x, "S")[keep, , drop = FALSE],
+              id = attr(x, "id")[keep],
               class = "grouped_rankings")
 }
 
@@ -73,8 +127,10 @@ as.grouped_rankings.paircomp <- function(x, ...){
     rankings[cbind(seq_len(ncomp), pairs[,1][id[,2]])] <- ifelse(x == -1, 2, 1)
     rankings[cbind(seq_len(ncomp), pairs[,2][id[,2]])] <- ifelse(x == 1, 2, 1)
     rankings <- as.rankings.matrix(rankings, ...)
-    structure(seq_len(max(id[,1])), rankings = rankings, index = id[,1],
-              class = "grouped_rankings")
+    do.call("structure",
+            c(list(seq_len(max(id[,1])), rankings = rankings, index = id[,1]),
+              ranking_stats(rankings),
+              list(class = "grouped_rankings")))
 }
 
 #' @method as.data.frame grouped_rankings
@@ -102,24 +158,6 @@ as.data.frame.grouped_rankings <-
     attr(value, "row.names") <- row.names
     class(value) <- "data.frame"
     value
-}
-
-#' @method [ grouped_rankings
-#' @export
-"[.grouped_rankings" <- function(x, i, ...) {
-    # subset subjects
-    value <- unclass(x)[i]
-    keep <- attr(x, "index") %in% value
-    # renumber indices to match rows of new object
-    index <- match(attr(x, "index")[keep], value)
-    value <- match(value, value)
-    # check if reduced rankings connected
-    rankings <- suppressWarnings(
-        as.rankings(unclass(attr(x, "rankings"))[keep, , drop = FALSE]))
-    structure(value,
-              index = index,
-              rankings = rankings,
-              class = "grouped_rankings")
 }
 
 #' @method print grouped_rankings

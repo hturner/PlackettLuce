@@ -47,16 +47,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
         warning("unused argument(s): ",
                 paste(c("x"[x], "start"[start], "weights"[weights],
                         "offset"[offset]), collapse = ","))
-    stopifnot(inherits(y, "grouped_rankings"))
-    # y is grouped_rankings object
-    R <- attr(y, "rankings")
-    # return null result if network not strongly connected
-    if (attr(R, "no") > 1){
-        return(list(coefficients = NA, objfun = Inf,
-                    estfun = NULL, object = NULL))
-    }
-    res <- PlackettLuce(R, ...)
-    # returns with rownames - possible to avoid?
+    res <- PlackettLuce(y, network = "connected", ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
@@ -78,46 +69,49 @@ estfun.PlackettLuce <- function(x) {
     N <- length(coef) - D + 1
     alpha <- coef[1:N]
     delta <- c(1, coef[-c(1:N)])
+    # get choices and alternatives for each ranking
+    choices <- as.choices(x$rankings, names = FALSE)
     # derivative wrt to alpha part 1: 1/(size of selected set)
-    R <- unclass(x$rankings)
-    S <- apply(R, 1, function(x){
-        last <- which(x == max(x))
-        ind <- which(x > 0)
-        # exclude untied last place
-        x[ind] <- 1/(tabulate(x[ind])[x[ind]])
-        if (length(last) == 1) x[last] <- 0
-        x
-    })
-    A <- t(S)
+    nr <- nrow(x$rankings)
+    A <- matrix(0, nrow = nr, ncol = N,
+                dimnames = list(NULL, names(alpha)))
+    for (i in seq_len(nr)){
+        r <- choices$choices[choices$ranking == i]
+        len <- lengths(r)
+        A[i, unlist(r)] <- rep(1/len, len)
+    }
     # derivative wrt delta part 1: row TRUE where selected set has cardinality d
     if (D > 1){
-        B <- matrix(nrow = nrow(R), ncol = D - 1,
+        B <- matrix(nrow = nr, ncol = D - 1,
                     dimnames = list(NULL, names(delta[-1])))
         for (d in 2:D){
             B[, d - 1] <- apply(A == 1/d, 1, any)
         }
     }
     # derivatives part 2: expectation of alpha | delta per set to choose from
-    nr <- nrow(R)
-    nc <- ncol(R)
-    R <- t(apply(R, 1, order, decreasing = TRUE))
-    S <- t(vapply(seq_len(nr), function(i) {
-        x <- unclass(x$rankings)[i, R[i,]]
-        rev(diff(c(0, rev(x))))
-    }, numeric(nc), USE.NAMES = FALSE))
-    P <- setdiff(which(as.logical(colSums(S) > 0)), 1)
-    for (i in seq_len(nr)) {
-        res <- expectation("all", alpha, delta, R[r, , drop = FALSE],
-                           structure(as.list(S[r,]),
-                                     ind = as.list(rep.int(1, nc))),
-                           N, D, P)[c("expA", "expB")]
-        A[i,] <- A[i,] - res$expA
-        # N.B. expectation of delta should include delta*, but cancelled out in
-        # in iterative scaling so omitted!
-        B[i,] <- B[i,] - delta[-1]*res$expB
-    }
+    # id unique alternatives - need to see how weights would fit in
+    size <- lengths(choices$alternatives)
+    ord <- order(size)
+    unique_alternatives <- unique(choices$alternatives[ord])
+    na <- lengths(unique_alternatives)
+    R <- matrix(0, nrow = length(na), ncol = max(na))
+    R[cbind(rep(seq_along(unique_alternatives), na), sequence(na))] <-
+        unlist(unique_alternatives)
+    G <- seq_along(unique_alternatives)
+    G <- lapply(seq_len(max(na)), function(i) G[na == i])
+    S <- setdiff(unique(na), 1)
+    res <- expectation(c("alpha", "delta"), alpha, delta,
+                       N = N, D = D, S = unique(na), R, G)
+    h <- match(choices$alternatives, unique_alternatives)
+    A <- A - rowsum(res$expA[h,], choices$ranking)
     # ignore column corresponding to fixed ref
     ref <- x$ref
     if (ref %in% names(alpha)) ref <- which(names(alpha) == ref)
+    if (D == 1) return(A[, -ref, drop = FALSE])
+    # N.B. expectation of delta should include delta*, but cancelled out in
+    # in iterative scaling so omitted!
+    res$expB <- sweep(res$expB, 2, delta[-1], "*")
+    B <- B - rowsum(res$expB[h,], choices$ranking)
     cbind(A[, -ref, drop = FALSE], B)
 }
+
