@@ -69,6 +69,88 @@ longdat2 <- function(R){
     res
 }
 
+#' @import Matrix Matrix
+poisson_rankings <- function(rankings, as.data.frame = FALSE){
+    # get choices and alternatives for each ranking
+    choices <- as.choices(rankings, names = FALSE)
+    # include free choices only
+    size <- lengths(choices$alternatives)
+    free <- size != 1
+    choices <- lapply(choices, `[`,  free)
+    # id unique choices
+    unique_choices <- unique(choices$choices)
+    g <- match(choices$choices, unique_choices)
+    # id unique alternatives
+    unique_alternatives <- unique(choices$alternatives)
+    h <- match(choices$alternatives, unique_alternatives)
+    #unique_alternatives <- choices$alternatives
+    #h <- seq_along(choices$alternatives)
+    # count unique choice:alternative combinations
+    g <- paste(g, h, sep = ":")
+    g <- match(g, unique(g))
+    choices$ranking <- split(choices$ranking, g)
+    keep <- !duplicated(g)
+    agg <- c("choices", "alternatives")
+    choices[agg] <- lapply(choices[agg], function(x) x[keep])
+    choices$n <- as.integer(table(g))
+
+    # now create X matrix for unique alternative sets
+    size <- lengths(unique_alternatives)
+    S <- unique(size)
+    D <- max(lengths(choices$choices))
+    N <- ncol(rankings)
+    items <- n <- val <- list()
+    for (s in S){
+        # generic choices from set of size s
+        x <- min(s, D)
+        comb <- list()
+        for (d in seq_len(x)){
+            comb[[d]] <- combn(seq_len(s), d)
+        }
+        id <- which(size == s)
+        n[id] <- list(rep(seq_len(x), vapply(comb, ncol, 1)))
+        items[id] <- lapply(unique_alternatives[id], `[`, unlist(comb))
+    }
+    # choice id
+    x <- sequence(lengths(n))
+    # alternative id
+    z <- rep(seq_along(unique_alternatives), lengths(n))
+    # columns for item parameters
+    size <- unlist(n)
+    A <- sparseMatrix(j = unlist(items), p = c(0, cumsum(size)),
+                      x = rep(1/size, size))
+    ord <- order(A@i)
+    all_choices <- split(unlist(items), A@i[ord])
+    # columns for tie parameters
+    if (D > 1){
+        nr <- nrow(rankings)
+        tied <- list()
+        for (d in seq_len(D - 1)){
+            tied[[d]] <- which(size == (d + 1))
+        }
+        B <- sparseMatrix(i = unlist(tied), p = c(0, cumsum(lengths(tied))))
+        X <- cBind(A, B)
+    } else X <- A
+    # counts
+    alt <- match(choices$alternatives, unique_alternatives)
+    #alt <- h
+    na <- length(alt)
+    #id <- numeric(na)
+    row <- split(seq_along(z), z)
+    for (i in seq_len(na)){
+        ch <- match(choices$choices[i], all_choices[row[[alt[i]]]])
+        id[i] <- row[[alt[i]]][ch]
+    }
+    y <- numeric(length(z))
+    y[id] <- choices$n
+    if (as.data.frame) {
+        dat <- data.frame(y = y)
+        dat$X <- as.matrix(X)
+        dat$z <- as.factor(z)
+        dat
+    } else list(y = y, X = X, z = z)
+}
+
 # convert ranked items to dense rankings for each object
 denseRanking <- function(M){
     t(apply(M, 1, function(x) match(1:max(M), x, nomatch = 0)))

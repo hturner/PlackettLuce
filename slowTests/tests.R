@@ -143,7 +143,7 @@ lambda <- lambda - lambda[1]
 all.equal(lambda, unname(alpha[-n]), tol = 1e-6)
 
 if (require(gnm)){
-    dat <- PlackettLuce:::longdat2(R)
+    dat <- PlackettLuce:::poisson_rankings(R, as.data.frame = TRUE)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     coef(mod2)
@@ -161,7 +161,7 @@ R <- matrix(c(1, 2, 0, 0,
 mod <- PlackettLuce(R)
 
 if (require(gnm)){
-    dat <- PlackettLuce:::longdat2(R)
+    dat <- PlackettLuce:::poisson_rankings(R, as.data.frame = TRUE)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     coef(mod2)

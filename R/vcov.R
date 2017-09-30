@@ -4,7 +4,7 @@
 vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##
-  theLongData <- longdat2(unclass(object$rankings))
+  theLongData <- poisson_rankings(unclass(object$rankings))
   coefs <- coef(object, ref = ref)
   na <- is.na(coefs)
   coefnames <- names(coefs[!na])
@@ -14,12 +14,13 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   y <- theLongData$y
   ##  Compute the fitted values:
   fit <- as.vector(exp(X %*% coefs[!na]))
-  fit <- fit  *  as.vector(tapply(y, z, sum)[z] / tapply(fit, z, sum)[z])
+  totals <- as.vector(tapply(y, z, sum))
+  fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
   ##  Compute the vcov matrix
   WX <- fit * X
-  XtWX <- crossprod(X, WX)
-  ZtWX <- as.matrix(aggregate(WX, by = list(z), FUN = sum)[,-1])
-  ZtWZinverse <- 1 / as.vector(tapply(fit, z, sum))
+  XtWX <- as.matrix(crossprod(X, WX))
+  ZtWX <- rowsum(as.matrix(WX), z)
+  ZtWZinverse <- 1/totals
   result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))    ## Should we try to avoid ginv() ?
   ##
   ##  That's the basic computation all done, ie to get Moore-Penrose inverse of the information matrix.

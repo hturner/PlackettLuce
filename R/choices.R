@@ -27,7 +27,9 @@
 #' @export
 as.choices <- function(rankings, names = FALSE) {
     N <- ncol(rankings)
-    M <- unclass(rankings)
+    if (inherits(rankings, "rankings")) {
+        M <- unclass(rankings)
+    } else M <- rankings
     J <- apply(M, 1, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)
