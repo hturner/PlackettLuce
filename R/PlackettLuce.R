@@ -69,6 +69,7 @@ PlackettLuce <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
                                      "cluster"),
                          npseudo = 1,
+                         weights = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
                          trace = FALSE, verbose = TRUE){
@@ -79,6 +80,11 @@ PlackettLuce <- function(rankings, ref = NULL,
     # check rankings
     grouped_rankings <- inherits(rankings, "grouped_rankings")
     if (grouped_rankings){
+        # weights are per group id - expand to be per ranking
+        if (!is.null(weights)) {
+            stopifnot(length(weights) == max(attr(rankings, "index")))
+            weights <- weights[attr(rankings, "index")]
+        }
         R <- attr(rankings, "R")
         S <- attr(rankings, "S")
         id <- attr(rankings, "id")
@@ -129,6 +135,14 @@ PlackettLuce <- function(rankings, ref = NULL,
     # total number of objects
     N <- ncol(M)
 
+    # number of rankings
+    nr <- nrow(M)
+
+    # weights
+    if (is.null(weights)){
+        weights <- rep.int(1, nr)
+    } else stopifnot(length(weights) == nrow(rankings))
+
     if (!grouped_rankings){
         # items ranked from last to 1st place
         R <- t(apply(M, 1, order, decreasing = TRUE))
@@ -142,7 +156,7 @@ PlackettLuce <- function(rankings, ref = NULL,
             for(j in r) {
                 one <- M[j,] == i
                 two <- M[j,] > i # > gives rest; == i + 1 gives next best
-                X[one, two] <- X[one, two] + 1
+                X[one, two] <- X[one, two] + weights[j]
             }
         }
 
@@ -155,31 +169,35 @@ PlackettLuce <- function(rankings, ref = NULL,
             list(x = tabulate(x[ind])[x[ind]], ind = ind)
         })
         ind <- unlist(lapply(S, `[[`, "ind"))
-        S <- unlist(lapply(S, `[[`, "x"))
+        S <- lapply(S, `[[`, "x")
+        ## replicate ranking weight for each choice in ranking
+        w <- rep(weights, lengths(S))
+        S <- unlist(S)
 
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of selected set
-        A <- unname(rowsum(1/S, ind)[,1])
+        A <- unname(rowsum(w/S, ind)[,1])
         # for delta d, number of sets with cardinality d/cardinality
-        B <- tabulate(S)
+        B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
     } else {
         # adjacency matrix: wins over rest
+        # (id extracted from grouped_rankings object)
         X <- matrix(0, N, N)
-        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + 1
+        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+
+        # replicate ranking weight for each choice in ranking
+        w <- rep(weights, rowSums(S > 0))
 
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of selected set
-        A <- unname(rowsum(1/S[as.logical(S)], R[as.logical(S)])[,1])
+        A <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- tabulate(S[as.logical(S)])
         rm(S)
     }
     D <- length(B)
     B <- B/seq(D)
-
-
-
 
     # (scaled, un-damped) PageRank based on underlying paired comparisons
     alpha <- drop(abs(eigs(X/colSums(X), 1,
@@ -209,9 +227,6 @@ PlackettLuce <- function(rankings, ref = NULL,
     # max number of objects in set
     nc <- max(rowSums(M > 0))
 
-    # number of rankings
-    nr <- nrow(M)
-
     # create W so cols are potential set sizes and value > 0 indicates ranking
     # aggregate common sets
     # - incorporate ranking weights by weighted count vs simple tabulate
@@ -227,13 +242,11 @@ PlackettLuce <- function(rankings, ref = NULL,
         S[s] <- s != 1 && length(r)
         if (!S[s]) next
         g <- uniquerow(set[r, , drop = FALSE])
-        W[[s]] <- tabulate(g)
+        W[[s]] <- as.vector(unname(rowsum(weights[r], g)))
         G[[s]] <- r[!duplicated(g)]
         minrank[r] <- minrank[r] + 1
     }
     S <- which(S)
-
-    # multiply by rankings weights here
 
     # quasi-newton methods ---
 

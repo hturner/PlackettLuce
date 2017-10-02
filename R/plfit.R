@@ -40,14 +40,13 @@
 plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
                    ..., estfun = FALSE, object = FALSE) {
     x <- !(is.null(x) || NCOL(x) == 0L)
-    weights <- !is.null(weights)
     offset <- !is.null(offset)
     start <- !is.null(start)
-    if (x || weights || offset)
+    if (x || offset)
         warning("unused argument(s): ",
-                paste(c("x"[x], "start"[start], "weights"[weights],
-                        "offset"[offset]), collapse = ","))
-    res <- PlackettLuce(y, network = "connected", ...)
+                paste(c("x"[x], "start"[start], "offset"[offset]),
+                      collapse = ","))
+    res <- PlackettLuce(y, network = "connected", weights = weights, ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
@@ -56,7 +55,6 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
          estfun = estfun,
          object = if (object) res else NULL)
 }
-
 
 # log-likelihood derivatives (score function)
 #' @method estfun PlackettLuce
