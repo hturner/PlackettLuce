@@ -1,13 +1,22 @@
 #' Fitted probabilities for PlackettLuce objects
 #'
-#' Fitted probabilities for all choice/alternative combinations in the data
+#' Fitted probabilities for all choice/alternative combinations in the data.
 #'
 #' @param object a \code{"PlackettLuce"} object as returned by
 #' \code{\link{PlackettLuce}}.
+#' @param aggregate logical; if \code{TRUE} observations of the same choice from
+#' the same set of alternatives are aggregated.
+#' @param free logical; if \code{TRUE} only free choices are included, i.e.
+#' choices of one item from a set of one item are excluded.
 #' @param ... further arguments passed to method (ignored).
-#'
+#' @return a list with the following components
+#' \item{choices}{The selected item(s).}
+#' \item{alternatives}{The set of item(s) that the choice was made from.}
+#' \item{ranking}{The ranking(s) including this choice.}
+#' \item{n}{If \code{aggregate = TRUE}, the number of rankings including this
+#' choice.}
+#' \item{fitted}{The fitted probability of making this choice.}
 #' @seealso as.choices
-#' @importFrom tibble as.tibble
 #' @export
 fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
@@ -15,7 +24,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get parameters
     id <- seq(length(object$coefficients) - object$maxTied + 1)
     alpha <- object$coefficients[id]
-    delta <- c(1, unname(mod$coefficients[-id]))
+    delta <- c(1, unname(object$coefficients[-id]))
     # if free = TRUE, ignore forced choice (choice of 1)
     if (free) {
         free <- lengths(choices$alternatives) != 1
@@ -41,6 +50,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
     S <- setdiff(unique(na), 1)
     D <- object$maxTied
+    N <- ncol(object$rankings)
     theta <- expectation("theta", alpha, delta, N, D, S, R, G)$theta
     denominator <- numeric(length(numerator))
     h <- match(choices$alternatives, unique_alternatives)

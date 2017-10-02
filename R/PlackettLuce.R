@@ -30,7 +30,7 @@
 #' \code{"cluster"} (the largest strongly connected cluster).
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
-#' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link{lbfgs}} package).
+#' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
 #' @param steffensen a threshold defined as for \code{epsilon} after which to
@@ -61,9 +61,9 @@
 #'
 #' mod <- PlackettLuce(R)
 #' coef(mod)
-#' @import Matrix lbfgs
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
+#' @importFrom stats optim
 #' @export
 PlackettLuce <- function(rankings, ref = NULL,
                          network = c("adaptive", "pseudodata", "connected",
@@ -288,9 +288,8 @@ PlackettLuce <- function(rankings, ref = NULL,
                     delta = c(1, exp(res$par[-(1:N)])))
 
     } else if (method == "L-BFGS"){
-        ok <- requireNamespace("lbfgs", quietly = TRUE)
-        if (!ok) stop('`method = "lbfgs"` requires lbfgs package')
-        res <- lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1)
+        # will give an error if lbfgs not available
+        res <- lbfgs::lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1)
         conv <- res$convergence == 0
         iter <- NULL
         res <- list(alpha = exp(res$par[1:N]),
@@ -325,8 +324,8 @@ PlackettLuce <- function(rankings, ref = NULL,
         }
         # stopping rule: compare observed & expected sufficient stats
         checkConv <- function(res){
-            assign("eps", abs(c(A, B[-1]) - c(res$expA, res$delta[-1]*res$expB)),
-                   envir = parent.env(environment()))
+            eps <- abs(c(A, B[-1]) - c(res$expA, res$delta[-1]*res$expB))
+            assign("eps", eps, envir = parent.env(environment()))
             all(eps < epsilon)
         }
         if (conv <- checkConv(res)) {
@@ -337,6 +336,7 @@ PlackettLuce <- function(rankings, ref = NULL,
             assign("iter", iter + 1,
                    envir = parent.env(environment()))
         }
+        eps <- c(A, B[-1])
         doSteffensen <- FALSE
         while(iter <= maxit){
             res <- oneUpdate(res)
@@ -379,7 +379,7 @@ PlackettLuce <- function(rankings, ref = NULL,
         S <- S - nobj
     }
     res$alpha <- res$alpha/sum(res$alpha)
-    rank <- N + D + sum(unlist(S)) - 2
+    rank <- N + D - 2
 
     # count possible choices from sets up to size D
     count <- function(W, S, D){
@@ -435,12 +435,12 @@ expectation <- function(par, # par to compute expectations for
     if (keepAlpha) {
         if (!is.null(W)) {
             expA <- numeric(N)
-        } else expA <- matrix(0, nr = nrow(R), nc = N)
+        } else expA <- matrix(0, nrow = nrow(R), ncol = N)
     }
     if (keepDelta) {
         if (!is.null(W)) {
             expB <- numeric(D - 1)
-        } else expB <- matrix(0, nr = nrow(R), nc = D - 1)
+        } else expB <- matrix(0, nrow = nrow(R), ncol = D - 1)
     }
     if (keepTheta) theta <- numeric(sum(lengths(G[S])))
     z <- 1

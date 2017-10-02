@@ -10,10 +10,25 @@
 \item{object}{a \code{"PlackettLuce"} object as returned by
 \code{\link{PlackettLuce}}.}
 
+\item{aggregate}{logical; if \code{TRUE} observations of the same choice from
+the same set of alternatives are aggregated.}
+
+\item{free}{logical; if \code{TRUE} only free choices are included, i.e.
+choices of one item from a set of one item are excluded.}
+
 \item{...}{further arguments passed to method (ignored).}
 }
+\value{
+a list with the following components
+\item{choices}{The selected item(s).}
+\item{alternatives}{The set of item(s) that the choice was made from.}
+\item{ranking}{The ranking(s) including this choice.}
+\item{n}{If \code{aggregate = TRUE}, the number of rankings including this
+choice.}
+\item{fitted}{The fitted probability of making this choice.}
+}
 \description{
-Fitted probabilities for all choice/alternative combinations in the data
+Fitted probabilities for all choice/alternative combinations in the data.
 }
 \seealso{
 as.choices

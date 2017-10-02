@@ -64,9 +64,6 @@
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
 #' @export
-library(Matrix)
-library(igraph)
-library(rARPACK)
 PlackettLuce0 <- function(rankings, ref = NULL,
                           network = c("adaptive", "pseudodata", "connected",
                                       "cluster"),
@@ -184,9 +181,9 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     # starting values
     N <- ncol(rankings)
     ## (scaled, un-damped) PageRank based on underlying paired comparisons
-    X <- as_adj(graph_from_edgelist(as.edgelist(rankings)))[colnames(rankings),
+    X <- igraph::as_adj(igraph::graph_from_edgelist(as.edgelist(rankings)))[colnames(rankings),
                                                             colnames(rankings)]
-    alpha <- drop(abs(eigs(X/colSums(X), 1,
+    alpha <- drop(abs(rARPACK::eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
     if (pseudo) {
         alpha <- alpha/alpha[1]
@@ -344,7 +341,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
         S <- S - nobj
     }
     par$alpha <- par$alpha/sum(par$alpha)
-    rank <- N + D + sum(rep) - 2
+    rank <- N + D - 2
 
     key_q <- key_quantities(unlist(par))
     logl <- loglik(unlist(par), fit = key_q)

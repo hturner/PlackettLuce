@@ -69,33 +69,37 @@ longdat2 <- function(R){
     res
 }
 
+# okay to aggregate for vcov computation, but not for logLik
 #' @import Matrix Matrix
-poisson_rankings <- function(rankings, as.data.frame = FALSE){
+poisson_rankings <- function(rankings, aggregate = TRUE, as.data.frame = FALSE){
     # get choices and alternatives for each ranking
     choices <- as.choices(rankings, names = FALSE)
     # include free choices only
     size <- lengths(choices$alternatives)
     free <- size != 1
     choices <- lapply(choices, `[`,  free)
-    # id unique choices
-    unique_choices <- unique(choices$choices)
-    g <- match(choices$choices, unique_choices)
-    # id unique alternatives
-    unique_alternatives <- unique(choices$alternatives)
-    h <- match(choices$alternatives, unique_alternatives)
-    #unique_alternatives <- choices$alternatives
-    #h <- seq_along(choices$alternatives)
-    # count unique choice:alternative combinations
-    g <- paste(g, h, sep = ":")
-    g <- match(g, unique(g))
-    choices$ranking <- split(choices$ranking, g)
-    keep <- !duplicated(g)
-    agg <- c("choices", "alternatives")
-    choices[agg] <- lapply(choices[agg], function(x) x[keep])
-    choices$n <- as.integer(table(g))
+    if (aggregate) {
+        # id unique choices
+        unique_choices <- unique(choices$choices)
+        g <- match(choices$choices, unique_choices)
+        # id unique alternatives
+        unique_alternatives <- unique(choices$alternatives)
+        h <- match(choices$alternatives, unique_alternatives)
+        # count unique choice:alternative combinations
+        g <- paste(g, h, sep = ":")
+        g <- match(g, unique(g))
+        choices$ranking <- split(choices$ranking, g)
+        keep <- !duplicated(g)
+        agg <- c("choices", "alternatives")
+        choices[agg] <- lapply(choices[agg], function(x) x[keep])
+        choices$n <- as.integer(table(g))
+        size <- lengths(unique_alternatives)
+    } else {
+        choices$n <- 1
+        size <- lengths(choices$alternatives)
+    }
 
-    # now create X matrix for unique alternative sets
-    size <- lengths(unique_alternatives)
+    # now create X matrix for (unique) alternative sets
     S <- unique(size)
     D <- max(lengths(choices$choices))
     N <- ncol(rankings)
@@ -109,12 +113,16 @@ poisson_rankings <- function(rankings, as.data.frame = FALSE){
         }
         id <- which(size == s)
         n[id] <- list(rep(seq_len(x), vapply(comb, ncol, 1)))
-        items[id] <- lapply(unique_alternatives[id], `[`, unlist(comb))
+        if (aggregate){
+            items[id] <- lapply(unique_alternatives[id], `[`, unlist(comb))
+        } else items[id] <- lapply(choices$alternatives[id], `[`, unlist(comb))
     }
     # choice id
     x <- sequence(lengths(n))
     # alternative id
-    z <- rep(seq_along(unique_alternatives), lengths(n))
+    if (aggregate){
+        z <- rep(seq_along(unique_alternatives), lengths(n))
+    } else z <- rep(seq_along(choices$alternatives), lengths(n))
     # columns for item parameters
     size <- unlist(n)
     A <- sparseMatrix(j = unlist(items), p = c(0, cumsum(size)),
@@ -132,10 +140,11 @@ poisson_rankings <- function(rankings, as.data.frame = FALSE){
         X <- cBind(A, B)
     } else X <- A
     # counts
-    alt <- match(choices$alternatives, unique_alternatives)
-    #alt <- h
+    if (aggregate){
+        alt <- match(choices$alternatives, unique_alternatives)
+    } else alt <- seq_along(choices$alternatives)
     na <- length(alt)
-    #id <- numeric(na)
+    id <- numeric(na)
     row <- split(seq_along(z), z)
     for (i in seq_len(na)){
         ch <- match(choices$choices[i], all_choices[row[[alt[i]]]])
