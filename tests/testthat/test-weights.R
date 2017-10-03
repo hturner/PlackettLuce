@@ -1,14 +1,13 @@
 context("implementation [weight argument in PlackettLuce]")
 
 coef_tol <- 1e-06
-loglik_tol <- 1e-12
+loglik_tol <- 1e-07
 
 ## Extractor for the log-likelihood of poisson gnm's adjusting for the -mu part
 ## which is fixed due to the parameter space restriction to match row totals
 logLik_poisson.gnm <- function(x) {
-    n <- nlevels(x$eliminate)
-    ll <- logLik(x) + n
-    attr(ll, "df") <- attr(ll, "df") - n
+    ll <- logLik(x) + sum(x$weights)
+    attr(ll, "df") <- attr(ll, "df") - nlevels(x$eliminate)
     ll
 }
 
@@ -35,26 +34,32 @@ w <- tabulate(g)
 if (require(gnm)){
     ## fit PlackettLuce model
     ## - one ranking per row
-    mod0 <- PlackettLuce(R)
+    mod0 <- PlackettLuce(R, npseudo = 0)
     ## - aggregated to unique rankings
-    mod1 <- PlackettLuce(R2, weights = w)
-    ## fit log-linear model to aggregated data
-    dat <- PlackettLuce:::poisson_rankings(R2, aggregate = FALSE,
-                                            as.data.frame = TRUE)
+    mod1 <- PlackettLuce(R2, weights = w, npseudo = 0)
+    ## fit log-linear model to aggregated rankings
+    ## (do not aggregate different choices from same set of alternatives)
+    dat <- PlackettLuce:::poisson_rankings(R2, weights = w, aggregate = FALSE,
+                                           as.data.frame = TRUE)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
-                constrain = 1, weights = w[dat2$z])
+                constrain = 1, weights = w)
     test_that("fit is the same for aggregated data [pudding]",
               {
                   expect_equal(coef(mod0), coef(mod1), tolerance = coef_tol)
                   expect_equal(logLik(mod0), logLik(mod1),
                                tolerance = loglik_tol)
+                  expect_equal(vcov(mod0), vcov(mod1))
               })
     test_that("fit matches gnm for aggregated data [pudding]",
               {
-                  expect_equal(coef(mod1), coef(mod2),
+                  expect_equal(as.vector(coef(mod1)),
+                               as.vector(parameters(mod2)),
+                               tolerance = coef_tol)
+                  expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
                                check.attributes = FALSE, tolerance = loglik_tol)
-                  expect_equal(logLik(mod1), logLik(mod2),
-                               check.attributes = FALSE, tolerance = loglik_tol)
+                  expect_equal(as.vector(vcov(mod1)),
+                               as.vector(vcov(mod2)))
+
               })
 }
 
@@ -69,11 +74,11 @@ if (require(psychotree)){
     mod2 <- btmodel(Topmodel2007$preference, weights = w)
     ## PlackettLuce (should be grouped rankings as weight is per judge)
     R <- as.grouped_rankings(Topmodel2007$preference)
-    mod3 <- PlackettLuce(R)
-    mod4 <- PlackettLuce(R, weights = w)
+    mod3 <- PlackettLuce(R, npseudo = 0)
+    mod4 <- PlackettLuce(R, weights = w, npseudo = 0)
     ## bttree can't take weights, so compare to tree with no split (alpha = 0)
     tm_tree <- pltree(R ~ ., data = Topmodel2007[, -1], minsize = 5,
-                      weights = w, alpha = 0)
+                      weights = w, alpha = 0, npseudo = 0)
     test_that("fit correct for grouped rankings object [Topmodel2007]",
               {
                   expect_equal(unclass(itempar(mod1, log = TRUE,
@@ -94,7 +99,7 @@ if (require(psychotree)){
               })
     test_that("weights work for pltree [Topmodel2007]",
               {
-                  expect_equal(coef(tm_tree), unclass(coef(mod4)),
+                  expect_equal(as.vector(coef(tm_tree)), as.vector(coef(mod4)),
                                check.attributes = FALSE, tolerance = coef_tol)
                   expect_equal(logLik(tm_tree), logLik(mod4),
                                check.attributes = FALSE,

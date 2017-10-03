@@ -4,24 +4,19 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, ref = NULL, network = c("adaptive", "pseudodata",
-  "connected", "cluster"), npseudo = 1, method = c("iterative scaling",
-  "BFGS", "L-BFGS"), epsilon = 1e-07, steffensen = 1e-04, maxit = 100,
-  trace = FALSE, verbose = TRUE)
+PlackettLuce(rankings, ref = NULL, npseudo = 0.5, weights = NULL,
+  method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
+  steffensen = 1e-04, maxit = 100, trace = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{rankings}{a matrix of dense rankings, see examples.}
 
 \item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
 
-\item{network}{the network of rankings on which to base the model:
-\code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
-\code{"pseudodata"} (rankings plus pseudodata),
-\code{"connected"} (rankings if network strongly connected, fail otherwise),
-\code{"cluster"} (the largest strongly connected cluster).}
-
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
+
+\item{weights}{an optional vector of weights for each ranking.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 

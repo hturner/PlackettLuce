@@ -36,7 +36,7 @@ R <- as.rankings(R)
 if (require("Matrix") & requireNamespace("igraph") &
     requireNamespace("rARPACK")) {
     model0 <- PlackettLuce0(rankings = R, ref = "orange")
-    model1 <- PlackettLuce(rankings = R, ref = "orange")
+    model1 <- PlackettLuce(rankings = R, ref = "orange", npseudo = 0)
     test_that("coef match legacy code [fake partial rankings with ties]", {
         # coefficients
         expect_equal(unname(unclass(coef(model0))),
@@ -57,16 +57,17 @@ M <- matrix(c(1, 2,
               2, 3,
               4, 3), nrow = 6, byrow = TRUE)
 R <- PlackettLuce:::denseRanking(M)
-mod1 <- PlackettLuce(R)
+mod1 <- PlackettLuce(R, npseudo = 0)
 dat <- PlackettLuce:::longdat(M)
-if (require(gnm) & require(BradleyTerry2) & require(BradleyTerryScalable)){
+if (require(gnm) & require(BradleyTerry2) &
+    requireNamespace("BradleyTerryScalable")){
     ## fit loglinear model
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     BT_data <- data.frame(p1 = factor(M[,1]), p2 = factor(M[,2]))
     mod3 <- BTm(rep(1, 6), p1, p2, data = BT_data)
-    cdat <- btdata(as.data.frame(cbind(M, 1)))
-    mod4 <- btfit(cdat, 1, epsilon = 1e-7)
+    cdat <- BradleyTerryScalable::btdata(as.data.frame(cbind(M, 1)))
+    mod4 <- BradleyTerryScalable::btfit(cdat, 1, epsilon = 1e-7)
     pp <- mod4$pi[[1]]
     pp <- (pp/sum(pp))[cdat$components$`1`]
     pp <- log(pp) - log(pp)[1]
@@ -104,7 +105,7 @@ if (require(BradleyTerry2)){
     R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
     R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
     ## needs 170 iterations
-    mod_PL <- PlackettLuce(R, maxit = 500, epsilon = 1e-5)
+    mod_PL <- PlackettLuce(R, maxit = 500, epsilon = 1e-5, npseudo = 0)
     test_that("estimates match BTm [icehockey]", {
         expect_equal(unname(coef(mod_BT)), unname(coef(mod_PL))[-1],
                      tolerance = coef_tol)
@@ -130,7 +131,7 @@ lambda <- log(c(gamma/sum(gamma)))
 lambda <- lambda - lambda[1]
 ## via PlackettLuce
 R <- PlackettLuce:::denseRanking(M)
-mod1 <- PlackettLuce(R)
+mod1 <- PlackettLuce(R, npseudo = 0)
 if (require(gnm)){
     ## fit loglinear model
     dat <- PlackettLuce:::longdat(M)
@@ -162,7 +163,7 @@ if (require(StatRank)){
     lambda <- lambda - lambda[1]
     ## via PlackettLuce
     R <- PlackettLuce:::denseRanking(Data.Nascar)
-    mod1 <- PlackettLuce(R)
+    mod1 <- PlackettLuce(R, npseudo = 0)
     ## fairly quick - A. Cameron (driver with ID 1) is fixed at zero
     dat <- PlackettLuce:::poisson_rankings(R, aggregate = FALSE,
                                            as.data.frame = TRUE)

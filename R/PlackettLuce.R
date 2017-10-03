@@ -23,13 +23,9 @@
 #'
 #' @param rankings a matrix of dense rankings, see examples.
 #' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
-#' @param network the network of rankings on which to base the model:
-#' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
-#' \code{"pseudodata"} (rankings plus pseudodata),
-#' \code{"connected"} (rankings if network strongly connected, fail otherwise),
-#' \code{"cluster"} (the largest strongly connected cluster).
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
+#' @param weights an optional vector of weights for each ranking.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
@@ -66,16 +62,12 @@
 #' @importFrom stats optim
 #' @export
 PlackettLuce <- function(rankings, ref = NULL,
-                         network = c("adaptive", "pseudodata", "connected",
-                                     "cluster"),
-                         npseudo = 1,
+                         npseudo = 0.5,
                          weights = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
-    network <- match.arg(network, c("adaptive", "pseudodata", "connected",
-                                    "cluster"))
 
     # check rankings
     grouped_rankings <- inherits(rankings, "grouped_rankings")
@@ -92,56 +84,19 @@ PlackettLuce <- function(rankings, ref = NULL,
     } else if (!inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
+
+    # attributes
     items <- colnames(rankings)
-    # if pseudodata or (adaptive and disconnected) add pseudodata
-    if (network == "pseudodata" ||
-        (network == "adaptive" && attr(rankings, "no") > 1)){
-        nobj <- ncol(rankings)
-        rankings <- cbind("NULL" = 0, rankings)
-        pseudo <- matrix(0, nrow = 2*npseudo*nobj,
-                         ncol = ncol(rankings))
-        pseudo[, 1] <- 1:2
-        pseudo[cbind(seq_len(nrow(pseudo)),
-                     rep(seq_len(nobj) + 1, each = 2))] <- 2:1
-        rankings <- as.rankings(rbind(pseudo, rankings))
-        pseudo <- TRUE
-    } else pseudo <- FALSE
-    # if disconnected, fit model to largest cluster
-    if (!is.null(attr(rankings, "no")) && attr(rankings, "no") > 1){
-        if (network == "connected")
-            stop("Network is not strongly connected.")
-        id <- which.max(attr(rankings, "csize"))
-        size <- attr(rankings, "csize")[id]
-        if (size == 1) {
-            stop("All items are weakly connected, cannot estimate item abilities.")
-        } else{
-            warning("The network of items is split into weakly connected clusters\n",
-                    "Analysing the largest cluster, with ", size, " items")
-            # drop items not in largest cluster and recode
-            rankings <- rankings[, attr(rankings, "membership") == id]
-            rankings <- suppressMessages(checkDense(rankings))
-            if (!is.null(ref)){
-                if ((is.character(ref) && !ref %in% colnames(rankings)) ||
-                    !ref %in% id){
-                    warning("re-setting `ref` to first object in largest cluster")
-                    ref <- id[1]
-                }
-            }
-        }
-    }
-    if (is.null(ref)) ref <- 1
-    M <- unclass(rankings) # shouldn't need to unclass when update subset method
-
-    # total number of objects
-    N <- ncol(M)
-
-    # number of rankings
-    nr <- nrow(M)
+    N <- ncol(rankings) # total number of objects
+    nr <- nrow(rankings) # number of rankings
 
     # weights
     if (is.null(weights)){
         weights <- rep.int(1, nr)
     } else stopifnot(length(weights) == nrow(rankings))
+
+    if (is.null(ref)) ref <- 1
+    M <- unclass(rankings) # shouldn't need to unclass when update subset method
 
     if (!grouped_rankings){
         # items ranked from last to 1st place
@@ -199,13 +154,6 @@ PlackettLuce <- function(rankings, ref = NULL,
     D <- length(B)
     B <- B/seq(D)
 
-    # (scaled, un-damped) PageRank based on underlying paired comparisons
-    alpha <- drop(abs(eigs(X/colSums(X), 1,
-                           opts = list(ncv = min(nrow(X), 10)))$vectors))
-    # alpha <- alpha/sum(alpha) current version doesnt divide by alpha
-    delta <- rep.int(0.1, D)
-    delta[1] <- 1
-
     # unique rows with >= 1 element for logical matrix
     # case where p is fixed
     uniquerow <- function(M){
@@ -247,6 +195,39 @@ PlackettLuce <- function(rankings, ref = NULL,
         minrank[r] <- minrank[r] + 1
     }
     S <- which(S)
+
+    # if npseudo > 0 add npseudo wins and losses with hypothetical item
+    stopifnot(npseudo >= 0)
+    if (npseudo > 0){
+        # update R with paired comparisons with hypothetical item (item N + 1)
+        R <- cbind(R, "NULL" = N + 1)
+        pseudo <- matrix(0, nrow = N, ncol = N + 1)
+        pseudo[, 1] <- N + 1
+        pseudo[, 2]  <- seq_len(N)
+        R <- rbind(R, pseudo)
+        # update X with npseudo wins and losses  with hypothetical item
+        X <- cbind(X, npseudo)
+        X <- rbind(X, c(rep.int(npseudo, N), 0))
+        # update weights: 2*npseudo comparisons of each pair
+        W[[2]] <- c(W[[2]], rep.int(2*npseudo, N))
+        # update indices
+        G[[2]] <- c(G[[2]], (nr + 1):(nr + N))
+        # update A: npseudo wins for item N + 1; npseudo wins for other items
+        A <- c(A + npseudo, N*npseudo)
+        # update B: 2*npseudo untied choices
+        B[1] <- B[1] + 2*npseudo*N
+        N <- N + 1
+    }
+
+    # (scaled, un-damped) PageRank based on underlying paired comparisons
+    alpha <- drop(abs(eigs(X/colSums(X), 1,
+                           opts = list(ncv = min(nrow(X), 10)))$vectors))
+    # fix alpha for hypothetical item to 1
+    if (npseudo > 0) {
+        alpha <- alpha/alpha[N]
+    }
+    delta <- rep.int(0.1, D)
+    delta[1] <- 1
 
     # quasi-newton methods ---
 
@@ -313,7 +294,7 @@ PlackettLuce <- function(rankings, ref = NULL,
             expectation(c("alpha", "delta"), alpha, delta, N, D, S, R, G, W)
         oneUpdate <- function(res){
             # update all alphas
-            if (pseudo){
+            if (npseudo > 0){
                 res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
             } else {
                 res$alpha <- res$alpha*A/res$expA
@@ -362,10 +343,13 @@ PlackettLuce <- function(rankings, ref = NULL,
                 res2 <- oneUpdate(res1)
                 if (conv <- checkConv(res2)) break
                 updateIter()
-                if (pseudo){
-                    res$alpha[-1] <- accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
-                } else res$alpha <- accelerate(res$alpha, res1$alpha, res2$alpha)
-                res$delta[-1] <- accelerate(res$delta, res1$delta, res2$delta)[-1]
+                if (npseudo > 0){
+                    res$alpha[-1] <-
+                        accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
+                } else res$alpha <-
+                        accelerate(res$alpha, res1$alpha, res2$alpha)
+                res$delta[-1] <-
+                    accelerate(res$delta, res1$delta, res2$delta)[-1]
                 res[c("expA", "expB")] <-
                     expectation(c("alpha", "delta"), res$alpha, res$delta,
                                 N, D, S, R, G, W)
@@ -377,31 +361,27 @@ PlackettLuce <- function(rankings, ref = NULL,
     }
     res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
 
-    if (pseudo) { ## needs fixing up, based on od patterns approach
+    if (npseudo > 0) {
         # drop hypothetical object
-        res$alpha <- res$alpha[-1]
+        res$alpha <- res$alpha[-N]
         N <- N - 1
-        # drop extra rankings
-        extra <- seq_len(2*npseudo*nobj)
-        rankings <- rankings[-extra, -1]
-        T <- T[-1, -extra]
-        J <- J[-extra]
-        # drop extra patterns
-        pattern <- pattern[-1, -seq_len(nobj)]
-        rep <- rep[-seq_len(nobj)]
-        S <- S - nobj
+        # drop weights and indices for pseudodata
+        i <- seq_len(length(W[[2]]) - N)
+        W[[2]] <- W[[2]][i]
+        G[[2]] <- G[[2]][i]
+        if (!length(W[[2]])) S <- setdiff(S, 2)
+        # remove contribution to A and B
+        A <- A[-(N + 1)] - npseudo
+        B[1] <- B[1] - 2*npseudo*N
     }
     res$alpha <- res$alpha/sum(res$alpha)
     rank <- N + D - 2
 
-    # count possible choices from sets up to size D
-    count <- function(W, S, D){
-        # frequencies of sets selected from, for sizes 2 to max observed
-        freq <- vapply(W[S], sum, 1)
-        # number of possible selections overall
-        sum(sapply(S, choose, seq(D)) %*% freq)
-    }
-    df.residual <- count(W, S, D) - rank
+    # frequencies of sets selected from, for sizes 2 to max observed
+    freq <- vapply(W[S], sum, 1)
+    # number of possible selections overall
+    n <- sum(sapply(S, choose, seq(D)) %*% freq)
+    df.residual <- n - sum(freq) - rank
 
     logl <- loglik(unlist(res[c("alpha", "delta")]))
 
@@ -423,9 +403,8 @@ PlackettLuce <- function(rankings, ref = NULL,
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
-                maxTied = D#, ##  Maybe we'll want to include these differently?
-                #constants = key_q$normalising_constants
-    )
+                weights = weights,
+                maxTied = D)
     class(fit) <- "PlackettLuce"
     fit
 }

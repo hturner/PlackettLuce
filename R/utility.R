@@ -71,13 +71,17 @@ longdat2 <- function(R){
 
 # okay to aggregate for vcov computation, but not for logLik
 #' @import Matrix Matrix
-poisson_rankings <- function(rankings, aggregate = TRUE, as.data.frame = FALSE){
+poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
+                             as.data.frame = FALSE){
     # get choices and alternatives for each ranking
     choices <- as.choices(rankings, names = FALSE)
     # include free choices only
     size <- lengths(choices$alternatives)
     free <- size != 1
     choices <- lapply(choices, `[`,  free)
+    if (!is.null(weights)) {
+        choices$w <- weights[choices$ranking]
+    } else choices$w <- rep.int(1, length(choices$ranking))
     if (aggregate) {
         # id unique choices
         unique_choices <- unique(choices$choices)
@@ -92,7 +96,8 @@ poisson_rankings <- function(rankings, aggregate = TRUE, as.data.frame = FALSE){
         keep <- !duplicated(g)
         agg <- c("choices", "alternatives")
         choices[agg] <- lapply(choices[agg], function(x) x[keep])
-        choices$n <- as.integer(table(g))
+        choices$n <- tabulate(g)
+        choices$w <- as.integer(rowsum(choices$w[keep], g[keep]))
         size <- lengths(unique_alternatives)
     } else {
         choices$n <- 1
@@ -152,12 +157,17 @@ poisson_rankings <- function(rankings, aggregate = TRUE, as.data.frame = FALSE){
     }
     y <- numeric(length(z))
     y[id] <- choices$n
+    if (aggregate){
+        w <- numeric(length(z))
+        w[id] <- choices$w
+    } else w <- choices$w[z]
     if (as.data.frame) {
         dat <- data.frame(y = y)
         dat$X <- as.matrix(X)
         dat$z <- as.factor(z)
+        dat$w <- w
         dat
-    } else list(y = y, X = X, z = z)
+    } else list(y = y, X = X, z = z, w = w)
 }
 
 # convert ranked items to dense rankings for each object

@@ -197,6 +197,23 @@ checkDense <- function(x, verbose = TRUE){
     structure(x, recoded = bad)
 }
 
+checkConnected <- function(x, verbose = TRUE){
+    # check network is strongly connected
+    # (win and loss connection between all subgroups)
+    net <- graph_from_edgelist(as.edgelist.rankings(x))
+    net <- simplify(net, remove.multiple = TRUE)
+    clus <- components(net, "strong")
+    if (clus$no > 1){
+        warning("Network of items is not strongly connected")
+    }
+    id <- match(colnames(x), names(clus$membership))
+    structure(x,
+              membership = clus$membership[id],
+              csize = clus$csize,
+              no = clus$no,
+              class = "rankings")
+}
+
 #' @method as.data.frame rankings
 #' @export
 as.data.frame.rankings <-

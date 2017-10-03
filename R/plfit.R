@@ -46,7 +46,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
         warning("unused argument(s): ",
                 paste(c("x"[x], "start"[start], "offset"[offset]),
                       collapse = ","))
-    res <- PlackettLuce(y, network = "connected", weights = weights, ...)
+    res <- PlackettLuce(y, weights = weights, ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
