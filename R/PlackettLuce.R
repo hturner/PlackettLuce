@@ -23,7 +23,8 @@
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
-#' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
+#' @param ref an integer or character string specifying the reference item (for
+#' which log ability will be set to zero). If \code{NULL} the first item is used.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param weights an optional vector of weights for each ranking.

@@ -9,7 +9,8 @@
 \arguments{
 \item{object}{an object of class "PlackettLuce" as returned by \code{PlackettLuce}.}
 
-\item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
+\item{ref}{an integer or character string specifying the reference item (for
+which log ability will be set to zero). If \code{NULL} the first item is used.}
 
 \item{type}{the type of coefficients to return: one of \code{"ties"}, \code{"abilities"} or \code{"all"}.}
 

@@ -12,7 +12,8 @@ PlackettLuce(rankings, ref = NULL, npseudo = 0.5, weights = NULL,
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
 coerced by \code{as.rankings}.}
 
-\item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
+\item{ref}{an integer or character string specifying the reference item (for
+which log ability will be set to zero). If \code{NULL} the first item is used.}
 
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
