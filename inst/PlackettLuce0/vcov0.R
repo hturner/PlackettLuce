@@ -1,27 +1,25 @@
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom MASS ginv
-vcov.PlackettLuce <- function(object, ref = NULL, ...) {
+vcov.PlackettLuce0 <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##
-  theLongData <- poisson_rankings(object$rankings, object$weights)
-  coefs <- coef(object, ref = ref)
+  theLongData <- longdat2(unclass(object$rankings))
+  coefs <- coef.PlackettLuce0(object, ref = ref)
   na <- is.na(coefs)
   coefnames <- names(coefs[!na])
   ncoefs <- sum(!na)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
-  w <- theLongData$w
   ##  Compute the fitted values:
   fit <- as.vector(exp(X %*% coefs[!na]))
-  totals <- as.vector(tapply(w * y, z, sum))
-  fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
+  fit <- fit  *  as.vector(tapply(y, z, sum)[z] / tapply(fit, z, sum)[z])
   ##  Compute the vcov matrix
   WX <- fit * X
-  XtWX <- as.matrix(crossprod(X, WX))
-  ZtWX <- rowsum(as.matrix(WX), z)
-  ZtWZinverse <- 1/totals
+  XtWX <- crossprod(X, WX)
+  ZtWX <- as.matrix(aggregate(WX, by = list(z), FUN = sum)[,-1])
+  ZtWZinverse <- 1 / as.vector(tapply(fit, z, sum))
   result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))    ## Should we try to avoid ginv() ?
   ##
   ##  That's the basic computation all done, ie to get Moore-Penrose inverse of the information matrix.

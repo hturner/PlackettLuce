@@ -7,7 +7,8 @@
 as.choices(rankings, names = FALSE)
 }
 \arguments{
-\item{rankings}{a matrix of dense rankings.}
+\item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
+coerced by \code{as.rankings}.}
 
 \item{names}{logical: if \code{TRUE} use the object names in the returned
 \code{"choices"} object, else use object indices.}
@@ -30,5 +31,7 @@ coded_choices <- as.choices(R, names = FALSE)
 attr(coded_choices, "objects")
 
 ## Coercion to tibble is straightforwards
-tibble::as.tibble(coded_choices)
+if (require(tibble)){
+    as.tibble(coded_choices)
+}
 }

@@ -12,13 +12,10 @@ Davidson <- function(i, j, r_ij, w_ij, w_ji, t_ij, maxit = 500){
     gamma <- rep(1/n, n)
     for (k in 1:maxit){
         gamma2 <- numeric(n)
-        resi <- resj <- numeric(R)
-        for (r in 1:R){
-            resi[r] <- r_ij[r]*(2 + theta*sqrt(gamma[j[r]]/gamma[i[r]]))/(
-                gamma[i[r]] + gamma[j[r]] + theta*sqrt(gamma[i[r]]*gamma[j[r]]))
-            resj[r] <- r_ij[r]*(2 + theta*sqrt(gamma[i[r]]/gamma[j[r]]))/(
-                gamma[i[r]] + gamma[j[r]] + theta*sqrt(gamma[i[r]]*gamma[j[r]]))
-        }
+        resi <- r_ij*(2 + theta*sqrt(gamma[j]/gamma[i]))/(
+            gamma[i] + gamma[j] + theta*sqrt(gamma[i]*gamma[j]))
+        resj <- r_ij*(2 + theta*sqrt(gamma[i]/gamma[j]))/(
+            gamma[i] + gamma[j] + theta*sqrt(gamma[i]*gamma[j]))
         for (obj in 1:n){
             gamma2[obj] <- s[obj]/(sum(resi[i == obj]) + sum(resj[j == obj]))
         }

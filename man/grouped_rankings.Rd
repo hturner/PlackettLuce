@@ -2,12 +2,16 @@
 % Please edit documentation in R/grouped_rankings.R
 \name{grouped_rankings}
 \alias{grouped_rankings}
+\alias{[.grouped_rankings}
 \alias{as.grouped_rankings}
 \alias{as.grouped_rankings.paircomp}
 \alias{format.grouped_rankings}
 \title{Grouped Rankings Object}
 \usage{
 grouped_rankings(rankings, index, ...)
+
+\method{[}{grouped_rankings}(x, i, j, ..., drop = TRUE,
+  as.grouped_rankings = TRUE)
 
 as.grouped_rankings(x, ...)
 
@@ -28,7 +32,17 @@ by \code{grouped_rankings} or \code{as.grouped_rankings}; unused by
 
 \item{x}{an object that can be coerced to a \code{"grouped_rankings"} object
 for \code{as.group_rankings}, or a \code{"grouped_rankings"} object for
-\code{format}.}
+\code{[} and \code{format}.}
+
+\item{i}{indices specifying groups to extract, may be any data type accepted
+by \code{\link{[}}.}
+
+\item{j}{indices specifying items to extract, as for \code{\link{[}}.}
+
+\item{drop}{if \code{TRUE} return single row/column matrices as a vector.}
+
+\item{as.grouped_rankings}{if \code{TRUE} return a rankings object, otherwise return
+a matrix/vector.}
 
 \item{max}{the maximum number of rankings to format per subject.}
 
@@ -36,7 +50,16 @@ for \code{as.group_rankings}, or a \code{"grouped_rankings"} object for
 ranking.}
 }
 \value{
-an object of class \code{"grouped_rankings"}.
+an object of class \code{"grouped_rankings"}, which is a vector of
+of group IDs with the following attributes:
+\item{rankings}{ The \code{"rankings"} object.}
+\item{index}{ An index match each ranking to each group ID.}
+\item{R}{ A matrix with items ordered from last to first place, for each
+ranking. }
+\item{S}{ The rankings matrix with the ranks replaced by the size of the
+chosen set for free choices and zero for forced choices. }
+\item{id}{ A list with elements of the adjacency matrix that are incremented
+by each ranking. }
 }
 \description{
 Create an object of class \code{"grouped_rankings"} which associates a
@@ -62,6 +85,15 @@ length(G)
 ## there are further rankings
 G
 print(G, max = 1)
+## select rankings from subject 1
+G[1,]
+## exclude item 3 from ranking
+G[, -3]
+## rankings from subject 2, excluding item 3
+## - note subject 2 becomes the first subject
+G[2, -3]
+## index underlying rankings without creating new grouped_rankings object
+G[2, -3, as.grouped_rankings = FALSE]
 }
 \seealso{
 \code{\link{pltree}}

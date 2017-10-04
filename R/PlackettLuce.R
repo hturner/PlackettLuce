@@ -21,15 +21,13 @@
 #' \code{npseudo = 1}, is sufficient to connect the network and has a weak
 #' shrinkage effect.
 #'
-#' @param rankings a matrix of dense rankings, see examples.
+#' @param rankings a \code{"\link{rankings}"} object, or an object that can be
+#' coerced by \code{as.rankings}.
 #' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
-#' @param network the network of rankings on which to base the model:
-#' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
-#' \code{"pseudodata"} (rankings plus pseudodata),
-#' \code{"connected"} (rankings if network strongly connected, fail otherwise),
-#' \code{"cluster"} (the largest strongly connected cluster).
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
+#' @param weights an optional vector of weights for each ranking.
+#' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
 #' @param steffensen a threshold defined as for \code{epsilon} after which to
@@ -60,404 +58,482 @@
 #'
 #' mod <- PlackettLuce(R)
 #' coef(mod)
-#' @import Matrix
 #' @importFrom igraph as_adj graph_from_edgelist
 #' @importFrom rARPACK eigs
+#' @importFrom stats optim
 #' @export
 PlackettLuce <- function(rankings, ref = NULL,
-                         network = c("adaptive", "pseudodata", "connected",
-                                     "cluster"),
-                         npseudo = 1,
-                         epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
+                         npseudo = 0.5,
+                         weights = NULL,
+                         method = c("iterative scaling", "BFGS", "L-BFGS"),
+                         epsilon = 1e-7, steffensen = 1e-4, maxit = 200,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
-    network <- match.arg(network, c("adaptive", "pseudodata", "connected",
-                                    "cluster"))
 
     # check rankings
-    if (!inherits(rankings, "rankings")){
+    grouped_rankings <- inherits(rankings, "grouped_rankings")
+    if (grouped_rankings){
+        # weights are per group id - expand to be per ranking
+        if (!is.null(weights)) {
+            stopifnot(length(weights) == max(attr(rankings, "index")))
+            weights <- weights[attr(rankings, "index")]
+        }
+        R <- attr(rankings, "R")
+        S <- attr(rankings, "S")
+        id <- attr(rankings, "id")
+        rankings <- attr(rankings, "rankings")
+    } else if (!inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
+
+    # attributes
     items <- colnames(rankings)
-    # if pseudodata or (adaptive and disconnected) add pseudodata
-    if (network == "pseudodata" ||
-        (network == "adaptive" & attr(rankings, "no") > 1)){
-        nobj <- ncol(rankings)
-        rankings <- cbind("NULL" = 0, rankings)
-        pseudo <- matrix(0, nrow = 2*npseudo*nobj,
-                         ncol = ncol(rankings))
-        pseudo[, 1] <- 1:2
-        pseudo[cbind(seq_len(nrow(pseudo)),
-                     rep(seq_len(nobj) + 1, each = 2))] <- 2:1
-        rankings <- as.rankings(rbind(pseudo, rankings))
-        pseudo <- TRUE
-    } else pseudo <- FALSE
-    # if disconnected, fit model to largest cluster
-    if (!is.null(attr(rankings, "no")) && attr(rankings, "no") > 1){
-        if (network == "connected")
-            stop("Network is not strongly connected.")
-        id <- which.max(attr(rankings, "csize"))
-        size <- attr(rankings, "csize")[id]
-        if (size == 1) {
-            stop("All items are weakly connected, cannot estimate item abilities.")
-        } else{
-            warning("The network of items is split into weakly connected clusters\n",
-                    "Analysing the largest cluster, with ", size, " items")
-            # drop items not in largest cluster and recode
-            rankings <- rankings[, attr(rankings, "membership") == id]
-            rankings <- suppressMessages(checkDense(rankings))
-            if (!is.null(ref)){
-                if ((is.character(ref) && !ref %in% colnames(rankings)) ||
-                    !ref %in% id){
-                    warning("re-setting `ref` to first object in largest cluster")
-                    ref <- id[1]
-                }
-            }
-        }
-    }
+    N <- ncol(rankings) # total number of objects
+    nr <- nrow(rankings) # number of rankings
+
+    # weights
+    if (is.null(weights)){
+        weights <- rep.int(1, nr)
+    } else stopifnot(length(weights) == nrow(rankings))
+
     if (is.null(ref)) ref <- 1
 
-    M <- t(Matrix(unclass(rankings), sparse = TRUE))
+    if (!grouped_rankings){
+        # items ranked from last to 1st place
+        R <- t(apply(rankings, 1, order, decreasing = TRUE))
 
-    # max nsets
-    J <- apply(M, 2, max)
+        # adjacency matrix: wins over rest
+        X <- adjacency(rankings, weights = weights)
 
-    # nontrivial nsets (excluding untied last place)
-    J <- J - as.numeric(rowSums(t(M) == J) == 1)
-    Jmax <- max(J)
+        # sizes of selected sets
+        S <- apply(rankings, 1, function(x){
+            last <- which(x == max(x))
+            ind <- which(x > 0)
+            # exclude untied last place
+            if (length(last) == 1) ind <- setdiff(ind, last)
+            list(x = tabulate(x[ind])[x[ind]], ind = ind)
+        })
+        ind <- unlist(lapply(S, `[[`, "ind"))
+        S <- lapply(S, `[[`, "x")
+        ## replicate ranking weight for each choice in ranking
+        w <- rep(weights, lengths(S))
+        S <- unlist(S)
 
-    # remove singletons - is this needed now rankings are checked?
-    singleton <- J == 0
-    M <- M[, !singleton, drop = FALSE]
-    J <- J[!singleton]
+        # sufficient statistics
+        # for alpha i, sum over all sets st object i is in selected set/size of
+        # selected set
+        A <- numeric(N)
+        i <- sort(unique(ind))
+        A[i] <- unname(rowsum(w/S, ind)[,1])
+        # for delta d, number of sets with cardinality d/cardinality
+        B <- as.vector(unname(rowsum(w, S)))
+        rm(S, ind)
+    } else {
+        # adjacency matrix: wins over rest
+        # (id extracted from grouped_rankings object)
+        X <- matrix(0, N, N)
+        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+        class(X) <- c("adjacency", "matrix")
 
-    # sizes of selected sets (not particularly efficient - could all be == 1!)
-    S <- M
-    S[t(t(M) > J)] <- 0
-    # S is copied onto T here to be used by loglik
-    T <- S
-    S@x <- 1/as.double(unlist(apply(S, 2, function(x) tabulate(x)[x])))
+        # replicate ranking weight for each choice in ranking
+        # (S extracted from grouped_rankings object)
+        w <- rep(weights, rowSums(S > 0))
 
-    # sufficient statistics
-
-    # for alpha i, sum over all sets of object i is in selected set/size of selected set
-    A <- rowSums(S)
-    # for delta d, number of sets with cardinality d
-    B <- tabulate(1/S@x)
+        # sufficient statistics
+        # for alpha i, sum over all sets st object i is in selected set/size of
+        # selected set
+        A <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
+        # for delta d, number of sets with cardinality d/cardinality
+        B <- tabulate(S[as.logical(S)])
+        rm(S)
+    }
     D <- length(B)
     B <- B/seq(D)
 
-    # unique columns with >= 1 element for logical matrix
-    uniquecol <- function(M, rep = TRUE){
-        min2 <- colSums(M) > 1
-        if (!any(min2)) return(NULL)
-        for (i in seq_len(nrow(M))){
-            if (i == 1) {
-                pattern <- M[1,]
-            }
-            else {
-                pattern <- 2*pattern + M[i,]
+    # check connectivity if npseudo = 0
+    if (npseudo == 0){
+        out <- connectivity(X, verbose = FALSE)
+        if (out$no > 1)
+            stop("Network is not fully connected - cannot estimate all ",
+                 "item parameters with npseudo = 0")
+    }
+
+    # unique rows with >= 1 element for logical matrix
+    # case where p is fixed
+    uniquerow <- function(M){
+        len <- ncol(M)
+        if (len == 1) return(1)
+        pattern <- M[,1]
+        max_exp <- .Machine$double.digits
+        for (k in seq_len(len - 1)){
+            pattern <- 2*pattern + M[,k]
+            if (k == len - 1 ||
+                k %% max_exp == (max_exp - 1)){
                 pattern <- match(pattern, unique(pattern))
+                max_exp <- .Machine$double.digits - ceiling(log2(max(pattern)))
             }
         }
-        uniq <- !duplicated(pattern) & min2
-        ind <- match(pattern, pattern[uniq])
-        if (rep){
-            rep <- tabulate(ind)
-            structure(M[, uniq, drop = FALSE], rep = rep)
-        } else structure(M[, uniq, drop = FALSE], ind = ind)
+        pattern
     }
 
-    # get unique sets and reps
-    pattern <- list()
-    for (j in seq_len(max(J))){
-        pattern[[j]] <- uniquecol(M >= j)
-    }
-    rep <- unlist(lapply(pattern, attr, "rep"))
-    pattern <- uniquecol(do.call("cBind", pattern), rep = FALSE)
-    rep <- c(rowsum(rep, attr(pattern, "ind")))
-    S <- length(rep)
+    # max number of objects in set
+    nc <- max(rowSums(rankings > 0))
 
-    # starting values
-    N <- ncol(rankings)
-    ## (scaled, un-damped) PageRank based on underlying paired comparisons
-    X <- as_adj(graph_from_edgelist(as.edgelist(rankings)))[colnames(rankings),
-                                                            colnames(rankings)]
+    # create W so cols are potential set sizes and value > 0 indicates ranking
+    # aggregate common sets
+    # - incorporate ranking weights by weighted count vs simple tabulate
+    W <- G <- list() # weight (currently rep count); group of rankings
+    nc <- max(rowSums(rankings > 0))
+    S <- logical(nc)  # set sizes present in rankings
+    minrank <- rep.int(1, nr)
+    for (i in seq_len(nc)){
+        s <- (nc - i + 1)
+        set <- rankings >= minrank
+        r <- which(rowSums(set) == s)
+        S[s] <- s != 1 && length(r)
+        if (!S[s]) next
+        g <- uniquerow(set[r, , drop = FALSE])
+        W[[s]] <- as.vector(unname(rowsum(weights[r], g)))
+        G[[s]] <- r[!duplicated(g)]
+        minrank[r] <- minrank[r] + 1
+    }
+    S <- which(S)
+
+    # if npseudo > 0 add npseudo wins and losses with hypothetical item
+    stopifnot(npseudo >= 0)
+    if (npseudo > 0){
+        # update R with paired comparisons with hypothetical item (item N + 1)
+        R <- cbind(R, "NULL" = 0)
+        pseudo <- matrix(0, nrow = N, ncol = N + 1)
+        pseudo[, 1] <- N + 1
+        pseudo[, 2]  <- seq_len(N)
+        R <- rbind(R, pseudo)
+        # update X with npseudo wins and losses  with hypothetical item
+        X <- cbind(X, npseudo)
+        X <- rbind(X, c(rep.int(npseudo, N), 0))
+        # update weights: 2*npseudo comparisons of each pair
+        W[[2]] <- c(W[[2]], rep.int(2*npseudo, N))
+        # update indices
+        G[[2]] <- c(G[[2]], (nr + 1):(nr + N))
+        # update A: npseudo wins for item N + 1; npseudo wins for other items
+        A <- c(A + npseudo, N*npseudo)
+        # update B: 2*npseudo untied choices
+        B[1] <- B[1] + 2*npseudo*N
+        N <- N + 1
+    }
+
+    # (scaled, un-damped) PageRank based on underlying paired comparisons
     alpha <- drop(abs(eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
-    if (pseudo) {
-        alpha <- alpha/alpha[1]
-    } else alpha/sum(alpha)
+    # fix alpha for hypothetical item to 1
+    if (npseudo > 0) {
+        alpha <- alpha/alpha[N]
+    }
     delta <- rep.int(0.1, D)
     delta[1] <- 1
-    #delta <- c(1, (2*B[2])/(sum(rep) - B[2]))
 
-    # iterative scaling
-
-    # count possible choices from sets up to size D
-    count <- function(pattern, rep, D){
-        # set sizes and frequencies
-        freq <- rowsum(rep, colSums(pattern))
-        size <- as.numeric(rownames(freq))
-        # number of possible selections overall
-        sum(sapply(size, choose, seq(D)) %*% freq)
-    }
+    # quasi-newton methods ---
 
     key_quantities <- function(par) {
         alpha <- par[1:N]
-        delta <- par[-c(1:N)]
-        cs <- numeric(S)
-        ## denominators
-        for (k in seq_len(S)) {
-            w <- which(pattern[, k])
-            nobj <- length(w)
-            ## ties of order d
-            z1 <- 0
-            for (d in seq_len(min(D, nobj))){
-                i <- seq_len(d)
-                maxi <- rev(nobj - seq_len(d) + 1)
-                # loop through all subsets of size d in set
-                z2 <- 0
-                repeat{
-                    x <- prod(alpha[w[i]])^(1/d)
-                    z2 <- z2 + x
-                    if (i[1] == maxi[1]) break
-                    id <- max(which(maxi - i > 0))
-                    i[id:d] <- i[id] + seq_len(d - id + 1)
-                }
-                z1 <- z1 + delta[d]*z2
-            }
-            cs[k] <- z1
-        }
-        list(alpha = alpha, delta = delta, normalising_constants = cs)
+        delta <- par[-c(1:N)] # includes delta1
+        res <- expectation("all", alpha, c(1, delta), N, D, S, R, G, W)
+        # sum of (log(normalising_constants_per_set) * rep)
+        c_contr <- sum(res$theta)
+        list(alpha = alpha, delta = delta, c_contr = c_contr,
+             expA = res$expA, expB = res$expB)
     }
 
     # Design loglik as brglm2::brglmFit
     # log-likelihood and score functions
     # Within optim or nlminb use obj and gr wrappers below
-    loglik <- function(par, fit = NULL) {
-        if (is.null(fit)) {
-            fit <- key_quantities(par)
-        }
-        alpha <- fit$alpha
-        delta <- fit$delta
-        c_contr <- sum(log(fit$normalising_constants) * rep)
-        b_contr <- 0
-        ## nominators
-        for(k in seq_len(Jmax)) {
-            w <- J >= k
-            x <- apply((T == k)[, w, drop = FALSE], 2, function(z){
-                ties0 <- sum(z)
-                sum(log(delta[ties0])) + sum(log(alpha[z]))/ties0
-            })
-            b_contr <- b_contr + sum(x)
-        }
-        b_contr - c_contr
+    #
+    # assign key quantities to function environment to re-use
+    loglik <- function(par) {
+        assign("fit", key_quantities(par), envir = parent.env(environment()))
+        b_contr <- sum(B[-1]*log(fit$delta)) + sum(A*log(fit$alpha))
+        b_contr - fit$c_contr
     }
 
     # log-likelihood derivatives
     score <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
-        c(A/alpha - expectation("alpha", alpha, delta, pattern, rep, N, D, S)/alpha,
-          B/delta - expectation("delta", alpha, delta, pattern, rep, N, D, S))
+        c(A/alpha - fit$expA/alpha,
+          B[-1]/delta - fit$expB)
     }
 
     # Alternative optimization via
     obj <- function(par) {
         al <- exp(par[1:N])
-        de <- c(1, exp(par[-c(1:N)]))
+        de <- exp(par[-c(1:N)])
         -loglik(c(al, de))
     }
     gr <- function(par) {
         al <- exp(par[1:N])
-        de <- c(1, exp(par[-c(1:N)]))
-        -score(c(al, de))[-(N + 1)] * c(al, de[-1])
+        de <- exp(par[-c(1:N)])
+        -score(c(al, de)) * c(al, de)
     }
-    #res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
-    #res2 <- lbfgs(obj, gr, log(c(alpha, delta[-1])))
-    conv <- FALSE
-    par <- list(alpha = alpha, delta = delta)
-    oneUpdate <- function(par){
-        # update all alphas
-        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
-        if (pseudo){
-            par$alpha[-1] <- par$alpha[-1]*A[-1]/expA[-1]
-        } else {
-            par$alpha <- par$alpha*A/expA
+
+    method <- match.arg(method, c("iterative scaling", "BFGS", "L-BFGS"))
+
+    if (method == "BFGS"){
+        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
+        conv <- res$convergence == 0
+        iter <- res$counts
+        res <- list(alpha = exp(res$par[1:N]),
+                    delta = c(1, exp(res$par[-(1:N)])))
+
+    } else if (method == "L-BFGS"){
+        # will give an error if lbfgs not available
+        res <- lbfgs::lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1)
+        conv <- res$convergence == 0
+        iter <- NULL
+        res <- list(alpha = exp(res$par[1:N]),
+                    delta = c(1, exp(res$par[-(1:N)])))
+    } else {
+        res <- list(alpha = alpha, delta = delta)
+        res[c("expA", "expB")] <-
+            expectation(c("alpha", "delta"), alpha, delta, N, D, S, R, G, W)
+        oneUpdate <- function(res){
+            # update all alphas
+            if (npseudo > 0){
+                res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
+            } else {
+                res$alpha <- res$alpha*A/res$expA
+            }
+            # update all deltas
+            if (D > 1) {
+                res$delta[-1] <- B[-1]/
+                    expectation("delta", res$alpha, res$delta,
+                                N, D, S, R, G, W)$expB
+            }
+            res[c("expA", "expB")] <-
+                expectation(c("alpha", "delta"), res$alpha, res$delta,
+                            N, D, S, R, G, W)
+            res
         }
-        # update all deltas
-        if (D > 1) par$delta[-1] <- B[-1]/
-                expectation("delta", par$alpha, par$delta,
-                            pattern, rep, N, D, S)[-1]
-        par
-    }
-    accelerate <- function(p, p1, p2){
-        p - (p1 - p)^2 / (p2 - 2 * p1 + p)
-    }
-    eps <- 1
-    doSteffensen <- FALSE
-    for (iter in seq_len(maxit)){
-        par <- oneUpdate(par)
-        # steffensen
-        if (doSteffensen){
-            par1 <- oneUpdate(par)
-            par2 <- oneUpdate(par1)
-            if (pseudo){
-                par$alpha[-1] <- accelerate(par$alpha, par1$alpha, par2$alpha)[-1]
-            } else par$alpha <- accelerate(par$alpha, par1$alpha, par2$alpha)
-            par$delta[-1] <- accelerate(par$delta, par1$delta, par2$delta)[-1]
+        accelerate <- function(p, p1, p2){
+            # only accelerate if parameter has changed in last iteration
+            d <- p2 != p1
+            p2[d] <- p[d] - (p1[d] - p[d])^2 / (p2[d] - 2 * p1[d] + p[d])
+            p2
         }
-        expA <- expectation("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
-        # trace
-        if (trace){
-            message("iter ", iter)
+        # stopping rule: compare observed & expected sufficient stats
+        checkConv <- function(res){
+            eps <- abs(c(A, B[-1]) - c(res$expA, res$delta[-1]*res$expB))
+            assign("eps", eps, envir = parent.env(environment()))
+            all(eps < epsilon)
         }
-        # stopping rule: compare observed & expected sufficient stats for alphas
-        eps <- abs(A - expA)
-        if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
-        if (all(eps < epsilon)) {
-            conv <- TRUE
-            break
+        if (conv <- checkConv(res)) {
+            maxit <- iter <- 0
+        } else iter <- 1
+        updateIter <- function(){
+            if (trace) message("iter: ", iter)
+            assign("iter", iter + 1,
+                   envir = parent.env(environment()))
+        }
+        eps <- c(A, B[-1])
+        doSteffensen <- FALSE
+        while(iter <= maxit){
+            res <- oneUpdate(res)
+            if (conv <- checkConv(res)) break
+            if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
+            # steffensen
+            if (doSteffensen){
+                res1 <- oneUpdate(res)
+                if (conv <- checkConv(res1)) break
+                res2 <- oneUpdate(res1)
+                if (conv <- checkConv(res2)) break
+                updateIter()
+                if (npseudo > 0){
+                    res$alpha[-1] <-
+                        accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
+                } else res$alpha <-
+                        accelerate(res$alpha, res1$alpha, res2$alpha)
+                res$delta[-1] <-
+                    accelerate(res$delta, res1$delta, res2$delta)[-1]
+                res[c("expA", "expB")] <-
+                    expectation(c("alpha", "delta"), res$alpha, res$delta,
+                                N, D, S, R, G, W)
+                if (conv <- checkConv(res)) break
+            } else{
+                updateIter()
+            }
         }
     }
-
-    par$delta <- structure(par$delta, names = paste0("tie", 1:D))
-
-    if (pseudo) {
-        # drop hypothetical object
-        par$alpha <- par$alpha[-1]
-        N <- N - 1
-        # drop extra rankings
-        extra <- seq_len(2*npseudo*nobj)
-        rankings <- rankings[-extra, -1]
-        T <- T[-1, -extra]
-        J <- J[-extra]
-        # drop extra patterns
-        pattern <- pattern[-1, -seq_len(nobj)]
-        rep <- rep[-seq_len(nobj)]
-        S <- S - nobj
-    }
-    par$alpha <- par$alpha/sum(par$alpha)
-    rank <- N + D + sum(rep) - 2
-
-    key_q <- key_quantities(unlist(par))
-    logl <- loglik(unlist(par), fit = key_q)
-
-    if (length(par$alpha) < length(items)){
-        out <- rep.int(NA_real_, length(items))
-        names(out) <- items
-        out[colnames(rankings)] <- par$alpha
-        par$alpha <- out
-    } else names(par$alpha) <- items
-
     if (!conv)
         warning("Iterations have not converged.")
+
+    res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
+
+    if (npseudo > 0) {
+        # drop hypothetical object
+        res$alpha <- res$alpha[-N]
+        N <- N - 1
+        # drop weights and indices for pseudodata
+        i <- seq_len(length(W[[2]]) - N)
+        W[[2]] <- W[[2]][i]
+        G[[2]] <- G[[2]][i]
+        if (!length(W[[2]])) S <- setdiff(S, 2)
+        # remove contribution to A and B
+        A <- A[-(N + 1)] - npseudo
+        B[1] <- B[1] - 2*npseudo*N
+    }
+    res$alpha <- res$alpha/sum(res$alpha)
+    rank <- N + D - 2
+
+    # frequencies of sets selected from, for sizes 2 to max observed
+    freq <- vapply(W[S], sum, 1)
+    # number of possible selections overall
+    n <- sum(sapply(S, choose, seq(D)) %*% freq)
+    df.residual <- n - sum(freq) - rank
+
+    logl <- loglik(unlist(res[c("alpha", "delta")]))
+
+    if (length(res$alpha) < length(items)){
+        out <- rep.int(NA_real_, length(items))
+        names(out) <- items
+        out[colnames(R)] <- res$alpha
+        res$alpha <- out
+    } else names(res$alpha) <- items
+
     fit <- list(call = call,
-                coefficients = c(par$alpha, par$delta[-1]),
+                coefficients = c(res$alpha, res$delta),
                 ref = ref,
                 loglik = unname(logl),
-                df.residual = count(pattern, rep, D) - rank,
+                df.residual = df.residual,
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
-                maxTied = D, ##  Maybe we'll want to include these differently?
-                patterns = pattern, ##  Useful for fitted values
-                constants = key_q$normalising_constants)
+                weights = weights,
+                maxTied = D)
     class(fit) <- "PlackettLuce"
     fit
 }
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
-expectation <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
-                        D = length(delta), S = ncol(pattern)){
-    n <- switch(par,
-                "alpha" = N,
-                "delta" = D)
-    res <- numeric(n)
-    for (k in seq_len(S)){
-        # objects in set
-        w <- which(pattern[, k])
-        nobj <- length(w)
-        # ties of order d
-        y1 <- numeric(n)
-        z1 <- 0
-        for (d in seq_len(min(D, nobj))){
+# if ranking weight is NULL, do not aggregate across rankings
+expectation <- function(par, # par to compute expectations for
+                        alpha, # alpha par
+                        delta, # delta par
+                        N, # number of objects
+                        D, # max tie order
+                        S, # set sizes in representative rankings
+                        R, # items in each ranking, from last to first place
+                        G, # group of rankings to include; list for each S
+                        W = NULL){ # weight of rankings; list for each S
+    keepAlpha <- any(par %in% c("alpha", "all"))
+    keepDelta <- D > 1 && any(par %in% c("delta", "all"))
+    keepTheta <- any(par %in% c("theta", "all"))
+    expA <- expB <- theta <- NULL
+    if (keepAlpha) {
+        if (!is.null(W)) {
+            expA <- numeric(N)
+        } else expA <- matrix(0, nrow = nrow(R), ncol = N)
+    }
+    if (keepDelta) {
+        if (!is.null(W)) {
+            expB <- numeric(D - 1)
+        } else expB <- matrix(0, nrow = nrow(R), ncol = D - 1)
+    }
+    if (keepTheta) theta <- numeric(sum(lengths(G[S])))
+    z <- 1
+    for (s in S){
+        # D == 1
+        ## numerators (for expA, else just to compute denominators)
+        r <- G[[s]]
+        nr <- length(r)
+        x1 <- matrix(alpha[R[r, 1:s]],
+                     nrow = nr, ncol = s)
+        ## denominators
+        z1 <- rowSums(x1)
+        # D > 1
+        d <- min(D, s)
+        if (d > 1){
+            if (keepDelta)
+                y1 <- matrix(0, nrow = nr, ncol = d - 1)
+            # index up to d items: start with 1:n
             i <- seq_len(d)
-            maxi <- rev(nobj - seq_len(d) + 1)
-            # loop through all subsets of size d in set
-            if (par == "alpha")
-                y2 <- numeric(n)
-            z2 <- 0
+            # id = index to change next; id2 = first index changed
+            if (d == s) {
+                id <- s - 1
+            } else id <- d
+            id2 <- 1
             repeat{
-                x <- prod(alpha[w[i]])^(1/d)
-                # add to sums for all objects in set
-                if (par == "alpha")
-                    y2[w[i]] <- y2[w[i]] + x
-                # add to sum for current order
-                if (par == "delta")
-                    y1[d] <- y1[d] + x
-                # add to sum for current set
-                z2 <- z2 + x
-                if (i[1] == maxi[1]) break
-                id <- max(which(maxi - i > 0))
-                i[id:d] <- i[id] + seq_len(d - id + 1)
+                # work along index vector from 1 to end/first index = s
+                v1 <- alpha[R[r, i[1]]] # ability for first ranked item
+                last <- i[id] == s
+                if (last) {
+                    end <- id
+                } else end <- min(d, id + 1)
+                for (k in 2:end){
+                    # product of first k alphas indexed by i
+                    v1 <- v1 * alpha[R[r, i[k]]]
+                    # ignore if already recorded
+                    if (k < id2) next
+                    # add to numerators/denominators for sets of order s
+                    v2 <- v1^(1/k)
+                    v3 <- delta[k]*v2
+                    if (keepAlpha) {
+                        # add to numerators for objects in sets
+                        x1[, i[1:k]] <- x1[, i[1:k]] + v3/k
+                    }
+                    if (keepDelta) {
+                        # add to numerator for current tie order for sets
+                        y1[, k - 1] <- y1[, k - 1] + v2
+                    }
+                    # add to denominators for sets
+                    z1 <- z1 + v3
+                }
+                # update index
+                if (i[1] == (s - 1)) break
+                if (last){
+                    id2 <- id - 1
+                    v <- i[id2]
+                    len <- min(s - 2 - v, d - id2)
+                    id <- id2 + len
+                    i[id2:id] <- v + seq_len(len + 1)
+                } else {
+                    id2 <- id
+                    i[id] <- i[id] + 1
+                }
             }
-            if (par == "alpha")
-                y1 <- y1 + delta[d]/d*y2
-            z1 <- z1 + delta[d]*z2
         }
-        res <- res + rep[k]*y1/z1
-    }
-    res
-}
-
-# log-likelihood derivatives (score function)
-#' @method estfun PlackettLuce
-#' @importFrom sandwich estfun
-#' @export
-estfun.PlackettLuce <- function(x) {
-    D <- x$maxTied
-    N <- length(coef(x)) - D + 1
-    # coefs on log-scale here
-    lambda <- coef(x)[1:N]
-    gamma <- c(0, coef(x)[-c(1:N)])
-    # get sizes of selected sets for each observation (as in main function)
-    M <- t(Matrix(unclass(x$rankings), sparse = TRUE))
-    J <- apply(M, 2, max) # max nsets
-    J <- J - as.numeric(rowSums(t(M) == J) == 1) # nontrivial nsets
-    # derivative wrt to lambda, first 1/(size of selected sets)
-    A <- M
-    A[t(t(M) > J)] <- 0
-    A@x <- 1/as.double(unlist(apply(A, 2, function(x) tabulate(x)[x])))
-    # for derivative wrt gamma, first 1 where select set of corresponding size
-    if (D > 1){
-        B <- matrix(nrow = D - 1, ncol = ncol(M))
-        for (d in 2:D){
-            B[d - 1, ] <- apply(A == 1/d, 2, any)
+        # add contribution for sets of size s to expectation
+        if (keepAlpha){
+            # R[r, 1:s] may only index some alphas
+            if (!is.null(W)){
+                id <- unique(as.integer(R[r, 1:s]))
+                add <- drop(rowsum(as.vector(W[[s]] * x1/z1),
+                                   c(R[r, 1:s]), reorder = FALSE))
+                expA[id] <- expA[id] + add
+            } else {
+                id <- cbind(r, c(R[r, 1:s]))
+                expA[id] <- expA[id] + c(x1/z1)
+            }
+        }
+        if (keepDelta && s > 1){
+            if (!is.null(W)){
+                expB[seq_len(d - 1)] <- expB[seq_len(d - 1)] +
+                    colSums(W[[s]] * y1/z1)
+            } else expB[r, seq_len(d - 1)] <- expB[r, seq_len(d - 1)] + y1/z1
+        }
+        if (keepTheta){
+            if (par == "all"){
+                # return logtheta
+                if (!is.null(W)){
+                    theta[z:(z + nr - 1)] <- W[[s]] * log(z1)
+                } else theta[z:(z + nr - 1)] <- log(z1)
+            } else {
+                if (!is.null(W)){
+                    theta[z:(z + nr - 1)] <- W[[s]] * z1
+                } else theta[z:(z + nr - 1)] <- z1
+            }
+            z <- z + nr
         }
     }
-    # subtract expectation of alpha per set to choose from
-    for (j in seq_len(max(J))){
-        A <- A - sapply(seq_len(ncol(M)), function(i){
-            expectation("alpha", exp(lambda), exp(gamma), M[,i, drop = FALSE] >= j,
-                        1, N, D, 1)
-        })
-    }
-    # ignore column corresponding to fixed ref
-    ref <- x$ref
-    if (ref %in% names(lambda)) ref <- which(names(lambda) == ref)
-    res <- t(A[-ref, , drop = FALSE])
-    if (D > 1){
-        for (j in seq_len(max(J))){
-            B <- B - sapply(seq_len(ncol(M)), function(i){
-                # N.B. expectation should include delta*, but cancelled out in
-                # in iterative scaling so omitted!
-                exp(gamma)[-1]*expectation("delta", exp(lambda), exp(gamma),
-                                           M[,i, drop = FALSE] >= j,
-                                           1, N, D, 1)[-1]
-            })
-        }
-      cbind(res, t(B))
-    } else res
+    c(list(expA = expA)[keepAlpha],
+      list(expB = expB)[keepDelta],
+      list(theta = theta)[keepTheta])
 }

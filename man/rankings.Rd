@@ -3,8 +3,8 @@
 \name{rankings}
 \alias{rankings}
 \alias{as.rankings}
-\alias{as.rankings.Matrix}
 \alias{as.rankings.matrix}
+\alias{[.rankings}
 \alias{format.rankings}
 \title{Rankings Objects}
 \usage{
@@ -12,9 +12,9 @@ rankings(data, id, item, rank, verbose = TRUE, ...)
 
 as.rankings(x, verbose = TRUE, ...)
 
-\method{as.rankings}{Matrix}(x, verbose = TRUE, ...)
-
 \method{as.rankings}{matrix}(x, verbose = TRUE, ...)
+
+\method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
 \method{format}{rankings}(x, width = 40, ...)
 }
@@ -37,25 +37,29 @@ to rankings data.}
 \item{...}{further arguments passed to/from methods.}
 
 \item{x}{for \code{as.rankings}, a matrix with one column per item and one
-row per ranking; for \code{format}, a \code{"rankings"} object.}
+row per ranking; for \code{[} and \code{format}, a \code{"rankings"} object.}
+
+\item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
+
+\item{j}{indices specifying items to extract, as for \code{\link{[}}.}
+
+\item{drop}{if \code{TRUE} return single row/column matrices as a vector.}
+
+\item{as.rankings}{if \code{TRUE} return a rankings object, otherwise return
+a matrix/vector.}
 
 \item{width}{the width in number of characters to format each ranking -
 rankings that are too wide will be truncated.}
 }
 \value{
-a \code{"rankings"} object, which is a matrix of rankings with
-attributes
-\code{membership}{a labelled vector of indices specifying membership of
-clusters in the network of items}
-\code{csize}{the sizes of clusters in the network of items}
-\code{no}{the number of clusters in the network of items}
+a \code{"rankings"} object, which is a matrix of dense rankings
+with one attribute \code{omit} the indices of any rankings that were
+omitted due to insufficient data (less than two non-missing ranks).
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
 to a \code{"rankings"} object. These functions validate that the data are
-(possibly partial) dense rankings, recoding as necessary. The connectivity of
-inferred pairwise comparisons is also checked and information on clusters in
-the network is returned.
+(possibly partial) dense rankings, recoding as necessary.
 }
 \details{
 Each ranking \eqn{r} should rank items from 1 (first place) to \eqn{n_r}
@@ -64,63 +68,49 @@ the same rank with no rank skipped. For example {1, 0, 2, 1}, ranks the first
 and fourth items in first place and the third item in second place; the
 second item is unranked.
 
-\code{as.rankings} with throw an error if \code{x} contains anything other
-than integers \code{0:M} where M is the maximum rank.
-
 If the ranks are not in dense form, they will be recoded, e.g. {2, 2, 0, 4}
 will become {1, 1, 0, 2}.
 
-The underlying network of paired comparisons is inferred and checked for
-connectivity. A warning is given if the network is not strongly connected,
-i.e. with at least one win and one loss between all partitions of the network
-into two groups. Attributes are returned on the clusters in the network - if
-the network is strongly connected, all items belong to the same cluster.
+Rankings with less than 2 items are dropped.
+
+The method for \code{[} will return a reduced rankings object by default,
+recoding and dropping invalid rankings as necessary. To extract rows
+and/or columns of the rankings as a matrix or vector,
+set \code{as.rankings = FALSE}, see examples.
 }
 \examples{
 # create rankings from data in long form
-
-## many issues with the raw rankings!
 x <- data.frame(ranking = c(rep(1:4, each = 4), 5, 5, 5),
                 letter = c(LETTERS[c(1:3, 3, 1:4, 2:5, 1:2, 1)], NA,
                            LETTERS[3:5]),
                 rank = c(4:1, rep(NA, 4), 3:4, NA, NA, 1, 3, 4, 2, 2, 2, 3))
+# ranking 1 has different rank for same item, but order of items unambiguous
+# all ranks are missing in ranking 2
+# some ranks are missing in ranking 3
+# ranking 4 has inconsistent ranks for two items and a rank with missing item
+# ranking 5 is fine - an example of a tie
+split(x, x$ranking)
+# fix issues when creating rankings object
 rankings(x, id = "ranking", item = "letter", rank = "rank")
 
 # convert existing matrix of rankings
+R <- matrix(c(1, 2, 0, 0,
+              4, 1, 2, 3,
+              2, 1, 1, 1,
+              1, 2, 3, 0,
+              2, 1, 1, 0,
+              1, 0, 3, 2), nrow = 6, byrow = TRUE)
+colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
+# first three rankings
+R[1:3,]
+# exclude pear from the rankings
+R[, -4]
+# extract rankings 2 and 3 as numeric matrix
+R[2:3, , as.rankings = FALSE]
+# same as
+unclass(R)[2:3,]
+# extract rankings for item 1 as a vector
+R[,1, as.rankings = FALSE]
 
-## weakly connected network:
-## one win between two clusters
-X <- matrix(c(1, 2, 0, 0,
-              2, 1, 3, 0,
-              0, 0, 1, 2,
-              0, 0, 2, 1), ncol = 4, byrow = TRUE)
-R <- as.rankings(X)
-attr(R, "membership")
-
-## two weakly connected items:
-## item 1 always loses; item 4 only wins against item 1
-X <- matrix(c(4, 1, 2, 3,
-              0, 2, 1, 3), nr = 2, byrow = TRUE)
-R <- as.rankings(X)
-attr(R, "membership")
-
-## item 1 always wins; item 4 always loses
-X <- matrix(c(1, 2, 3, 4,
-              1, 3, 2, 4), nr = 2, byrow = TRUE)
-R <- as.rankings(X)
-attr(R, "membership")
-
-## all in separate clusters: always 1 > 2 > 3 > 4
-## also miscoded rankings and redundant ranking
-X <- matrix(c(1, 2, 3, 4,
-              1, 0, 2, 3,
-              1, 1, 2, 0,
-              1, 0, 3, 4,
-              2, 2, 0, 4,
-              0, 0, 3, 0,
-              2, 4, 0, 0), ncol = 4, byrow = TRUE)
-R <- as.rankings(X)
-R
-attr(R, "recoded")
-attr(R, "membership")
 }

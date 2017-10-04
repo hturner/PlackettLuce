@@ -1,8 +1,8 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.2.0009
-Date: 2017-08-08
+Version: 0.2.1041
+Date: 2017-10-04
 Authors@R: c(person("Heather", "Turner", email =
         "ht@heatherturner.net", role = c("aut", "cre")),
         person("Ioannis", "Kosmidis", role = "aut"), person("David",
@@ -12,6 +12,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK,
-        sandwich, stats, tibble
-Suggests: BradleyTerry2, StatRank, gnm, qvcalc, psychotree
+        sandwich, stats
+Suggests: BradleyTerry2, BradleyTerryScalable, StatRank, lbfgs, gnm,
+        qvcalc, psychotree, testthat, tibble
 RoxygenNote: 6.0.1
