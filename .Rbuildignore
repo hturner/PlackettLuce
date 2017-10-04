@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 pre-commit.R
 slowTests
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$
