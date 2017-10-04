@@ -4,7 +4,7 @@
 vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##
-  theLongData <- poisson_rankings(unclass(object$rankings), object$weights)
+  theLongData <- poisson_rankings(object$rankings, object$weights)
   coefs <- coef(object, ref = ref)
   na <- is.na(coefs)
   coefnames <- names(coefs[!na])

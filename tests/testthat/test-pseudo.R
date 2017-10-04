@@ -1,14 +1,10 @@
 context("implementation [pseudo-data]")
 
 ## Get the legacy implementation
-source_files <- c("PlackettLuce0.R", "coef0.R",
-                  "fitted0.R", "logLik0.R",
-                  "print.PlackettLuce0.R", "summary0.R",
-                  "vcov0.R")
+source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
+                    full.names = TRUE)
 
-for (file0 in source_files) {
-    source(system.file("PlackettLuce0", file0, package = "PlackettLuce"))
-}
+for (file0 in source_files) source(file0)
 
 
 coef_tol <- 1e-06
@@ -34,8 +30,8 @@ if (require(Matrix)){
     model1 <- PlackettLuce(rankings = X, npseudo = 1)
     test_that("coef match legacy code [weakly connected network]", {
         # coefficients
-        expect_equal(unname(unclass(coef(model0))),
-                     unname(unclass(coef(model1))), tolerance = coef_tol)
+        expect_equal(as.vector(coef(model0)),
+                     as.vector(coef(model1)), tolerance = coef_tol)
     })
     test_that("logLik matches legacy code [weakly connected network]", {
         # log-likelihood
@@ -87,4 +83,85 @@ if (require(gnm) & require(sandwich)){
 
               })
 }
-## TODO: subset as rankings etc to not bother checking
+
+## simple BT model
+R <- matrix(c(1, 2, 0, 0,
+              2, 0, 1, 0,
+              1, 0, 0, 2,
+              2, 1, 0, 0,
+              0, 1, 2, 0,
+              0, 0, 2, 0), byrow = TRUE, ncol = 4,
+            dimnames = list(NULL, letters[1:4]))
+
+test_that("disconnected network causes error [one always loses]",
+          {
+              # error for discinnected network
+              expect_error(mod <- PlackettLuce(R, npseudo = 0))
+              # no error for connected subset
+              expect_error(mod <- PlackettLuce(R[, 1:3], npseudo = 0), NA)
+           })
+
+test_that("disconnected network works with pseudodata [one always loses]",
+          {
+              expect_error(mod <- PlackettLuce(R), NA)
+          })
+
+# weakly connected clusters
+X <- matrix(c(1, 2, 0, 0,
+              2, 1, 3, 0,
+              0, 0, 1, 2,
+              0, 0, 2, 1), ncol = 4, byrow = TRUE)
+R <- as.rankings(X)
+
+test_that("disconnected network causes error [weakly connected clusters]",
+          {
+              expect_error(mod <- PlackettLuce(R, npseudo = 0))
+          })
+
+# disconnected clusters
+X <- matrix(c(1, 2, 0, 0,
+              2, 1, 0, 0,
+              0, 0, 1, 2,
+              0, 0, 2, 1), ncol = 4, byrow = TRUE)
+R <- as.rankings(X)
+
+test_that("disconnected network causes error [disconnected clusters]",
+          {
+              expect_error(mod <- PlackettLuce(R, npseudo = 0))
+          })
+
+test_that("disconnected network works with pseudodata [disconnected clusters]",
+          {
+              expect_error(mod <- PlackettLuce(R), NA)
+          })
+
+# two weakly connected items:
+# item 1 always loses; item 4 only wins against item 1
+X <- matrix(c(4, 1, 2, 3,
+              0, 2, 1, 3), nr = 2, byrow = TRUE)
+R <- as.rankings(X)
+
+test_that("disconnected network causes error [weakly connected items]",
+          {
+              expect_error(mod <- PlackettLuce(R, npseudo = 0))
+          })
+
+test_that("disconnected network works with pseudodata [weakly connected items]",
+          {
+              expect_error(mod <- PlackettLuce(R), NA)
+          })
+
+# item 1 always wins; item 4 always loses
+X <- matrix(c(1, 2, 3, 4,
+              1, 3, 2, 4), nr = 2, byrow = TRUE)
+R <- as.rankings(X)
+
+test_that("disconnected network causes error [1 wins; 4 loses]",
+          {
+              expect_error(mod <- PlackettLuce(R, npseudo = 0))
+          })
+
+test_that("disconnected network works with pseudodata [1 wins; 4 loses]",
+          {
+              expect_error(mod <- PlackettLuce(R), NA)
+          })

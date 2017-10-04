@@ -45,7 +45,8 @@
 #'     ## fit partition model based on all variables except preference
 #'     ## currently gives warnings because PlackettLuce does not accept weights
 #'     ## but all weights are 1 here
-#'     tm_tree <- pltree(R ~ ., data = Topmodel2007[, -1], minsize = 5)
+#'     tm_tree <- pltree(R ~ ., data = Topmodel2007[, -1], minsize = 5,
+#'                       )
 #'
 #'     ## plot shows abilities constrained to sum to 1
 #'     plot(tm_tree, abbreviate = 1, yscale = c(0, 0.5))

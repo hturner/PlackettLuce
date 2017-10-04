@@ -81,19 +81,17 @@ if (require(psychotree)){
                       weights = w, alpha = 0, npseudo = 0)
     test_that("fit correct for grouped rankings object [Topmodel2007]",
               {
-                  expect_equal(unclass(itempar(mod1, log = TRUE,
-                                               ref = "Barbara")),
-                               unclass(coef(mod3)), check.attributes = FALSE,
-                               tolerance = coef_tol)
+                  expect_equal(as.vector(itempar(mod1, log = TRUE,
+                                                 ref = "Barbara")),
+                               as.vector(coef(mod3)), tolerance = coef_tol)
                   expect_equal(logLik(mod1), logLik(mod3),
                                tolerance = loglik_tol)
               })
     test_that("weights work for plfit [Topmodel2007]",
               {
-                  expect_equal(unclass(itempar(mod2, log = TRUE,
-                                               ref = "Barbara")),
-                               unclass(coef(mod4)), check.attributes = FALSE,
-                               tolerance = coef_tol)
+                  expect_equal(as.vector(itempar(mod2, log = TRUE,
+                                                 ref = "Barbara")),
+                               as.vector(coef(mod4)), tolerance = coef_tol)
                   expect_equal(logLik(mod2), logLik(mod4),
                                tolerance = loglik_tol)
               })

@@ -4,7 +4,8 @@
 #' rankings. The choices and the corresponding alternatives is the
 #' exchangeable bit of the Plackett-Luce with ties.
 #'
-#' @param rankings a matrix of dense rankings.
+#' @param rankings a \code{"\link{rankings}"} object, or an object that can be
+#' coerced by \code{as.rankings}.
 #' @param names logical: if \code{TRUE} use the object names in the returned
 #' \code{"choices"} object, else use object indices.
 #'
@@ -26,37 +27,35 @@
 #' }
 #' @export
 as.choices <- function(rankings, names = FALSE) {
+    if (!inherits(rankings, "rankings")) rankings <- as.rankings(rankings)
     N <- ncol(rankings)
-    if (inherits(rankings, "rankings")) {
-        M <- unclass(rankings)
-    } else M <- rankings
-    J <- apply(M, 1, max)
+    J <- apply(rankings, 1, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)
     if (names & !is.null(onames)) {
         opt <- onames
     }
     choices <- alternatives <- list()
-    rankings <- c()
+    ranking <- c()
     for (j in seq_len(max(J))) {
         ## j-th choices
-        cho <- apply((M == j)[J >= j, , drop = FALSE], 1, function(z) opt[z])
+        cho <- apply((rankings == j)[J >= j, , drop = FALSE], 1, function(z) opt[z])
         if (is.matrix(cho)) {
             cho <- unname(split(cho, col(cho)))
         }
         choices <- c(choices, cho)
         ## j-th alternatives
-        alt <- apply((M > j - 1)[J >= j, , drop = FALSE], 1,
+        alt <- apply((rankings > j - 1)[J >= j, , drop = FALSE], 1,
                      function(z) opt[z])
         if (is.matrix(alt)) {
             alt <- unname(split(alt, col(alt)))
         }
         alternatives <- c(alternatives, alt)
-        rankings <- c(rankings, which(J >= j))
+        ranking <- c(ranking, which(J >= j))
     }
-    ii <- order(rankings)
+    ii <- order(ranking)
     out <- list(choices = choices[ii], alternatives = alternatives[ii],
-                ranking = rankings[ii])
+                ranking = ranking[ii])
     attr(out, "nchoices") <- length(choices)
     attr(out, "objects") <- onames
     class(out) <- c("choices", class(out))

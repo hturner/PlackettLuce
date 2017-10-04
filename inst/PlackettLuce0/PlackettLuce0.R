@@ -79,6 +79,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
     items <- colnames(rankings)
+    if (is.null(attr(rankings, "no"))) attr(rankings, "no") <- 1
     # if pseudodata or (adaptive and disconnected) add pseudodata
     if (network == "pseudodata" ||
         (network == "adaptive" & attr(rankings, "no") > 1)){

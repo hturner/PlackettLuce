@@ -11,14 +11,29 @@
 #' specifying the subject for each ranking.
 #' @param x an object that can be coerced to a \code{"grouped_rankings"} object
 #' for \code{as.group_rankings}, or a \code{"grouped_rankings"} object for
-#' \code{format}.
+#' \code{[} and \code{format}.
+#' @param i indices specifying groups to extract, may be any data type accepted
+#' by \code{\link{[}}.
+#' @param j indices specifying items to extract, as for \code{\link{[}}.
+#' @param drop if \code{TRUE} return single row/column matrices as a vector.
+#' @param as.grouped_rankings if \code{TRUE} return a rankings object, otherwise return
+#' a matrix/vector.
 #' @param max the maximum number of rankings to format per subject.
 #' @param width the maximum width in number of characters to format each
 #' ranking.
 #' @param ... additional arguments passed on to \code{\link{as.rankings}}
 #' by \code{grouped_rankings} or \code{as.grouped_rankings}; unused by
 #' \code{format}.
-#' @return an object of class \code{"grouped_rankings"}.
+#' @return an object of class \code{"grouped_rankings"}, which is a vector of
+#' of group IDs with the following attributes:
+#' \item{rankings}{ The \code{"rankings"} object.}
+#' \item{index}{ An index match each ranking to each group ID.}
+#' \item{R}{ A matrix with items ordered from last to first place, for each
+#' ranking. }
+#' \item{S}{ The rankings matrix with the ranks replaced by the size of the
+#' chosen set for free choices and zero for forced choices. }
+#' \item{id}{ A list with elements of the adjacency matrix that are incremented
+#' by each ranking. }
 #' @seealso \code{\link{pltree}}
 #' @examples
 #'
@@ -38,13 +53,29 @@
 #' ## there are further rankings
 #' G
 #' print(G, max = 1)
+#' ## select rankings from subject 1
+#' G[1,]
+#' ## exclude item 3 from ranking
+#' G[, -3]
+#' ## rankings from subject 2, excluding item 3
+#' ## - note subject 2 becomes the first subject
+#' G[2, -3]
+#' ## index underlying rankings without creating new grouped_rankings object
+#' G[2, -3, as.grouped_rankings = FALSE]
 #' @export
 grouped_rankings <- function(rankings, index, ...){
-    if (!inherits(rankings, "rankings"))
-        rankings <- as.rankings(rankings, ...)
     if (!(is.vector(index) & length(index) == nrow(rankings)))
         stop("index must be a vector with length equal to rankings")
+    nm <- rownames(rankings)
+    if (!inherits(rankings, "rankings"))
+        rankings <- as.rankings(rankings, ...)
     index <- as.numeric(index)
+    if (!is.null(attr(rankings, "omit"))){
+        if (!is.null(nm)) {
+            omit <- match(attr(rankings, "omit"), nm)
+        } else omit <- attr(rankings, "omit")
+        index <- index[-omit]
+    }
     do.call("structure",
             c(list(seq_len(max(index)), rankings = rankings, index = index),
               ranking_stats(rankings),
@@ -53,13 +84,12 @@ grouped_rankings <- function(rankings, index, ...){
 
 # ranking stats - summaries used in model fitting, compute once for all
 ranking_stats <- function(rankings){
-    rankings <- unclass(rankings)
     nr <- nrow(rankings)
     nc <- ncol(rankings)
     R <- S <- matrix(0, nr, nc)
     id <- list()
     for (i in seq_len(nr)){
-        x <- rankings[i,]
+        x <- rankings[i, , as.rankings = FALSE]
         ind <- which(as.logical(x))
         ord <- order(x[ind], decreasing = TRUE)
         j <- seq_along(ind)
@@ -76,7 +106,8 @@ ranking_stats <- function(rankings){
         add <- list()
         for (s in seq_len(x[1] - 1)){
             one <- which(rankings[i,] == s)
-            two <- which(rankings[i,] > s) # > gives rest; == s + 1 gives next best
+            # > gives rest; == s + 1 gives next best
+            two <- which(rankings[i,] > s)
             add[[s]] <- kronecker(one, (two - 1)*nc, "+")
         }
         id[[i]] <- unlist(add)
@@ -84,23 +115,52 @@ ranking_stats <- function(rankings){
     list(R = R, S = S, id = id)
 }
 
+#' @rdname grouped_rankings
 #' @method [ grouped_rankings
 #' @export
-"[.grouped_rankings" <- function(x, i, ...) {
-    # subset subjects
-    value <- unclass(x)[i]
-    keep <- attr(x, "index") %in% value # or match(value, x)
-    # renumber indices to match rows of new object
-    index <- match(attr(x, "index")[keep], value)
-    value <- match(value, value)
-    # create subsetted object
-    structure(value,
-              rankings = unclass(attr(x, "rankings"))[keep, , drop = FALSE],
-              index = index,
-              R = attr(x, "R")[keep, , drop = FALSE],
-              S = attr(x, "S")[keep, , drop = FALSE],
-              id = attr(x, "id")[keep],
-              class = "grouped_rankings")
+"[.grouped_rankings" <- function(x, i, j, ..., drop = TRUE,
+                                 as.grouped_rankings = TRUE) {
+    if (!missing(i)) {
+        if (missing(j)) j <- TRUE
+        # always a vector if picking out elements of rankings matrix
+        if (is.matrix(i)) {
+            r <- split(1:length(attr(x, "index")), attr(x, "index"))
+            i1 <- unlist(r[i[,1]])
+            i2 <- rep(i[,2], lengths(r))
+            return(.subset(attr(x, "rankings"), cbind(i1, i2)))
+        }
+        # convert index of groups to index of rankings
+        value <- .subset(x, i)
+        i <- attr(x, "index") %in% value # or match(value, x)
+        # update index to remove omitted groups
+        index <- match(attr(x, "index")[i], value)
+        value <- seq_len(length(value))
+    } else {
+        if (missing(j)) return(x)
+        value <- x
+        i <- TRUE
+        index <- attr(x, "index")
+    }
+    # now subset rankings matrix
+    rankings <- .subset(attr(x, "rankings"), i, j, drop = FALSE)
+    if (!as.grouped_rankings) {
+        if (drop) return(drop(rankings))
+        return(rankings)
+    }
+    if (ncol(rankings) == ncol(attr(x, "rankings"))) {
+        # subset attributes to match selected rankings
+        structure(value,
+                  rankings = rankings,
+                  index = index,
+                  R = attr(x, "R")[i, , drop = FALSE],
+                  S = attr(x, "S")[i, , drop = FALSE],
+                  id = attr(x, "id")[i],
+                  class = "grouped_rankings")
+    } else {
+        # convert rankings matrix to grouped_rankings
+        # (will recode as necessary, omit redundant rankings, create R, S, id)
+        grouped_rankings(rankings, index)
+    }
 }
 
 #' @rdname grouped_rankings

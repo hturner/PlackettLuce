@@ -21,7 +21,8 @@
 #' \code{npseudo = 1}, is sufficient to connect the network and has a weak
 #' shrinkage effect.
 #'
-#' @param rankings a matrix of dense rankings, see examples.
+#' @param rankings a \code{"\link{rankings}"} object, or an object that can be
+#' coerced by \code{as.rankings}.
 #' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
@@ -65,7 +66,7 @@ PlackettLuce <- function(rankings, ref = NULL,
                          npseudo = 0.5,
                          weights = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
-                         epsilon = 1e-7, steffensen = 1e-4, maxit = 100,
+                         epsilon = 1e-7, steffensen = 1e-4, maxit = 200,
                          trace = FALSE, verbose = TRUE){
     call <- match.call()
 
@@ -96,27 +97,16 @@ PlackettLuce <- function(rankings, ref = NULL,
     } else stopifnot(length(weights) == nrow(rankings))
 
     if (is.null(ref)) ref <- 1
-    M <- unclass(rankings) # shouldn't need to unclass when update subset method
 
     if (!grouped_rankings){
         # items ranked from last to 1st place
-        R <- t(apply(M, 1, order, decreasing = TRUE))
+        R <- t(apply(rankings, 1, order, decreasing = TRUE))
 
         # adjacency matrix: wins over rest
-        nset <- apply(M, 1, max)
-        m <- max(M)
-        X <- matrix(0, N, N)
-        for (i in 1:m){
-            r <- which(nset >= (i + 1))
-            for(j in r) {
-                one <- M[j,] == i
-                two <- M[j,] > i # > gives rest; == i + 1 gives next best
-                X[one, two] <- X[one, two] + weights[j]
-            }
-        }
+        X <- adjacency(rankings, weights = weights)
 
         # sizes of selected sets
-        S <- apply(M, 1, function(x){
+        S <- apply(rankings, 1, function(x){
             last <- which(x == max(x))
             ind <- which(x > 0)
             # exclude untied last place
@@ -130,8 +120,11 @@ PlackettLuce <- function(rankings, ref = NULL,
         S <- unlist(S)
 
         # sufficient statistics
-        # for alpha i, sum over all sets st object i is in selected set/size of selected set
-        A <- unname(rowsum(w/S, ind)[,1])
+        # for alpha i, sum over all sets st object i is in selected set/size of
+        # selected set
+        A <- numeric(N)
+        i <- sort(unique(ind))
+        A[i] <- unname(rowsum(w/S, ind)[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
@@ -140,12 +133,15 @@ PlackettLuce <- function(rankings, ref = NULL,
         # (id extracted from grouped_rankings object)
         X <- matrix(0, N, N)
         for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+        class(X) <- c("adjacency", "matrix")
 
         # replicate ranking weight for each choice in ranking
+        # (S extracted from grouped_rankings object)
         w <- rep(weights, rowSums(S > 0))
 
         # sufficient statistics
-        # for alpha i, sum over all sets st object i is in selected set/size of selected set
+        # for alpha i, sum over all sets st object i is in selected set/size of
+        # selected set
         A <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- tabulate(S[as.logical(S)])
@@ -153,6 +149,14 @@ PlackettLuce <- function(rankings, ref = NULL,
     }
     D <- length(B)
     B <- B/seq(D)
+
+    # check connectivity if npseudo = 0
+    if (npseudo == 0){
+        out <- connectivity(X, verbose = FALSE)
+        if (out$no > 1)
+            stop("Network is not fully connected - cannot estimate all ",
+                 "item parameters with npseudo = 0")
+    }
 
     # unique rows with >= 1 element for logical matrix
     # case where p is fixed
@@ -173,19 +177,18 @@ PlackettLuce <- function(rankings, ref = NULL,
     }
 
     # max number of objects in set
-    nc <- max(rowSums(M > 0))
+    nc <- max(rowSums(rankings > 0))
 
     # create W so cols are potential set sizes and value > 0 indicates ranking
     # aggregate common sets
     # - incorporate ranking weights by weighted count vs simple tabulate
     W <- G <- list() # weight (currently rep count); group of rankings
-    M <- as.matrix(M)
-    nc <- max(rowSums(M > 0))
+    nc <- max(rowSums(rankings > 0))
     S <- logical(nc)  # set sizes present in rankings
     minrank <- rep.int(1, nr)
     for (i in seq_len(nc)){
         s <- (nc - i + 1)
-        set <- M >= minrank
+        set <- rankings >= minrank
         r <- which(rowSums(set) == s)
         S[s] <- s != 1 && length(r)
         if (!S[s]) next
@@ -200,7 +203,7 @@ PlackettLuce <- function(rankings, ref = NULL,
     stopifnot(npseudo >= 0)
     if (npseudo > 0){
         # update R with paired comparisons with hypothetical item (item N + 1)
-        R <- cbind(R, "NULL" = N + 1)
+        R <- cbind(R, "NULL" = 0)
         pseudo <- matrix(0, nrow = N, ncol = N + 1)
         pseudo[, 1] <- N + 1
         pseudo[, 2]  <- seq_len(N)
@@ -359,6 +362,9 @@ PlackettLuce <- function(rankings, ref = NULL,
             }
         }
     }
+    if (!conv)
+        warning("Iterations have not converged.")
+
     res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
 
     if (npseudo > 0) {
@@ -391,9 +397,6 @@ PlackettLuce <- function(rankings, ref = NULL,
         out[colnames(R)] <- res$alpha
         res$alpha <- out
     } else names(res$alpha) <- items
-
-    if (!conv)
-        warning("Iterations have not converged.")
 
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),

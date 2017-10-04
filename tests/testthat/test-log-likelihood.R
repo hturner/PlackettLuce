@@ -1,15 +1,10 @@
 context("implementation [log-likelihood and coefficients]")
 
 ## Get the legacy implementation
-source_files <- c("PlackettLuce0.R", "coef0.R",
-                  "fitted0.R", "logLik0.R",
-                  "print.PlackettLuce0.R", "summary0.R",
-                  "vcov0.R")
+source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
+                    full.names = TRUE)
 
-for (file0 in source_files) {
-    source(system.file("PlackettLuce0", file0, package = "PlackettLuce"))
-}
-
+for (file0 in source_files) source(file0)
 
 coef_tol <- 1e-06
 loglik_tol <- 1e-12
@@ -39,8 +34,8 @@ if (require("Matrix") & requireNamespace("igraph") &
     model1 <- PlackettLuce(rankings = R, ref = "orange", npseudo = 0)
     test_that("coef match legacy code [fake partial rankings with ties]", {
         # coefficients
-        expect_equal(unname(unclass(coef(model0))),
-                     unname(unclass(coef(model1))), tolerance = coef_tol)
+        expect_equal(as.vector(coef(model0)),
+                     as.vector(coef(model1)), tolerance = coef_tol)
     })
     test_that("logLik matches legacy code [fake partial rankings with ties]", {
         # log-likelihood
@@ -105,7 +100,7 @@ if (require(BradleyTerry2)){
     R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
     R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
     ## needs 170 iterations
-    mod_PL <- PlackettLuce(R, maxit = 500, epsilon = 1e-5, npseudo = 0)
+    mod_PL <- PlackettLuce(R, npseudo = 0)
     test_that("estimates match BTm [icehockey]", {
         expect_equal(unname(coef(mod_BT)), unname(coef(mod_PL))[-1],
                      tolerance = coef_tol)

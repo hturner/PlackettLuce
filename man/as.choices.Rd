@@ -7,7 +7,8 @@
 as.choices(rankings, names = FALSE)
 }
 \arguments{
-\item{rankings}{a matrix of dense rankings.}
+\item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
+coerced by \code{as.rankings}.}
 
 \item{names}{logical: if \code{TRUE} use the object names in the returned
 \code{"choices"} object, else use object indices.}

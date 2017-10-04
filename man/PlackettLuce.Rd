@@ -6,10 +6,11 @@
 \usage{
 PlackettLuce(rankings, ref = NULL, npseudo = 0.5, weights = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 1e-04, maxit = 100, trace = FALSE, verbose = TRUE)
+  steffensen = 1e-04, maxit = 200, trace = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{rankings}{a matrix of dense rankings, see examples.}
+\item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
+coerced by \code{as.rankings}.}
 
 \item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.}
 
