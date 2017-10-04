@@ -14,6 +14,6 @@ Encoding: UTF-8
 LazyData: true
 Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK,
         sandwich, stats
-Suggests: BradleyTerry2, BradleyTerryScalable, StatRank, lbfgs, gnm,
-        qvcalc, psychotree, testthat, tibble, covr
+Suggests: BradleyTerry2, BradleyTerryScalable, Matrix.utils, 
+        StatRank, covr, lbfgs, gnm, psychotree, qvcalc, testthat, tibble
 RoxygenNote: 6.0.1
