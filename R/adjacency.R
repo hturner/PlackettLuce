@@ -14,7 +14,7 @@
 #' @param object a \code{\link{rankings}} object, or an object that can be
 #' coerced by \code{as.rankings}.
 #' @param weights an optional vector of weights for the rankings.
-#' @param ... further argumjents passed to/from methods.
+#' @param ... further arguments passed to/from methods.
 #'
 #' @return an N by N matrix, where N is the number of items that can be ranked.
 #'

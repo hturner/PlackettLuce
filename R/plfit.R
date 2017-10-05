@@ -1,6 +1,6 @@
 #' PlackettLuce Wrapper for Model-based Recursive Partitioning
 #'
-#' This is a wrapper arround \code{PlackettLuce} as required by
+#' This is a wrapper around \code{PlackettLuce} as required by
 #' \code{\link[partykit]{mob}} for model-based recursive partitioning. It is
 #' not intended for general use.
 #'

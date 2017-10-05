@@ -16,8 +16,8 @@
 #' by \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
 #' @param drop if \code{TRUE} return single row/column matrices as a vector.
-#' @param as.grouped_rankings if \code{TRUE} return a rankings object, otherwise return
-#' a matrix/vector.
+#' @param as.grouped_rankings if \code{TRUE} return a rankings object, otherwise
+#' return a matrix/vector.
 #' @param max the maximum number of rankings to format per subject.
 #' @param width the maximum width in number of characters to format each
 #' ranking.
@@ -124,7 +124,7 @@ ranking_stats <- function(rankings){
         if (missing(j)) j <- TRUE
         # always a vector if picking out elements of rankings matrix
         if (is.matrix(i)) {
-            r <- split(1:length(attr(x, "index")), attr(x, "index"))
+            r <- split(seq_along(attr(x, "index")), attr(x, "index"))
             i1 <- unlist(r[i[,1]])
             i2 <- rep(i[,2], lengths(r))
             return(.subset(attr(x, "rankings"), cbind(i1, i2)))
@@ -197,7 +197,8 @@ as.grouped_rankings.paircomp <- function(x, ...){
 #' @export
 as.data.frame.grouped_rankings <-
     function(x, row.names = NULL, optional = FALSE, ...,
-             nm = paste(deparse(substitute(x), width.cutoff = 20L), collapse = " ")){
+             nm = paste(deparse(substitute(x), width.cutoff = 20L),
+                        collapse = " ")){
     value <- list(x)
     if (!optional) {
         names(value) <- nm
@@ -235,8 +236,8 @@ format.grouped_rankings <- function(x, max = 2, width = 20, ...){
     rep[order(attr(x, "index"))] <- sequence(tab)
     R <- attr(x, "rankings")[rep <= max, ]
     char <- format.rankings(R, width = width)
-    value <- sapply(split(char, attr(x, "index")[rep <= max]), paste,
-                    collapse = ", ")
+    value <- vapply(split(char, attr(x, "index")[rep <= max]), paste,
+                    collapse = ", ", "a")
     # add ... if more than max rankings
     trunc <- tab > max
     value[trunc] <- paste0(value[trunc], ", ...")

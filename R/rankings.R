@@ -108,7 +108,8 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
         keep <- logical(ndups)
         for (i in seq(ndups)){
             ranks <- data[[3]][id == dups[i]]
-            # keep first if equal/consecutive ranks, else drop all (inconsistent)
+            # keep first if equal/consecutive ranks,
+            # else drop all (inconsistent)
             keep[i] <- diff(range(ranks)) < 2
         }
         include <- !id %in% dups

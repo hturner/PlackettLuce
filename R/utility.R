@@ -8,11 +8,11 @@ longdat <- function(dat){
     X <- diag(N)
     resX <- resY <- resZ <- list()
     k <- 1
-    for (i in 1:nrow(dat)){
+    for (i in seq_len(nrow(dat))){
         y <- numeric(N)
         nobj <- max(which(dat[i,] != 0))
         resX[[i]] <- resY[[i]] <-resZ[[i]] <- list()
-        for(j in 1:(nobj - 1)){
+        for(j in seq_len(nobj - 1)){
             y[dat[i,j]] <- 1
             ind <- unlist(dat[i, j:nobj])
             resY[[i]][[j]] <- y[ind]
@@ -34,31 +34,32 @@ longdat2 <- function(R){
     N <- ncol(R)
     D <- max(apply(R, 1, function(x) max(tabulate(x))))
     X <- list()
-    for (d in 1:D){
-        comb <- combn(1:N, d)
+    for (d in seq_len(D)){
+        comb <- combn(seq_len(N), d)
         A <- matrix(0, nrow = ncol(comb), ncol = N)
-        A[cbind(rep(1:ncol(comb), each = nrow(comb)), c(comb))] <- 1/d
+        A[cbind(rep(seq_len(ncol(comb)), each = nrow(comb)), c(comb))] <- 1/d
         B <- matrix(0, nrow = ncol(comb), ncol = D - 1)
         if (ncol(B)) B[, d - 1] <- 1
         X[[d]] <- cbind(A, B)
     }
     resX <- resY <- resZ <- list()
     k <- 1
-    for (i in 1:nrow(R)){
+    for (i in seq_len(nrow(R))){
         J <- max(R[i,])
         J <- J - (sum(R[i,] == J) == 1)
         resX[[i]] <- resY[[i]] <- resZ[[i]] <- list()
         for (j in seq_len(J)){
             id <- which(R[i,] < j)
             Xij <- list()
-            for (d in 1:min(D, N - length(id))){
+            for (d in seq_len(min(D, N - length(id)))){
                 keep <- rowSums(X[[d]][, id, drop = FALSE]) == 0
                 Xij[[d]] <- X[[d]][keep,]
             }
             resX[[i]][[j]] <- do.call("rbind", Xij)
             resZ[[i]][[j]] <- rep(k, nrow(resX[[i]][[j]]))
             resY[[i]][[j]] <- numeric(nrow(resX[[i]][[j]]))
-            id <- colSums(t(resX[[i]][[j]][, 1:N]) == (R[i,] == j)/sum(R[i,] == j)) == N
+            id <- colSums(t(resX[[i]][[j]][, seq_len(N)]) == (R[i,] == j)/
+                              sum(R[i,] == j)) == N
             resY[[i]][[j]][id] <- 1
             k <- k + 1
         }
@@ -70,7 +71,7 @@ longdat2 <- function(R){
 }
 
 # okay to aggregate for vcov computation, but not for logLik
-#' @import Matrix Matrix
+#' @importFrom Matrix sparseMatrix cBind
 poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
@@ -172,6 +173,6 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
 
 # convert ranked items to dense rankings for each object
 denseRanking <- function(M){
-    t(apply(M, 1, function(x) match(1:max(M), x, nomatch = 0)))
+    t(apply(M, 1, function(x) match(seq_len(max(M)), x, nomatch = 0)))
 }
 

@@ -12,7 +12,7 @@ coerced by \code{as.rankings}.}
 
 \item{weights}{an optional vector of weights for the rankings.}
 
-\item{...}{further argumjents passed to/from methods.}
+\item{...}{further arguments passed to/from methods.}
 }
 \value{
 an N by N matrix, where N is the number of items that can be ranked.

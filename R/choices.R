@@ -39,7 +39,8 @@ as.choices <- function(rankings, names = FALSE) {
     ranking <- c()
     for (j in seq_len(max(J))) {
         ## j-th choices
-        cho <- apply((rankings == j)[J >= j, , drop = FALSE], 1, function(z) opt[z])
+        cho <- apply((rankings == j)[J >= j, , drop = FALSE], 1,
+                     function(z) opt[z])
         if (is.matrix(cho)) {
             cho <- unname(split(cho, col(cho)))
         }

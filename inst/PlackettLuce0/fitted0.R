@@ -31,7 +31,10 @@ fitted.PlackettLuce0 <- function(object, ...) {
         D <- obs$D
         alt <- obs$alternatives
         ch <- obs$choices
-        if (obs$T == 1) 1 else { delta[D] * prod(alpha[ch])^(1/D) / nconst[colSums(patterns == (seq.int(nobjects) %in% alt)) == nobjects] }
+        if (obs$T == 1) 1 else {
+            delta[D] * prod(alpha[ch])^(1/D) /
+                nconst[colSums(patterns == (seq.int(nobjects) %in% alt)) ==
+                           nobjects] }
     }
     choices$fitted <- apply(choices, 1, prob)
     choices$D <- choices$T <- NULL

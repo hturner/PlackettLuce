@@ -15,7 +15,7 @@
 #' with log-ability 0 and adds \code{npseudo} wins and \code{npseudo} losses
 #' to the set of rankings.
 #'
-#' The paramater \code{npseudo} is the prior strength.  With \code{npseudo = 0}
+#' The parameter \code{npseudo} is the prior strength.  With \code{npseudo = 0}
 #' we have the MLE as the posterior mode.  As \code{npseudo} approaches
 #' infinity the log-ability estimates all shrink towards 0. The default,
 #' \code{npseudo = 1}, is sufficient to connect the network and has a weak
@@ -387,7 +387,7 @@ PlackettLuce <- function(rankings, ref = NULL,
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- vapply(W[S], sum, 1)
     # number of possible selections overall
-    n <- sum(sapply(S, choose, seq(D)) %*% freq)
+    n <- sum(vapply(S, choose, numeric(D), k = seq(D)) %*% freq)
     df.residual <- n - sum(freq) - rank
 
     logl <- loglik(unlist(res[c("alpha", "delta")]))

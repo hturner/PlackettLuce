@@ -59,7 +59,7 @@ bias in the ability estimates. This approach posits a hypothetical object
 with log-ability 0 and adds \code{npseudo} wins and \code{npseudo} losses
 to the set of rankings.
 
-The paramater \code{npseudo} is the prior strength.  With \code{npseudo = 0}
+The parameter \code{npseudo} is the prior strength.  With \code{npseudo = 0}
 we have the MLE as the posterior mode.  As \code{npseudo} approaches
 infinity the log-ability estimates all shrink towards 0. The default,
 \code{npseudo = 1}, is sufficient to connect the network and has a weak

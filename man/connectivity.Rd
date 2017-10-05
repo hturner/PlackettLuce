@@ -28,7 +28,7 @@ Check the connectivity of the network underlying a set of rankings.
 Ranked items are connected in a directed graph according to the implied
 wins and loses between pairs of items. The wins and losses can be
 summarised as an adjacency matrix using \code{\link{adjacency}}. From this
-adjancency matrix, the graph is inferred and it is checked for
+adjacency matrix, the graph is inferred and it is checked for
 connectivity. A message is given if the network is not strongly connected,
 i.e. with at least one win and one loss between all partitions of the network
 into two groups. Features of clusters in the network are returned - if

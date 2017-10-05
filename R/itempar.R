@@ -3,7 +3,8 @@
 #' A method for \code{\link[psychotools]{itempar}} to extract the item
 #' parameters (abilities or log-abilities) from a Plackett-Luce model.
 #'
-#' @param object a fitted model object as returned by \code{\link{PlackettLuce}}.
+#' @param object a fitted model object as returned by
+#' \code{\link{PlackettLuce}}.
 #' @param ref  a vector of labels or position indices of item parameters which
 #' should be used as restriction/for normalization. If \code{NULL}
 #' (the default), all items are used with a zero sum (\code{log = TRUE}) or
@@ -55,8 +56,10 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
         if (!all(ref %in% id))
             stop("Could not match 'ref' to estimable coefficients")
     } else if (is.matrix(ref)) {
-        stop("Handling of contrast matrices in argument 'ref' currently not implemented for itempar.PlackettLuce().")
-    } else stop("Argument 'ref' is misspecified (see ?itempar for possible values).")
+        stop("Handling of contrast matrices in argument 'ref' currently not ",
+             "implemented for itempar.PlackettLuce().")
+    } else stop("Argument 'ref' is misspecified (see ?itempar for possible ",
+                "values).")
     ref <- match(ref, id)
     # define parameters
     if (log){

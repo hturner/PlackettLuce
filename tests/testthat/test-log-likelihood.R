@@ -92,13 +92,15 @@ if (require(BradleyTerry2)){
     ## loglinear model with BTm
     icehockey2 <- subset(icehockey, result != 0.5) #remove ties
     mod_BT <- BTm(outcome = result,
-                      player1 = visitor, player2 = opponent,
-                      id = "team", data = icehockey2)
+                  player1 = visitor, player2 = opponent,
+                  id = "team", data = icehockey2)
     ## compare to PlackettLuce
     R <- matrix(0, nrow = nrow(icehockey2),
                 ncol = nlevels(icehockey2$visitor))
-    R[cbind(1:nrow(icehockey2), icehockey2$visitor)] <- 2 - icehockey2$result
-    R[cbind(1:nrow(icehockey2), icehockey2$opponent)] <- icehockey2$result + 1
+    R[cbind(seq_len(nrow(icehockey2)), icehockey2$visitor)] <-
+        2 - icehockey2$result
+    R[cbind(seq_len(nrow(icehockey2)), icehockey2$opponent)] <-
+        icehockey2$result + 1
     ## needs 170 iterations
     mod_PL <- PlackettLuce(R, npseudo = 0)
     test_that("estimates match BTm [icehockey]", {
@@ -141,14 +143,14 @@ if (require(gnm)){
               {
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
                                check.attributes = FALSE, tolerance = loglik_tol)
-    })
+              })
 }
 
 
 ## Nascar example from Hunter
 if (require(StatRank)){
-    ## 36 races. Partial rankings of length (42 or 43), ranking 83 drivers in 1st to
-    ## 83rd place (puts zero for 43rd or 44th to last place). No ties.
+    ## 36 races. Partial rankings of length (42 or 43), ranking 83 drivers in
+    ## 1st to 83rd place (puts zero for 43rd or 44th to last place). No ties.
     data(Data.Nascar)
     ## StatRank PL function takes ~10min; not sure how to compare coef
     ## a <- Estimation.PL.MLE(Data.Nascar)$Mean

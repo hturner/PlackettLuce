@@ -8,7 +8,8 @@
   vcov = TRUE, log = FALSE, ...)
 }
 \arguments{
-\item{object}{a fitted model object as returned by \code{\link{PlackettLuce}}.}
+\item{object}{a fitted model object as returned by
+\code{\link{PlackettLuce}}.}
 
 \item{ref}{a vector of labels or position indices of item parameters which
 should be used as restriction/for normalization. If \code{NULL}

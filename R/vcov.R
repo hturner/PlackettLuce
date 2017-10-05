@@ -1,6 +1,7 @@
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom MASS ginv
+#' @importFrom Matrix crossprod Diagonal
 vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##
@@ -22,12 +23,15 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   XtWX <- as.matrix(crossprod(X, WX))
   ZtWX <- rowsum(as.matrix(WX), z)
   ZtWZinverse <- 1/totals
-  result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))    ## Should we try to avoid ginv() ?
+  ## Should we try to avoid ginv() ?
+  result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))
   ##
-  ##  That's the basic computation all done, ie to get Moore-Penrose inverse of the information matrix.
+  ##  That's the basic computation all done, ie to get Moore-Penrose inverse of
+  ##  the information matrix.
   ##
-  ##  The rest is all about presenting the result as the /actual/ vcov matrix for a specified
-  ##  set of contrasts (or equivalently a specified constraint on the parameters).
+  ##  The rest is all about presenting the result as the /actual/ vcov matrix
+  ##  for a specified set of contrasts (or equivalently a specified constraint
+  ##  on the parameters).
   nobj <- ncoefs - object$maxTied + 1
   # ref already checked in coef method (with error if invalid)
   ref <- attr(coefs, "ref")

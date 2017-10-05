@@ -25,8 +25,9 @@ summary.PlackettLuce0 <- function(object,
 #' @method print summary.PlackettLuce0
 #' @importFrom stats printCoefmat
 #' @export
-print.summary.PlackettLuce0 <-  function(x,
-                                        digits = max(3L, getOption("digits") - 3L),
+print.summary.PlackettLuce0 <- function(x,
+                                        digits = max(3L,
+                                                     getOption("digits") - 3L),
                                         ...) {
     cat("Call: ", deparse(x$call), "\n", sep = "", fill = TRUE)
 

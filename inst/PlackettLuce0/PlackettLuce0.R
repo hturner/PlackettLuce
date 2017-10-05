@@ -22,9 +22,11 @@
 #' shrinkage effect.
 #'
 #' @param rankings a matrix of dense rankings, see examples.
-#' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If \code{NULL} the first item is used.
+#' @param ref an integer or character string specifying the reference item (for
+#' which log ability will be set to zero). If \code{NULL} the first item is used.
 #' @param network the network of rankings on which to base the model:
-#' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly connected),
+#' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly
+#' connected),
 #' \code{"pseudodata"} (rankings plus pseudodata),
 #' \code{"connected"} (rankings if network strongly connected, fail otherwise),
 #' \code{"cluster"} (the largest strongly connected cluster).
@@ -96,17 +98,20 @@ PlackettLuce0 <- function(rankings, ref = NULL,
         id <- which.max(attr(rankings, "csize"))
         size <- attr(rankings, "csize")[id]
         if (size == 1) {
-            stop("All items are weakly connected, cannot estimate item abilities.")
+            stop("All items are weakly connected, ",
+                 "cannot estimate item abilities.")
         } else{
-            warning("The network of items is split into weakly connected clusters\n",
-                    "Analysing the largest cluster, with ", size, " items")
+            warning("The network of items is split into weakly connected ",
+                    "clusters\nAnalysing the largest cluster, with ", size,
+                    " items")
             # drop items not in largest cluster and recode
             rankings <- rankings[, attr(rankings, "membership") == id]
             rankings <- suppressMessages(checkDense(rankings))
             if (!is.null(ref)){
                 if ((is.character(ref) && !ref %in% colnames(rankings)) ||
                     !ref %in% id){
-                    warning("re-setting `ref` to first object in largest cluster")
+                    warning("re-setting `ref` to first object in largest ",
+                            "cluster")
                     ref <- id[1]
                 }
             }
@@ -137,7 +142,8 @@ PlackettLuce0 <- function(rankings, ref = NULL,
 
     # sufficient statistics
 
-    # for alpha i, sum over all sets of object i is in selected set/size of selected set
+    # for alpha i, sum over all sets of object i is in selected set/size of
+    # selected set
     A <- rowSums(S)
     # for delta d, number of sets with cardinality d
     B <- tabulate(1/S@x)
@@ -178,8 +184,8 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     # starting values
     N <- ncol(rankings)
     ## (scaled, un-damped) PageRank based on underlying paired comparisons
-    X <- igraph::as_adj(igraph::graph_from_edgelist(as.edgelist(rankings)))[colnames(rankings),
-                                                            colnames(rankings)]
+    X <- igraph::as_adj(igraph::graph_from_edgelist(as.edgelist(rankings)))[
+        colnames(rankings), colnames(rankings)]
     alpha <- drop(abs(rARPACK::eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
     if (pseudo) {
@@ -197,7 +203,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
         freq <- rowsum(rep, colSums(pattern))
         size <- as.numeric(rownames(freq))
         # number of possible selections overall
-        sum(sapply(size, choose, seq(D)) %*% freq)
+        sum(vapply(size, choose, numeric(D), k = seq(D)) %*% freq)
     }
 
     key_quantities <- function(par) {
@@ -256,7 +262,8 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     score <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
-        c(A/alpha - expectation0("alpha", alpha, delta, pattern, rep, N, D, S)/alpha,
+        c(A/alpha -
+              expectation0("alpha", alpha, delta, pattern, rep, N, D, S)/alpha,
           B/delta - expectation0("delta", alpha, delta, pattern, rep, N, D, S))
     }
 
@@ -277,8 +284,8 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     par <- list(alpha = alpha, delta = delta)
     oneUpdate <- function(par, trace = FALSE){
         # update all alphas
-        expA <- expectation0("alpha", par$alpha, par$delta, pattern, rep, N, D, S,
-                            trace = trace)
+        expA <- expectation0("alpha", par$alpha, par$delta, pattern, rep,
+                             N, D, S, trace = trace)
         if (pseudo){
             par$alpha[-1] <- par$alpha[-1]*A[-1]/expA[-1]
         } else {
@@ -303,11 +310,13 @@ PlackettLuce0 <- function(rankings, ref = NULL,
             par1 <- oneUpdate(par)
             par2 <- oneUpdate(par1)
             if (pseudo){
-                par$alpha[-1] <- accelerate(par$alpha, par1$alpha, par2$alpha)[-1]
+                par$alpha[-1] <-
+                    accelerate(par$alpha, par1$alpha, par2$alpha)[-1]
             } else par$alpha <- accelerate(par$alpha, par1$alpha, par2$alpha)
             par$delta[-1] <- accelerate(par$delta, par1$delta, par2$delta)[-1]
         }
-        expA <- expectation0("alpha", par$alpha, par$delta, pattern, rep, N, D, S)
+        expA <- expectation0("alpha", par$alpha, par$delta, pattern, rep,
+                             N, D, S)
         eps <- abs(A - expA)
         # trace
         if (trace){
@@ -413,7 +422,8 @@ expectation0 <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
                         # add to numerators for all objects in set
                         y1[i[1:j]] <- y1[i[1:j]] + x2/j
                         if (trace)
-                            message("x2/j: ", paste(round(x2/j, 7), collapse = ", "))
+                            message("x2/j: ", paste(round(x2/j, 7),
+                                                    collapse = ", "))
                         # add to denominator for current set
                         z1 <- z1 + x2
                         if (trace)

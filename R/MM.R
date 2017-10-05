@@ -7,7 +7,7 @@ BT <- function(M, maxit = 500){
     X <- model.matrix(~as.factor(M[,1]) - 1)
     X <- X + model.matrix(~as.factor(M[,2]) - 1)
     wins <- tabulate(M[,1])
-    for (i in 1:maxit){
+    for (i in seq_len(maxit)){
         denom <- 1/(gamma[M[,1]] + gamma[M[,2]])
         gamma2 <- c(wins * 1/(t(X) %*% denom))
         if (isTRUE(all.equal(log(gamma), log(gamma2)))) break
@@ -25,12 +25,13 @@ PL <- function(M, maxit = 500){
     j <- sequence(J)
     i <- rep(seq_along(J), J)
     wins <- tabulate(c(M[cbind(i,j)]))
-    for (k in 1:maxit){
+    for (k in seq_len(maxit)){
         gamma2 <- numeric(N)
-        for (i in 1:N){
-            for (j in 1:nrow(M)){
+        for (i in seq_len(N)){
+            for (j in seq_len(nrow(M))){
                 if (sum(M[j,i:N] > 0) > 1){
-                    gamma2[M[j,i:N]] <- gamma2[M[j,i:N]] + 1/sum(gamma[M[j,i:N]])
+                    gamma2[M[j,i:N]] <-
+                        gamma2[M[j,i:N]] + 1/sum(gamma[M[j,i:N]])
                 }
             }
         }
@@ -55,7 +56,7 @@ BTties <- function(R, maxit = 500){
     j <- apply(R > 0, 1, function(x) which(x)[2])
     obji <- sort(unique(i))
     objj <- sort(unique(j))
-    for (k in 1:maxit){
+    for (k in seq_len(maxit)){
         g <- (2 + theta*sqrt(gamma[j]/gamma[i]))/(
                 gamma[i] + gamma[j] + theta*sqrt(gamma[i]*gamma[j]))
         denom <- numeric(N)

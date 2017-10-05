@@ -41,8 +41,8 @@ by \code{\link{[}}.}
 
 \item{drop}{if \code{TRUE} return single row/column matrices as a vector.}
 
-\item{as.grouped_rankings}{if \code{TRUE} return a rankings object, otherwise return
-a matrix/vector.}
+\item{as.grouped_rankings}{if \code{TRUE} return a rankings object, otherwise
+return a matrix/vector.}
 
 \item{max}{the maximum number of rankings to format per subject.}
 
