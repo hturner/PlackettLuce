@@ -1,6 +1,3 @@
-#' @importFrom stats coef
-#' @method print PlackettLuce0
-#' @export
 print.PlackettLuce0 <- function(x,
                                digits = max(3, getOption("digits") - 3),
                                ...) {

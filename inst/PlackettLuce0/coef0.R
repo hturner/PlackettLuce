@@ -5,7 +5,6 @@
 #' @param type the type of coefficients to return: one of \code{"ties"}, \code{"abilities"} or \code{"all"}.
 #' @param ... additional arguments, currently ignored.
 #'
-#' @export
 coef.PlackettLuce0 <- function(object, ref = NULL, type = "all", ...){
   type <-  match.arg(type, c("ties", "abilities", "all"))
   coefs <- log(object$coefficients)

@@ -1,6 +1,3 @@
-#' @export
-#' @importFrom stats aggregate
-#' @importFrom MASS ginv
 vcov.PlackettLuce0 <- function(object, ref = NULL, ...) {
   ##  A temporary version until we can do it properly
   ##

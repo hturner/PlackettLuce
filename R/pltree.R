@@ -29,7 +29,16 @@
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
 #' covariances in the parameter stability tests, see \code{\link{mob}}.
 #' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If NULL the first item is used.
-#' @param ... additional arguments passed to \code{\link{PlackettLuce}}
+#' @param ... additional arguments, passed to \code{\link{PlackettLuce}} by
+#' \code{pltree} and to \code{\link{itempar}} by \code{predict}.
+#' @param object a fitted model object of class \code{"pltree"}.
+#' @param newdata an optional data frame to use for prediction instead of the
+#' original data.
+#' @param type the type of prediction to return for each group, one of:
+#' \code{"itempar"} to give the result of \code{\link{itempar}} (by default the
+#' fitted probability of each item being ranked first out of all objects),
+#' \code{"rank"} the corresponding rank, \code{"best"} the topped ranked item,
+#' or \code{"node"} the node of the tree the group belongs to.
 #' @return An object of class \code{"pltree"} inheriting from \code{"bttree"}
 #' and \code{"modelparty"}.
 #' @seealso \code{\link[psychotree]{bttree}}
@@ -43,10 +52,9 @@
 #'     R <- as.grouped_rankings(Topmodel2007$preference)
 #'
 #'     ## fit partition model based on all variables except preference
-#'     ## currently gives warnings because PlackettLuce does not accept weights
-#'     ## but all weights are 1 here
+#'     ## set npseudo = 0 as all judges rank all models
 #'     tm_tree <- pltree(R ~ ., data = Topmodel2007[, -1], minsize = 5,
-#'                       )
+#'                       npseudo = 0)
 #'
 #'     ## plot shows abilities constrained to sum to 1
 #'     plot(tm_tree, abbreviate = 1, yscale = c(0, 0.5))
@@ -58,6 +66,20 @@
 #'     itempar(tm_tree, log = TRUE)
 #'     ## abilities with Anja as reference
 #'     itempar(tm_tree, ref = "Anja")
+#'
+#'     ## results for the first three judges
+#'     newdata <- Topmodel2007[1:3,]
+#'     ### fitted probabilities
+#'     predict(tm_tree, newdata)
+#'     ### fitted log-abilities, with Anni as reference
+#'     predict(tm_tree, newdata, log = TRUE, ref = "Anni")
+#'     ###  item ranks
+#'     predict(tm_tree, newdata, type = "rank")
+#'     ### top ranked item
+#'     predict(tm_tree, newdata, type = "best")
+#'     ### node the judge belongs to
+#'     predict(tm_tree, newdata, type = "node")
+#'
 #'}
 #' @importFrom partykit mob_control
 #' @export
@@ -80,9 +102,33 @@ pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
 #' @export
 partykit::mob
 
+#' @rdname pltree
 #' @method predict pltree
+#' @importFrom stats model.frame
 #' @export
-predict.pltree <- function(object, ...){
-    # do not pass on to predict.bttree
-    stop('Method not yet implemented for "pltree" objects.')
-}
+predict.pltree <- function(object, newdata = NULL,
+                           type = c("itempar", "rank", "best", "node"), ...) {
+        type <- match.arg(type)
+        if (type == "node"){
+            res <- partykit::predict.modelparty(object,
+                                                newdata = newdata,
+                                                type = "node")
+            return(structure(as.character(res),
+                             names = as.character(seq_along(res))))
+        }
+        if (is.null(newdata))
+            newdata <- model.frame(object)
+        pred <- switch(type,
+                       itempar = function(obj, ...) {
+                           t(as.matrix(itempar(obj, ...)))
+                       },
+                       rank = function(obj, ...) {
+                           t(as.matrix(rank(-obj$coefficients)))
+                       },
+                       best = function(obj, ...) {
+                           nm <- names(obj$coefficients)
+                           nm[which.max(obj$coefficients)]
+                       })
+        partykit::predict.modelparty(object, newdata = newdata, type = pred,
+                                     ...)
+    }

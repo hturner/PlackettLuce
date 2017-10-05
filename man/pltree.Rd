@@ -2,9 +2,13 @@
 % Please edit documentation in R/pltree.R
 \name{pltree}
 \alias{pltree}
+\alias{predict.pltree}
 \title{Plackett-Luce Trees}
 \usage{
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
+
+\method{predict}{pltree}(object, newdata = NULL, type = c("itempar", "rank",
+  "best", "node"), ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted, of the form
@@ -22,7 +26,19 @@ covariances in the parameter stability tests, see \code{\link{mob}}.}
 
 \item{ref}{an integer or character string specifying the reference item (for which log ability will be set to zero). If NULL the first item is used.}
 
-\item{...}{additional arguments passed to \code{\link{PlackettLuce}}}
+\item{...}{additional arguments, passed to \code{\link{PlackettLuce}} by
+\code{pltree} and to \code{\link{itempar}} by \code{predict}.}
+
+\item{object}{a fitted model object of class \code{"pltree"}.}
+
+\item{newdata}{an optional data frame to use for prediction instead of the
+original data.}
+
+\item{type}{the type of prediction to return for each group, one of:
+\code{"itempar"} to give the result of \code{\link{itempar}} (by default the
+fitted probability of each item being ranked first out of all objects),
+\code{"rank"} the corresponding rank, \code{"best"} the topped ranked item,
+or \code{"node"} the node of the tree the group belongs to.}
 }
 \value{
 An object of class \code{"pltree"} inheriting from \code{"bttree"}
@@ -60,10 +76,9 @@ if (require(psychotree)){
     R <- as.grouped_rankings(Topmodel2007$preference)
 
     ## fit partition model based on all variables except preference
-    ## currently gives warnings because PlackettLuce does not accept weights
-    ## but all weights are 1 here
+    ## set npseudo = 0 as all judges rank all models
     tm_tree <- pltree(R ~ ., data = Topmodel2007[, -1], minsize = 5,
-                      )
+                      npseudo = 0)
 
     ## plot shows abilities constrained to sum to 1
     plot(tm_tree, abbreviate = 1, yscale = c(0, 0.5))
@@ -75,6 +90,20 @@ if (require(psychotree)){
     itempar(tm_tree, log = TRUE)
     ## abilities with Anja as reference
     itempar(tm_tree, ref = "Anja")
+
+    ## results for the first three judges
+    newdata <- Topmodel2007[1:3,]
+    ### fitted probabilities
+    predict(tm_tree, newdata)
+    ### fitted log-abilities, with Anni as reference
+    predict(tm_tree, newdata, log = TRUE, ref = "Anni")
+    ###  item ranks
+    predict(tm_tree, newdata, type = "rank")
+    ### top ranked item
+    predict(tm_tree, newdata, type = "best")
+    ### node the judge belongs to
+    predict(tm_tree, newdata, type = "node")
+
 }
 }
 \seealso{

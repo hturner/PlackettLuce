@@ -60,10 +60,6 @@
 #'
 #' mod <- PlackettLuce0(R)
 #' coef(mod)
-#' @import Matrix
-#' @importFrom igraph as_adj graph_from_edgelist
-#' @importFrom rARPACK eigs
-#' @export
 PlackettLuce0 <- function(rankings, ref = NULL,
                           network = c("adaptive", "pseudodata", "connected",
                                       "cluster"),

@@ -1,6 +1,3 @@
-#' @importFrom stats AIC deviance df.residual pnorm
-#' @method summary PlackettLuce0
-#' @export
 summary.PlackettLuce0 <- function(object,
                                   ref = NULL,
                                   ...) {

@@ -22,12 +22,10 @@
 #'               1, 0, 2, 2, 3), nrow = 3, byrow = TRUE)
 #' as.edgelist(as.rankings(X))
 #'
-#' @export
 as.edgelist <- function(x, ...){
     UseMethod("as.edgelist")
 }
 
-#' @export
 as.edgelist.rankings <- function(x, ...){
     x <- unclass(x)
     maxRank <- max(x)
