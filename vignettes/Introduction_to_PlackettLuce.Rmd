@@ -1,0 +1,69 @@
+---
+title: "Introduction to PlackettLuce"
+author:
+- name: Heather Turner
+  affiliation: Department of Statistics, University of Warwick, UK
+- name: Jacob van Etten
+  affiliation: Bioversity International, Costa Rica
+- name: David Firth 
+  affiliation: Department of Statistics, University of Warwick, UK
+- name: Ioannis Kosmidis
+  affiliation: Department of Statistical Science, UCL, UK
+package: PlackettLuce
+output:
+  BiocStyle::html_document2:
+  BiocStyle::pdf_document2: default
+abstract: |
+  The **PlackettLuce** package implements a generalization of the model jointly
+  attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The 
+  generalization accomodates both ties (of any order) and partial rankings 
+  (rankings of only some items). By default, the implementation adds a set
+  pseudo-rankings with a hypothetical item, ensuring that the network of wins
+  and losses is always strongly connected, i.e. all items are connected to every
+  other item by both a path of wins and a path of losses. This means that the 
+  worth of each item is always estimable with finite standard error. It also has
+  a shrinkage effect, regularizing the estimated parameters. In addition to
+  standard methods for model summary, **PlackettLuce** provides a method to 
+  estimate quasi-standard errors for the item parameters, so that comparison 
+  intervals can be derived even when a reference item is set. Finally the 
+  package provides a method for model-based partitioning, enabling the 
+  identification of subgroups of subjects that rank items differently.
+vignette: |
+  %\VignetteIndexEntry{Introduction to PlackettLuce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: ["plackettluce.bib"]
+biblio-style: "apalike"
+link-citations: true
+---
+
+# Introduction
+
+Rankings data, in which each observation is an ordering of a set of items, 
+arises in a range of applications, for example sports tournaments and consumer 
+studies. A classic model for such data is the Plackett-Luce model. This model
+depends on Luce's axiom of choice [@Luce1977] which states that the odds of 
+choosing item 1 over item 2 do not depend on the set of items from which the
+choice is made. Suppose we have a set of items
+
+$$S_j = {i_1, i_2, \ldots, i_J}.$$
+
+Then under Luce's axiom, the probability of selecting item $j$ is given by
+
+$$P(i_j | S_j) = \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+
+where $\alpha_j$ represents the **worth** of item $j$. Viewing a ranking of $K$ 
+items as a sequence of choices--first choosing the top-ranked item, then 
+choosing the second-ranked item from the remaining items and so on--it follows
+that the probability of a ranking {i_1 > \ldots > i_K} is given by
+
+$$\prod_{j=1}^K \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+
+The above model is also derived in @Plackett1975, hence the name Plackett-Luce 
+model.
+
+## software available for PL and limitations
+
+## limitations of PL and motivation for extensions/additional methods
+
+# References
