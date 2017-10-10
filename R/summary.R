@@ -2,7 +2,7 @@
 #' @method summary PlackettLuce
 #' @export
 summary.PlackettLuce <- function(object,
-                                 ref = NULL,
+                                 ref = 1,
                                  ...) {
     coefs <- coef(object, ref = ref)
     coefficients <- matrix(NA, nrow = length(coefs), ncol = 4,
@@ -12,7 +12,8 @@ summary.PlackettLuce <- function(object,
     coefficients[,1] <- coefs
     se <- sqrt(diag(vcov(object, ref = ref)))
     coefficients[names(se), 2] <- se
-    coefficients[attr(coefs, "ref"), 2] <- NA
+    ref <- attr(coefs, "ref")
+    if (length(ref) == 1) coefficients[attr(coefs, "ref"), 2] <- NA
     coefficients[,3] <- coefficients[,1]/coefficients[,2]
     coefficients[,4] <- 2 * pnorm(-abs(coefficients[, 3]))
     structure(list(call = object$call,

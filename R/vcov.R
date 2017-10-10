@@ -35,10 +35,10 @@ vcov.PlackettLuce <- function(object, ref = NULL, ...) {
   nobj <- ncoefs - object$maxTied + 1
   # ref already checked in coef method (with error if invalid)
   ref <- attr(coefs, "ref")
-  ref <- which((seq_along(coefs) == ref)[!na])
   # Can be done more economically?
   theContrasts <- Diagonal(ncoefs)
-  theContrasts[ref, 1:nobj] <- theContrasts[ref, 1:nobj] - 1
+  theContrasts[ref, seq_len(nobj)] <-
+      theContrasts[ref,  seq_len(nobj)] - 1/length(ref)
   result <- crossprod(theContrasts, result) %*% theContrasts
   rownames(result) <- colnames(result) <- coefnames
   return(as.matrix(result))

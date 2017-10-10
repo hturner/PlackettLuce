@@ -23,8 +23,6 @@
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
-#' @param ref an integer or character string specifying the reference item (for
-#' which log ability will be set to zero). If \code{NULL} the first item is used.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param weights an optional vector of weights for each ranking.
@@ -63,7 +61,7 @@
 #' @importFrom rARPACK eigs
 #' @importFrom stats optim
 #' @export
-PlackettLuce <- function(rankings, ref = NULL,
+PlackettLuce <- function(rankings,
                          npseudo = 0.5,
                          weights = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
@@ -96,8 +94,6 @@ PlackettLuce <- function(rankings, ref = NULL,
     if (is.null(weights)){
         weights <- rep.int(1, nr)
     } else stopifnot(length(weights) == nrow(rankings))
-
-    if (is.null(ref)) ref <- 1
 
     if (!grouped_rankings){
         # items ranked from last to 1st place
@@ -401,7 +397,6 @@ PlackettLuce <- function(rankings, ref = NULL,
 
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),
-                ref = ref,
                 loglik = unname(logl),
                 df.residual = df.residual,
                 rank = rank,
