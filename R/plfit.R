@@ -47,8 +47,17 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
                 paste(c("x"[x], "start"[start], "offset"[offset]),
                       collapse = ","))
     res <- PlackettLuce(y, weights = weights, ...)
+    if (object) {
+        # returning in order to compute final vcov etc, so can aggregate now
+        uniq <- !duplicated(attr(y, "id"))
+        g <- match(attr(y, "id"), attr(y, "id")[uniq])
+        res$rankings <- structure(res$rankings[uniq,],
+                                 class = "rankings")
+        res$weights <- tapply(res$weights, g, sum)
+    }
     if (estfun) {
         percomp <- estfun.PlackettLuce(res)
+        if (object) percomp <- percomp[g, , drop = FALSE]
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
     list(coefficients = coef(res), objfun = -res$loglik,
@@ -73,8 +82,9 @@ estfun.PlackettLuce <- function(x) {
     nr <- nrow(x$rankings)
     A <- matrix(0, nrow = nr, ncol = N,
                 dimnames = list(NULL, names(alpha)))
+    choices$choices <- split(choices$choices, choices$ranking)
     for (i in seq_len(nr)){
-        r <- choices$choices[choices$ranking == i]
+        r <- choices$choices[[i]]
         len <- lengths(r)
         A[i, unlist(r)] <- rep(1/len, len)
     }

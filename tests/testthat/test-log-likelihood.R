@@ -51,9 +51,9 @@ M <- matrix(c(1, 2,
               2, 1,
               2, 3,
               4, 3), nrow = 6, byrow = TRUE)
-R <- PlackettLuce:::denseRanking(M)
+R <- as.rankings(M, "ordering")
 mod1 <- PlackettLuce(R, npseudo = 0)
-dat <- PlackettLuce:::longdat(M)
+dat <- poisson_rankings(R, aggregate = FALSE, as.data.frame = TRUE)
 if (require(gnm) & require(BradleyTerry2) &
     requireNamespace("BradleyTerryScalable")){
     ## fit loglinear model
@@ -127,11 +127,11 @@ gamma <- PlackettLuce:::PL(M)
 lambda <- log(c(gamma/sum(gamma)))
 lambda <- lambda - lambda[1]
 ## via PlackettLuce
-R <- PlackettLuce:::denseRanking(M)
+R <- as.rankings(M, "ordering")
 mod1 <- PlackettLuce(R, npseudo = 0)
 if (require(gnm)){
     ## fit loglinear model
-    dat <- PlackettLuce:::longdat(M)
+    dat <- dat <- poisson_rankings(R, aggregate = FALSE, as.data.frame = TRUE)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     test_that("coef match Hunter's MM, gnm [fake partial rankings no ties]", {
@@ -159,7 +159,7 @@ if (require(StatRank)){
     lambda <- log(c(gamma/sum(gamma)))
     lambda <- lambda - lambda[1]
     ## via PlackettLuce
-    R <- PlackettLuce:::denseRanking(Data.Nascar)
+    R <- as.rankings(Data.Nascar, input = "ordering")
     mod1 <- PlackettLuce(R, npseudo = 0)
     ## fairly quick - A. Cameron (driver with ID 1) is fixed at zero
     dat <- PlackettLuce:::poisson_rankings(R, aggregate = FALSE,

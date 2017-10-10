@@ -28,7 +28,11 @@
 #' @param rank an index of \code{data} specifying the column containing item
 #' ranks.
 #' @param x for \code{as.rankings}, a matrix with one column per item and one
-#' row per ranking; for \code{[} and \code{format}, a \code{"rankings"} object.
+#' row per ranking, or an object that can be coerced to such as matrix; for
+#' \code{[} and \code{format}, a \code{"rankings"} object.
+#' @param input for \code{as.rankings}, whether each row in the input matrix
+#' contains a \code{"ranking"} (dense, standard/modified competition or
+#' fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
 #' @param drop if \code{TRUE} return single row/column matrices as a vector.
@@ -133,16 +137,31 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
 
 #' @rdname rankings
 #' @export
-as.rankings <- function(x, verbose = TRUE, ...){
+as.rankings <- function(x, input = c("ranking", "ordering"),
+                        verbose = TRUE, ...){
     UseMethod("as.rankings")
 }
 
 #' @rdname rankings
 #' @export
-as.rankings.matrix <- function(x, verbose = TRUE, ...){
-    if (NCOL(x) >= 2) {
-        # check rankings are dense rankings, recode if necessary
-        x <- checkDense(x, verbose = verbose)
+as.rankings.default <- function(x, input = c("ranking", "ordering"),
+                                verbose = TRUE, ...){
+    x <- as.matrix(x)
+    as.rankings.matrix(x, input = input, verbose = verbose, ...)
+}
+
+#' @rdname rankings
+#' @export
+as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
+                               verbose = TRUE, ...){
+    input <- match.arg(input, c("ranking", "ordering"))
+    if (input == "ordering"){
+        # convert ordered items to dense ranking
+        item <- seq_len(max(x))
+        x <- t(apply(x, 1, function(x) match(item, x, nomatch = 0)))
+    } else if (NCOL(x) >= 2) {
+            # check rankings are dense rankings, recode if necessary
+            x <- checkDense(x, verbose = verbose)
     }
     # remove rankings with less than 2 items
     id <- which(rowSums(x > 0) < 2)

@@ -27,7 +27,10 @@
 #' }
 #' @export
 as.choices <- function(rankings, names = FALSE) {
+    # check rankings are valid
     if (!inherits(rankings, "rankings")) rankings <- as.rankings(rankings)
+    # treat as matrix for faster indexing
+    rankings <- unclass(rankings)
     N <- ncol(rankings)
     J <- apply(rankings, 1, max)
     onames <- colnames(rankings)

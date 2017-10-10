@@ -3,6 +3,7 @@
 \name{rankings}
 \alias{rankings}
 \alias{as.rankings}
+\alias{as.rankings.default}
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
@@ -10,9 +11,13 @@
 \usage{
 rankings(data, id, item, rank, verbose = TRUE, ...)
 
-as.rankings(x, verbose = TRUE, ...)
+as.rankings(x, input = c("ranking", "ordering"), verbose = TRUE, ...)
 
-\method{as.rankings}{matrix}(x, verbose = TRUE, ...)
+\method{as.rankings}{default}(x, input = c("ranking", "ordering"),
+  verbose = TRUE, ...)
+
+\method{as.rankings}{matrix}(x, input = c("ranking", "ordering"),
+  verbose = TRUE, ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
@@ -37,7 +42,12 @@ to rankings data.}
 \item{...}{further arguments passed to/from methods.}
 
 \item{x}{for \code{as.rankings}, a matrix with one column per item and one
-row per ranking; for \code{[} and \code{format}, a \code{"rankings"} object.}
+row per ranking, or an object that can be coerced to such as matrix; for
+\code{[} and \code{format}, a \code{"rankings"} object.}
+
+\item{input}{for \code{as.rankings}, whether each row in the input matrix
+contains a \code{"ranking"} (dense, standard/modified competition or
+fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
 
 \item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
 

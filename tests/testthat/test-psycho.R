@@ -34,7 +34,7 @@ if (require(psychotree) & require(sandwich)){
     bt_tree <- bttree(preference ~ ., data = Topmodel2007, minsize = 5,
                       ref = "Anja")
     pl_tree <- pltree(G ~ ., npseudo = 0, data = Topmodel2007[, -1],
-                      minsize = 15, ref = "Anja")
+                      minsize = 5, ref = "Anja")
 
     test_that("pltree and bttree agree [Topmodel2007]",
               {
