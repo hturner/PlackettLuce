@@ -1,0 +1,13 @@
+base
+rmarkdown
+BiocStyle
+knitr
+kableExtra
+PlackettLuce
+profvis
+partykit
+psychotools
+psychotree
+sandwich
+igraph
+testthat

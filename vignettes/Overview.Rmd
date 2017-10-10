@@ -1,0 +1,425 @@
+---
+title: "Introduction to PlackettLuce"
+author:
+- name: Heather Turner
+  affiliation: Department of Statistics, University of Warwick, UK
+- name: Jacob van Etten
+  affiliation: Bioversity International, Costa Rica
+- name: David Firth 
+  affiliation: Department of Statistics, University of Warwick, UK
+- name: Ioannis Kosmidis
+  affiliation: Department of Statistical Science, UCL, UK
+package: PlackettLuce
+output:
+  BiocStyle::html_document2:
+  BiocStyle::pdf_document2: default
+abstract: |
+  The **PlackettLuce** package implements a generalization of the model jointly
+  attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The 
+  generalization accomodates both ties (of any order) and partial rankings 
+  (rankings of only some items). By default, the implementation adds a set
+  pseudo-rankings with a hypothetical item, ensuring that the network of wins
+  and losses is always strongly connected, i.e. all items are connected to every
+  other item by both a path of wins and a path of losses. This means that the 
+  worth of each item is always estimable with finite standard error. It also has
+  a shrinkage effect, regularizing the estimated parameters. In addition to
+  standard methods for model summary, **PlackettLuce** provides a method to 
+  estimate quasi-standard errors for the item parameters, so that comparison 
+  intervals can be derived even when a reference item is set. Finally the 
+  package provides a method for model-based partitioning, enabling the 
+  identification of subgroups of subjects that rank items differently.
+vignette: |
+  %\VignetteIndexEntry{Introduction to PlackettLuce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: ["plackettluce.bib"]
+biblio-style: "apalike"
+link-citations: true
+---
+
+```{r vignette-setup, include = FALSE}
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "html")
+```
+
+# Introduction
+
+Rankings data, in which each observation is an ordering of a set of items, 
+arises in a range of applications, for example sports tournaments and consumer 
+studies. A classic model for such data is the Plackett-Luce model. This model
+depends on Luce's axiom of choice [@Luce1977] which states that the odds of 
+choosing item 1 over item 2 do not depend on the set of items from which the
+choice is made. Suppose we have a set of items
+
+$$S_j = {i_1, i_2, \ldots, i_J}.$$
+
+Then under Luce's axiom, the probability of selecting item $j$ is given by
+
+$$P(i_j | S_j) = \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+
+where $\alpha_j$ represents the **worth** of item $j$. Viewing a ranking of $K$ 
+items as a sequence of choices---first choosing the top-ranked item from all 
+items, then choosing the second-ranked item from the remaining items and so 
+on---it follows that the probability of a ranking ${i_1 > \ldots > i_K}$ is 
+given by
+
+$$\prod_{j=1}^K \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+
+The above model is also derived in @Plackett1975, hence the name Plackett-Luce 
+model.
+
+The **PlackettLuce** package implements a novel extension of the Plackett-Luce 
+model that accommodates tied rankings, which may be applied to either full or 
+partial rankings. Pseudo-rankings are utilised to obtain estimates in cases
+where the maximum likelihood estimates do not exist, or do not have finite
+standard errors. Methods are provided to obtain different parameterisations with
+corresponding standard errors or quasi-standard errors (that are independent of
+the reference item). There is also a method to work with the **psychotree** 
+package to fit Plackett-Luce trees.
+
+## Comparison with other packages
+
+Even though the Plackett-Luce model is a well-established method for analysing 
+rankings, the software available to fit the model is limited. By considering 
+each choice in the ranking as a multinomial observation, with one item observed
+out of a possible set, the "Poisson trick" can be applied to express the model 
+as a log-linear model, where the response is the count (one or zero) of each 
+possible outcome within each choice. In theory, the model can then be fitted 
+using standard software for generalized linear models. However there are a 
+number of difficulties with this. Firstly, dummy variables must be set up to 
+represent the presense or absense of each item in each choice and a factor 
+created to identify each choice, which is a non-standard task. Secondly the 
+factor identifying each choice will have many levels: greater than the number 
+of rankings for rankings of more than two objects. Thus there are many 
+parameters to estimate and a standard function such as `glm` will be slow to 
+fit the model, or may even fail as the corresponding model matrix will be too 
+large to fit in memory. This issue can be circumvented by using the `gnm` 
+function from **gnm**, which provides an `eliminate` argument to efficiently 
+estimate the effects of such a factor. Even then, the model-fitting may be 
+relatively slow, given the expansion in the number of observations converting 
+from rankings to counts. For example, the ranking {item 3 > item 1 > item 2}
+expands to two choices with five counts all together:
+
+```{r, echo = FALSE}
+as.matrix(data.frame(choice = c(1, 1, 1, 2, 2),
+                     `item 1` = c(1, 0, 0, 1, 0),
+                     `item 2` = c(0, 1, 0, 0, 1),
+                     `item 3` = c(0, 0, 1, 0, 0),
+                     count = c(0, 0, 1, 1, 0), check.names = FALSE))
+
+```
+
+It is possible to aggregate observations of the same choice from the same set of
+alternatives, but the number of combinations increases quickly with the number 
+of items.
+
+Given the issues with applying general methods, custom algorithms and software 
+have been developed. One approach is use Hunter's [-@Hunter2004] 
+minorization-maximization (MM) algorithm to maximize the likelihood, which is
+equivalent to an iterative scaling algorithm; this algorithm is used by the 
+**StatRank** package. Alternatively
+the likelihood of the observed data under the PlackettLuce model can be 
+maximised directly using a generic optimisation method such the 
+Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as used by both the **pmr** 
+and **hyper2** packages. Finally Bayesian methods can be used to either 
+maximize the posterior distribution via an Expectation Maximization (EM) 
+algorithm or to simulate the posterior distribution using 
+Markov-chain Monte-Carlo (MCMC) techniques, both of which are provided by 
+**PLMIX**. **PlackettLuce** offers both iterative scaling and generic 
+optimization using either BFGS or a limited memory variant (L-BFGS) via the 
+**lbfgs** package.
+
+Even some of these specialized implementations can scale poorly with the number 
+of items and/or the number of rankings as shown by the example timings in Table 
+\@ref(tab:timings-kable). Specifically `pmr::pl` becomes impractical to use with
+a moderate number of items (~10), while the functions from **hyper2** and 
+**StatRank** take much longer to run with a large number (1000s) of unique 
+rankings. **PlackettLuce** copes well with these moderately-sized data sets, 
+though is not quite as fast as **PLMIX** when both the number of items and the
+number of unique rankings is large.
+
+```{r wrappers, echo = FALSE, cache = TRUE}
+library(PlackettLuce)
+# read in example data sets
+preflib <- "http://www.preflib.org/data/election/"
+netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
+tshirt <- read.soc(file.path(preflib, "shirt/ED-00012-00000001.soc"))
+sushi <- read.soc(file.path(preflib, "sushi/ED-00014-00000001.soc"))
+
+# wrappers for each method
+pl <- function(dat, ...){
+    # convert ordered items to ranking
+    R <- as.rankings(dat[,-1], "ordering")
+    # fit without adding pseudo-rankings, weight rankings by count
+    PlackettLuce(R, npseudo = 0, weights = dat$n)
+}
+hyper2 <- function(dat, ...){
+    requireNamespace("hyper2")
+    # create likelihood object based on ordered items and counts
+    H <- hyper2::hyper2(pnames = paste0("p", seq_len(ncol(dat) - 1)))
+    for (i in seq_len(nrow(dat))){
+        x <-  dat[i, -1][dat[i, -1] > 0]
+        H <- H + hyper2::order_likelihood(x, times = dat[i, 1])
+    }
+    # find parameters to maximise likelihood
+    p <- hyper2::maxp(H)
+    structure(p, loglik = hyper2::lhyper2(H, p[-length(p)]))
+}
+plmix <- function(dat, ...){
+    requireNamespace("PLMIX")
+    # disaggregate data (no functionality for weights or counts)
+    r <- rep(seq_len(nrow(dat)), dat$n)
+    # maximum a posterioi estimate, with non-informative prior, 
+    # K items in each ranking, single component distribution
+    # default starting values do not always work
+    K <- ncol(dat)
+    PLMIX::mapPLMIX(as.matrix(dat[r, -1]), K = K, G = 1, 
+                    init = list(p = rep.int(1/K, K)), plot_objective = FALSE)
+}
+pmr <- function(dat, ...){
+    requireNamespace("pmr")
+    # convert ordered items to ranking
+    R <- as.rankings(dat[,-1], "ordering")
+    # create data frame with counts as required by pl
+    X <- as.data.frame(unclass(R))
+    X$n <- dat$n
+    capture.output(res <- pmr::pl(X))
+    res
+}
+statrank <- function(dat, iter){
+    requireNamespace("StatRank")
+    # disaggregate data (no functionality for weights or counts)
+    r <- rep(seq_len(nrow(dat)), dat$n)
+    capture.output(res <- StatRank::Estimation.PL.MLE(as.matrix(dat[r, -1]), 
+                                                      iter = iter))
+    res
+}
+timings <- function(dat, iter = NULL,
+                    fun = c("pl", "hyper2", "plmix", "pmr", "statrank")){
+    res <- list()
+    for (nm in c("pl", "hyper2", "plmix", "pmr", "statrank")){
+        if (nm %in% fun){
+            res[[nm]] <- try(
+                system.time(do.call(nm, list(dat, iter)))[["elapsed"]],
+                silent = TRUE)
+        } else res[[nm]] <- NA
+    }
+    res
+}
+```
+
+```{r timings, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+# set iter for statrank so that log-likelihood pass `all.equal` with tolerance 1e-6
+netflix_timings <- timings(netflix, 6)
+tshirt_timings <- timings(tshirt, 341)
+sushi_timings <- timings(sushi, 5)
+```
+
+```{r data-features, echo = FALSE}
+features <- cbind(c(1256, 30, 5000),
+                  c(24, 30, 4926),
+                  c(4, 11, 10))
+dimnames(features) <- list(c("Netflix", "T-shirt", "Sushi"),
+                           c("Rankings", "Unique rankings", "Items"))
+kable(features, 
+      caption = "Features of example data sets from PrefLib [@Mattei2013]") %>%
+    kable_styling()
+```
+
+```{r timings-kable, echo = FALSE}
+res <- data.frame(netflix = round(unlist(netflix_timings), 3))
+a <- gsub("[^0-9]*([0-9.]* Gb).*", "\\1", tshirt_timings$pmr)
+tshirt_timings$pmr <- NA
+res$tshirt <- formatC(unlist(tshirt_timings), digits = 3, format = "f")
+res["pmr", "tshirt"] <- "a"
+b <- gsub("[^0-9]*([0-9.]* Gb).*", "\\1", sushi_timings$pmr)
+sushi_timings$pmr <- NA
+res$sushi <- formatC(unlist(sushi_timings), digits = 3, format = "f")
+res["pmr", "sushi"] <- "b"
+res <- t(as.matrix(res))
+dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
+                      c("PlackettLuce", 
+                        "hyper2", "PLMIX", "pmr", "StatRank"))
+
+kable(res, align = c("rrrrr"), caption = "Timings for fitting the
+Plackett-Luce model to data sets summarised in Table \\@ref(tab:data-features) using 
+different packages. See Appendix for details and code.") %>%
+    kable_styling() %>%
+    add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
+    add_footnote(c(paste("Failed to allocate vector of size:", a), 
+                   paste("Failed to allocate vector of size:", b)), 
+                 notation = "alphabet")
+```
+
+When the number of items is more than ten, it is more common to 
+observe partial rankings than complete rankings. Partial rankings can be of two 
+types: *sub-rankings*, where only a subset of items are ranked each time, and 
+*incomplete rankings*, where the top $n$ items are selected and the remaining
+items are unranked, but implictly ranked lower than the top $n$. Sub-rankings
+are accommodated by the standard Plackett-Luce model, while incomplete rankings 
+require an extension of the Plackett-Luce model. **PlackettLuce** handles 
+sub-rankings only, while **PLMIX** handles incomplete rankings only and 
+**hyper2** can handle both types. (**StatRank** supports partial rankings, but 
+it is not clear in which form). Table \@ref(tab:nascar) demonstrates using the 
+NASCAR data from @Hunter2004 that **PlackettLuce** is more efficient than
+**hyper2** for modelling subrankings of a relatively large number of items.
+
+```{r timings-sub, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+data(Data.Nascar, package = "StatRank")
+# add column of frequencies so the format the same as before
+nascar <- cbind(n = 1, Data.Nascar)
+nascar_timings <- timings(nascar, fun = c("pl", "hyper2"))
+```
+
+```{r nascar, echo = FALSE}
+res <- round(unlist(nascar_timings)[c("pl", "hyper2")], 3)
+res <- data.frame(Rankings = 36, 
+                  Items = 83, 
+                  `Items per ranking` = "42-43", 
+                  PlackettLuce = res[1], 
+                  hyper2 = res[2], 
+                  check.names = FALSE, row.names = NULL)
+kable(res, align = "rrrrr",
+      caption = "Timings for fitting the Plackett-Luce model to the NASCAR data from @Hunter2004. All rankings are unique.") %>%
+    kable_styling() %>%
+    add_header_above(c("Features of NASCAR data" = 3, "Time elapsed (s)" = 2))
+```
+
+**PlackettLuce** is the only package out of those based on maximum likelihood
+estimation with the functionality to compute standard errors for the item 
+parameters and thereby the facility to conduct inference on these parameters. 
+Using **PLMIX**, inference may be based on the posterior distribution. In some 
+cases, when the network of wins and losses is disconnected or weakly connected,
+the maximum likelihood estimate does not exist, or has infinite standard 
+error; such issues are handled in **PlackettLuce** by utilising pseudo-rankings. 
+This is similar to incorporating prior information as in the Bayesian approach.
+
+**PlackettLuce** is the only package that can accommodated tied rankings, this 
+is achieved through a novel extension of the Plackett-Luce model. On the other
+hand **hyper2** is currently the only package that can handle rankings of 
+combinations of items, for example team rankings in sports. **PLMIX** offers 
+the facility to model heterogenous populations of subjects that have different
+sets of worth parameters via mixture models. This is similar in spirit to the
+model-based partitioning offered by **PlackettLuce**, except here the 
+sub-populations are defined by binary splits on subject attributes. A summary of
+the package features is given in Table \@ref(tab:package-summary).
+
+```{r package-summary, echo = FALSE}
+tab <- data.frame(Feature = c("Inference", "Disconnected networks",
+                              "Ties", "Teams", "Heterogenous case"),
+                  PlackettLuce = c("Frequentist", "Yes", "Yes", "No", "Trees"),
+                  hyper2 = c("No", "No", "No", "Yes", "No"),
+                  pmr = c("No", "No", "No", "No", "No"),
+                  StatRank = c("No", "No", "No", "No", "No"),
+                  PLMIX = c("Bayesian", "Yes", "No", "No", "Mixtures"))
+kable(tab, 
+      caption = "Features of packages for fitting the Plackett-Luce model.") %>%
+    kable_styling()
+```
+
+# Methods
+
+## Extended Plackett-Luce model
+
+The **PlackettLuce** package permits rankings of the form
+
+$$R = \{C_1, C_2, \ldots, C_J\}$$
+
+where the items in set $C_1$ are ranked higher than (better than) the items
+in $C_2$, and so on. If there are multiple objects in set $C_j$ these items 
+are tied in the ranking. For a set $S$, let
+
+$$f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
+
+where $|S|$ is the cardinality of the set, $\delta_n$ is a parameter 
+representing the prevalence of ties of order $n$, and $\alpha_i$ is a parameter 
+representing the worth of item $i$. Then under an extension of the 
+Plackett-Luce model allowing ties up to order $D$, the probability of the 
+ranking $R$ is given by
+
+\begin{equation}
+\prod_{j = 1}^J \frac{f(C_j)}{
+\sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
+(\#eq:PL)
+\end{equation}
+
+where $D_j$ is the cardinality of $C_j$, $A_j$ is the set of alternatives from 
+which $C_j$ is chosen, and $A_j \choose k$ is all the possible choices of $k$ 
+items from $A_j$. The value of $D$ can be set to the maximum number of tied 
+items observed in the data, so that $\delta_n = 0$ for $n > D$.
+
+When the worth parameters are constrained to sum to one, they represent the 
+probability that the corresponding item comes first in a ranking of all items,
+given that first place is not tied.
+
+### Pudding example (with ties)
+
+When each ranking contains only two items, then the model in Equation 
+\@ref(eq:PL) reduces to extended Bradley-Terry model proposed by 
+@Davidson1970 for paired comparisons with ties. The `pudding` data set,
+available in **PlackettLuce** provides the data from Example 2 of that paper, in
+which respondents were asked to test two brands of chocolate pudding from a 
+total of six brands. For each comparison of brands $i$ and $j$, the data set 
+gives the frequencies that brand $i$ was preferred ($w_{ij}$), that brand $j$ 
+was preferred ($w_{ji}$ and that the brands were tied ($t_{ij}$).
+
+```{r}
+head(pudding)
+```
+
+First we create a matrix representing each unique ranking, as required by 
+`PlackettLuce`, the model-fitting function in **PlackettLuce**
+
+```{r}
+nr <- 3*nrow(pudding)
+R <- matrix(0, nrow = nr, ncol = 6,
+            dimnames = list(NULL, seq_len(6)))
+i <- rep(pudding$i, 3)
+j <- rep(pudding$j, 3)
+R[cbind(seq_len(nr), i)] <- rep(c(1, 2, 1), each = nrow(pudding))
+R[cbind(seq_len(nr), j)] <- rep(c(2, 1, 1), each = nrow(pudding))
+head(R, 3)
+tail(R, 3)
+```
+The matrix `R` represents first the wins of $i$ over $j$, then the wins of 
+$j$ over $i$ and finally the ties, so is three times as long as the original 
+data. Each column represents a brand. In each row `0` represents an 
+unranked brand (not in the comparison), `1` represents the brand(s) ranked
+in first place and `2` represents the brand in second place, if applicable.
+
+Then we create a weight vector from the frequencies
+```{r}
+w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
+```
+
+Now we can fit the model with `PlackettLuce`, passing the rankings matrix 
+and the weight vector as arguments. Setting `npseudo = 0` means that standard 
+maximum likelihood estimation is performed and `maxit = 7` limits the number of
+iterations to obtain the same worth parameters as @Davidson1970:
+```{r}
+mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
+coef(mod, log = FALSE)
+```
+Note here we specify `log = FALSE` to give the parameterization as in Equation
+\@ref(eq:PL), later we will see that it is more natural to work on the log 
+scale for inference.
+
+
+
+# Appendix
+
+For the package comparison in Table \@ref(tab:timings-kable), the model was 
+fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr). 
+Arguments were set to obtain the maximum likelihood estimate, using the default
+iterative scaling algorithm for PlackettLuce. The functions were run with their
+default convergence criteria; the number of iterations for StatRank was set so 
+that the log-likehood on exit was equal to the log-likelihood returned by the 
+other functions with relative tolerance 1e-6. 
+
+```{r chunk2}
+```{r wrappers, eval = FALSE}
+```{r timings, eval = FALSE}
+```
+
+# References
