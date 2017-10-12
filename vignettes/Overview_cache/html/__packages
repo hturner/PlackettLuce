@@ -11,3 +11,9 @@ psychotree
 sandwich
 igraph
 testthat
+PLMIX
+Matrix
+tibble
+gnm
+readxl
+devtools

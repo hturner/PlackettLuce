@@ -2,7 +2,7 @@
 #' @importFrom stats aggregate
 #' @importFrom MASS ginv
 #' @importFrom Matrix crossprod Diagonal
-vcov.PlackettLuce <- function(object, ref = NULL, ...) {
+vcov.PlackettLuce <- function(object, ref = 1, ...) {
   ##  A temporary version until we can do it properly
   ##
   theLongData <- poisson_rankings(object$rankings, object$weights)

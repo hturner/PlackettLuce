@@ -69,7 +69,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
 #' @export
-estfun.PlackettLuce <- function(x) {
+estfun.PlackettLuce <- function(x, ref = 1, ...) {
     D <- x$maxTied
     # get coefficients (unconstrained)
     coef <- x$coefficients
@@ -112,14 +112,18 @@ estfun.PlackettLuce <- function(x) {
                        N = N, D = D, S = unique(na), R, G)
     h <- match(choices$alternatives, unique_alternatives)
     A <- A - rowsum(res$expA[h,], choices$ranking)
-    # ignore column corresponding to fixed ref
-    ref <- x$ref
     if (ref %in% names(alpha)) ref <- which(names(alpha) == ref)
-    if (D == 1) return(A[, -ref, drop = FALSE])
+    if (D == 1) {
+        if (!is.null(ref)) {
+            return(A[, -ref, drop = FALSE])
+        } else return(A)
+    }
     # N.B. expectation of delta should include delta*, but cancelled out in
     # in iterative scaling so omitted!
     res$expB <- sweep(res$expB, 2, delta[-1], "*")
     B <- B - rowsum(res$expB[h,], choices$ranking)
-    cbind(A[, -ref, drop = FALSE], B)
+    if (!is.null(ref)) {
+        return(cbind(A[, -ref, drop = FALSE], B))
+    } else return(cbind(A[, drop = FALSE], B))
 }
 

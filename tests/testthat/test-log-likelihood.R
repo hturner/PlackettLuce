@@ -30,8 +30,8 @@ colnames(R) <- c("apple", "banana", "orange", "pear")
 R <- as.rankings(R)
 if (require("Matrix") & requireNamespace("igraph") &
     requireNamespace("rARPACK")) {
-    model0 <- PlackettLuce0(rankings = R, ref = "orange")
-    model1 <- PlackettLuce(rankings = R, ref = "orange", npseudo = 0)
+    model0 <- PlackettLuce0(rankings = R)
+    model1 <- PlackettLuce(rankings = R, npseudo = 0)
     test_that("coef match legacy code [fake partial rankings with ties]", {
         # coefficients
         expect_equal(as.vector(coef(model0)),

@@ -365,6 +365,7 @@ gives the frequencies that brand $i$ was preferred ($w_{ij}$), that brand $j$
 was preferred ($w_{ji}$ and that the brands were tied ($t_{ij}$).
 
 ```{r}
+library(PlackettLuce)
 head(pudding)
 ```
 
@@ -388,7 +389,24 @@ data. Each column represents a brand. In each row `0` represents an
 unranked brand (not in the comparison), `1` represents the brand(s) ranked
 in first place and `2` represents the brand in second place, if applicable.
 
-Then we create a weight vector from the frequencies
+This matrix can used to specify the rankings in the call to `PlackettLuce`, 
+however there are some advantages to creating a formal \code{"rankings"} object,
+which `PlackettLuce` create internally if necessary:
+
+```{r}
+R <- as.rankings(R)
+head(R)
+tail(R)
+```
+
+The `as.rankings` method checks that the rankings are specified as dense 
+rankings, i.e. consecutive integers with no rank skipped for tied items, 
+recoding as necessary; drops rankings with less than two items since these are 
+uninformative, and adds column names if necessary. As can be seen above, the
+print method displays the rankings in a more readable form.
+
+To specify the full set of rankings, we need the frequency of each ranking, 
+which will be specified to the model0fitting function as a weight vector:
 ```{r}
 w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
 ```
@@ -402,9 +420,228 @@ mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
 coef(mod, log = FALSE)
 ```
 Note here we specify `log = FALSE` to give the parameterization as in Equation
-\@ref(eq:PL), later we will see that it is more natural to work on the log 
-scale for inference.
+\@ref(eq:PL). In the next section we discuss why it is more appropriate to use 
+the log scale for inference.
 
+## Inference
+
+A standard way to report model parameters is to report them along with their 
+corresponding standard error. This is an indication of the estimate's precision,
+however implicitly this invites comparison with zero. Such comparison is made 
+explicit in many summary methods for models in R, with the addition of 
+partial t or Z tests testing the null hypothesis that the parameter is
+equal to zero, given the other parameters in the model. However this hypothesis 
+is generally not of interest for the worth parameters in a Plackett-Luce model:
+we expect most items to have *some* worth, the question is whether the items 
+differ in their worth. In addition, a Z test based on asymptotic normality of 
+the maximum likelihood estimate will not be appropriate for worth parameters 
+near zero or one, since it does not take account of the fact that the parameters 
+cannot be outside of these limits.
+
+On the log scale however, there are no bounds on the parameters and we can set 
+a reference level to provide meaningful comparisons. By default, the summary 
+method for \code{"PlackettLuce"} objects sets the first item as the reference:
+
+```{r}
+summary(mod)
+```
+
+None of the Z tests for the item parameters is significant, which is consistent
+with test for equal preferences presented in @Davidson1970. Note the tie 
+parameter is alo shown on the log scale here, but since it is an integral part 
+of the model it is not a parameter of interest for inference, so the scale is 
+not relevant.
+
+The reference level for the item parameters can be changed via the `ref` 
+argument, for example setting to `NULL` sets the mean worth as the reference:
+
+```{r}
+summary(mod, ref = NULL)
+```
+
+As can be seen from the output above, the standard error of the item parameters
+changes with the reference level. Therefore in cases where there is not a 
+natural reference (e.g. own brand versus competitor's brands), the inference can
+depend on an arbitrary choice. This problem can be handled through the use of
+*quasi standard errors* that remain constant for a given item regardless of the
+reference. In addition quasi standard errors are defined for the reference item,
+so even in cases where there is a natural reference, the uncertainty around the 
+worth of that item can still be represented.
+
+Quasi standard errors for the item parameters are implemented via a method for 
+the `qvcalc` function from the **qvalc** package:
+
+```{r}
+qv <- qvcalc(mod)
+qv
+```
+
+Again by default, the first item is taken as the reference, but this may be 
+changed via a `ref` argument. The plot method for the returned object visualizes
+the item parameters (log-worth parameters) along with comparison intervals -
+item parameters for which the comparison intervals do not cross are 
+significantly different:
+
+```{r pudding-qv, fig.cap = "Worth of brands of chocolate pudding. Intervals based on quasi-standard errors."}
+plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
+```
+
+## Disconnected networks
+
+The wins and losses between items can be represented as a directed network. For 
+example, consider the following set of paried comparisons:
+
+```{r}
+R <- matrix(c(1, 2, 0, 0,
+              2, 0, 1, 0,
+              1, 0, 0, 2,
+              2, 1, 0, 0,
+              0, 1, 2, 0), byrow = TRUE, ncol = 4,
+            dimnames = list(NULL, LETTERS[1:4]))
+R <- as.rankings(R)
+```
+
+The `adjacency` function from **PlacketLuce** can be used to convert these to
+an adjace`ncy matrix where element $(i, j)$ is the number of times item $i$ is 
+ranked higher than item $j$:
+```{r}
+A <- adjacency(R)
+A
+```
+Using functions from **igraph** we can visualise the corresponding network:
+```{r always-loses, fig.cap = "Network representation of toy rankings."}
+library(igraph)
+net <- graph_from_adjacency_matrix(A)
+plot(net, edge.arrow.size = 0.5, vertex.size = 30)
+```
+For the worth parameters to have finite maximum likelihood estimates (MLEs) and 
+standard errors, the network must be strongly connected, i.e. there must be a 
+path of wins and a path of losses between each pair of items. In the example 
+above, A, B and C are strongly connected. For example, C directly loses against 
+B and although C never directly beats B, it does beat A and A in turn beats B, 
+so C indirectly beats B. Similar paths of wins and losses can be found for all 
+pairs of A, B and C. On the other hand D is only observed to lose, therefore the
+MLE of the worth would be zero, with infinite standard error.
+
+If one item always wins, the MLE of the worth would be one with infinite 
+standard error. Or if there are clusters of items that are strongly connected
+with each other, but disconnected or connected only by wins or only by loses 
+(weakly connected) to other clusters, then the maximum likelihood estimates are
+undefined, because there is no information on the relative worth of the 
+clusters or one cluster is infinitely worse than the other.
+
+The connectivity of the network can be checked with the `connectivity` function
+from **PlackettLuce**
+```{r}
+connectivity(A)
+```
+If the netwrok is not strongly connected, information on the clusters within 
+the network is returned. In this case a model could be estimated excluding item
+D:
+```{r}
+R2 <- R[, -4]
+R2
+mod <- PlackettLuce(R2, npseudo = 0)
+summary(mod)
+```
+Note that since `R` is a rankings object, the rankings are automatically 
+updated when items are dropped, so in this case the paired comparison with item 
+D is dropped.
+
+By default however **PlackettLuce** provides a way to handle disconnected/weakly
+connected networks, through the addition of pseudo-rankings. This works by 
+adding a win and a loss between each item and a hypothetical or ghost item with
+fixed worth. This makes the network strongly connected so all the worth 
+parameters are estimable. It also has an interpretation as a Bayesian prior, in 
+particular a non-informative prior where all items have equal worth. 
+
+The `npseudo` argument defines the number of wins and loses with the ghost item 
+that are added for each real item. Setting `npseudo = 0 ` doesn't add any 
+pseudo-rankings, so `PlackettLuce` will return the standard MLE, if the 
+network is strongly connected, and throw an error otherwise. The larger 
+`npseudo` is, the stronger the influence of the prior, so by default `npseudo`
+is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to 
+connect the network, but is a weak prior. In this toy example, the item 
+parameters changes quite considerably:
+```{r}
+mod2 <- PlackettLuce(R)
+coef(mod2)
+```
+This is because there are only 5 rankings, so there is not much information in 
+the data. In more realistic examples, the default prior will have a weak 
+shrinkage effect, shrinking the item parameters towards $1/N$, where $N$ is the
+number of items.
+
+For a practical example, we consider the NASCAR data from @Hunter2004. This 
+collects the results of the 36 races in the 2002 NASCAR season in the United 
+States. Each race involves 43 drivers out of a total of 87 drivers. The 
+`d_nascar` data provided by **PlackettLuce** records the results as an ordering 
+of the drivers in each race:
+```{r}
+data(nascar)
+nascar[1:2, 1:45]
+```
+For example, in the first race, driver 83 came first, followed by driver 18 and
+so on. Ranks 43 to 87 are zero for all races. We can convert these orderings 
+to rankings using `as.rankings` with `input = "ordering"`:
+```{r}
+R <- as.rankings(nascar, input = "ordering")
+R[1:2,]
+```
+The names corresponding to the driver IDs are available as an attribute of 
+`nascar`; since the columns of `R` now correspond to the drivers, we can use 
+these as the column names:
+```{r}
+colnames(R) <- attr(nascar, "drivers")
+R[1:3, 1:3, as.rankings = FALSE]
+R[1:3]
+```
+Maximum likelihood estimation cannot be used in this example, because four 
+drivers placed last in each race they entered. So @Hunter2004 dropped these 
+four drivers to fit the Plackett-Luce model, which we can reproduce as follows:
+```{r}
+keep <- seq_len(83)
+R2 <- R[, keep]
+mod <- PlackettLuce(R2, npseudo = 0)
+```
+In order to demonstrate the correspondene with the results from @Hunter2004, we
+order the item parameters by the deriver's average rank:
+```{r}
+avRank <- apply(R, 2, function(x) mean(x[x > 0]))
+coefs <- round(coef(mod)[order(avRank[keep])], 2)
+head(coefs, 3)
+tail(coefs, 3)
+```
+Now we fit the Plackett-Luce model to the full data, using the default 
+pseudo-rankings method. In this case the default iterative scaling method does
+not perform very well, so we switch to the L-BFGS algorithm:
+```{r}
+mod2 <- PlackettLuce(R, method = "L-BFGS")
+```
+For items that were in the previous model, we see that the log-worth parameters
+generally shrink towards zero:
+```{r}
+coefs2 <- round(coef(mod2), 2)
+coefs2[names(coefs)[1:3]]
+coefs2[names(coefs)[81:83]]
+```
+The new items have relative large negative log worth
+```{r}
+coefs2[84:87]
+```
+Nonetheless, the estimates are finite and have finite standard errors:
+```{r, cache = TRUE}
+coef(summary(mod2))[84:87,]
+```
+Note that the reference here is simply the driver that comes first 
+alphabetically: A. Cameron. We can plot the quasi-variances for a better 
+comparison:
+```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.", cache = TRUE}
+qv <- qvcalc(mod2)
+qv$qvframe <- qv$qvframe[order(coef(mod2)),]
+plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
+axis(1, at = seq_len(87), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.7)
+```
 
 
 # Appendix

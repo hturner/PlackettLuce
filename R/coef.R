@@ -19,7 +19,7 @@
 #' @param ... additional arguments, currently ignored.
 #'
 #' @export
-coef.PlackettLuce <- function(object, ref = NULL, log = TRUE,
+coef.PlackettLuce <- function(object, ref = 1, log = TRUE,
                               type = "all", ...){
   type <-  match.arg(type, c("ties", "worth", "all"))
   if (!log) {
@@ -30,7 +30,8 @@ coef.PlackettLuce <- function(object, ref = NULL, log = TRUE,
       nitem <- length(item)
       coefs <- c(item, log(object$coefficients[-seq_len(nitem)]))
   }
-
+  ncoefs <- length(coefs)
+  id <- seq_len(ncoefs - object$maxTied + 1)
   cls <- c("coef.PlackettLuce", "numeric")
   switch(type,
          "ties" = return(coefs[-id]),

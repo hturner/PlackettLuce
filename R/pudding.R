@@ -17,7 +17,7 @@
 #' @references
 #' Davidson, R. R. (1970). On extending the Bradley-Terry model to accommodate
 #' ties in paired comparison experiments. \emph{Journal of the American
-#' Statistical Association}, \textbf{65}, 317–328.
+#' Statistical Association}, \bold{65}, 317--328.
 #' @examples
 #'
 #' # reshape to give one row per unique ranking

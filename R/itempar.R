@@ -104,7 +104,7 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
         V <- V[-alias, -alias]
     }
     structure(coefs, class = "itempar", model = "PlackettLuce",
-              ref = ref, alias = alias, vcov = V)
+              ref = ref, alias = alias, vcov = if (vcov) V)
 }
 
 #' @importFrom psychotools itempar
