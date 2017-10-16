@@ -7,8 +7,8 @@
 #' @param y a \code{"\link{grouped_rankings}"} object giving the rankings to
 #' model.
 #' @param x unused.
-#' @param start unused.
-#' @param weights unused (generates warnings).
+#' @inheritParams PlackettLuce
+#' @inheritParams coef.PlackettLuce
 #' @param offset unused.
 #' @param ... additional arguments passed to \code{PlackettLuce}.
 #' @param estfun logical. If \code{TRUE} the empirical estimating functions
@@ -37,15 +37,13 @@
 #'
 #' PlackettLuce(R)
 #' @export
-plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
-                   ..., estfun = FALSE, object = FALSE) {
+plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
+                   offset = NULL, ..., estfun = FALSE, object = FALSE) {
     x <- !(is.null(x) || NCOL(x) == 0L)
     offset <- !is.null(offset)
-    start <- !is.null(start)
     if (x || offset)
         warning("unused argument(s): ",
-                paste(c("x"[x], "start"[start], "offset"[offset]),
-                      collapse = ","))
+                paste(c("x"[x], "offset"[offset]), collapse = ","))
     res <- PlackettLuce(y, weights = weights, ...)
     if (object) {
         # returning in order to compute final vcov etc, so can aggregate now
@@ -56,11 +54,11 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
         res$weights <- tapply(res$weights, g, sum)
     }
     if (estfun) {
-        percomp <- estfun.PlackettLuce(res)
+        percomp <- estfun.PlackettLuce(res, ref = ref)
         if (object) percomp <- percomp[g, , drop = FALSE]
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
-    list(coefficients = coef(res), objfun = -res$loglik,
+    list(coefficients = coef(res, ref = ref), objfun = -res$loglik,
          estfun = estfun,
          object = if (object) res else NULL)
 }
@@ -112,7 +110,9 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
                        N = N, D = D, S = unique(na), R, G)
     h <- match(choices$alternatives, unique_alternatives)
     A <- A - rowsum(res$expA[h,], choices$ranking)
-    if (ref %in% names(alpha)) ref <- which(names(alpha) == ref)
+    if (!is.null(ref) && ref %in% names(alpha)) {
+        ref <- which(names(alpha) == ref)
+    }
     if (D == 1) {
         if (!is.null(ref)) {
             return(A[, -ref, drop = FALSE])

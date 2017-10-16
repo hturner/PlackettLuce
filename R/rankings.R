@@ -1,17 +1,13 @@
 #' Rankings Objects
 #'
 #' Create a \code{"rankings"} object from data or convert a matrix of rankings
-#' to a \code{"rankings"} object. These functions validate that the data are
-#' (possibly partial) dense rankings, recoding as necessary.
+#' or ordered items to a \code{"rankings"} object.
 #'
-#' Each ranking \eqn{r} should rank items from 1 (first place) to \eqn{n_r}
-#' (last place). Items not ranked should have a rank of 0. Tied items are given
-#' the same rank with no rank skipped. For example {1, 0, 2, 1}, ranks the first
-#' and fourth items in first place and the third item in second place; the
-#' second item is unranked.
-#'
-#' If the ranks are not in dense form, they will be recoded, e.g. {2, 2, 0, 4}
-#' will become {1, 1, 0, 2}.
+#' Each ranking in the input data will be converted to a dense ranking, which
+#' rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
+#' should have a rank of 0. Tied items are given the same rank with no rank
+#' skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+#' first place and the third item in second place; the second item is unranked.
 #'
 #' Rankings with less than 2 items are dropped.
 #'
@@ -31,8 +27,11 @@
 #' row per ranking, or an object that can be coerced to such as matrix; for
 #' \code{[} and \code{format}, a \code{"rankings"} object.
 #' @param input for \code{as.rankings}, whether each row in the input matrix
-#' contains a \code{"ranking"} (dense, standard/modified competition or
+#' contains a numeric \code{"ranking"} (dense, standard/modified competition or
 #' fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.
+#' @param labels for \code{input = "ordering"} an optional vector of labels for
+#' the items. If \code{NULL}, the items will be labelled by the sorted unique
+#' values of \code{x}.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
 #' @param drop if \code{TRUE} return single row/column matrices as a vector.
@@ -138,6 +137,7 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
 #' @rdname rankings
 #' @export
 as.rankings <- function(x, input = c("ranking", "ordering"),
+                        labels = NULL,
                         verbose = TRUE, ...){
     UseMethod("as.rankings")
 }
@@ -145,6 +145,7 @@ as.rankings <- function(x, input = c("ranking", "ordering"),
 #' @rdname rankings
 #' @export
 as.rankings.default <- function(x, input = c("ranking", "ordering"),
+                                labels = NULL,
                                 verbose = TRUE, ...){
     x <- as.matrix(x)
     as.rankings.matrix(x, input = input, verbose = verbose, ...)
@@ -153,12 +154,31 @@ as.rankings.default <- function(x, input = c("ranking", "ordering"),
 #' @rdname rankings
 #' @export
 as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
+                               labels = NULL,
                                verbose = TRUE, ...){
     input <- match.arg(input, c("ranking", "ordering"))
+    if (mode(x) != "numeric" && input == "ranking"){
+        stop("values should be numeric ranks for `input = ranking`")
+    }
     if (input == "ordering"){
         # convert ordered items to dense ranking
-        item <- seq_len(max(x))
+        if (mode(x) == "character"){
+            if (is.null(labels)) labels <- sort(unique(as.vector(x)))
+            value <- match(x, labels)
+            att <- attributes(x)
+            rm(x)
+            x <- array(value, dim = att$dim, dimnames = att$dimnames)
+        }
+        m <- max(x)
+        if (!is.null(labels) && length(labels) > m){
+            unused <- length(labels) - m
+            x <- cbind(x, matrix(0, nrow = nrow(x), ncol = unused))
+            m <- m + unused
+        }
+        m <- ifelse(!is.null(labels), length(labels), max(x))
+        item <- seq_len(m)
         x <- t(apply(x, 1, function(x) match(item, x, nomatch = 0)))
+        if (!is.null(labels)) colnames(x) <- labels
     } else if (NCOL(x) >= 2) {
             # check rankings are dense rankings, recode if necessary
             x <- checkDense(x, verbose = verbose)
@@ -289,4 +309,27 @@ format.rankings <- function(x, width = 40, ...){
     trunc <- nc > width
     value[trunc] <- paste(strtrim(value[trunc], width - 4), "...")
     value
+}
+
+#' @method rbind rankings
+#' @rdname rankings
+#' @export
+rbind.rankings <- function(..., labels = NULL){
+    # check contain the same items
+    R <- list(...)
+    nm <- lapply(R, colnames)
+    ref <- nm[[1]]
+    ok <- vapply(nm, identical, TRUE, ref)
+    if (any(!ok)){
+        if (is.null(labels)) labels <- sort(unique(unlist(nm)))
+        R <- lapply(R, function(x){
+            R <- matrix(0, nrow = nrow(x), ncol = length(labels),
+                        dimnames = list(NULL, labels))
+            R[, colnames(x)] <- x
+            R
+        })
+    }
+    # rbind matrices
+    R <- do.call("rbind", lapply(R, unclass))
+    structure(R, class = "rankings")
 }

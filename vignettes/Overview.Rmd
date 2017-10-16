@@ -509,7 +509,7 @@ A <- adjacency(R)
 A
 ```
 Using functions from **igraph** we can visualise the corresponding network:
-```{r always-loses, fig.cap = "Network representation of toy rankings."}
+```{r always-loses, fig.cap = "Network representation of toy rankings.", fig.small = TRUE}
 library(igraph)
 net <- graph_from_adjacency_matrix(A)
 plot(net, edge.arrow.size = 0.5, vertex.size = 30)
@@ -642,7 +642,132 @@ qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
 axis(1, at = seq_len(87), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.7)
 ```
+Although the pseudo-rankings are only necessary to add when the network is 
+incomplete, the default behaviour is always to use them (with a weight of 0.5) 
+because the small shrinkage effect reduces the bias of the estimates.
 
+# Plackett-Luce Trees
+
+A Plackett-Luce model that assumes the same worth parameters across all rankings 
+may sometimes be an over-simplification. For example, if rankings are made by 
+different judges, the worth parameters may vary between judges with different
+characteristics. Model-based partitioning provides an automatic way to determine 
+subgroups of the judges with significantly different sets of worth parameters,
+based on judge covariates. A Plackett-Luce tree is created via the following 
+steps:
+
+1. Fit a Plackett-Luce model to the full data.
+2. Asses the stability of the worth parameters with respect to each available 
+covariate.
+3. If there is significant instability, split the full data by the covariate 
+with the strongest instability and use the cut-point with the highest 
+improvement in model fit.
+4. Repeat steps 1-3 until there are no more significant instabilities, or a 
+split produces a sub-group below a given size threshold.
+
+This is an extension of Bradley-Terry trees, implented in the R package **psychotree** and described in more detail by @Strobl2011.
+
+To illustrate this approach, we consider data from a trial of different 
+varieties of bean in Nicaragua, run by Bioversity International. Farmers were 
+asked to grow three experimental varieties of bean in one of the growing 
+seasons, Primera (May - August), Postrera (September - October) or Apante 
+(November - January). At the end of the season, they were asked which variety 
+they though was best and which variety they thought was worse, to give a ranking
+of the three varieties. In addition, they were asked to compare each trial 
+variety to the standard local variety and say whether it was better or worse.
+
+The data are provided as the dataset `beans` in Plackett-Luce. The data require 
+some preparation to collate the rankings. First we consider the best and 
+worst rankings. These give the variety the farmer though was best or worst, 
+coded as A, B or C for the first, second or third variety assigned to the farmer 
+respectively. 
+```{r}
+data(beans)
+head(beans[c("best", "worst")], 2)
+```
+We convert these to numeric values, allowing us to impute the middle-ranked 
+variety (a strict ranking is assumed here, so the sum of each row should be 6)
+```{r}
+beans <- within(beans, {
+    best <- match(best, c("A", "B", "C")) 
+    worst <- match(worst, c("A", "B", "C"))
+    middle <- 6 - best - worst
+})
+head(beans[c("best", "middle", "worst")], 2)
+```
+This gives an ordering of the three varieties the farmer was given. The names of
+these varieties are stored in separate columns
+```{r}
+varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+head(varieties, 2)
+```
+So we can convert the variety IDs to the variety names
+```{r}
+n <- nrow(beans)
+beans <- within(beans, {
+    best <- varieties[cbind(seq_len(n), best)]
+    worst <- varieties[cbind(seq_len(n), worst)]
+    middle <- varieties[cbind(seq_len(n), middle)]
+})
+head(beans[c("best", "middle", "worst")], 2)
+```
+Next we convert these orderings to sub-rankings of the full set of 
+varieties, including the local variety as an additional item, so that we can 
+add the paired comparisons shortly:
+    ```{r}
+lab <- c("Local", sort(unique(as.vector(varieties))))
+R <- as.rankings(beans[c("best", "middle", "worst")], 
+                 input = "ordering", labels = lab)
+```
+The comparisons with the local variety are stored in another set of columns
+```{r}
+head(beans[c("var_a", "var_b", "var_c")], 2)
+```
+The following converts each of these columns to a matrix of ordered pairs:
+```{r}
+paired <- list()
+for (id in c("a", "b", "c")){
+    ordering <- matrix("Local", nrow = n, ncol = 2)
+    worse <- beans[[paste0("var_", id)]] == "Worse"
+    ## name of winner
+    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
+    ## name of loser
+    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
+    paired[[id]] <- ordering
+}
+head(paired[[id]])
+```
+Again we convert these orderings to sub-rankings of the full set of varieties 
+and combine them with the rankings of order three:
+```{r}
+paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
+R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
+```
+In order to fit a Plackett-Luce tree, we need to create a 
+\code{"grouped_rankings"} object, that defines how the rankings map to the 
+covariate values. In this case we wish to group by each record in 
+the original data set, so we create a \code{"grouped_rankings"} object as 
+follows:
+```{r}
+G <- grouped_rankings(R, rep(seq_len(n), 4))
+format(head(G, 2), width = 50)
+```
+For each record in the original data, we have three covariates: \code{season} 
+the season-year the beans were planted, \code{year} the year of planting,
+and \code{rx5day} the maximum 5-day rainfall. The covariates will be used to 
+fit a Plackett-Luce tree
+```{r}
+beans$season <- factor(beans$season, 
+                       labels = c("Ap - 15", "Ap - 16", "Ap - 17", "Po - 15",
+                                  "Po - 16", "Pr - 16"))
+beans$year <- factor(beans$year)
+tree <- pltree(G ~ ., data = beans[c("season", "year", "rx5day")], minsize = 5)
+tree
+```
+In this case there are two nodes defined by the seasons.
+```{r}
+plot(tree)
+```
 
 # Appendix
 

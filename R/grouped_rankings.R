@@ -224,8 +224,8 @@ as.data.frame.grouped_rankings <-
 
 #' @method print grouped_rankings
 #' @export
-print.grouped_rankings <- function(x, ...){
-    print.default(format(x, ...))
+print.grouped_rankings <- function(x, max = 2, width = 20, ...){
+    print.default(format(x, max = max, width = width, ...))
 }
 
 #' @rdname grouped_rankings

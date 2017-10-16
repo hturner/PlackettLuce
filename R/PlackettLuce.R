@@ -26,6 +26,7 @@
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param weights an optional vector of weights for each ranking.
+#' @param start starting values for the worth parameters and the tie parameters.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
@@ -64,6 +65,7 @@
 PlackettLuce <- function(rankings,
                          npseudo = 0.5,
                          weights = NULL,
+                         start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 1e-4, maxit = 200,
                          trace = FALSE, verbose = TRUE){
@@ -99,8 +101,10 @@ PlackettLuce <- function(rankings,
         # items ranked from last to 1st place
         R <- t(apply(rankings, 1, order, decreasing = TRUE))
 
-        # adjacency matrix: wins over rest
-        X <- adjacency(rankings, weights = weights)
+        if (is.null(start)) {
+            # adjacency matrix: wins over rest
+            X <- adjacency(rankings, weights = weights)
+        }
 
         # sizes of selected sets
         S <- apply(rankings, 1, function(x){
@@ -126,11 +130,13 @@ PlackettLuce <- function(rankings,
         B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
     } else {
-        # adjacency matrix: wins over rest
-        # (id extracted from grouped_rankings object)
-        X <- matrix(0, N, N)
-        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
-        class(X) <- c("adjacency", "matrix")
+        if (is.null(start)){
+            # adjacency matrix: wins over rest
+            # (id extracted from grouped_rankings object)
+            X <- matrix(0, N, N)
+            for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+            class(X) <- c("adjacency", "matrix")
+        }
 
         # replicate ranking weight for each choice in ranking
         # (S extracted from grouped_rankings object)
@@ -139,7 +145,9 @@ PlackettLuce <- function(rankings,
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of
         # selected set
-        A <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
+        A <- numeric(N)
+        i <- sort(unique(R[as.logical(S)]))
+        A[i] <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- tabulate(S[as.logical(S)])
         rm(S)
@@ -219,14 +227,19 @@ PlackettLuce <- function(rankings,
         N <- N + 1
     }
 
-    # (scaled, un-damped) PageRank based on underlying paired comparisons
-    alpha <- drop(abs(eigs(X/colSums(X), 1,
-                           opts = list(ncv = min(nrow(X), 10)))$vectors))
+    if (is.null(start)){
+        # (scaled, un-damped) PageRank based on underlying paired comparisons
+        alpha <- drop(abs(eigs(X/colSums(X), 1,
+                               opts = list(ncv = min(nrow(X), 10)))$vectors))
+        delta <- rep.int(0.1, D)
+    } else {
+        alpha <- start[seq_len(N)]
+        delta <- c(0.1, start[-seq_len(N)])
+    }
     # fix alpha for hypothetical item to 1
     if (npseudo > 0) {
         alpha <- alpha/alpha[N]
     }
-    delta <- rep.int(0.1, D)
     delta[1] <- 1
 
     # quasi-newton methods ---

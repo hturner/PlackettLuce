@@ -1,0 +1,68 @@
+#' Preferred Bean Varieties in Nicaragua
+#'
+#' This is a subset of data from trials of bean varieties in Nicaragua over six
+#' growing seasons. Farmers were asked to try three variaties of bean from a
+#' total of ten varieties and to rank them in order of preference. In addition,
+#' for each variety the farmers were asked to compare each trial variety to the
+#' local variety and state whether they considered it to be better or worse.
+#'
+#' There are three crop seasons in Central America:
+#' \describe{
+#'     \item{Primera}{May - August.}
+#'     \item{Postrera}{September - October.}
+#'     \item{Apante}{November - January.}
+#' }
+#' Beans can be planted near the beginning of each season, though are most
+#' commonly planted in the Postrera or Apante seasons.
+#'
+#' @format A data frame with 842 records and 11 variables:
+#' \describe{
+#'     \item{\code{variety_a}}{The name of variety A in the comparison.}
+#'     \item{\code{variety_b}}{The name of variety B in the comparison.}
+#'     \item{\code{variety_c}}{The name of variety C in the comparison.}
+#'     \item{\code{best}}{The variety the farmer ranked in first place ("A",
+#'     "B" or "C").}
+#'     \item{\code{worst}}{The variety the farmer ranked in last place ("A",
+#'     "B" or "C").}
+#'     \item{\code{var_a}}{How the farmer ranked variety A compared to the local
+#'     variety ("Worse" or "Better").}
+#'     \item{\code{var_b}}{How the farmer ranked variety B compared to the local
+#'     variety ("Worse" or "Better").}
+#'     \item{\code{var_c}}{How the farmer ranked variety C compared to the local
+#'     variety ("Worse" or "Better").}
+#'     \item{\code{season}}{The growing season ("Postrera - 2015",
+#'     "Apante - 2015", "Primera - 2016",, see details "Postrera - 2016", "Apante - 2016",
+#'     "Apante 2017").}
+#'     \item{\code{year}}{The year of planting.}
+#'     \item{\code{rx5day}}{The maximum 5-day rainfall.}
+#' }
+#' @source The data were provided by Bioversity International, a CGIAR research
+#' centre \url{https://www.bioversityinternational.org}.
+#' @examples
+#'
+#' # convert best and worse variety to numeric (A = 1, B = 2, C = 3)
+#' # infer value of middle variety (given values must sum to 6)
+#' beans <- within(beans, {
+#'     best <- match(best, c("A", "B", "C"))
+#'     worst <- match(worst, c("A", "B", "C"))
+#'     middle <- 6 - best - worst
+#' })
+#' head(beans[c("best", "middle", "worst")], 3)
+#'
+#'
+#' # convert numeric ordering to ordering of variety names
+#' n <- nrow(beans)
+#' varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+#' beans <- within(beans, {
+#'     best <- varieties[cbind(seq_len(n), best)]
+#'     worst <- varieties[cbind(seq_len(n), worst)]
+#'     middle <- varieties[cbind(seq_len(n), middle)]
+#' })
+#' head(beans[c("best", "middle", "worst")], 3)
+#'
+#' # create rankings object from all orderings
+#' ## three-way rankings
+#' lab <- sort(unique(as.vector(varieties)))
+#' R <- as.rankings(beans[c("best", "middle", "worst")],
+#'                  input = "ordering", labels = lab)
+"beans"

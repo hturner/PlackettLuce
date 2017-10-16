@@ -7,21 +7,25 @@
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
+\alias{rbind.rankings}
 \title{Rankings Objects}
 \usage{
 rankings(data, id, item, rank, verbose = TRUE, ...)
 
-as.rankings(x, input = c("ranking", "ordering"), verbose = TRUE, ...)
+as.rankings(x, input = c("ranking", "ordering"), labels = NULL,
+  verbose = TRUE, ...)
 
 \method{as.rankings}{default}(x, input = c("ranking", "ordering"),
-  verbose = TRUE, ...)
+  labels = NULL, verbose = TRUE, ...)
 
 \method{as.rankings}{matrix}(x, input = c("ranking", "ordering"),
-  verbose = TRUE, ...)
+  labels = NULL, verbose = TRUE, ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
 \method{format}{rankings}(x, width = 40, ...)
+
+\method{rbind}{rankings}(..., labels = NULL)
 }
 \arguments{
 \item{data}{a data frame with columns specified by \code{id}, \code{item} and
@@ -46,8 +50,12 @@ row per ranking, or an object that can be coerced to such as matrix; for
 \code{[} and \code{format}, a \code{"rankings"} object.}
 
 \item{input}{for \code{as.rankings}, whether each row in the input matrix
-contains a \code{"ranking"} (dense, standard/modified competition or
+contains a numeric \code{"ranking"} (dense, standard/modified competition or
 fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
+
+\item{labels}{for \code{input = "ordering"} an optional vector of labels for
+the items. If \code{NULL}, the items will be labelled by the sorted unique
+values of \code{x}.}
 
 \item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
 
@@ -68,18 +76,14 @@ omitted due to insufficient data (less than two non-missing ranks).
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
-to a \code{"rankings"} object. These functions validate that the data are
-(possibly partial) dense rankings, recoding as necessary.
+or ordered items to a \code{"rankings"} object.
 }
 \details{
-Each ranking \eqn{r} should rank items from 1 (first place) to \eqn{n_r}
-(last place). Items not ranked should have a rank of 0. Tied items are given
-the same rank with no rank skipped. For example {1, 0, 2, 1}, ranks the first
-and fourth items in first place and the third item in second place; the
-second item is unranked.
-
-If the ranks are not in dense form, they will be recoded, e.g. {2, 2, 0, 4}
-will become {1, 1, 0, 2}.
+Each ranking in the input data will be converted to a dense ranking, which
+rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
+should have a rank of 0. Tied items are given the same rank with no rank
+skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+first place and the third item in second place; the second item is unranked.
 
 Rankings with less than 2 items are dropped.
 

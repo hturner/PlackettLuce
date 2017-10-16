@@ -4,7 +4,7 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, npseudo = 0.5, weights = NULL,
+PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
   steffensen = 1e-04, maxit = 200, trace = FALSE, verbose = TRUE)
 }
@@ -16,6 +16,8 @@ coerced by \code{as.rankings}.}
 between each object and a hypothetical reference object.}
 
 \item{weights}{an optional vector of weights for each ranking.}
+
+\item{start}{starting values for the worth parameters and the tie parameters.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 
