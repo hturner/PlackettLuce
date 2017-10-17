@@ -18,16 +18,15 @@
 #' The parameter \code{npseudo} is the prior strength.  With \code{npseudo = 0}
 #' we have the MLE as the posterior mode.  As \code{npseudo} approaches
 #' infinity the log-ability estimates all shrink towards 0. The default,
-#' \code{npseudo = 1}, is sufficient to connect the network and has a weak
+#' \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 #' shrinkage effect.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
-#' @param ref an integer or character string specifying the reference item (for
-#' which log ability will be set to zero). If \code{NULL} the first item is used.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param weights an optional vector of weights for each ranking.
+#' @param start starting values for the worth parameters and the tie parameters.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
@@ -63,9 +62,10 @@
 #' @importFrom rARPACK eigs
 #' @importFrom stats optim
 #' @export
-PlackettLuce <- function(rankings, ref = NULL,
+PlackettLuce <- function(rankings,
                          npseudo = 0.5,
                          weights = NULL,
+                         start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 1e-4, maxit = 200,
                          trace = FALSE, verbose = TRUE){
@@ -97,14 +97,14 @@ PlackettLuce <- function(rankings, ref = NULL,
         weights <- rep.int(1, nr)
     } else stopifnot(length(weights) == nrow(rankings))
 
-    if (is.null(ref)) ref <- 1
-
     if (!grouped_rankings){
         # items ranked from last to 1st place
         R <- t(apply(rankings, 1, order, decreasing = TRUE))
 
-        # adjacency matrix: wins over rest
-        X <- adjacency(rankings, weights = weights)
+        if (is.null(start)) {
+            # adjacency matrix: wins over rest
+            X <- adjacency(rankings, weights = weights)
+        }
 
         # sizes of selected sets
         S <- apply(rankings, 1, function(x){
@@ -130,11 +130,13 @@ PlackettLuce <- function(rankings, ref = NULL,
         B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
     } else {
-        # adjacency matrix: wins over rest
-        # (id extracted from grouped_rankings object)
-        X <- matrix(0, N, N)
-        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
-        class(X) <- c("adjacency", "matrix")
+        if (is.null(start)){
+            # adjacency matrix: wins over rest
+            # (id extracted from grouped_rankings object)
+            X <- matrix(0, N, N)
+            for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+            class(X) <- c("adjacency", "matrix")
+        }
 
         # replicate ranking weight for each choice in ranking
         # (S extracted from grouped_rankings object)
@@ -143,7 +145,9 @@ PlackettLuce <- function(rankings, ref = NULL,
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of
         # selected set
-        A <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
+        A <- numeric(N)
+        i <- sort(unique(R[as.logical(S)]))
+        A[i] <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- tabulate(S[as.logical(S)])
         rm(S)
@@ -223,14 +227,19 @@ PlackettLuce <- function(rankings, ref = NULL,
         N <- N + 1
     }
 
-    # (scaled, un-damped) PageRank based on underlying paired comparisons
-    alpha <- drop(abs(eigs(X/colSums(X), 1,
-                           opts = list(ncv = min(nrow(X), 10)))$vectors))
+    if (is.null(start)){
+        # (scaled, un-damped) PageRank based on underlying paired comparisons
+        alpha <- drop(abs(eigs(X/colSums(X), 1,
+                               opts = list(ncv = min(nrow(X), 10)))$vectors))
+        delta <- rep.int(0.1, D)
+    } else {
+        alpha <- start[seq_len(N)]
+        delta <- c(0.1, start[-seq_len(N)])
+    }
     # fix alpha for hypothetical item to 1
     if (npseudo > 0) {
         alpha <- alpha/alpha[N]
     }
-    delta <- rep.int(0.1, D)
     delta[1] <- 1
 
     # quasi-newton methods ---
@@ -401,7 +410,6 @@ PlackettLuce <- function(rankings, ref = NULL,
 
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),
-                ref = ref,
                 loglik = unname(logl),
                 df.residual = df.residual,
                 rank = rank,

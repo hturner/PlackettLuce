@@ -4,7 +4,7 @@
 \alias{PlackettLuce}
 \title{Fit Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, ref = NULL, npseudo = 0.5, weights = NULL,
+PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
   steffensen = 1e-04, maxit = 200, trace = FALSE, verbose = TRUE)
 }
@@ -12,13 +12,12 @@ PlackettLuce(rankings, ref = NULL, npseudo = 0.5, weights = NULL,
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
 coerced by \code{as.rankings}.}
 
-\item{ref}{an integer or character string specifying the reference item (for
-which log ability will be set to zero). If \code{NULL} the first item is used.}
-
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
 
 \item{weights}{an optional vector of weights for each ranking.}
+
+\item{start}{starting values for the worth parameters and the tie parameters.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 
@@ -62,7 +61,7 @@ to the set of rankings.
 The parameter \code{npseudo} is the prior strength.  With \code{npseudo = 0}
 we have the MLE as the posterior mode.  As \code{npseudo} approaches
 infinity the log-ability estimates all shrink towards 0. The default,
-\code{npseudo = 1}, is sufficient to connect the network and has a weak
+\code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 shrinkage effect.
 }
 \examples{

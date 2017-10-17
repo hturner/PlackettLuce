@@ -84,12 +84,13 @@ grouped_rankings <- function(rankings, index, ...){
 
 # ranking stats - summaries used in model fitting, compute once for all
 ranking_stats <- function(rankings){
+    rankings <- unclass(rankings)
     nr <- nrow(rankings)
     nc <- ncol(rankings)
     R <- S <- matrix(0, nr, nc)
     id <- list()
     for (i in seq_len(nr)){
-        x <- rankings[i, , as.rankings = FALSE]
+        x <- rankings[i, ]
         ind <- which(as.logical(x))
         ord <- order(x[ind], decreasing = TRUE)
         j <- seq_along(ind)
@@ -105,9 +106,9 @@ ranking_stats <- function(rankings){
         if (x[1] < 2) next # x[1] gives max rank
         add <- list()
         for (s in seq_len(x[1] - 1)){
-            one <- which(rankings[i,] == s)
+            one <- which(rankings[i, ] == s)
             # > gives rest; == s + 1 gives next best
-            two <- which(rankings[i,] > s)
+            two <- which(rankings[i, ] > s)
             add[[s]] <- kronecker(one, (two - 1)*nc, "+")
         }
         id[[i]] <- unlist(add)
@@ -150,7 +151,7 @@ ranking_stats <- function(rankings){
     if (ncol(rankings) == ncol(attr(x, "rankings"))) {
         # subset attributes to match selected rankings
         structure(value,
-                  rankings = rankings,
+                  rankings = structure(rankings, class = "rankings"),
                   index = index,
                   R = attr(x, "R")[i, , drop = FALSE],
                   S = attr(x, "S")[i, , drop = FALSE],
@@ -186,7 +187,7 @@ as.grouped_rankings.paircomp <- function(x, ...){
     x <- as.matrix(x)[id]
     rankings[cbind(seq_len(ncomp), pairs[,1][id[,2]])] <- ifelse(x == -1, 2, 1)
     rankings[cbind(seq_len(ncomp), pairs[,2][id[,2]])] <- ifelse(x == 1, 2, 1)
-    rankings <- as.rankings.matrix(rankings, ...)
+    rankings <- structure(rankings, class = "rankings")
     do.call("structure",
             c(list(seq_len(max(id[,1])), rankings = rankings, index = id[,1]),
               ranking_stats(rankings),
@@ -223,8 +224,8 @@ as.data.frame.grouped_rankings <-
 
 #' @method print grouped_rankings
 #' @export
-print.grouped_rankings <- function(x, ...){
-    print.default(format(x, ...))
+print.grouped_rankings <- function(x, max = 2, width = 20, ...){
+    print.default(format(x, max = max, width = width, ...))
 }
 
 #' @rdname grouped_rankings

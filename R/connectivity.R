@@ -65,8 +65,7 @@ connectivity <- function(x, verbose = TRUE){
     # check network is strongly connected
     # (win and loss connection between all subgroups)
     if (!inherits(x, "adjacency")) x <- adjacency(x)
-    net <- graph_from_adjacency_matrix(x)
-    net <- simplify(net, remove.multiple = TRUE)
+    net <- graph_from_adjacency_matrix(x > 0)
     clus <- components(net, "strong")
     if (verbose && clus$no > 1){
         message("Network of items is not strongly connected")

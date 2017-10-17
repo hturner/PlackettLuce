@@ -2,20 +2,32 @@
 % Please edit documentation in R/coef.R
 \name{coef.PlackettLuce}
 \alias{coef.PlackettLuce}
-\title{Extract Coefficient of Plackett Luce Model}
+\title{Extract Coefficients of Plackett-Luce Model}
 \usage{
-\method{coef}{PlackettLuce}(object, ref = NULL, type = "all", ...)
+\method{coef}{PlackettLuce}(object, ref = 1, log = TRUE, type = "all",
+  ...)
 }
 \arguments{
-\item{object}{an object of class "PlackettLuce" as returned by \code{PlackettLuce}.}
+\item{object}{an object of class "PlackettLuce" as returned by
+\code{PlackettLuce}.}
 
 \item{ref}{an integer or character string specifying the reference item (for
-which log ability will be set to zero). If \code{NULL} the first item is used.}
+which log worth will be set to zero). If \code{NULL} the sum of the log worth
+parameters is set to zero.}
 
-\item{type}{the type of coefficients to return: one of \code{"ties"}, \code{"abilities"} or \code{"all"}.}
+\item{log}{a logical indicating whether to return parameters on the log scale
+with the item specified by \code{ref} set to zero.}
+
+\item{type}{the type of coefficients to return: one of \code{"ties"},
+\code{"worth"} or \code{"all"}.}
 
 \item{...}{additional arguments, currently ignored.}
 }
 \description{
-Extract Coefficient of Plackett Luce Model
+Extract the coefficients of a model fitted by \code{PlackettLuce}. By
+default, parameters are returned on the log scale, as most suited for
+inference. If \code{log = FALSE}, the worth parameters are returned,
+constrained to sum to one so that they represent the probability that
+the corresponding item comes first in a ranking of all items, given that
+first place is not tied.
 }

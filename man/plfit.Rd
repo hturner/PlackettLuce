@@ -4,8 +4,8 @@
 \alias{plfit}
 \title{PlackettLuce Wrapper for Model-based Recursive Partitioning}
 \usage{
-plfit(y, x = NULL, start = NULL, weights = NULL, offset = NULL, ...,
-  estfun = FALSE, object = FALSE)
+plfit(y, x = NULL, ref = 1, start = NULL, weights = NULL,
+  offset = NULL, ..., estfun = FALSE, object = FALSE)
 }
 \arguments{
 \item{y}{a \code{"\link{grouped_rankings}"} object giving the rankings to
@@ -13,9 +13,13 @@ model.}
 
 \item{x}{unused.}
 
-\item{start}{unused.}
+\item{ref}{an integer or character string specifying the reference item (for
+which log worth will be set to zero). If \code{NULL} the sum of the log worth
+parameters is set to zero.}
 
-\item{weights}{unused (generates warnings).}
+\item{start}{starting values for the worth parameters and the tie parameters.}
+
+\item{weights}{an optional vector of weights for each ranking.}
 
 \item{offset}{unused.}
 

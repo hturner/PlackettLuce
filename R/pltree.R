@@ -102,6 +102,15 @@ pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
 #' @export
 partykit::mob
 
+#' @method print pltree
+#' @export
+print.pltree <- function (x, title = "Plackett-Luce tree",
+                          objfun = "negative log-likelihood",
+                          ...) {
+    partykit::print.modelparty(x, title = title, objfun = objfun,
+                               ...)
+}
+
 #' @rdname pltree
 #' @method predict pltree
 #' @importFrom stats model.frame

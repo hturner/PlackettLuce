@@ -4,14 +4,15 @@
 \alias{qvcalc.PlackettLuce}
 \title{Quasi Variances for Model Coefficients}
 \usage{
-\method{qvcalc}{PlackettLuce}(object, ref = NULL, ...)
+\method{qvcalc}{PlackettLuce}(object, ref = 1, ...)
 }
 \arguments{
 \item{object}{a \code{"PlackettLuce"} object as returned by
 \code{PlackettLuce}.}
 
 \item{ref}{an integer or character string specifying the reference item (for
-which log ability will be set to zero). If \code{NULL} the first item is used.}
+which log worth will be set to zero). If \code{NULL} the sum of the log worth
+parameters is set to zero.}
 
 \item{...}{additional arguments, currently ignored..}
 }

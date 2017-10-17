@@ -12,8 +12,11 @@ Description: Specify and fit Plackett-Luce models for rankings data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 2.10)
 Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK, qvcalc,
         sandwich, stats
-Suggests: BradleyTerry2, BradleyTerryScalable, Matrix.utils, 
-        StatRank, covr, lbfgs, gnm, psychotree, testthat, tibble
+Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils,
+        StatRank, covr, kableExtra, knitr, lbfgs, gnm, psychotree, rmarkdown, 
+        testthat, tibble
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr

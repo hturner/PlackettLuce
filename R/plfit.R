@@ -7,8 +7,8 @@
 #' @param y a \code{"\link{grouped_rankings}"} object giving the rankings to
 #' model.
 #' @param x unused.
-#' @param start unused.
-#' @param weights unused (generates warnings).
+#' @inheritParams PlackettLuce
+#' @inheritParams coef.PlackettLuce
 #' @param offset unused.
 #' @param ... additional arguments passed to \code{PlackettLuce}.
 #' @param estfun logical. If \code{TRUE} the empirical estimating functions
@@ -37,21 +37,28 @@
 #'
 #' PlackettLuce(R)
 #' @export
-plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
-                   ..., estfun = FALSE, object = FALSE) {
+plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
+                   offset = NULL, ..., estfun = FALSE, object = FALSE) {
     x <- !(is.null(x) || NCOL(x) == 0L)
     offset <- !is.null(offset)
-    start <- !is.null(start)
     if (x || offset)
         warning("unused argument(s): ",
-                paste(c("x"[x], "start"[start], "offset"[offset]),
-                      collapse = ","))
+                paste(c("x"[x], "offset"[offset]), collapse = ","))
     res <- PlackettLuce(y, weights = weights, ...)
+    if (object) {
+        # returning in order to compute final vcov etc, so can aggregate now
+        uniq <- !duplicated(attr(y, "id"))
+        g <- match(attr(y, "id"), attr(y, "id")[uniq])
+        res$rankings <- structure(res$rankings[uniq,],
+                                 class = "rankings")
+        res$weights <- tapply(res$weights, g, sum)
+    }
     if (estfun) {
-        percomp <- estfun.PlackettLuce(res)
+        percomp <- estfun.PlackettLuce(res, ref = ref)
+        if (object) percomp <- percomp[g, , drop = FALSE]
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
-    list(coefficients = coef(res), objfun = -res$loglik,
+    list(coefficients = coef(res, ref = ref), objfun = -res$loglik,
          estfun = estfun,
          object = if (object) res else NULL)
 }
@@ -60,7 +67,7 @@ plfit <- function (y, x = NULL, start = NULL, weights = NULL, offset = NULL,
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
 #' @export
-estfun.PlackettLuce <- function(x) {
+estfun.PlackettLuce <- function(x, ref = 1, ...) {
     D <- x$maxTied
     # get coefficients (unconstrained)
     coef <- x$coefficients
@@ -73,8 +80,9 @@ estfun.PlackettLuce <- function(x) {
     nr <- nrow(x$rankings)
     A <- matrix(0, nrow = nr, ncol = N,
                 dimnames = list(NULL, names(alpha)))
+    choices$choices <- split(choices$choices, choices$ranking)
     for (i in seq_len(nr)){
-        r <- choices$choices[choices$ranking == i]
+        r <- choices$choices[[i]]
         len <- lengths(r)
         A[i, unlist(r)] <- rep(1/len, len)
     }
@@ -102,14 +110,20 @@ estfun.PlackettLuce <- function(x) {
                        N = N, D = D, S = unique(na), R, G)
     h <- match(choices$alternatives, unique_alternatives)
     A <- A - rowsum(res$expA[h,], choices$ranking)
-    # ignore column corresponding to fixed ref
-    ref <- x$ref
-    if (ref %in% names(alpha)) ref <- which(names(alpha) == ref)
-    if (D == 1) return(A[, -ref, drop = FALSE])
+    if (!is.null(ref) && ref %in% names(alpha)) {
+        ref <- which(names(alpha) == ref)
+    }
+    if (D == 1) {
+        if (!is.null(ref)) {
+            return(A[, -ref, drop = FALSE])
+        } else return(A)
+    }
     # N.B. expectation of delta should include delta*, but cancelled out in
     # in iterative scaling so omitted!
     res$expB <- sweep(res$expB, 2, delta[-1], "*")
     B <- B - rowsum(res$expB[h,], choices$ranking)
-    cbind(A[, -ref, drop = FALSE], B)
+    if (!is.null(ref)) {
+        return(cbind(A[, -ref, drop = FALSE], B))
+    } else return(cbind(A[, drop = FALSE], B))
 }
 

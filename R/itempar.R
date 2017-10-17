@@ -44,7 +44,8 @@
 #' @export
 itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
                                  log = FALSE, ...){
-    coefs <- coef(object, type = "abilities")
+    item <- seq_len(length(object$coefficients) - object$maxTied + 1)
+    coefs <- log(object$coefficients[item])
     object_names <- names(coefs)
     n <- length(coefs)
     id <- seq_len(n)[!is.na(coefs)]
@@ -103,7 +104,7 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
         V <- V[-alias, -alias]
     }
     structure(coefs, class = "itempar", model = "PlackettLuce",
-              ref = ref, alias = alias, vcov = V)
+              ref = ref, alias = alias, vcov = if (vcov) V)
 }
 
 #' @importFrom psychotools itempar

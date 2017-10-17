@@ -15,7 +15,7 @@
 #' @param object a \code{"PlackettLuce"} object as returned by
 #' \code{PlackettLuce}.
 #' @param ... additional arguments, currently ignored..
-#' @inheritParams PlackettLuce
+#' @inheritParams coef.PlackettLuce
 #' @return A list of class \code{"qv"}, with components
 #' \item{covmat}{The full variance-covariance matrix for the item
 #' parameters.}
@@ -75,7 +75,7 @@
 #' plot(qv)
 #' @importFrom stats vcov
 #' @export
-qvcalc.PlackettLuce <- function(object, ref = NULL, ...) {
+qvcalc.PlackettLuce <- function(object, ref = 1, ...) {
   coefs <- coef(object, ref = ref)
   vc <- vcov(object, ref = ref)
   nobj <- length(coefs) - object$maxTied + 1
