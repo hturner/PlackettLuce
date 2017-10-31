@@ -82,23 +82,23 @@ package to fit Plackett-Luce trees.
 Even though the Plackett-Luce model is a well-established method for analysing
 rankings, the software available to fit the model is limited. By considering
 each choice in the ranking as a multinomial observation, with one item observed
-out of a possible set, the "Poisson trick" can be applied to express the model
-as a log-linear model, where the response is the count (one or zero) of each
-possible outcome within each choice. In theory, the model can then be fitted
-using standard software for generalized linear models. However there are a
-number of difficulties with this. Firstly, dummy variables must be set up to
-represent the presense or absense of each item in each choice and a factor
-created to identify each choice, which is a non-standard task. Secondly the
-factor identifying each choice will have many levels: greater than the number
-of rankings for rankings of more than two objects. Thus there are many
-parameters to estimate and a standard function such as `glm` will be slow to
-fit the model, or may even fail as the corresponding model matrix will be too
-large to fit in memory. This issue can be circumvented by using the `gnm`
-function from **gnm**, which provides an `eliminate` argument to efficiently
-estimate the effects of such a factor. Even then, the model-fitting may be
-relatively slow, given the expansion in the number of observations converting
-from rankings to counts. For example, the ranking {item 3 > item 1 > item 2}
-expands to two choices with five counts all together:
+out of a possible set, the "Poisson trick" [see, for example, @Baker1994] can be
+applied to express the model as a log-linear model, where the response is the
+count (one or zero) of each possible outcome within each choice. In theory, the
+model can then be fitted using standard software for generalized linear
+models. However there are a number of difficulties with this. Firstly, dummy
+variables must be set up to represent the presense or absense of each item in
+each choice and a factor created to identify each choice, which is a
+non-standard task. Secondly the factor identifying each choice will have many
+levels: greater than the number of rankings for rankings of more than two
+objects. Thus there are many parameters to estimate and a standard function such
+as `glm` will be slow to fit the model, or may even fail as the corresponding
+model matrix will be too large to fit in memory. This issue can be circumvented
+by using the `gnm` function from **gnm**, which provides an `eliminate` argument
+to efficiently estimate the effects of such a factor. Even then, the
+model-fitting may be relatively slow, given the expansion in the number of
+observations converting from rankings to counts. For example, the ranking {item
+3 > item 1 > item 2} expands to two choices with five counts all together:
 
 ```{r, echo = FALSE}
 as.matrix(data.frame(choice = c(1, 1, 1, 2, 2),
