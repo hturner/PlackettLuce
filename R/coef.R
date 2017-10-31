@@ -23,9 +23,10 @@ coef.PlackettLuce <- function(object, ref = 1, log = TRUE,
                               type = "all", ...){
   type <-  match.arg(type, c("ties", "worth", "all"))
   if (!log) {
+      # ignore ref here, always return probabilities
       coefs <- object$coefficients
   } else {
-      item <- itempar(object, ref = ref, log = log, vcov = FALSE)
+      item <- itempar.PlackettLuce(object, ref = ref, log = log, vcov = FALSE)
       ref <- attr(item, "ref")
       nitem <- length(item)
       coefs <- c(item, log(object$coefficients[-seq_len(nitem)]))

@@ -111,6 +111,53 @@ print.pltree <- function (x, title = "Plackett-Luce tree",
                                ...)
 }
 
+#' @method coef pltree
+#' @importFrom partykit info_node nodeids
+#' @export
+coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
+    if (is.null(node)){
+        ids <- nodeids(object, terminal = TRUE)
+    } else ids <- node
+    if ("object" %in% object$info$control$terminal) {
+        cf <- do.call("rbind",
+                      lapply(ids, FUN = function(n, ...){
+                          # set ref as specified in plfit if unspecified
+                          info <- info_node(object[[n]]$node)
+                          cll <- as.call(list(coef.PlackettLuce,
+                                              info$object, ...))
+                          cll <- match.call(coef.PlackettLuce, cll)
+                          if (!"ref" %in% names(cll)) {
+                              cll$ref <- attr(info$coefficients, "ref")
+                          }
+                          eval(cll)
+                      }, ...))
+    } else{
+        cf <- do.call("rbind",
+                      lapply(ids, FUN = function(n, ...){
+                          # compute coef as returned from original fit
+                          info <- info_node(object[[n]]$node)
+                          n <- length(info$coefficients) - info$maxTied + 1
+                          info$coefficients <- exp(info$coefficients)
+                          id <- seq_len(n)
+                          info$coefficients[id] <-
+                              info$coefficients[id]/sum(info$coefficients[id])
+                          # parameterize as requested
+                          cll <- as.call(list(coef.PlackettLuce, info, ...))
+                          cll <- match.call(coef.PlackettLuce, cll)
+                          if (!"ref" %in% names(cll)) {
+                              cll$ref <- attr(info$coefficients, "ref")
+                          }
+                          eval(cll)
+                      }, ...))
+    }
+    rownames(cf) <- ids
+    if (drop) {
+        drop(cf)
+    } else {
+        cf
+    }
+}
+
 #' @rdname pltree
 #' @method predict pltree
 #' @importFrom stats model.frame
