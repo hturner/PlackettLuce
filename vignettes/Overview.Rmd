@@ -294,12 +294,12 @@ the maximum likelihood estimate does not exist, or has infinite standard
 error; such issues are handled in **PlackettLuce** by utilising pseudo-rankings.
 This is similar to incorporating prior information as in the Bayesian approach.
 
-**PlackettLuce** is the only package that can accommodated tied rankings, this
-is achieved through a novel extension of the Plackett-Luce model. On the other
-hand **hyper2** is currently the only package that can handle rankings of
-combinations of items, for example team rankings in sports. **PLMIX** offers
-the facility to model heterogenous populations of subjects that have different
-sets of worth parameters via mixture models. This is similar in spirit to the
+**PlackettLuce** is also the only package that can accommodate tied rankings,
+through a novel extension of the Plackett-Luce model. On the other hand
+**hyper2** is currently the only package that can handle rankings of
+combinations of items, for example team rankings in sports. **PLMIX** offers the
+facility to model heterogenous populations of subjects that have different sets
+of worth parameters via mixture models. This is similar in spirit to the
 model-based partitioning offered by **PlackettLuce**, except here the
 sub-populations are defined by binary splits on subject attributes. A summary of
 the package features is given in Table \@ref(tab:package-summary).
@@ -361,7 +361,7 @@ available in **PlackettLuce** provides the data from Example 2 of that paper, in
 which respondents were asked to test two brands of chocolate pudding from a
 total of six brands. For each comparison of brands $i$ and $j$, the data set
 gives the frequencies that brand $i$ was preferred ($w_{ij}$), that brand $j$
-was preferred ($w_{ji}$ and that the brands were tied ($t_{ij}$).
+was preferred ($w_{ji}$) and that the brands were tied ($t_{ij}$).
 
 ```{r}
 library(PlackettLuce)
@@ -390,7 +390,7 @@ in first place and `2` represents the brand in second place, if applicable.
 
 This matrix can used to specify the rankings in the call to `PlackettLuce`,
 however there are some advantages to creating a formal \code{"rankings"} object,
-which `PlackettLuce` create internally if necessary:
+which `PlackettLuce` does internally if necessary:
 
 ```{r}
 R <- as.rankings(R)
@@ -445,11 +445,11 @@ method for \code{"PlackettLuce"} objects sets the first item as the reference:
 summary(mod)
 ```
 
-None of the Z tests for the item parameters is significant, which is consistent
-with test for equal preferences presented in @Davidson1970. Note the tie
-parameter is alo shown on the log scale here, but since it is an integral part
-of the model it is not a parameter of interest for inference, so the scale is
-not relevant.
+None of the Z tests for the item parameters provides significant evidence
+against the null hypothesis, which is consistent with the test for equal
+preferences presented in @Davidson1970. The tie parameter is alo shown on the
+log scale here, but it is an integral part of the model rather than a parameter
+of interest for inference, and its scale is not relevant.
 
 The reference level for the item parameters can be changed via the `ref`
 argument, for example setting to `NULL` sets the mean worth as the reference:
@@ -500,8 +500,8 @@ R <- matrix(c(1, 2, 0, 0,
 R <- as.rankings(R)
 ```
 
-The `adjacency` function from **PlacketLuce** can be used to convert these to
-an adjace`ncy matrix where element $(i, j)$ is the number of times item $i$ is
+The `adjacency` function from **PlacketLuce** can be used to convert these to an
+adjacency matrix where element $(i, j)$ is the number of times item $i$ is
 ranked higher than item $j$:
 ```{r}
 A <- adjacency(R)
@@ -561,7 +561,7 @@ network is strongly connected, and throw an error otherwise. The larger
 `npseudo` is, the stronger the influence of the prior, so by default `npseudo`
 is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to
 connect the network, but is a weak prior. In this toy example, the item
-parameters changes quite considerably:
+parameters change quite considerably:
 ```{r}
 mod2 <- PlackettLuce(R)
 coef(mod2)
