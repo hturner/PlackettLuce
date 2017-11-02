@@ -54,11 +54,12 @@ choice is made. Suppose we have a set of $j$ items
 
 $$S_j = \{i_1, i_2, \ldots, i_j\}.$$
 
-Then under Luce's axiom, the probability of selecting item $i_j$ is given by
+Then under Luce's axiom, the probability of selecting some item $i$
+from $S_j$ is given by
 
-$$P(i_j | S_j) = \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+$$P(i | S_j) = \frac{\alpha_{i}}{\sum_{c \in S_j} \alpha_c}$$
 
-where $\alpha_j$ represents the **worth** of item $i_j$. Viewing a ranking of $K$
+where $\alpha_i$ represents the **worth** of item $i$. Viewing a ranking of $K$
 items as a sequence of choices ---first choosing the top-ranked item from all
 items, then choosing the second-ranked item from the remaining items and so
 on--- it follows that the probability of the ranking ${i_K > \ldots > i_1}$ is
