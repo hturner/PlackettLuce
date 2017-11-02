@@ -73,7 +73,7 @@ The **PlackettLuce** package implements a novel extension of the Plackett-Luce
 model that accommodates tied rankings, which may be applied to either full or
 partial rankings. Pseudo-rankings are utilised to obtain estimates in cases
 where the maximum likelihood estimates do not exist, or do not have finite
-standard errors. Methods are provided to obtain different parameterisations with
+standard errors. Methods are provided to obtain different parameterizations with
 corresponding standard errors or quasi-standard errors (that are independent of
 the reference item). There is also a method to work with the **psychotree**
 package to fit Plackett-Luce trees.
@@ -88,7 +88,7 @@ applied to express the model as a log-linear model, where the response is the
 count (one or zero) of each possible outcome within each choice. In theory, the
 model can then be fitted using standard software for generalized linear
 models. However there are a number of difficulties with this. Firstly, dummy
-variables must be set up to represent the presense or absense of each item in
+variables must be set up to represent the presence or absence of each item in
 each choice and a factor created to identify each choice, which is a
 non-standard task. Secondly the factor identifying each choice will have many
 levels: greater than the number of rankings for rankings of more than two
@@ -256,7 +256,7 @@ When the number of items is more than ten, it is more common to
 observe partial rankings than complete rankings. Partial rankings can be of two
 types: *sub-rankings*, where only a subset of items are ranked each time, and
 *incomplete rankings*, where the top $n$ items are selected and the remaining
-items are unranked, but implictly ranked lower than the top $n$. Sub-rankings
+items are unranked, but implicitly ranked lower than the top $n$. Sub-rankings
 are accommodated by the standard Plackett-Luce model, while incomplete rankings
 require an extension of the Plackett-Luce model. **PlackettLuce** handles
 sub-rankings only, while **PLMIX** handles incomplete rankings only and
@@ -299,7 +299,7 @@ This is similar to incorporating prior information as in the Bayesian approach.
 through a novel extension of the Plackett-Luce model. On the other hand
 **hyper2** is currently the only package that can handle rankings of
 combinations of items, for example team rankings in sports. **PLMIX** offers the
-facility to model heterogenous populations of subjects that have different sets
+facility to model heterogeneous populations of subjects that have different sets
 of worth parameters via mixture models. This is similar in spirit to the
 model-based partitioning offered by **PlackettLuce**, except here the
 sub-populations are defined by binary splits on subject attributes. A summary of
@@ -448,7 +448,7 @@ summary(mod)
 
 None of the Z tests for the item parameters provides significant evidence
 against the null hypothesis, which is consistent with the test for equal
-preferences presented in @Davidson1970. The tie parameter is alo shown on the
+preferences presented in @Davidson1970. The tie parameter is also shown on the
 log scale here, but it is an integral part of the model rather than a parameter
 of interest for inference, and its scale is not relevant.
 
@@ -489,7 +489,7 @@ plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
 ## Disconnected networks
 
 The wins and losses between items can be represented as a directed network. For
-example, consider the following set of paried comparisons:
+example, consider the following set of paired comparisons:
 
 ```{r}
 R <- matrix(c(1, 2, 0, 0,
@@ -535,7 +535,7 @@ from **PlackettLuce**
 ```{r}
 connectivity(A)
 ```
-If the netwrok is not strongly connected, information on the clusters within
+If the network is not strongly connected, information on the clusters within
 the network is returned. In this case a model could be estimated excluding item
 D:
 ```{r}
@@ -604,8 +604,8 @@ keep <- seq_len(83)
 R2 <- R[, keep]
 mod <- PlackettLuce(R2, npseudo = 0)
 ```
-In order to demonstrate the correspondene with the results from @Hunter2004, we
-order the item parameters by the deriver's average rank:
+In order to demonstrate the correspondence with the results from @Hunter2004, we
+order the item parameters by the driver's average rank:
 ```{r}
 avRank <- apply(R, 2, function(x) mean(x[x > 0]))
 coefs <- round(coef(mod)[order(avRank[keep])], 2)
@@ -653,7 +653,7 @@ may sometimes be an over-simplification. For example, if rankings are made by
 different judges, the worth parameters may vary between judges with different
 characteristics. Model-based partitioning provides an automatic way to determine
 subgroups of the judges with significantly different sets of worth parameters,
-based on judge covariates. A Plackett-Luce tree is created via the following
+based on judge covariates. A Plackett-Luce tree is constructed via the following
 steps:
 
 1. Fit a Plackett-Luce model to the full data.
@@ -665,14 +665,14 @@ improvement in model fit.
 4. Repeat steps 1-3 until there are no more significant instabilities, or a
 split produces a sub-group below a given size threshold.
 
-This is an extension of Bradley-Terry trees, implented in the R package **psychotree** and described in more detail by @Strobl2011.
+This is an extension of Bradley-Terry trees, implemented in the R package **psychotree** and described in more detail by @Strobl2011.
 
 To illustrate this approach, we consider data from a trial of different
 varieties of bean in Nicaragua, run by Bioversity International. Farmers were
 asked to grow three experimental varieties of bean in one of the growing
 seasons, Primera (May - August), Postrera (September - October) or Apante
 (November - January). At the end of the season, they were asked which variety
-they though was best and which variety they thought was worse, to give a ranking
+they thought was best and which variety they thought was worse, to give a ranking
 of the three varieties. In addition, they were asked to compare each trial
 variety to the standard local variety and say whether it was better or worse.
 
@@ -768,6 +768,9 @@ In this case there are two nodes defined by the seasons.
 plot(tree)
 ```
 
+# Discussion
+
+
 # Appendix
 
 For the package comparison in Table \@ref(tab:timings-kable), the model was
@@ -775,7 +778,7 @@ fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr).
 Arguments were set to obtain the maximum likelihood estimate, using the default
 iterative scaling algorithm for PlackettLuce. The functions were run with their
 default convergence criteria; the number of iterations for StatRank was set so
-that the log-likehood on exit was equal to the log-likelihood returned by the
+that the log-likelihood on exit was equal to the log-likelihood returned by the
 other functions with relative tolerance 1e-6.
 
 ```{r chunk2}
