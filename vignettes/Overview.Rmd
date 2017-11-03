@@ -679,14 +679,68 @@ trial variety to the standard local variety and say whether it was better or
 worse.
 
 The data are provided as the dataset `beans` in Plackett-Luce. The data require
-some preparation to collate the rankings, which is detailed in the example of
-the help file of the `beans` dataset. Specifically, the code in the example will
-results in a `rankings` object `R` which provides all rankings of the three
-experimental varieties and the output of their comparison with the local
-variety.
-```{r beans-preparation, results = FALSE}
+some preparation to collate the rankings, which is detailed in the Appendix
+Appendix. The same code is provided in the example of in the help file of
+`beans`
+```{r beans-preparation, eval = FALSE}
 example("beans", package = "PlackettLuce")
 ```
+The result is a `rankings` object `R` with all rankings of the three
+experimental varieties and the output of their comparison with the local
+variety.
+
+```{r beans-1, echo = FALSE, results = FALSE}
+data(beans)
+head(beans[c("best", "worst")], 2)
+```
+```{r beans-2, echo = FALSE, results = FALSE}
+beans <- within(beans, {
+    best <- match(best, c("A", "B", "C"))
+    worst <- match(worst, c("A", "B", "C"))
+    middle <- 6 - best - worst
+})
+head(beans[c("best", "middle", "worst")], 2)
+```
+```{r beans-3, echo = FALSE, results = FALSE}
+varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+head(varieties, 2)
+```
+```{r beans-4, echo = FALSE, results = FALSE}
+n <- nrow(beans)
+beans <- within(beans, {
+    best <- varieties[cbind(seq_len(n), best)]
+    worst <- varieties[cbind(seq_len(n), worst)]
+    middle <- varieties[cbind(seq_len(n), middle)]
+})
+head(beans[c("best", "middle", "worst")], 2)
+```
+```{r beans-5, echo = FALSE, results = FALSE}
+lab <- c("Local", sort(unique(as.vector(varieties))))
+R <- as.rankings(beans[c("best", "middle", "worst")],
+                 input = "ordering", labels = lab)
+```
+```{r beans-6, echo = FALSE, results = FALSE}
+head(beans[c("var_a", "var_b", "var_c")], 2)
+```
+```{r beans-7, echo = FALSE, results = FALSE}
+paired <- list()
+for (id in c("a", "b", "c")){
+    ordering <- matrix("Local", nrow = n, ncol = 2)
+    worse <- beans[[paste0("var_", id)]] == "Worse"
+    ## name of winner
+    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
+    ## name of loser
+    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
+    paired[[id]] <- ordering
+}
+head(paired[[id]])
+```
+```{r beans-8, echo = FALSE, results = FALSE}
+paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
+R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
+```
+
+
 
 In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
 object, that defines how the rankings map to the covariate values. In this case
@@ -723,6 +777,7 @@ plot(tree)
 
 # Appendix
 
+## Timings
 For the package comparison in Table \@ref(tab:timings-kable), the model was
 fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr).
 Arguments were set to obtain the maximum likelihood estimate, using the default
@@ -735,5 +790,48 @@ other functions with relative tolerance 1e-6.
 ```{r wrappers, eval = FALSE}
 ```{r timings, eval = FALSE}
 ```
+
+## `beans` data preparation
+
+First we consider the best and worst rankings. These give the variety the farmer
+though was best or worst, coded as A, B or C for the first, second or third
+variety assigned to the farmer respectively.
+```{r}
+```{r beans-1, eval = FALSE}
+```
+We convert these to numeric values, allowing us to impute the middle-ranked
+variety (a strict ranking is assumed here, so the sum of each row should be 6)
+```{r}
+```{r beans-2, eval = FALSE}
+```
+This gives an ordering of the three varieties the farmer was given. The names of
+these varieties are stored in separate columns
+```{r}
+```{r beans-3, eval = FALSE}
+```
+So we can convert the variety IDs to the variety names
+```{r}
+```{r beans-4, eval = FALSE}
+```
+Next we convert these orderings to sub-rankings of the full set of
+varieties, including the local variety as an additional item, so that we can
+add the paired comparisons shortly:
+```{r}
+```{r beans-5, eval = FALSE}
+```
+The comparisons with the local variety are stored in another set of columns
+```{r}
+```{r beans-6, eval = FALSE}
+```
+The following converts each of these columns to a matrix of ordered pairs:
+```{r}
+```{r beans-7, eval = FALSE}
+```
+Again we convert these orderings to sub-rankings of the full set of varieties
+and combine them with the rankings of order three:
+```{r}
+```{r beans-8, eval = FALSE}
+```
+
 
 # References
