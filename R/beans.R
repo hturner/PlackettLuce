@@ -40,29 +40,66 @@
 #' centre \url{https://www.bioversityinternational.org}.
 #' @examples
 #'
-#' # convert best and worse variety to numeric (A = 1, B = 2, C = 3)
-#' # infer value of middle variety (given values must sum to 6)
+#' # consider the best andw worst rankings. These give the variety the
+#' # farmer though was best or worst, coded as A, B or C for the
+#' # first, second or third variety assigned to the farmer
+#' # respectively.
+#' data(beans)
+#' head(beans[c("best", "worst")], 2)
+#'
+#' # convert these to numeric values, allowing us to impute the
+#' # middle-ranked variety (a strict ranking is assumed here, so the
+#' # sum of each row should be 6)
 #' beans <- within(beans, {
-#'     best <- match(best, c("A", "B", "C"))
-#'     worst <- match(worst, c("A", "B", "C"))
-#'     middle <- 6 - best - worst
+#'    best <- match(best, c("A", "B", "C"))
+#'    worst <- match(worst, c("A", "B", "C"))
+#'    middle <- 6 - best - worst
 #' })
-#' head(beans[c("best", "middle", "worst")], 3)
+#' head(beans[c("best", "middle", "worst")], 2)
 #'
-#'
-#' # convert numeric ordering to ordering of variety names
-#' n <- nrow(beans)
+#' # this gives an ordering of the three varieties the farmer was
+#' # given. The names of these varieties are stored in separate
+#' # columns
 #' varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+#' head(varieties, 2)
+#'
+#' # So we can convert the variety IDs to the variety names
+#' n <- nrow(beans)
 #' beans <- within(beans, {
 #'     best <- varieties[cbind(seq_len(n), best)]
 #'     worst <- varieties[cbind(seq_len(n), worst)]
 #'     middle <- varieties[cbind(seq_len(n), middle)]
 #' })
-#' head(beans[c("best", "middle", "worst")], 3)
+#' head(beans[c("best", "middle", "worst")], 2)
 #'
-#' # create rankings object from all orderings
-#' ## three-way rankings
-#' lab <- sort(unique(as.vector(varieties)))
+#' # next we convert these orderings to sub-rankings of the full set
+#' # of varieties, including the local variety as an additional item,
+#' # so that we can add the paired comparisons shortly:
+#' lab <- c("Local", sort(unique(as.vector(varieties))))
 #' R <- as.rankings(beans[c("best", "middle", "worst")],
 #'                  input = "ordering", labels = lab)
+#'
+#' # the comparisons with the local variety are stored in another set
+#' # of columns
+#'
+#' head(beans[c("var_a", "var_b", "var_c")], 2)
+#'
+#' # the following converts each of these columns to a matrix of
+#' # ordered pairs:
+#' paired <- list()
+#' for (id in c("a", "b", "c")){
+#'    ordering <- matrix("Local", nrow = n, ncol = 2)
+#'     worse <- beans[[paste0("var_", id)]] == "Worse"
+#'     # name of winner
+#'     ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
+#'     # name of loser
+#'     ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
+#'     paired[[id]] <- ordering
+#' }
+#' head(paired[[id]])
+#'
+#' # again we convert these orderings to sub-rankings of the full set
+#' # of varieties and combine them with the rankings of order three:
+#' paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
+#' R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 "beans"
