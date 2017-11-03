@@ -263,7 +263,7 @@ sub-rankings only, while **PLMIX** handles incomplete rankings only and
 **hyper2** can handle both types. (**StatRank** supports partial rankings, but
 it is not clear in which form). Table \@ref(tab:nascar) demonstrates using the
 NASCAR data from @Hunter2004 that **PlackettLuce** is more efficient than
-**hyper2** for modelling subrankings of a relatively large number of items.
+**hyper2** for modelling sub-rankings of a relatively large number of items.
 
 ```{r timings-sub, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
 data(Data.Nascar, package = "StatRank")
@@ -773,6 +773,7 @@ plot(tree)
 ```
 
 # Discussion
+
 
 
 # Appendix
