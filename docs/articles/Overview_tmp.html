@@ -13,32 +13,6 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-<style type="text/css">
-.offset {
-  padding-top: 60px;
-}
-.caption {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  color: #777;
-  text-align: left;
-}
-p.abstract{
-  font-size: 24px;
-  font-family: inherit;
-  text-align: center;
-  font-weight: bold;
-}
-div.abstract{
-  margin: auto;
-  width: 90%;
-  padding-bottom: 15px;
-}
-div.contents{
-  border-top: 1px solid #eee;
-  padding-top: 9px;
-}
-</style>
 </head>
 <body>
     <div class="container template-vignette">
@@ -144,10 +118,10 @@ div.contents{
 ## [5,]      2      0      1      0     0</code></pre>
 <p>It is possible to aggregate observations of the same choice from the same set of alternatives, but the number of combinations increases quickly with the number of items.</p>
 <p>Given the issues with applying general methods, custom algorithms and software have been developed. One approach is use Hunter’s <span class="citation">(<a href="#ref-Hunter2004">2004</a>)</span> minorization-maximization (MM) algorithm to maximize the likelihood, which is equivalent to an iterative scaling algorithm; this algorithm is used by the <strong>StatRank</strong> package. Alternatively the likelihood of the observed data under the PlackettLuce model can be maximised directly using a generic optimisation method such the Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as used by both the <strong>pmr</strong> and <strong>hyper2</strong> packages. Finally Bayesian methods can be used to either maximize the posterior distribution via an Expectation Maximization (EM) algorithm or to simulate the posterior distribution using Markov-chain Monte-Carlo (MCMC) techniques, both of which are provided by <strong>PLMIX</strong>. <strong>PlackettLuce</strong> offers both iterative scaling and generic optimization using either BFGS or a limited memory variant (L-BFGS) via the <strong>lbfgs</strong> package.</p>
-<p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table <a href="#tab:timings-kable">2</a>. Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
+<p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table @ref(tab:timings-kable). Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:data-features">Table 1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
+Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -209,7 +183,7 @@ Sushi
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:timings-kable">Table 2: </span>Timings for fitting the Plackett-Luce model to data sets summarised in Table <a href="#tab:data-features">1</a> using different packages. See Appendix for details and code.
+Timings for fitting the Plackett-Luce model to data sets summarised in Table @ref(tab:data-features) using different packages. See Appendix for details and code.
 </caption>
 <thead>
 <tr>
@@ -316,10 +290,10 @@ b
 </tr>
 </tfoot>
 </table>
-<p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table <a href="#tab:nascar">3</a> demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling subrankings of a relatively large number of items.</p>
+<p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table @ref(tab:nascar) demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling subrankings of a relatively large number of items.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:nascar">Table 3: </span>Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
+Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
 </caption>
 <thead>
 <tr>
@@ -371,10 +345,10 @@ hyper2
 </tr></tbody>
 </table>
 <p><strong>PlackettLuce</strong> is the only package out of those based on maximum likelihood estimation with the functionality to compute standard errors for the item parameters and thereby the facility to conduct inference on these parameters. Using <strong>PLMIX</strong>, inference may be based on the posterior distribution. In some cases, when the network of wins and losses is disconnected or weakly connected, the maximum likelihood estimate does not exist, or has infinite standard error; such issues are handled in <strong>PlackettLuce</strong> by utilising pseudo-rankings. This is similar to incorporating prior information as in the Bayesian approach.</p>
-<p><strong>PlackettLuce</strong> is the only package that can accommodated tied rankings, this is achieved through a novel extension of the Plackett-Luce model. On the other hand <strong>hyper2</strong> is currently the only package that can handle rankings of combinations of items, for example team rankings in sports. <strong>PLMIX</strong> offers the facility to model heterogeneous populations of subjects that have different sets of worth parameters via mixture models. This is similar in spirit to the model-based partitioning offered by <strong>PlackettLuce</strong>, except here the sub-populations are defined by binary splits on subject attributes. A summary of the package features is given in Table <a href="#tab:package-summary">4</a>.</p>
+<p><strong>PlackettLuce</strong> is the only package that can accommodated tied rankings, this is achieved through a novel extension of the Plackett-Luce model. On the other hand <strong>hyper2</strong> is currently the only package that can handle rankings of combinations of items, for example team rankings in sports. <strong>PLMIX</strong> offers the facility to model heterogeneous populations of subjects that have different sets of worth parameters via mixture models. This is similar in spirit to the model-based partitioning offered by <strong>PlackettLuce</strong>, except here the sub-populations are defined by binary splits on subject attributes. A summary of the package features is given in Table @ref(tab:package-summary).</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:package-summary">Table 4: </span>Features of packages for fitting the Plackett-Luce model.
+Features of packages for fitting the Plackett-Luce model.
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -626,9 +600,9 @@ qv</code></pre></div>
 ## 6 0.3742162 0.1923830 0.1391874 0.01937314</code></pre>
 <p>Again by default, the first item is taken as the reference, but this may be changed via a <code>ref</code> argument. The plot method for the returned object visualizes the item parameters (log-worth parameters) along with comparison intervals - item parameters for which the comparison intervals do not cross are significantly different:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="st">"Brand of pudding"</span>, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:pudding-qv"></span>
+<div class="figure">
 <img src="Overview_files/figure-html/pudding-qv-1.png" alt="Worth of brands of chocolate pudding. Intervals based on quasi-standard errors." width="672"><p class="caption">
-Figure 1: Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
+Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
 </p>
 </div>
 </div>
@@ -657,9 +631,9 @@ A</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(igraph)
 net &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/igraph/topics/graph_from_adjacency_matrix">graph_from_adjacency_matrix</a></span>(A)
 <span class="kw">plot</span>(net, <span class="dt">edge.arrow.size =</span> <span class="fl">0.5</span>, <span class="dt">vertex.size =</span> <span class="dv">30</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:always-loses"></span>
+<div class="figure">
 <img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="672"><p class="caption">
-Figure 2: Network representation of toy rankings.
+Network representation of toy rankings.
 </p>
 </div>
 <p>For the worth parameters to have finite maximum likelihood estimates (MLEs) and standard errors, the network must be strongly connected, i.e. there must be a path of wins and a path of losses between each pair of items. In the example above, A, B and C are strongly connected. For example, C directly loses against B and although C never directly beats B, it does beat A and A in turn beats B, so C indirectly beats B. Similar paths of wins and losses can be found for all pairs of A, B and C. On the other hand D is only observed to lose, therefore the MLE of the worth would be zero, with infinite standard error.</p>
@@ -775,9 +749,9 @@ coefs2[<span class="kw">names</span>(coefs)[<span class="dv">1</span><span class
 qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="op">$</span>qvframe[<span class="kw">order</span>(<span class="kw">coef</span>(mod2)),]
 <span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>, <span class="dt">xaxt=</span><span class="st">"n"</span>)
 <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq_len</span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw">rownames</span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.7</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:nascar-qv"></span>
+<div class="figure">
 <img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="672"><p class="caption">
-Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
+Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
 </p>
 </div>
 <p>Although the pseudo-rankings are only necessary to add when the network is incomplete, the default behaviour is always to use them (with a weight of 0.5) because the small shrinkage effect reduces the bias of the estimates.</p>
@@ -915,16 +889,16 @@ tree</code></pre></div>
 ## Objective function (negative log-likelihood): 3152.027</code></pre>
 <p>The algorithm identifies three nodes, with the first split defined by high night-time temperatures, and the second splitting the single Primera season from the others. So for early planting in regions where the night-time temperatures were not too high, INTA Rojo (7) was most preferred, closely followed by the local variety. During the regular growing seasons (Postrera and Apante) in regions where the night-time temperatures were not too high, the local variety was most preferred, closely followed by INTA Sequia (8). Finally in regions where the maximum night-time temperature was high, INTA Sequia (8) was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur (3). A plot method is provided to visualise the tree:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(tree, <span class="dt">names =</span> <span class="ot">FALSE</span>, <span class="dt">abbreviate =</span> <span class="dv">2</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:plot-pltree"></span>
+<div class="figure">
 <img src="Overview_files/figure-html/plot-pltree-1.png" alt="Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79." width="672"><p class="caption">
-Figure 4: Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
+Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
 </p>
 </div>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h1>
-<p>For the package comparison in Table <a href="#tab:timings-kable">2</a>, the model was fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr). Arguments were set to obtain the maximum likelihood estimate, using the default iterative scaling algorithm for PlackettLuce. The functions were run with their default convergence criteria; the number of iterations for StatRank was set so that the log-likelihood on exit was equal to the log-likelihood returned by the other functions with relative tolerance 1e-6.</p>
+<p>For the package comparison in Table @ref(tab:timings-kable), the model was fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr). Arguments were set to obtain the maximum likelihood estimate, using the default iterative scaling algorithm for PlackettLuce. The functions were run with their default convergence criteria; the number of iterations for StatRank was set so that the log-likelihood on exit was equal to the log-likelihood returned by the other functions with relative tolerance 1e-6.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)
 <span class="co"># read in example data sets</span>
 preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span>

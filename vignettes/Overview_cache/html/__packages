@@ -17,3 +17,8 @@ tibble
 gnm
 readxl
 devtools
+dplyr
+readr
+bindrcpp
+forcats
+pkgdown

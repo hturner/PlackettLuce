@@ -88,7 +88,7 @@ as a log-linear model, where the response is the count (one or zero) of each
 possible outcome within each choice. In theory, the model can then be fitted 
 using standard software for generalized linear models. However there are a 
 number of difficulties with this. Firstly, dummy variables must be set up to 
-represent the presense or absense of each item in each choice and a factor 
+represent the presence or absence of each item in each choice and a factor 
 created to identify each choice, which is a non-standard task. Secondly the 
 factor identifying each choice will have many levels: greater than the number 
 of rankings for rankings of more than two objects. Thus there are many 
@@ -256,7 +256,7 @@ When the number of items is more than ten, it is more common to
 observe partial rankings than complete rankings. Partial rankings can be of two 
 types: *sub-rankings*, where only a subset of items are ranked each time, and 
 *incomplete rankings*, where the top $n$ items are selected and the remaining
-items are unranked, but implictly ranked lower than the top $n$. Sub-rankings
+items are unranked, but implicitly ranked lower than the top $n$. Sub-rankings
 are accommodated by the standard Plackett-Luce model, while incomplete rankings 
 require an extension of the Plackett-Luce model. **PlackettLuce** handles 
 sub-rankings only, while **PLMIX** handles incomplete rankings only and 
@@ -299,7 +299,7 @@ This is similar to incorporating prior information as in the Bayesian approach.
 is achieved through a novel extension of the Plackett-Luce model. On the other
 hand **hyper2** is currently the only package that can handle rankings of 
 combinations of items, for example team rankings in sports. **PLMIX** offers 
-the facility to model heterogenous populations of subjects that have different
+the facility to model heterogeneous populations of subjects that have different
 sets of worth parameters via mixture models. This is similar in spirit to the
 model-based partitioning offered by **PlackettLuce**, except here the 
 sub-populations are defined by binary splits on subject attributes. A summary of
@@ -448,7 +448,7 @@ summary(mod)
 
 None of the Z tests for the item parameters is significant, which is consistent
 with test for equal preferences presented in @Davidson1970. Note the tie 
-parameter is alo shown on the log scale here, but since it is an integral part 
+parameter is also shown on the log scale here, but since it is an integral part 
 of the model it is not a parameter of interest for inference, so the scale is 
 not relevant.
 
@@ -489,7 +489,7 @@ plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
 ## Disconnected networks
 
 The wins and losses between items can be represented as a directed network. For 
-example, consider the following set of paried comparisons:
+example, consider the following set of paired comparisons:
 
 ```{r}
 R <- matrix(c(1, 2, 0, 0,
@@ -502,7 +502,7 @@ R <- as.rankings(R)
 ```
 
 The `adjacency` function from **PlacketLuce** can be used to convert these to
-an adjace`ncy matrix where element $(i, j)$ is the number of times item $i$ is 
+an adjacency matrix where element $(i, j)$ is the number of times item $i$ is 
 ranked higher than item $j$:
 ```{r}
 A <- adjacency(R)
@@ -535,7 +535,7 @@ from **PlackettLuce**
 ```{r}
 connectivity(A)
 ```
-If the netwrok is not strongly connected, information on the clusters within 
+If the network is not strongly connected, information on the clusters within 
 the network is returned. In this case a model could be estimated excluding item
 D:
 ```{r}
@@ -604,8 +604,8 @@ keep <- seq_len(83)
 R2 <- R[, keep]
 mod <- PlackettLuce(R2, npseudo = 0)
 ```
-In order to demonstrate the correspondene with the results from @Hunter2004, we
-order the item parameters by the deriver's average rank:
+In order to demonstrate the correspondence with the results from @Hunter2004, we
+order the item parameters by the driver's average rank:
 ```{r}
 avRank <- apply(R, 2, function(x) mean(x[x > 0]))
 coefs <- round(coef(mod)[order(avRank[keep])], 2)
@@ -630,13 +630,13 @@ The new items have relative large negative log worth
 coefs2[84:87]
 ```
 Nonetheless, the estimates are finite and have finite standard errors:
-```{r, cache = TRUE}
+```{r}
 coef(summary(mod2))[84:87,]
 ```
 Note that the reference here is simply the driver that comes first 
 alphabetically: A. Cameron. We can plot the quasi-variances for a better 
 comparison:
-```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.", cache = TRUE}
+```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors."}
 qv <- qvcalc(mod2)
 qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
@@ -657,7 +657,7 @@ based on judge covariates. A Plackett-Luce tree is created via the following
 steps:
 
 1. Fit a Plackett-Luce model to the full data.
-2. Asses the stability of the worth parameters with respect to each available 
+2. Assess the stability of the worth parameters with respect to each available 
 covariate.
 3. If there is significant instability, split the full data by the covariate 
 with the strongest instability and use the cut-point with the highest 
@@ -665,7 +665,7 @@ improvement in model fit.
 4. Repeat steps 1-3 until there are no more significant instabilities, or a 
 split produces a sub-group below a given size threshold.
 
-This is an extension of Bradley-Terry trees, implented in the R package **psychotree** and described in more detail by @Strobl2011.
+This is an extension of Bradley-Terry trees, implemented in the R package **psychotree** and described in more detail by @Strobl2011.
 
 To illustrate this approach, we consider data from a trial of different 
 varieties of bean in Nicaragua, run by Bioversity International. Farmers were 
@@ -676,9 +676,9 @@ they though was best and which variety they thought was worse, to give a ranking
 of the three varieties. In addition, they were asked to compare each trial 
 variety to the standard local variety and say whether it was better or worse.
 
-The data are provided as the dataset `beans` in Plackett-Luce. The data require 
+The data are provided as the data set `beans` in Plackett-Luce. The data require 
 some preparation to collate the rankings. First we consider the best and 
-worst rankings. These give the variety the farmer though was best or worst, 
+worst rankings. These give the variety the farmer thought was best or worst, 
 coded as A, B or C for the first, second or third variety assigned to the farmer 
 respectively. 
 ```{r}
@@ -714,7 +714,7 @@ head(beans[c("best", "middle", "worst")], 2)
 Next we convert these orderings to sub-rankings of the full set of 
 varieties, including the local variety as an additional item, so that we can 
 add the paired comparisons shortly:
-    ```{r}
+```{r}
 lab <- c("Local", sort(unique(as.vector(varieties))))
 R <- as.rankings(beans[c("best", "middle", "worst")], 
                  input = "ordering", labels = lab)
@@ -729,9 +729,9 @@ paired <- list()
 for (id in c("a", "b", "c")){
     ordering <- matrix("Local", nrow = n, ncol = 2)
     worse <- beans[[paste0("var_", id)]] == "Worse"
-    ## name of winner
+    ## put trial variety in column 1 when it is not worse than local
     ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-    ## name of loser
+    ## put trial variety in column 2 when it is worse than local
     ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
     paired[[id]] <- ordering
 }
@@ -746,27 +746,36 @@ R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 In order to fit a Plackett-Luce tree, we need to create a 
 \code{"grouped_rankings"} object, that defines how the rankings map to the 
 covariate values. In this case we wish to group by each record in 
-the original data set, so we create a \code{"grouped_rankings"} object as 
-follows:
+the original data set, so we create a \code{"grouped_rankings"} object that 
+identifies the record number for each of the four rankings from each farmer (
+one ranking of order three plus three pairwise rankings with the local variety):
 ```{r}
 G <- grouped_rankings(R, rep(seq_len(n), 4))
 format(head(G, 2), width = 50)
 ```
 For each record in the original data, we have three covariates: \code{season} 
 the season-year the beans were planted, \code{year} the year of planting,
-and \code{rx5day} the maximum 5-day rainfall. The covariates will be used to 
-fit a Plackett-Luce tree
-```{r}
-beans$season <- factor(beans$season, 
-                       labels = c("Ap - 15", "Ap - 16", "Ap - 17", "Po - 15",
-                                  "Po - 16", "Pr - 16"))
+and \code{maxTN} the maximum temperature at night during the vegetative cycle. 
+The following code fits a Plackett-Luce tree with up to three nodes and at 
+least 5% of the records in each node:
+```{r pltree, cache = TRUE}
 beans$year <- factor(beans$year)
-tree <- pltree(G ~ ., data = beans[c("season", "year", "rx5day")], minsize = 5)
+tree <- pltree(G ~ ., data = beans[c("season", "year", "maxTN")], 
+               minsize = 0.05*n, maxdepth = 3)
 tree
 ```
-In this case there are two nodes defined by the seasons.
-```{r}
-plot(tree)
+The algorithm identifies three nodes, with the first split defined by high 
+night-time temperatures, and the second splitting the single Primera season 
+from the others. So for early planting in regions where the night-time 
+temperatures were not too high, INTA Rojo (7) was most preferred, closely 
+followed by the local variety. During the regular growing seasons (Postrera and
+Apante) in regions where the night-time temperatures were not too high, the 
+local variety was most preferred, closely followed by INTA Sequia (8). Finally
+in regions where the maximum night-time temperature was high, INTA Sequia (8) 
+was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur 
+(3). A plot method is provided to visualise the tree:
+```{r plot-pltree, fig.wide = TRUE, fig.cap = "Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79."}
+plot(tree, names = FALSE, abbreviate = 2)
 ```
 
 # Appendix
@@ -776,7 +785,7 @@ fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr).
 Arguments were set to obtain the maximum likelihood estimate, using the default
 iterative scaling algorithm for PlackettLuce. The functions were run with their
 default convergence criteria; the number of iterations for StatRank was set so 
-that the log-likehood on exit was equal to the log-likelihood returned by the 
+that the log-likelihood on exit was equal to the log-likelihood returned by the 
 other functions with relative tolerance 1e-6. 
 
 ```{r chunk2}

@@ -75,7 +75,7 @@
 #'     worse <- beans[[paste0("var_", id)]] == "Worse"
 #'     ## put trial variety in column 1 when it is not worse than local
 #'     ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-#'     ## put trial variety in column 3 when it is worse than local
+#'     ## put trial variety in column 2 when it is worse than local
 #'     ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
 #'     paired[[id]] <- ordering
 #' }
