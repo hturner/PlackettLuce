@@ -774,7 +774,19 @@ plot(tree)
 
 # Discussion
 
+**PlackettLuce** is a feature-rich package for the handling of ranking data. The
+package provides methods for importing, handling and visualising partial ranking
+data, and for the estimation and inference from generalizations of the
+Plackett-Luce model that can handle partial rankings of items and ties of
+arbitrary order. Disconnected item networks are handled by appropriately
+augmenting the data with pseudo-rankings for a hypothetical item. The package
+also allows for the construction of generalized Plackett-Luce trees to account
+for heterogeneity across the item worth parameters due to ranking-specific
+covariates.
 
+Current work involves support for the online estimation from streams of
+partial-rankings and accounting for spatio-temporal heterogeneity in worth
+parameters.
 
 # Appendix
 
