@@ -17,6 +17,6 @@ Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK, qvcalc,
         sandwich, stats
 Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils,
         StatRank, covr, kableExtra, knitr, lbfgs, gnm, psychotree, rmarkdown,
-        testthat, tibble, profvis, PLMIX, pmr
+        testthat, tibble, profvis, PLMIX, pmr, readxl
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
