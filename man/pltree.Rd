@@ -55,12 +55,9 @@ items. Thus the response should be a
 \code{\link{grouped_rankings}} object that groups rankings by subject. This
 may be included in a data frame alongside the subject covariates.
 
-The returned object inherits from \code{"\link[psychotree]{bttree}"}, therefore the
-psychotree package is required so that the methods are available.
-
 Various methods are provided for \code{"pltree"} objects, most of them
-inherited from \code{"modelparty"} objects (e.g. \code{print}, \code{summary}), or
-\code{"bttree"} objects (\code{itempar}, \code{plot}). \code{itempar}
+inherited from \code{"modelparty"} objects (e.g. \code{print},
+\code{summary}), or \code{"bttree"} objects (\code{plot}). \code{itempar}
 extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 method employs the \code{\link[psychotree]{node_btplot}}

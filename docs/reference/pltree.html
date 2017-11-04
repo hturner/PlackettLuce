@@ -175,11 +175,9 @@ rankings. The partitioning is based on attributes of the subjects ranking the
 items. Thus the response should be a
 <code><a href='grouped_rankings.html'>grouped_rankings</a></code> object that groups rankings by subject. This
 may be included in a data frame alongside the subject covariates.</p>
-<p>The returned object inherits from <code>"<a href='http://www.rdocumentation.org/packages/psychotree/topics/bttree'>bttree</a>"</code>, therefore the
-psychotree package is required so that the methods are available.</p>
 <p>Various methods are provided for <code>"pltree"</code> objects, most of them
-inherited from <code>"modelparty"</code> objects (e.g. <code>print</code>, <code>summary</code>), or
-<code>"bttree"</code> objects (<code>itempar</code>, <code>plot</code>). <code>itempar</code>
+inherited from <code>"modelparty"</code> objects (e.g. <code>print</code>,
+<code>summary</code>), or <code>"bttree"</code> objects (<code>plot</code>). <code>itempar</code>
 extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using <code><a href='itempar.PlackettLuce.html'>itempar.PlackettLuce</a></code>. The plot
 method employs the <code><a href='http://www.rdocumentation.org/packages/psychotree/topics/node_btplot'>node_btplot</a></code>
@@ -228,7 +226,7 @@ panel-generating function.</p>
     <span class='co'>### node the judge belongs to</span>
     <span class='fu'>predict</span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"node"</span>)
 
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotree</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: partykit</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: grid</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotools</span></div><div class='img'><img src='pltree-1.png' alt='' width='700' height='432.632880098887' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='432.632880098887' /></div><div class='output co'>#&gt;   1   2   3 
+}</div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotree</span></div><div class='img'><img src='pltree-1.png' alt='' width='700' height='432.632880098887' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='432.632880098887' /></div><div class='output co'>#&gt;   1   2   3 
 #&gt; "7" "3" "3" </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
