@@ -5,5 +5,4 @@ pre-commit.R
 ^appveyor\.yml$
 ^codecov\.yml$
 vignettes\*.html
-vignettes\render.R
 ^docs$

@@ -636,7 +636,7 @@ coef(summary(mod2))[84:87,]
 Note that the reference here is simply the driver that comes first 
 alphabetically: A. Cameron. We can plot the quasi-variances for a better 
 comparison:
-```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors."}
+```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.", fig.wide = TRUE}
 qv <- qvcalc(mod2)
 qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
