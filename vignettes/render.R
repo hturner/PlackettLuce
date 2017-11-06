@@ -1,6 +1,5 @@
 # render vignette - result is in inst/doc
-library(devtools)
-build_vignettes()
+rmarkdown::render("vignettes/Overview.Rmd")
 
 library(devtools)
 library(pkgdown)

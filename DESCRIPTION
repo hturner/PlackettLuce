@@ -15,8 +15,8 @@ LazyData: true
 Depends: R (>= 2.10)
 Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK, qvcalc,
         sandwich, stats
-Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils,
-        StatRank, covr, kableExtra, knitr, lbfgs, gnm, psychotree, rmarkdown,
-        testthat, tibble, profvis, PLMIX, pmr
+Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils, PLMIX,
+        StatRank, covr, hyper2, kableExtra, knitr, lbfgs, gnm, pmr, psychotree, 
+        rmarkdown, testthat, tibble
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

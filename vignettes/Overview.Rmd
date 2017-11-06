@@ -212,8 +212,10 @@ timings <- function(dat, iter = NULL,
 ```{r timings, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
 # set iter for statrank so that log-likelihood pass `all.equal` with tolerance 1e-6
 netflix_timings <- timings(netflix, 6)
-tshirt_timings <- timings(tshirt, 341)
-sushi_timings <- timings(sushi, 5)
+tshirt_timings <- timings(tshirt, 341, 
+                          fun = c("pl", "hyper2", "plmix", "statrank"))
+sushi_timings <- timings(sushi, 5,
+                         fun = c("pl", "hyper2", "plmix", "statrank"))
 ```
 
 ```{r data-features, echo = FALSE}
@@ -228,15 +230,11 @@ kable(features,
 ```
 
 ```{r timings-kable, echo = FALSE}
-res <- data.frame(netflix = round(unlist(netflix_timings), 3))
-a <- gsub("[^0-9]*([0-9.]* Gb).*", "\\1", tshirt_timings$pmr)
-tshirt_timings$pmr <- NA
-res$tshirt <- formatC(unlist(tshirt_timings), digits = 3, format = "f")
+res <- data.frame(netflix = round(unlist(netflix_timings), 3),
+                  tshirt = round(unlist(tshirt_timings), 3),
+                  sushi = round(unlist(sushi_timings), 3))
 res["pmr", "tshirt"] <- "a"
-b <- gsub("[^0-9]*([0-9.]* Gb).*", "\\1", sushi_timings$pmr)
-sushi_timings$pmr <- NA
-res$sushi <- formatC(unlist(sushi_timings), digits = 3, format = "f")
-res["pmr", "sushi"] <- "b"
+res["pmr", "sushi"] <- "a"
 res <- t(as.matrix(res))
 dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
                       c("PlackettLuce",
@@ -244,12 +242,10 @@ dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
 
 kable(res, align = c("rrrrr"), caption = "Timings for fitting the
 Plackett-Luce model to data sets summarised in Table \\@ref(tab:data-features) using
-different packages. See Appendix for details and code.") %>%
+different packages. See Appendix for details and code.", escape = FALSE) %>%
     kable_styling() %>%
     add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
-    add_footnote(c(paste("Failed to allocate vector of size:", a),
-                   paste("Failed to allocate vector of size:", b)),
-                 notation = "alphabet")
+    add_footnote("Function fails to complete.", notation = "alphabet")
 ```
 
 When the number of items is more than ten, it is more common to
