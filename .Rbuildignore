@@ -6,3 +6,4 @@ pre-commit.R
 ^codecov\.yml$
 vignettes\*.html
 ^docs$
+^pkgdown$

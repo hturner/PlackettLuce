@@ -2,7 +2,7 @@
 library(devtools)
 build_vignettes()
 
-# create version for pkgdown site (not needed )
+# create version for pkgdown site
 library(pkgdown)
 
 # either a) rebuild whole pkgdown site including help files

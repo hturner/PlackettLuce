@@ -9,36 +9,11 @@
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-<style type="text/css">
-.offset {
-  padding-top: 60px;
-}
-.caption {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  color: #777;
-  text-align: left;
-}
-p.abstract{
-  font-size: 24px;
-  font-family: inherit;
-  text-align: center;
-  font-weight: bold;
-}
-div.abstract{
-  margin: auto;
-  width: 90%;
-  padding-bottom: 15px;
-}
-div.contents{
-  border-top: 1px solid #eee;
-  padding-top: 9px;
-}
-</style>
 </head>
 <body>
     <div class="container template-vignette">
@@ -147,7 +122,7 @@ div.contents{
 <p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table <a href="#tab:timings-kable">2</a>. Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:data-features">Table 1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
+<span id="tab:data-features">Table 1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -209,7 +184,7 @@ Sushi
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:timings-kable">Table 2: </span>Timings for fitting the Plackett-Luce model to data sets summarised in Table <a href="#tab:data-features">1</a> using different packages. See Appendix for details and code.
+<span id="tab:timings-kable">Table 2: </span>Timings for fitting the Plackett-Luce model to data sets summarised in Table <a href="#tab:data-features">1</a> using different packages. See Appendix for details and code.
 </caption>
 <thead>
 <tr>
@@ -319,7 +294,7 @@ b
 <p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table <a href="#tab:nascar">3</a> demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling subrankings of a relatively large number of items.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:nascar">Table 3: </span>Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
+<span id="tab:nascar">Table 3: </span>Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
 </caption>
 <thead>
 <tr>
@@ -374,7 +349,7 @@ hyper2
 <p><strong>PlackettLuce</strong> is the only package that can accommodated tied rankings, this is achieved through a novel extension of the Plackett-Luce model. On the other hand <strong>hyper2</strong> is currently the only package that can handle rankings of combinations of items, for example team rankings in sports. <strong>PLMIX</strong> offers the facility to model heterogeneous populations of subjects that have different sets of worth parameters via mixture models. This is similar in spirit to the model-based partitioning offered by <strong>PlackettLuce</strong>, except here the sub-populations are defined by binary splits on subject attributes. A summary of the package features is given in Table <a href="#tab:package-summary">4</a>.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span class="offset" id="tab:package-summary">Table 4: </span>Features of packages for fitting the Plackett-Luce model.
+<span id="tab:package-summary">Table 4: </span>Features of packages for fitting the Plackett-Luce model.
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -512,17 +487,17 @@ Mixtures
 <p>where the items in set <span class="math inline">\(C_1\)</span> are ranked higher than (better than) the items in <span class="math inline">\(C_2\)</span>, and so on. If there are multiple objects in set <span class="math inline">\(C_j\)</span> these items are tied in the ranking. For a set <span class="math inline">\(S\)</span>, let</p>
 <p><span class="math display">\[f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}\]</span></p>
 <p>where <span class="math inline">\(|S|\)</span> is the cardinality of the set, <span class="math inline">\(\delta_n\)</span> is a parameter representing the prevalence of ties of order <span class="math inline">\(n\)</span>, and <span class="math inline">\(\alpha_i\)</span> is a parameter representing the worth of item <span class="math inline">\(i\)</span>. Then under an extension of the Plackett-Luce model allowing ties up to order <span class="math inline">\(D\)</span>, the probability of the ranking <span class="math inline">\(R\)</span> is given by</p>
-<span class="math display">\[\begin{equation}
+<span class="math display" id="eq:PL">\[\begin{equation}
 \prod_{j = 1}^J \frac{f(C_j)}{
 \sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
-(\#eq:PL)
+\tag{1}
 \end{equation}\]</span>
 <p>where <span class="math inline">\(D_j\)</span> is the cardinality of <span class="math inline">\(C_j\)</span>, <span class="math inline">\(A_j\)</span> is the set of alternatives from which <span class="math inline">\(C_j\)</span> is chosen, and <span class="math inline">\(A_j \choose k\)</span> is all the possible choices of <span class="math inline">\(k\)</span> items from <span class="math inline">\(A_j\)</span>. The value of <span class="math inline">\(D\)</span> can be set to the maximum number of tied items observed in the data, so that <span class="math inline">\(\delta_n = 0\)</span> for <span class="math inline">\(n &gt; D\)</span>.</p>
 <p>When the worth parameters are constrained to sum to one, they represent the probability that the corresponding item comes first in a ranking of all items, given that first place is not tied.</p>
 <div id="pudding-example-with-ties" class="section level3">
 <h3 class="hasAnchor">
 <a href="#pudding-example-with-ties" class="anchor"></a>Pudding example (with ties)</h3>
-<p>When each ranking contains only two items, then the model in Equation @ref(eq:PL) reduces to extended Bradley-Terry model proposed by <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set, available in <strong>PlackettLuce</strong> provides the data from Example 2 of that paper, in which respondents were asked to test two brands of chocolate pudding from a total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span> was preferred (<span class="math inline">\(w_{ji}\)</span> and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
+<p>When each ranking contains only two items, then the model in Equation <a href="#eq:PL">(1)</a> reduces to extended Bradley-Terry model proposed by <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set, available in <strong>PlackettLuce</strong> provides the data from Example 2 of that paper, in which respondents were asked to test two brands of chocolate pudding from a total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span> was preferred (<span class="math inline">\(w_{ji}\)</span> and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)</code></pre></div>
 <pre><code>## 
 ## Attaching package: 'PlackettLuce'</code></pre>
@@ -572,7 +547,7 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>##         1         2         3         4         5         6      tie2 
 ## 0.1389750 0.1729960 0.1618192 0.1653960 0.1587648 0.2020490 0.7466951</code></pre>
-<p>Note here we specify <code>log = FALSE</code> to give the parameterization as in Equation @ref(eq:PL). In the next section we discuss why it is more appropriate to use the log scale for inference.</p>
+<p>Note here we specify <code>log = FALSE</code> to give the parameterization as in Equation <a href="#eq:PL">(1)</a>. In the next section we discuss why it is more appropriate to use the log scale for inference.</p>
 </div>
 </div>
 <div id="inference" class="section level2">
@@ -631,7 +606,8 @@ qv</code></pre></div>
 ## 6 0.3742162 0.1923830 0.1391874 0.01937314</code></pre>
 <p>Again by default, the first item is taken as the reference, but this may be changed via a <code>ref</code> argument. The plot method for the returned object visualizes the item parameters (log-worth parameters) along with comparison intervals - item parameters for which the comparison intervals do not cross are significantly different:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="st">"Brand of pudding"</span>, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:pudding-qv"></span>
+<div class="figure">
+<span id="fig:pudding-qv"></span>
 <img src="Overview_files/figure-html/pudding-qv-1.png" alt="Worth of brands of chocolate pudding. Intervals based on quasi-standard errors." width="672"><p class="caption">
 Figure 1: Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
 </p>
@@ -670,7 +646,8 @@ A</code></pre></div>
 ##     union</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">net &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/igraph/topics/graph_from_adjacency_matrix">graph_from_adjacency_matrix</a></span>(A)
 <span class="kw">plot</span>(net, <span class="dt">edge.arrow.size =</span> <span class="fl">0.5</span>, <span class="dt">vertex.size =</span> <span class="dv">30</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:always-loses"></span>
+<div class="figure">
+<span id="fig:always-loses"></span>
 <img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="672"><p class="caption">
 Figure 2: Network representation of toy rankings.
 </p>
@@ -788,7 +765,8 @@ coefs2[<span class="kw">names</span>(coefs)[<span class="dv">1</span><span class
 qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="op">$</span>qvframe[<span class="kw">order</span>(<span class="kw">coef</span>(mod2)),]
 <span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>, <span class="dt">xaxt=</span><span class="st">"n"</span>)
 <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq_len</span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw">rownames</span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.7</span>)</code></pre></div>
-<div class="figure"><span class="offset" id="fig:nascar-qv"></span>
+<div class="figure">
+<span id="fig:nascar-qv"></span>
 <img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="672"><p class="caption">
 Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
 </p>
@@ -929,7 +907,8 @@ tree</code></pre></div>
 <p>The algorithm identifies three nodes, with the first split defined by high night-time temperatures, and the second splitting the single Primera season from the others. So for early planting in regions where the night-time temperatures were not too high, INTA Rojo (7) was most preferred, closely followed by the local variety. During the regular growing seasons (Postrera and Apante) in regions where the night-time temperatures were not too high, the local variety was most preferred, closely followed by INTA Sequia (8). Finally in regions where the maximum night-time temperature was high, INTA Sequia (8) was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur (3). A plot method is provided to visualise the tree:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(tree, <span class="dt">names =</span> <span class="ot">FALSE</span>, <span class="dt">abbreviate =</span> <span class="dv">2</span>)</code></pre></div>
 <pre><code>## Loading required namespace: psychotree</code></pre>
-<div class="figure"><span class="offset" id="fig:plot-pltree"></span>
+<div class="figure">
+<span id="fig:plot-pltree"></span>
 <img src="Overview_files/figure-html/plot-pltree-1.png" alt="Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79." width="672"><p class="caption">
 Figure 4: Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
 </p>

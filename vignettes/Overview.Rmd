@@ -35,6 +35,9 @@ vignette: |
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
 link-citations: true
+header-includes:
+- \usepackage{chngcntr}
+- \counterwithout{figure}{chapter}    
 ---
 
 ```{r vignette-setup, include = FALSE}
