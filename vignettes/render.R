@@ -1,2 +1,14 @@
-library(rmarkdown)
-render("vignettes/Overview.Rmd")
+# render vignette - result is in inst/doc
+library(devtools)
+build_vignettes()
+
+library(devtools)
+library(pkgdown)
+source_gist("https://gist.github.com/hturner/3152081e223ade0bb212bcef19f183bf",
+            filename = "build_rmarkdown_format.R")
+
+# either a) rebuild whole pkgdown site including help files
+build_site()
+
+# or b) just rebuild vignette
+build_articles() # or build_site()

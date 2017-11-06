@@ -236,10 +236,6 @@ PlackettLuce <- function(rankings,
         alpha <- start[seq_len(N)]
         delta <- c(0.1, start[-seq_len(N)])
     }
-    # fix alpha for hypothetical item to 1
-    if (npseudo > 0) {
-        alpha <- alpha/alpha[N]
-    }
     delta[1] <- 1
 
     # quasi-newton methods ---
@@ -307,11 +303,7 @@ PlackettLuce <- function(rankings,
             expectation(c("alpha", "delta"), alpha, delta, N, D, S, R, G, W)
         oneUpdate <- function(res){
             # update all alphas
-            if (npseudo > 0){
-                res$alpha[-1] <- res$alpha[-1]*A[-1]/res$expA[-1]
-            } else {
-                res$alpha <- res$alpha*A/res$expA
-            }
+            res$alpha <- res$alpha*A/res$expA
             # update all deltas
             if (D > 1) {
                 res$delta[-1] <- B[-1]/

@@ -58,7 +58,9 @@ plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
         if (object) percomp <- percomp[g, , drop = FALSE]
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
-    list(coefficients = coef(res, ref = ref), objfun = -res$loglik,
+    list(coefficients = coef(res, ref = ref),
+         maxTied = res$maxTied,
+         objfun = -res$loglik,
          estfun = estfun,
          object = if (object) res else NULL)
 }

@@ -11,7 +11,7 @@ if (require(psychotree) & require(sandwich)){
     btmod <- btmodel(preference, ref = "Anja")
 
     G <- as.grouped_rankings(preference)
-    plmod <- plfit(G, npseudo = 0, ref= "Anja", estfun = TRUE, object = TRUE)
+    plmod <- plfit(G, npseudo = 0, ref = "Anja", estfun = TRUE, object = TRUE)
 
     # some conditions with psychotree 0.15.1 and psychotools 0.4.2
     test_that("plfit and bt model agree [Topmodel2007]",
@@ -30,7 +30,7 @@ if (require(psychotree) & require(sandwich)){
                   expect_equal(coef(w1), coef(w2))
                   expect_equal(attr(w1, "vcov"), attr(w2, "vcov"), 1e-6)
               })
-    # pltree vs brtree
+    # pltree vs bttree
     bt_tree <- bttree(preference ~ ., data = Topmodel2007, minsize = 5,
                       ref = "Anja")
     pl_tree <- pltree(G ~ ., npseudo = 0, data = Topmodel2007[, -1],
@@ -105,5 +105,13 @@ if (require(psychotree) & require(sandwich)){
                   mode(tmp) <- "numeric"
                   expect_equal(predict(bt_tree, newdata = newdata,
                                        type = "node"), tmp)
+              })
+    # coef pltree
+    test_that('coef pltree works with log = FALSE [Topmodel2007]',
+              {
+                  expect_equal(coef(pl_tree, log = FALSE),
+                               itempar(pl_tree, log = FALSE, vcov = FALSE))
+                  expect_equal(coef(pl_tree)[, -6],
+                               coef(bt_tree))
               })
 }

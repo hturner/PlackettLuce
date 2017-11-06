@@ -9,7 +9,7 @@ objects of type `"grouped_rankings"` that add a grouping index to a `"rankings"`
 object and store other derived objects used by `PlackettLuce`. Methods to print,
 plot and predict from Plackett-Luce tree are provided.
 * Add `connectivity()` function to check connectivity of a network given 
-adjancency matrix. New `adjacency()` function comuptes adjacency matrix without
+adjacency matrix. New `adjacency()` function computes adjacency matrix without
 creating edgelist, so remove `as.edgelist` generic and method for 
 `"PlackettLuce" objects.
 * Add `as.data.frame` methods so that rankings and grouped rankings can be added
@@ -49,6 +49,6 @@ vcov.
 first in strict ranking of all items) can be obtained easily.
 
 
-# PlackettLuce 0.1
+# PlackettLuce 0.1-0
 
 * GitHub-only release of prototype package.

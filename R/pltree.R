@@ -9,12 +9,9 @@
 #' \code{\link{grouped_rankings}} object that groups rankings by subject. This
 #' may be included in a data frame alongside the subject covariates.
 #'
-#' The returned object inherits from \code{"\link[psychotree]{bttree}"}, therefore the
-#' psychotree package is required so that the methods are available.
-#'
 #' Various methods are provided for \code{"pltree"} objects, most of them
-#' inherited from \code{"modelparty"} objects (e.g. \code{print}, \code{summary}), or
-#' \code{"bttree"} objects (\code{itempar}, \code{plot}). \code{itempar}
+#' inherited from \code{"modelparty"} objects (e.g. \code{print},
+#' \code{summary}), or \code{"bttree"} objects (\code{plot}). \code{itempar}
 #' extracts the abilities or item parameters from the Plackett-Luce models in
 #' each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 #' method employs the \code{\link[psychotree]{node_btplot}}
@@ -84,7 +81,6 @@
 #' @importFrom partykit mob_control
 #' @export
 pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
-    requireNamespace("psychotree")
     m <- match.call(expand.dots = TRUE)
     control_args <- names(m) %in% names(formals(mob_control))
     control <- do.call("mob_control", as.list(m)[control_args])
@@ -109,6 +105,62 @@ print.pltree <- function (x, title = "Plackett-Luce tree",
                           ...) {
     partykit::print.modelparty(x, title = title, objfun = objfun,
                                ...)
+}
+
+#' @method plot pltree
+#' @export
+plot.pltree <- function (x, terminal_panel = psychotree::node_btplot,
+                         tp_args = list(...),
+                         tnex = NULL, drop_terminal = NULL, ...){
+    requireNamespace("psychotree")
+    NextMethod()
+}
+
+#' @method coef pltree
+#' @importFrom partykit info_node nodeids
+#' @export
+coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
+    if (is.null(node)){
+        ids <- nodeids(object, terminal = TRUE)
+    } else ids <- node
+    if ("object" %in% object$info$control$terminal) {
+        cf <- do.call("rbind",
+                      lapply(ids, FUN = function(n, ...){
+                          # set ref as specified in plfit if unspecified
+                          info <- info_node(object[[n]]$node)
+                          cll <- as.call(list(coef.PlackettLuce,
+                                              info$object, ...))
+                          cll <- match.call(coef.PlackettLuce, cll)
+                          if (!"ref" %in% names(cll)) {
+                              cll$ref <- attr(info$coefficients, "ref")
+                          }
+                          eval(cll)
+                      }, ...))
+    } else{
+        cf <- do.call("rbind",
+                      lapply(ids, FUN = function(n, ...){
+                          # compute coef as returned from original fit
+                          info <- info_node(object[[n]]$node)
+                          n <- length(info$coefficients) - info$maxTied + 1
+                          info$coefficients <- exp(info$coefficients)
+                          id <- seq_len(n)
+                          info$coefficients[id] <-
+                              info$coefficients[id]/sum(info$coefficients[id])
+                          # parameterize as requested
+                          cll <- as.call(list(coef.PlackettLuce, info, ...))
+                          cll <- match.call(coef.PlackettLuce, cll)
+                          if (!"ref" %in% names(cll)) {
+                              cll$ref <- attr(info$coefficients, "ref")
+                          }
+                          eval(cll)
+                      }, ...))
+    }
+    rownames(cf) <- ids
+    if (drop) {
+        drop(cf)
+    } else {
+        cf
+    }
 }
 
 #' @rdname pltree

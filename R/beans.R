@@ -1,6 +1,6 @@
 #' Preferred Bean Varieties in Nicaragua
 #'
-#' This is a subset of data from trials of bean varieties in Nicaragua over six
+#' This is a subset of data from trials of bean varieties in Nicaragua over five
 #' growing seasons. Farmers were asked to try three variaties of bean from a
 #' total of ten varieties and to rank them in order of preference. In addition,
 #' for each variety the farmers were asked to compare each trial variety to the
@@ -30,17 +30,17 @@
 #'     variety ("Worse" or "Better").}
 #'     \item{\code{var_c}}{How the farmer ranked variety C compared to the local
 #'     variety ("Worse" or "Better").}
-#'     \item{\code{season}}{The growing season ("Postrera - 2015",
-#'     "Apante - 2015", "Primera - 2016",, see details "Postrera - 2016", "Apante - 2016",
-#'     "Apante 2017").}
+#'     \item{\code{season}}{A factor specifying the growing season ("Po - 15",
+#'     "Ap - 15", "Pr - 16", "Po - 16", "Ap - 16".}
 #'     \item{\code{year}}{The year of planting.}
-#'     \item{\code{rx5day}}{The maximum 5-day rainfall.}
+#'     \item{\code{maxTN}}{The maximum temperature at night during the
+#'     vegetative cycle (degrees Celsius).}
 #' }
 #' @source The data were provided by Bioversity International, a CGIAR research
 #' centre \url{https://www.bioversityinternational.org}.
 #' @examples
 #'
-#' # consider the best andw worst rankings. These give the variety the
+#' # consider the best and worst rankings. These give the variety the
 #' # farmer though was best or worst, coded as A, B or C for the
 #' # first, second or third variety assigned to the farmer
 #' # respectively.
@@ -72,34 +72,30 @@
 #' })
 #' head(beans[c("best", "middle", "worst")], 2)
 #'
-#' # next we convert these orderings to sub-rankings of the full set
-#' # of varieties, including the local variety as an additional item,
-#' # so that we can add the paired comparisons shortly:
+#' # create rankings object from rankings of order three
+#' ## each ranking is a ranking of three varieties from the full set
 #' lab <- c("Local", sort(unique(as.vector(varieties))))
 #' R <- as.rankings(beans[c("best", "middle", "worst")],
 #'                  input = "ordering", labels = lab)
+#' head(R)
 #'
-#' # the comparisons with the local variety are stored in another set
-#' # of columns
-#'
+#' # convert worse/better columns to ordered pairs
 #' head(beans[c("var_a", "var_b", "var_c")], 2)
-#'
-#' # the following converts each of these columns to a matrix of
-#' # ordered pairs:
 #' paired <- list()
 #' for (id in c("a", "b", "c")){
-#'    ordering <- matrix("Local", nrow = n, ncol = 2)
+#'     ordering <- matrix("Local", nrow = n, ncol = 2)
 #'     worse <- beans[[paste0("var_", id)]] == "Worse"
-#'     # name of winner
+#'     ## put trial variety in column 1 when it is not worse than local
 #'     ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-#'     # name of loser
+#'     ## put trial variety in column 2 when it is worse than local
 #'     ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
 #'     paired[[id]] <- ordering
 #' }
-#' head(paired[[id]])
+#' head(paired[["a"]])
 #'
-#' # again we convert these orderings to sub-rankings of the full set
-#' # of varieties and combine them with the rankings of order three:
+#' # convert orderings to sub-rankings of full set and combine all rankings
 #' paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 #' R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
+#' head(R)
+#' tail(R)
 "beans"

@@ -34,7 +34,7 @@ vignette: |
   %\VignetteEncoding{UTF-8}
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
-link-citations: true
+link-citations: true    
 ---
 
 ```{r vignette-setup, include = FALSE}
@@ -630,13 +630,13 @@ The new items have relative large negative log worth
 coefs2[84:87]
 ```
 Nonetheless, the estimates are finite and have finite standard errors:
-```{r, cache = TRUE}
+```{r}
 coef(summary(mod2))[84:87,]
 ```
 Note that the reference here is simply the driver that comes first
 alphabetically: A. Cameron. We can plot the quasi-variances for a better
 comparison:
-```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.", cache = TRUE}
+```{r nascar-qv, fig.cap = "Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.", fig.wide = TRUE}
 qv <- qvcalc(mod2)
 qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
@@ -657,7 +657,7 @@ based on judge covariates. A Plackett-Luce tree is constructed via the following
 steps:
 
 1. Fit a Plackett-Luce model to the full data.
-2. Asses the stability of the worth parameters with respect to each available
+2. Assess the stability of the worth parameters with respect to each available 
 covariate.
 3. If there is significant instability, split the full data by the covariate
 with the strongest instability and use the cut-point with the highest
@@ -665,6 +665,7 @@ improvement in model fit.
 4. Repeat steps 1-3 until there are no more significant instabilities, or a
 split produces a sub-group below a given size threshold.
 
+<<<<<<< HEAD
 This is an extension of Bradley-Terry trees, implemented in the R package
 **psychotree** and described in more detail by @Strobl2011.
 
@@ -680,7 +681,7 @@ worse.
 
 The data are provided as the dataset `beans` in Plackett-Luce. The data require
 some preparation to collate the rankings, which is detailed in the Appendix
-Appendix. The same code is provided in the example of in the help file of
+Appendix. The same code is provided in the examples section of the help file of
 `beans`
 ```{r beans-preparation, eval = FALSE}
 example("beans", package = "PlackettLuce")
@@ -693,6 +694,7 @@ variety.
 data(beans)
 head(beans[c("best", "worst")], 2)
 ```
+
 ```{r beans-2, echo = FALSE, results = FALSE}
 beans <- within(beans, {
     best <- match(best, c("A", "B", "C"))
@@ -701,10 +703,12 @@ beans <- within(beans, {
 })
 head(beans[c("best", "middle", "worst")], 2)
 ```
+
 ```{r beans-3, echo = FALSE, results = FALSE}
 varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
 head(varieties, 2)
 ```
+
 ```{r beans-4, echo = FALSE, results = FALSE}
 n <- nrow(beans)
 beans <- within(beans, {
@@ -714,62 +718,69 @@ beans <- within(beans, {
 })
 head(beans[c("best", "middle", "worst")], 2)
 ```
+
 ```{r beans-5, echo = FALSE, results = FALSE}
 lab <- c("Local", sort(unique(as.vector(varieties))))
 R <- as.rankings(beans[c("best", "middle", "worst")],
                  input = "ordering", labels = lab)
 ```
+
 ```{r beans-6, echo = FALSE, results = FALSE}
 head(beans[c("var_a", "var_b", "var_c")], 2)
 ```
+
 ```{r beans-7, echo = FALSE, results = FALSE}
 paired <- list()
 for (id in c("a", "b", "c")){
     ordering <- matrix("Local", nrow = n, ncol = 2)
     worse <- beans[[paste0("var_", id)]] == "Worse"
-    ## name of winner
+    ## put trial variety in column 1 when it is not worse than local
     ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-    ## name of loser
+    ## put trial variety in column 2 when it is worse than local
     ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
     paired[[id]] <- ordering
 }
 head(paired[[id]])
 ```
+
 ```{r beans-8, echo = FALSE, results = FALSE}
 paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 ```
-
-
-
 In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
 object, that defines how the rankings map to the covariate values. In this case
 we wish to group by each record in the original data set, so we create a
-`grouped_rankings` object as follows:
+`"grouped_rankings"` object that 
+identifies the record number for each of the four rankings from each farmer (
+one ranking of order three plus three pairwise rankings with the local variety):
 ```{r}
 G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 format(head(G, 2), width = 50)
 ```
-For each record in the original data, we have three covariates: `season` for the
-season-year the beans were planted, `year` for the year of planting, and
-`rx5day` for the maximum 5-day rainfall.
-```{r}
-beans$season <- factor(beans$season,
-                       labels = c("Ap - 15", "Ap - 16", "Ap - 17", "Po - 15",
-                                  "Po - 16", "Pr - 16"))
-beans$year <- factor(beans$year)
-```
 
-These covariates and the are used to fit a Plackett-Luce tree for the
-`grouped_rankings` object `G`
-```{r beans-tree}
-tree <- pltree(G ~ season + year + rx5day, data = beans,
-               minsize = 5, maxit = 500)
+For each record in the original data, we have three covariates: \code{season} 
+the season-year the beans were planted, \code{year} the year of planting,
+and \code{maxTN} the maximum temperature at night during the vegetative cycle. 
+The following code fits a Plackett-Luce tree with up to three nodes and at 
+least 5% of the records in each node:
+```{r pltree, cache = TRUE}
+beans$year <- factor(beans$year)
+tree <- pltree(G ~ ., data = beans[c("season", "year", "maxTN")], 
+               minsize = 0.05*n, maxdepth = 3)
 tree
 ```
-The resulting tree has two nodes defined by the seasons.
-```{r}
-plot(tree)
+The algorithm identifies three nodes, with the first split defined by high 
+night-time temperatures, and the second splitting the single Primera season 
+from the others. So for early planting in regions where the night-time 
+temperatures were not too high, INTA Rojo (7) was most preferred, closely 
+followed by the local variety. During the regular growing seasons (Postrera and
+Apante) in regions where the night-time temperatures were not too high, the 
+local variety was most preferred, closely followed by INTA Sequia (8). Finally
+in regions where the maximum night-time temperature was high, INTA Sequia (8) 
+was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur 
+(3). A plot method is provided to visualise the tree:
+```{r plot-pltree, fig.wide = TRUE, fig.cap = "Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79."}
+plot(tree, names = FALSE, abbreviate = 2)
 ```
 
 # Discussion
