@@ -200,9 +200,8 @@ timings <- function(dat, iter = NULL,
     res <- list()
     for (nm in c("pl", "hyper2", "plmix", "pmr", "statrank")){
         if (nm %in% fun){
-            res[[nm]] <- try(
-                system.time(do.call(nm, list(dat, iter)))[["elapsed"]],
-                silent = TRUE)
+            res[[nm]] <- suppressWarnings(
+                system.time(do.call(nm, list(dat, iter)))[["elapsed"]])
         } else res[[nm]] <- NA
     }
     res
