@@ -7,3 +7,5 @@ pre-commit.R
 vignettes\*.html
 ^docs$
 ^pkgdown$
+^CONDUCT\.md$
+readme.bib

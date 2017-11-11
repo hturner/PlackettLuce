@@ -506,7 +506,7 @@ A <- adjacency(R)
 A
 ```
 Using functions from **igraph** we can visualise the corresponding network:
-```{r always-loses, fig.cap = "Network representation of toy rankings.", fig.small = TRUE}
+```{r always-loses, fig.cap = "Network representation of toy rankings.", fig.small = TRUE, fig.width = 3.5, fig.height = 3.5}
 library(igraph)
 net <- graph_from_adjacency_matrix(A)
 plot(net, edge.arrow.size = 0.5, vertex.size = 30)
