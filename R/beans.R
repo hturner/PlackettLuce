@@ -40,14 +40,14 @@
 #' centre \url{https://www.bioversityinternational.org}.
 #' @examples
 #'
-#' # consider the best and worst rankings. These give the variety the
-#' # farmer though was best or worst, coded as A, B or C for the
+#' # Consider the best and worst rankings. These give the variety the
+#' # farmer thought was best or worst, coded as A, B or C for the
 #' # first, second or third variety assigned to the farmer
 #' # respectively.
 #' data(beans)
 #' head(beans[c("best", "worst")], 2)
 #'
-#' # convert these to numeric values, allowing us to impute the
+#' # Convert these to numeric values, allowing us to impute the
 #' # middle-ranked variety (a strict ranking is assumed here, so the
 #' # sum of each row should be 6)
 #' beans <- within(beans, {
@@ -57,7 +57,7 @@
 #' })
 #' head(beans[c("best", "middle", "worst")], 2)
 #'
-#' # this gives an ordering of the three varieties the farmer was
+#' # This gives an ordering of the three varieties the farmer was
 #' # given. The names of these varieties are stored in separate
 #' # columns
 #' varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
@@ -72,14 +72,14 @@
 #' })
 #' head(beans[c("best", "middle", "worst")], 2)
 #'
-#' # create rankings object from rankings of order three
-#' ## each ranking is a ranking of three varieties from the full set
+#' # Create a rankings object from the rankings of order three
+#' ## each ranking is a sub-ranking of three varieties from the full set
 #' lab <- c("Local", sort(unique(as.vector(varieties))))
 #' R <- as.rankings(beans[c("best", "middle", "worst")],
 #'                  input = "ordering", labels = lab)
 #' head(R)
 #'
-#' # convert worse/better columns to ordered pairs
+#' # Convert worse/better columns to ordered pairs
 #' head(beans[c("var_a", "var_b", "var_c")], 2)
 #' paired <- list()
 #' for (id in c("a", "b", "c")){
@@ -93,7 +93,7 @@
 #' }
 #' head(paired[["a"]])
 #'
-#' # convert orderings to sub-rankings of full set and combine all rankings
+#' # Convert orderings to sub-rankings of full set and combine all rankings
 #' paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 #' R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 #' head(R)

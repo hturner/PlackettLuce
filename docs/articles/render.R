@@ -1,18 +1,13 @@
 # render vignette - result is in inst/doc
-library(devtools)
-build_vignettes()
+rmarkdown::render("vignettes/Overview.Rmd")
 
-# create version for pkgdown site
+library(devtools)
 library(pkgdown)
+source_gist("https://gist.github.com/hturner/3152081e223ade0bb212bcef19f183bf",
+            filename = "build_rmarkdown_format.R")
 
 # either a) rebuild whole pkgdown site including help files
 build_site()
 
 # or b) just rebuild vignette
 build_articles() # or build_site()
-
-# fix up result
-source_gist("https://gist.github.com/hturner/5202ee24e7f2db02ed9ab4b2e1805dac",
-            filename = "fix_biocstyle_articles.r")
-fix_biocstyle_articles()
-

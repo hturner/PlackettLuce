@@ -50,24 +50,26 @@ arises in a range of applications, for example sports tournaments and consumer
 studies. A classic model for such data is the Plackett-Luce model. This model
 depends on Luce's axiom of choice [@Luce1977] which states that the odds of
 choosing item 1 over item 2 do not depend on the set of items from which the
-choice is made. Suppose we have a set of $j$ items
+choice is made. Suppose we have a set of $J$ items
 
-$$S_j = \{i_1, i_2, \ldots, i_j\}.$$
+$$S = \{i_1, i_2, \ldots, i_J\}.$$
 
-Then under Luce's axiom, the probability of selecting some item $i$
-from $S_j$ is given by
+Then under Luce's axiom, the probability of selecting some item $j$
+from $S$ is given by
 
-$$P(i | S_j) = \frac{\alpha_{i}}{\sum_{c \in S_j} \alpha_c}$$
+$$P(j | S) = \frac{\alpha_{j}}{\sum_{i \in S} \alpha_i}$$
 
-where $\alpha_i$ represents the **worth** of item $i$. Viewing a ranking of $K$
+where $\alpha_i$ represents the **worth** of item $i$. Viewing a ranking of $J$
 items as a sequence of choices ---first choosing the top-ranked item from all
 items, then choosing the second-ranked item from the remaining items and so
-on--- it follows that the probability of the ranking ${i_K > \ldots > i_1}$ is
+on--- it follows that the probability of the ranking 
+${i_1 \succ \ldots \succ i_J}$ is
 
-$$\prod_{j=1}^K \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
+$$\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}$$
 
-The above model is also derived in @Plackett1975, hence the name Plackett-Luce
-model.
+where $A_j$ is the set of alternatives $\{i_j, i_{j + 1}, \ldots, i_J\}$ from 
+which item $i_j$ is chosen. The above model is also derived in @Plackett1975, 
+hence the name Plackett-Luce model.
 
 The **PlackettLuce** package implements a novel extension of the Plackett-Luce
 model that accommodates tied rankings, which may be applied to either full or
@@ -75,7 +77,7 @@ partial rankings. Pseudo-rankings are utilised to obtain estimates in cases
 where the maximum likelihood estimates do not exist, or do not have finite
 standard errors. Methods are provided to obtain different parameterizations with
 corresponding standard errors or quasi-standard errors (that are independent of
-the reference item). There is also a method to work with the **psychotree**
+parameter constraints). There is also a method to work with the **psychotree**
 package to fit Plackett-Luce trees.
 
 ## Comparison with other packages
@@ -99,7 +101,8 @@ by using the `gnm` function from **gnm**, which provides an `eliminate` argument
 to efficiently estimate the effects of such a factor. Even then, the
 model-fitting may be relatively slow, given the expansion in the number of
 observations converting from rankings to counts. For example, the ranking {item
-3 > item 1 > item 2} expands to two choices with five counts all together:
+3 $\prec$ item 1 $\prec$ item 2} expands to two choices with five counts all 
+together:
 
 ```{r, echo = FALSE}
 as.matrix(data.frame(choice = c(1, 1, 1, 2, 2),
@@ -139,15 +142,15 @@ rankings. **PlackettLuce** copes well with these moderately-sized data sets,
 though is not quite as fast as **PLMIX** when both the number of items and the
 number of unique rankings is large.
 
-```{r wrappers, echo = FALSE, cache = TRUE}
+```{r soc, echo = FALSE, cache = TRUE}
 library(PlackettLuce)
 # read in example data sets
 preflib <- "http://www.preflib.org/data/election/"
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
 tshirt <- read.soc(file.path(preflib, "shirt/ED-00012-00000001.soc"))
 sushi <- read.soc(file.path(preflib, "sushi/ED-00014-00000001.soc"))
-
-# wrappers for each method
+```
+```{r wrappers, echo = FALSE}
 pl <- function(dat, ...){
     # convert ordered items to ranking
     R <- as.rankings(dat[,-1], "ordering")
@@ -170,9 +173,9 @@ plmix <- function(dat, ...){
     requireNamespace("PLMIX")
     # disaggregate data (no functionality for weights or counts)
     r <- rep(seq_len(nrow(dat)), dat$n)
-    # maximum a posterioi estimate, with non-informative prior,
+    # maximum a posteriori estimate, with non-informative prior
     # K items in each ranking, single component distribution
-    # default starting values do not always work
+    # default starting values do not always work so specify as uniform
     K <- ncol(dat)
     PLMIX::mapPLMIX(as.matrix(dat[r, -1]), K = K, G = 1,
                     init = list(p = rep.int(1/K, K)), plot_objective = FALSE)
@@ -195,6 +198,9 @@ statrank <- function(dat, iter){
                                                       iter = iter))
     res
 }
+```
+
+```{r timings, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
 timings <- function(dat, iter = NULL,
                     fun = c("pl", "hyper2", "plmix", "pmr", "statrank")){
     res <- list()
@@ -206,10 +212,6 @@ timings <- function(dat, iter = NULL,
     }
     res
 }
-```
-
-```{r timings, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
-# set iter for statrank so that log-likelihood pass `all.equal` with tolerance 1e-6
 netflix_timings <- timings(netflix, 6)
 tshirt_timings <- timings(tshirt, 341, 
                           fun = c("pl", "hyper2", "plmix", "statrank"))
@@ -241,7 +243,7 @@ dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
 
 kable(res, align = c("rrrrr"), caption = "Timings for fitting the
 Plackett-Luce model to data sets summarised in Table \\@ref(tab:data-features) using
-different packages. See Appendix for details and code.", escape = FALSE) %>%
+different packages. See Appendix \\@ref(app:timings) for details and code.", escape = FALSE) %>%
     kable_styling() %>%
     add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
     add_footnote("Function fails to complete.", notation = "alphabet")
@@ -353,7 +355,7 @@ given that first place is not tied.
 When each ranking contains only two items, then the model in Equation
 \@ref(eq:PL) reduces to extended Bradley-Terry model proposed by
 @Davidson1970 for paired comparisons with ties. The `pudding` data set,
-available in **PlackettLuce** provides the data from Example 2 of that paper, in
+available in **PlackettLuce**, provides the data from Example 2 of that paper, in
 which respondents were asked to test two brands of chocolate pudding from a
 total of six brands. For each comparison of brands $i$ and $j$, the data set
 gives the frequencies that brand $i$ was preferred ($w_{ij}$), that brand $j$
@@ -385,7 +387,7 @@ unranked brand (not in the comparison), `1` represents the brand(s) ranked
 in first place and `2` represents the brand in second place, if applicable.
 
 This matrix can used to specify the rankings in the call to `PlackettLuce`,
-however there are some advantages to creating a formal \code{"rankings"} object,
+however there are some advantages to creating a formal `"rankings"` object,
 which `PlackettLuce` does internally if necessary:
 
 ```{r}
@@ -401,7 +403,7 @@ uninformative, and adds column names if necessary. As can be seen above, the
 print method displays the rankings in a more readable form.
 
 To specify the full set of rankings, we need the frequency of each ranking,
-which will be specified to the model0fitting function as a weight vector:
+which will be specified to the model-fitting function as a weight vector:
 ```{r}
 w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
 ```
@@ -435,7 +437,7 @@ cannot be outside of these limits.
 
 On the log scale however, there are no bounds on the parameters and we can set
 a reference level to provide meaningful comparisons. By default, the summary
-method for \code{"PlackettLuce"} objects sets the first item as the reference:
+method for `"PlackettLuce"` objects sets the first item as the reference:
 
 ```{r}
 summary(mod)
@@ -464,7 +466,7 @@ so even in cases where there is a natural reference, the uncertainty around the
 worth of that item can still be represented.
 
 Quasi standard errors for the item parameters are implemented via a method for
-the `qvcalc` function from the **qvalc** package:
+the `qvcalc` function from the **qvcalc** package:
 
 ```{r}
 qv <- qvcalc(mod)
@@ -554,7 +556,7 @@ The `npseudo` argument defines the number of wins and loses with the ghost item
 that are added for each real item. Setting `npseudo = 0 ` doesn't add any
 pseudo-rankings, so `PlackettLuce` will return the standard MLE, if the
 network is strongly connected, and throw an error otherwise. The larger
-`npseudo` is, the stronger the influence of the prior, so by default `npseudo`
+`npseudo` is, the stronger the influence of the prior, by default `npseudo`
 is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to
 connect the network, but is a weak prior. In this toy example, the item
 parameters change quite considerably:
@@ -608,10 +610,9 @@ head(coefs, 3)
 tail(coefs, 3)
 ```
 Now we fit the Plackett-Luce model to the full data, using the default
-pseudo-rankings method. In this case the default iterative scaling method does
-not perform very well, so we switch to the L-BFGS algorithm:
+pseudo-rankings method.
 ```{r}
-mod2 <- PlackettLuce(R, method = "L-BFGS")
+mod2 <- PlackettLuce(R)
 ```
 For items that were in the previous model, we see that the log-worth parameters
 generally shrink towards zero:
@@ -660,12 +661,12 @@ improvement in model fit.
 4. Repeat steps 1-3 until there are no more significant instabilities, or a
 split produces a sub-group below a given size threshold.
 
-<<<<<<< HEAD
 This is an extension of Bradley-Terry trees, implemented in the R package
 **psychotree** and described in more detail by @Strobl2011.
 
 To illustrate this approach, we consider data from a trial of different
-varieties of bean in Nicaragua, run by Bioversity International. Farmers were
+varieties of bean in Nicaragua, run by Bioversity International [@vanEtten2016]. 
+Farmers were
 asked to grow three experimental varieties of bean in one of the growing
 seasons, Primera (May - August), Postrera (September - October) or Apante
 (November - January). At the end of the season, they were asked which variety
@@ -675,73 +676,17 @@ trial variety to the standard local variety and say whether it was better or
 worse.
 
 The data are provided as the dataset `beans` in Plackett-Luce. The data require
-some preparation to collate the rankings, which is detailed in the Appendix
-Appendix. The same code is provided in the examples section of the help file of
+some preparation to collate the rankings, which is detailed in 
+Appendix \@ref(app:beans).
+The same code is provided in the examples section of the help file of
 `beans`
-```{r beans-preparation, eval = FALSE}
+```{r beans-preparation, results = "hide"}
 example("beans", package = "PlackettLuce")
 ```
 The result is a `rankings` object `R` with all rankings of the three
 experimental varieties and the output of their comparison with the local
 variety.
 
-```{r beans-1, echo = FALSE, results = FALSE}
-data(beans)
-head(beans[c("best", "worst")], 2)
-```
-
-```{r beans-2, echo = FALSE, results = FALSE}
-beans <- within(beans, {
-    best <- match(best, c("A", "B", "C"))
-    worst <- match(worst, c("A", "B", "C"))
-    middle <- 6 - best - worst
-})
-head(beans[c("best", "middle", "worst")], 2)
-```
-
-```{r beans-3, echo = FALSE, results = FALSE}
-varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
-head(varieties, 2)
-```
-
-```{r beans-4, echo = FALSE, results = FALSE}
-n <- nrow(beans)
-beans <- within(beans, {
-    best <- varieties[cbind(seq_len(n), best)]
-    worst <- varieties[cbind(seq_len(n), worst)]
-    middle <- varieties[cbind(seq_len(n), middle)]
-})
-head(beans[c("best", "middle", "worst")], 2)
-```
-
-```{r beans-5, echo = FALSE, results = FALSE}
-lab <- c("Local", sort(unique(as.vector(varieties))))
-R <- as.rankings(beans[c("best", "middle", "worst")],
-                 input = "ordering", labels = lab)
-```
-
-```{r beans-6, echo = FALSE, results = FALSE}
-head(beans[c("var_a", "var_b", "var_c")], 2)
-```
-
-```{r beans-7, echo = FALSE, results = FALSE}
-paired <- list()
-for (id in c("a", "b", "c")){
-    ordering <- matrix("Local", nrow = n, ncol = 2)
-    worse <- beans[[paste0("var_", id)]] == "Worse"
-    ## put trial variety in column 1 when it is not worse than local
-    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-    ## put trial variety in column 2 when it is worse than local
-    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
-    paired[[id]] <- ordering
-}
-head(paired[[id]])
-```
-
-```{r beans-8, echo = FALSE, results = FALSE}
-paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
-R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
-```
 In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
 object, that defines how the rankings map to the covariate values. In this case
 we wish to group by each record in the original data set, so we create a
@@ -753,9 +698,9 @@ G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 format(head(G, 2), width = 50)
 ```
 
-For each record in the original data, we have three covariates: \code{season} 
-the season-year the beans were planted, \code{year} the year of planting,
-and \code{maxTN} the maximum temperature at night during the vegetative cycle. 
+For each record in the original data, we have three covariates: `season` 
+the season-year the beans were planted, `year` the year of planting,
+and `maxTN` the maximum temperature at night during the vegetative cycle. 
 The following code fits a Plackett-Luce tree with up to three nodes and at 
 least 5% of the records in each node:
 ```{r pltree, cache = TRUE}
@@ -794,63 +739,108 @@ Current work involves support for the online estimation from streams of
 partial-rankings and accounting for spatio-temporal heterogeneity in worth
 parameters.
 
-# Appendix
+# Appendix 
 
-## Timings
-For the package comparison in Table \@ref(tab:timings-kable), the model was
-fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr).
-Arguments were set to obtain the maximum likelihood estimate, using the default
-iterative scaling algorithm for PlackettLuce. The functions were run with their
-default convergence criteria; the number of iterations for StatRank was set so
+## Timings {#app:timings}
+
+Data for the package comparison in Table \@ref(tab:timings-kable) was downloaded
+from PrefLib [@Mattei2013] using the `read.soc` function provided in 
+**PlackettLuce** to read in files with the "Strict Orders - Complete List" 
+format.
+
+```{r show-soc}
+```{r soc, eval = FALSE}
+```
+
+A wrapper was defined for each function in the comparison, to prepare the 
+rankings and run each function with reasonable defaults. The Plackett-Luce model
+was fitted to aggregated rankings where possible (for `PlackettLuce`, `hyper2`, 
+and `pmr`). Arguments were set to obtain the maximum likelihood estimate, with 
+the default convergence criteria. The default iterative scaling algorithm was 
+used for `PlackettLuce`. 
+
+```{r chunk2}
+```{r wrappers, eval = FALSE}
+```
+
+When recording timings, the number of iterations for StatRank was set so
 that the log-likelihood on exit was equal to the log-likelihood returned by the
 other functions with relative tolerance 1e-6.
 
 ```{r chunk2}
-```{r wrappers, eval = FALSE}
 ```{r timings, eval = FALSE}
 ```
 
-## `beans` data preparation
+## `beans` data preparation {#app:beans}
 
-First we consider the best and worst rankings. These give the variety the farmer
-though was best or worst, coded as A, B or C for the first, second or third
+First we handle the best and worst rankings. These give the variety the farmer
+thought was best or worst, coded as A, B or C for the first, second or third
 variety assigned to the farmer respectively.
-```{r}
-```{r beans-1, eval = FALSE}
+```{r beans-1}
+data(beans)
+head(beans[c("best", "worst")], 2)
 ```
 We convert these to numeric values, allowing us to impute the middle-ranked
-variety (a strict ranking is assumed here, so the sum of each row should be 6)
-```{r}
-```{r beans-2, eval = FALSE}
+variety (a strict ranking is assumed, so the sum of each row must be 6)
+```{r beans-2}
+beans <- within(beans, {
+    best <- match(best, c("A", "B", "C"))
+    worst <- match(worst, c("A", "B", "C"))
+    middle <- 6 - best - worst
+})
+head(beans[c("best", "middle", "worst")], 2)
 ```
 This gives an ordering of the three varieties the farmer was given. The names of
 these varieties are stored in separate columns
-```{r}
-```{r beans-3, eval = FALSE}
+```{r beans-3}
+varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+head(varieties, 2)
 ```
 So we can convert the variety IDs to the variety names
-```{r}
-```{r beans-4, eval = FALSE}
+```{r beans-4}
+n <- nrow(beans)
+beans <- within(beans, {
+    best <- varieties[cbind(seq_len(n), best)]
+    worst <- varieties[cbind(seq_len(n), worst)]
+    middle <- varieties[cbind(seq_len(n), middle)]
+})
+head(beans[c("best", "middle", "worst")], 2)
 ```
 Next we convert these orderings to sub-rankings of the full set of
 varieties, including the local variety as an additional item, so that we can
 add the paired comparisons shortly:
-```{r}
-```{r beans-5, eval = FALSE}
+```{r beans-5}
+lab <- c("Local", sort(unique(as.vector(varieties))))
+R <- as.rankings(beans[c("best", "middle", "worst")],
+                 input = "ordering", labels = lab)
+head(R)
 ```
 The comparisons with the local variety are stored in another set of columns
-```{r}
-```{r beans-6, eval = FALSE}
+```{r beans-6}
+head(beans[c("var_a", "var_b", "var_c")], 2)
 ```
 The following converts each of these columns to a matrix of ordered pairs:
-```{r}
-```{r beans-7, eval = FALSE}
-```
-Again we convert these orderings to sub-rankings of the full set of varieties
-and combine them with the rankings of order three:
-```{r}
-```{r beans-8, eval = FALSE}
+```{r beans-7}
+paired <- list()
+for (id in c("a", "b", "c")){
+    ordering <- matrix("Local", nrow = n, ncol = 2)
+    worse <- beans[[paste0("var_", id)]] == "Worse"
+    ## put trial variety in column 1 when it is not worse than local
+    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
+    ## put trial variety in column 2 when it is worse than local
+    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
+    paired[[id]] <- ordering
+}
+head(paired[["a"]])
 ```
 
+Again we convert these orderings to sub-rankings of the full set of varieties
+and combine them with the rankings of order three:
+```{r beans-8}
+paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
+R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
+head(R)
+tail(R)
+```
 
 # References

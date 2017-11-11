@@ -92,25 +92,25 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">R. Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accomodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
+      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accomodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
     </div>
     
 <div class="contents">
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Rankings data, in which each observation is an ordering of a set of items, arises in a range of applications, for example sports tournaments and consumer studies. A classic model for such data is the Plackett-Luce model. This model depends on Luce’s axiom of choice <span class="citation">(R. D. Luce <a href="#ref-Luce1977">1977</a>)</span> which states that the odds of choosing item 1 over item 2 do not depend on the set of items from which the choice is made. Suppose we have a set of items</p>
-<p><span class="math display">\[S_j = {i_1, i_2, \ldots, i_J}.\]</span></p>
-<p>Then under Luce’s axiom, the probability of selecting item <span class="math inline">\(j\)</span> is given by</p>
-<p><span class="math display">\[P(i_j | S_j) = \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}\]</span></p>
-<p>where <span class="math inline">\(\alpha_j\)</span> represents the <strong>worth</strong> of item <span class="math inline">\(j\)</span>. Viewing a ranking of <span class="math inline">\(K\)</span> items as a sequence of choices—first choosing the top-ranked item from all items, then choosing the second-ranked item from the remaining items and so on—it follows that the probability of a ranking <span class="math inline">\({i_1 &gt; \ldots &gt; i_K}\)</span> is given by</p>
-<p><span class="math display">\[\prod_{j=1}^K \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}\]</span></p>
-<p>The above model is also derived in <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span>, hence the name Plackett-Luce model.</p>
-<p>The <strong>PlackettLuce</strong> package implements a novel extension of the Plackett-Luce model that accommodates tied rankings, which may be applied to either full or partial rankings. Pseudo-rankings are utilised to obtain estimates in cases where the maximum likelihood estimates do not exist, or do not have finite standard errors. Methods are provided to obtain different parameterisations with corresponding standard errors or quasi-standard errors (that are independent of the reference item). There is also a method to work with the <strong>psychotree</strong> package to fit Plackett-Luce trees.</p>
+<p>Rankings data, in which each observation is an ordering of a set of items, arises in a range of applications, for example sports tournaments and consumer studies. A classic model for such data is the Plackett-Luce model. This model depends on Luce’s axiom of choice <span class="citation">(Luce <a href="#ref-Luce1977">1977</a>)</span> which states that the odds of choosing item 1 over item 2 do not depend on the set of items from which the choice is made. Suppose we have a set of <span class="math inline">\(J\)</span> items</p>
+<p><span class="math display">\[S = \{i_1, i_2, \ldots, i_J\}.\]</span></p>
+<p>Then under Luce’s axiom, the probability of selecting some item <span class="math inline">\(j\)</span> from <span class="math inline">\(S\)</span> is given by</p>
+<p><span class="math display">\[P(j | S) = \frac{\alpha_{j}}{\sum_{i \in S} \alpha_i}\]</span></p>
+<p>where <span class="math inline">\(\alpha_i\)</span> represents the <strong>worth</strong> of item <span class="math inline">\(i\)</span>. Viewing a ranking of <span class="math inline">\(J\)</span> items as a sequence of choices —first choosing the top-ranked item from all items, then choosing the second-ranked item from the remaining items and so on— it follows that the probability of the ranking <span class="math inline">\({i_1 \succ \ldots \succ i_J}\)</span> is</p>
+<p><span class="math display">\[\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}\]</span></p>
+<p>where <span class="math inline">\(A_j\)</span> is the set of alternatives <span class="math inline">\(\{i_j, i_{j + 1}, \ldots, i_J\}\)</span> from which item <span class="math inline">\(i_j\)</span> is chosen. The above model is also derived in <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span>, hence the name Plackett-Luce model.</p>
+<p>The <strong>PlackettLuce</strong> package implements a novel extension of the Plackett-Luce model that accommodates tied rankings, which may be applied to either full or partial rankings. Pseudo-rankings are utilised to obtain estimates in cases where the maximum likelihood estimates do not exist, or do not have finite standard errors. Methods are provided to obtain different parameterizations with corresponding standard errors or quasi-standard errors (that are independent of parameter constraints). There is also a method to work with the <strong>psychotree</strong> package to fit Plackett-Luce trees.</p>
 <div id="comparison-with-other-packages" class="section level2">
 <h2 class="hasAnchor">
 <a href="#comparison-with-other-packages" class="anchor"></a>Comparison with other packages</h2>
-<p>Even though the Plackett-Luce model is a well-established method for analysing rankings, the software available to fit the model is limited. By considering each choice in the ranking as a multinomial observation, with one item observed out of a possible set, the “Poisson trick” can be applied to express the model as a log-linear model, where the response is the count (one or zero) of each possible outcome within each choice. In theory, the model can then be fitted using standard software for generalized linear models. However there are a number of difficulties with this. Firstly, dummy variables must be set up to represent the presence or absence of each item in each choice and a factor created to identify each choice, which is a non-standard task. Secondly the factor identifying each choice will have many levels: greater than the number of rankings for rankings of more than two objects. Thus there are many parameters to estimate and a standard function such as <code>glm</code> will be slow to fit the model, or may even fail as the corresponding model matrix will be too large to fit in memory. This issue can be circumvented by using the <code>gnm</code> function from <strong>gnm</strong>, which provides an <code>eliminate</code> argument to efficiently estimate the effects of such a factor. Even then, the model-fitting may be relatively slow, given the expansion in the number of observations converting from rankings to counts. For example, the ranking {item 3 &gt; item 1 &gt; item 2} expands to two choices with five counts all together:</p>
+<p>Even though the Plackett-Luce model is a well-established method for analysing rankings, the software available to fit the model is limited. By considering each choice in the ranking as a multinomial observation, with one item observed out of a possible set, the “Poisson trick” <span class="citation">(see, for example, Baker <a href="#ref-Baker1994">1994</a>)</span> can be applied to express the model as a log-linear model, where the response is the count (one or zero) of each possible outcome within each choice. In theory, the model can then be fitted using standard software for generalized linear models. However there are a number of difficulties with this. Firstly, dummy variables must be set up to represent the presence or absence of each item in each choice and a factor created to identify each choice, which is a non-standard task. Secondly the factor identifying each choice will have many levels: greater than the number of rankings for rankings of more than two objects. Thus there are many parameters to estimate and a standard function such as <code>glm</code> will be slow to fit the model, or may even fail as the corresponding model matrix will be too large to fit in memory. This issue can be circumvented by using the <code>gnm</code> function from <strong>gnm</strong>, which provides an <code>eliminate</code> argument to efficiently estimate the effects of such a factor. Even then, the model-fitting may be relatively slow, given the expansion in the number of observations converting from rankings to counts. For example, the ranking {item 3 <span class="math inline">\(\prec\)</span> item 1 <span class="math inline">\(\prec\)</span> item 2} expands to two choices with five counts all together:</p>
 <pre><code>##      choice item 1 item 2 item 3 count
 ## [1,]      1      1      0      0     0
 ## [2,]      1      0      1      0     0
@@ -119,10 +119,10 @@
 ## [5,]      2      0      1      0     0</code></pre>
 <p>It is possible to aggregate observations of the same choice from the same set of alternatives, but the number of combinations increases quickly with the number of items.</p>
 <p>Given the issues with applying general methods, custom algorithms and software have been developed. One approach is use Hunter’s <span class="citation">(<a href="#ref-Hunter2004">2004</a>)</span> minorization-maximization (MM) algorithm to maximize the likelihood, which is equivalent to an iterative scaling algorithm; this algorithm is used by the <strong>StatRank</strong> package. Alternatively the likelihood of the observed data under the PlackettLuce model can be maximised directly using a generic optimisation method such the Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as used by both the <strong>pmr</strong> and <strong>hyper2</strong> packages. Finally Bayesian methods can be used to either maximize the posterior distribution via an Expectation Maximization (EM) algorithm or to simulate the posterior distribution using Markov-chain Monte-Carlo (MCMC) techniques, both of which are provided by <strong>PLMIX</strong>. <strong>PlackettLuce</strong> offers both iterative scaling and generic optimization using either BFGS or a limited memory variant (L-BFGS) via the <strong>lbfgs</strong> package.</p>
-<p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table <a href="#tab:timings-kable">2</a>. Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
+<p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table @ref(tab:timings-kable). Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:data-features">Table 1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
+Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -184,7 +184,7 @@ Sushi
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:timings-kable">Table 2: </span>Timings for fitting the Plackett-Luce model to data sets summarised in Table <a href="#tab:data-features">1</a> using different packages. See Appendix for details and code.
+Timings for fitting the Plackett-Luce model to data sets summarised in Table @ref(tab:data-features) using different packages. See Appendix @ref(app:timings) for details and code.
 </caption>
 <thead>
 <tr>
@@ -222,19 +222,19 @@ StatRank
 Netflix
 </td>
 <td style="text-align:right;">
-0.107
+0.111
 </td>
 <td style="text-align:right;">
-0.090
+0.077
 </td>
 <td style="text-align:right;">
-0.157
+0.189
 </td>
 <td style="text-align:right;">
-0.410
+0.369
 </td>
 <td style="text-align:right;">
-0.783
+0.810
 </td>
 </tr>
 <tr>
@@ -242,19 +242,19 @@ Netflix
 T-shirt
 </td>
 <td style="text-align:right;">
-0.282
+0.276
 </td>
 <td style="text-align:right;">
-0.145
+0.147
 </td>
 <td style="text-align:right;">
-0.065
+0.062
 </td>
 <td style="text-align:right;">
 a
 </td>
 <td style="text-align:right;">
-6.380
+6.668
 </td>
 </tr>
 <tr>
@@ -262,39 +262,32 @@ a
 Sushi
 </td>
 <td style="text-align:right;">
-1.392
+1.466
 </td>
 <td style="text-align:right;">
-69.742
+88.861
 </td>
 <td style="text-align:right;">
-0.150
+0.163
 </td>
 <td style="text-align:right;">
-b
+a
 </td>
 <td style="text-align:right;">
-12.321
+13.193
 </td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
+<tfoot><tr>
 <td style="padding: 0; border:0;" colspan="100%">
-<sup>a</sup> Failed to allocate vector of size: 2125.7 Gb
+<sup>a</sup> Function fails to complete.
 </td>
-</tr>
-<tr>
-<td style="padding: 0; border:0;" colspan="100%">
-<sup>b</sup> Failed to allocate vector of size: 74.5 Gb
-</td>
-</tr>
-</tfoot>
+</tr></tfoot>
 </table>
-<p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table <a href="#tab:nascar">3</a> demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling subrankings of a relatively large number of items.</p>
+<p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table @ref(tab:nascar) demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling sub-rankings of a relatively large number of items.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:nascar">Table 3: </span>Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
+Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
 </caption>
 <thead>
 <tr>
@@ -346,10 +339,10 @@ hyper2
 </tr></tbody>
 </table>
 <p><strong>PlackettLuce</strong> is the only package out of those based on maximum likelihood estimation with the functionality to compute standard errors for the item parameters and thereby the facility to conduct inference on these parameters. Using <strong>PLMIX</strong>, inference may be based on the posterior distribution. In some cases, when the network of wins and losses is disconnected or weakly connected, the maximum likelihood estimate does not exist, or has infinite standard error; such issues are handled in <strong>PlackettLuce</strong> by utilising pseudo-rankings. This is similar to incorporating prior information as in the Bayesian approach.</p>
-<p><strong>PlackettLuce</strong> is the only package that can accommodated tied rankings, this is achieved through a novel extension of the Plackett-Luce model. On the other hand <strong>hyper2</strong> is currently the only package that can handle rankings of combinations of items, for example team rankings in sports. <strong>PLMIX</strong> offers the facility to model heterogeneous populations of subjects that have different sets of worth parameters via mixture models. This is similar in spirit to the model-based partitioning offered by <strong>PlackettLuce</strong>, except here the sub-populations are defined by binary splits on subject attributes. A summary of the package features is given in Table <a href="#tab:package-summary">4</a>.</p>
+<p><strong>PlackettLuce</strong> is also the only package that can accommodate tied rankings, through a novel extension of the Plackett-Luce model. On the other hand <strong>hyper2</strong> is currently the only package that can handle rankings of combinations of items, for example team rankings in sports. <strong>PLMIX</strong> offers the facility to model heterogeneous populations of subjects that have different sets of worth parameters via mixture models. This is similar in spirit to the model-based partitioning offered by <strong>PlackettLuce</strong>, except here the sub-populations are defined by binary splits on subject attributes. A summary of the package features is given in Table @ref(tab:package-summary).</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:package-summary">Table 4: </span>Features of packages for fitting the Plackett-Luce model.
+Features of packages for fitting the Plackett-Luce model.
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -487,17 +480,17 @@ Mixtures
 <p>where the items in set <span class="math inline">\(C_1\)</span> are ranked higher than (better than) the items in <span class="math inline">\(C_2\)</span>, and so on. If there are multiple objects in set <span class="math inline">\(C_j\)</span> these items are tied in the ranking. For a set <span class="math inline">\(S\)</span>, let</p>
 <p><span class="math display">\[f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}\]</span></p>
 <p>where <span class="math inline">\(|S|\)</span> is the cardinality of the set, <span class="math inline">\(\delta_n\)</span> is a parameter representing the prevalence of ties of order <span class="math inline">\(n\)</span>, and <span class="math inline">\(\alpha_i\)</span> is a parameter representing the worth of item <span class="math inline">\(i\)</span>. Then under an extension of the Plackett-Luce model allowing ties up to order <span class="math inline">\(D\)</span>, the probability of the ranking <span class="math inline">\(R\)</span> is given by</p>
-<span class="math display" id="eq:PL">\[\begin{equation}
+<span class="math display">\[\begin{equation}
 \prod_{j = 1}^J \frac{f(C_j)}{
 \sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
-\tag{1}
+(\#eq:PL)
 \end{equation}\]</span>
 <p>where <span class="math inline">\(D_j\)</span> is the cardinality of <span class="math inline">\(C_j\)</span>, <span class="math inline">\(A_j\)</span> is the set of alternatives from which <span class="math inline">\(C_j\)</span> is chosen, and <span class="math inline">\(A_j \choose k\)</span> is all the possible choices of <span class="math inline">\(k\)</span> items from <span class="math inline">\(A_j\)</span>. The value of <span class="math inline">\(D\)</span> can be set to the maximum number of tied items observed in the data, so that <span class="math inline">\(\delta_n = 0\)</span> for <span class="math inline">\(n &gt; D\)</span>.</p>
 <p>When the worth parameters are constrained to sum to one, they represent the probability that the corresponding item comes first in a ranking of all items, given that first place is not tied.</p>
 <div id="pudding-example-with-ties" class="section level3">
 <h3 class="hasAnchor">
 <a href="#pudding-example-with-ties" class="anchor"></a>Pudding example (with ties)</h3>
-<p>When each ranking contains only two items, then the model in Equation <a href="#eq:PL">(1)</a> reduces to extended Bradley-Terry model proposed by <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set, available in <strong>PlackettLuce</strong> provides the data from Example 2 of that paper, in which respondents were asked to test two brands of chocolate pudding from a total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span> was preferred (<span class="math inline">\(w_{ji}\)</span> and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
+<p>When each ranking contains only two items, then the model in Equation @ref(eq:PL) reduces to extended Bradley-Terry model proposed by <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set, available in <strong>PlackettLuce</strong>, provides the data from Example 2 of that paper, in which respondents were asked to test two brands of chocolate pudding from a total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span> was preferred (<span class="math inline">\(w_{ji}\)</span>) and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)</code></pre></div>
 <pre><code>## 
 ## Attaching package: 'PlackettLuce'</code></pre>
@@ -531,14 +524,14 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## [44,] 0 0 0 1 0 1
 ## [45,] 0 0 0 0 1 1</code></pre>
 <p>The matrix <code>R</code> represents first the wins of <span class="math inline">\(i\)</span> over <span class="math inline">\(j\)</span>, then the wins of <span class="math inline">\(j\)</span> over <span class="math inline">\(i\)</span> and finally the ties, so is three times as long as the original data. Each column represents a brand. In each row <code>0</code> represents an unranked brand (not in the comparison), <code>1</code> represents the brand(s) ranked in first place and <code>2</code> represents the brand in second place, if applicable.</p>
-<p>This matrix can used to specify the rankings in the call to <code>PlackettLuce</code>, however there are some advantages to creating a formal  object, which <code>PlackettLuce</code> create internally if necessary:</p>
+<p>This matrix can used to specify the rankings in the call to <code>PlackettLuce</code>, however there are some advantages to creating a formal <code>"rankings"</code> object, which <code>PlackettLuce</code> does internally if necessary:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(R)
 <span class="kw">head</span>(R)</code></pre></div>
 <pre><code>## [1] "1 &gt; 2" "1 &gt; 3" "2 &gt; 3" "1 &gt; 4" "2 &gt; 4" "3 &gt; 4"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(R)</code></pre></div>
 <pre><code>## [1] "4 = 5" "1 = 6" "2 = 6" "3 = 6" "4 = 6" "5 = 6"</code></pre>
 <p>The <code>as.rankings</code> method checks that the rankings are specified as dense rankings, i.e. consecutive integers with no rank skipped for tied items, recoding as necessary; drops rankings with less than two items since these are uninformative, and adds column names if necessary. As can be seen above, the print method displays the rankings in a more readable form.</p>
-<p>To specify the full set of rankings, we need the frequency of each ranking, which will be specified to the model0fitting function as a weight vector:</p>
+<p>To specify the full set of rankings, we need the frequency of each ranking, which will be specified to the model-fitting function as a weight vector:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">w &lt;-<span class="st"> </span><span class="kw">unlist</span>(pudding[<span class="kw">c</span>(<span class="st">"w_ij"</span>, <span class="st">"w_ji"</span>, <span class="st">"t_ij"</span>)])</code></pre></div>
 <p>Now we can fit the model with <code>PlackettLuce</code>, passing the rankings matrix and the weight vector as arguments. Setting <code>npseudo = 0</code> means that standard maximum likelihood estimation is performed and <code>maxit = 7</code> limits the number of iterations to obtain the same worth parameters as <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> w, <span class="dt">npseudo =</span> <span class="dv">0</span>, <span class="dt">maxit =</span> <span class="dv">7</span>)</code></pre></div>
@@ -547,14 +540,14 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>##         1         2         3         4         5         6      tie2 
 ## 0.1389750 0.1729960 0.1618192 0.1653960 0.1587648 0.2020490 0.7466951</code></pre>
-<p>Note here we specify <code>log = FALSE</code> to give the parameterization as in Equation <a href="#eq:PL">(1)</a>. In the next section we discuss why it is more appropriate to use the log scale for inference.</p>
+<p>Note here we specify <code>log = FALSE</code> to give the parameterization as in Equation @ref(eq:PL). In the next section we discuss why it is more appropriate to use the log scale for inference.</p>
 </div>
 </div>
 <div id="inference" class="section level2">
 <h2 class="hasAnchor">
 <a href="#inference" class="anchor"></a>Inference</h2>
 <p>A standard way to report model parameters is to report them along with their corresponding standard error. This is an indication of the estimate’s precision, however implicitly this invites comparison with zero. Such comparison is made explicit in many summary methods for models in R, with the addition of partial t or Z tests testing the null hypothesis that the parameter is equal to zero, given the other parameters in the model. However this hypothesis is generally not of interest for the worth parameters in a Plackett-Luce model: we expect most items to have <em>some</em> worth, the question is whether the items differ in their worth. In addition, a Z test based on asymptotic normality of the maximum likelihood estimate will not be appropriate for worth parameters near zero or one, since it does not take account of the fact that the parameters cannot be outside of these limits.</p>
-<p>On the log scale however, there are no bounds on the parameters and we can set a reference level to provide meaningful comparisons. By default, the summary method for  objects sets the first item as the reference:</p>
+<p>On the log scale however, there are no bounds on the parameters and we can set a reference level to provide meaningful comparisons. By default, the summary method for <code>"PlackettLuce"</code> objects sets the first item as the reference:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod)</code></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7)
 ## 
@@ -573,7 +566,7 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## Residual deviance:  1619.4  on  1484  degrees of freedom
 ## AIC:  1631.4 
 ## Number of iterations: 8</code></pre>
-<p>None of the Z tests for the item parameters is significant, which is consistent with test for equal preferences presented in <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>. Note the tie parameter is also shown on the log scale here, but since it is an integral part of the model it is not a parameter of interest for inference, so the scale is not relevant.</p>
+<p>None of the Z tests for the item parameters provides significant evidence against the null hypothesis, which is consistent with the test for equal preferences presented in <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>. The tie parameter is also shown on the log scale here, but it is an integral part of the model rather than a parameter of interest for inference, and its scale is not relevant.</p>
 <p>The reference level for the item parameters can be changed via the <code>ref</code> argument, for example setting to <code>NULL</code> sets the mean worth as the reference:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod, <span class="dt">ref =</span> <span class="ot">NULL</span>)</code></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7)
@@ -594,7 +587,7 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## AIC:  1631.4 
 ## Number of iterations: 8</code></pre>
 <p>As can be seen from the output above, the standard error of the item parameters changes with the reference level. Therefore in cases where there is not a natural reference (e.g. own brand versus competitor’s brands), the inference can depend on an arbitrary choice. This problem can be handled through the use of <em>quasi standard errors</em> that remain constant for a given item regardless of the reference. In addition quasi standard errors are defined for the reference item, so even in cases where there is a natural reference, the uncertainty around the worth of that item can still be represented.</p>
-<p>Quasi standard errors for the item parameters are implemented via a method for the <code>qvcalc</code> function from the <strong>qvalc</strong> package:</p>
+<p>Quasi standard errors for the item parameters are implemented via a method for the <code>qvcalc</code> function from the <strong>qvcalc</strong> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)
 qv</code></pre></div>
 <pre><code>##    estimate        SE   quasiSE   quasiVar
@@ -607,9 +600,8 @@ qv</code></pre></div>
 <p>Again by default, the first item is taken as the reference, but this may be changed via a <code>ref</code> argument. The plot method for the returned object visualizes the item parameters (log-worth parameters) along with comparison intervals - item parameters for which the comparison intervals do not cross are significantly different:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="st">"Brand of pudding"</span>, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</code></pre></div>
 <div class="figure">
-<span id="fig:pudding-qv"></span>
 <img src="Overview_files/figure-html/pudding-qv-1.png" alt="Worth of brands of chocolate pudding. Intervals based on quasi-standard errors." width="672"><p class="caption">
-Figure 1: Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
+Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
 </p>
 </div>
 </div>
@@ -647,9 +639,8 @@ A</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">net &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/igraph/topics/graph_from_adjacency_matrix">graph_from_adjacency_matrix</a></span>(A)
 <span class="kw">plot</span>(net, <span class="dt">edge.arrow.size =</span> <span class="fl">0.5</span>, <span class="dt">vertex.size =</span> <span class="dv">30</span>)</code></pre></div>
 <div class="figure">
-<span id="fig:always-loses"></span>
 <img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="672"><p class="caption">
-Figure 2: Network representation of toy rankings.
+Network representation of toy rankings.
 </p>
 </div>
 <p>For the worth parameters to have finite maximum likelihood estimates (MLEs) and standard errors, the network must be strongly connected, i.e. there must be a path of wins and a path of losses between each pair of items. In the example above, A, B and C are strongly connected. For example, C directly loses against B and although C never directly beats B, it does beat A and A in turn beats B, so C indirectly beats B. Similar paths of wins and losses can be found for all pairs of A, B and C. On the other hand D is only observed to lose, therefore the MLE of the worth would be zero, with infinite standard error.</p>
@@ -686,7 +677,7 @@ Figure 2: Network representation of toy rankings.
 ## Number of iterations: 9</code></pre>
 <p>Note that since <code>R</code> is a rankings object, the rankings are automatically updated when items are dropped, so in this case the paired comparison with item D is dropped.</p>
 <p>By default however <strong>PlackettLuce</strong> provides a way to handle disconnected/weakly connected networks, through the addition of pseudo-rankings. This works by adding a win and a loss between each item and a hypothetical or ghost item with fixed worth. This makes the network strongly connected so all the worth parameters are estimable. It also has an interpretation as a Bayesian prior, in particular a non-informative prior where all items have equal worth.</p>
-<p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> doesn’t add any pseudo-rankings, so <code>PlackettLuce</code> will return the standard MLE, if the network is strongly connected, and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, so by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters changes quite considerably:</p>
+<p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> doesn’t add any pseudo-rankings, so <code>PlackettLuce</code> will return the standard MLE, if the network is strongly connected, and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters change quite considerably:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)
 <span class="kw">coef</span>(mod2)</code></pre></div>
 <pre><code>##          A          B          C          D 
@@ -739,8 +730,8 @@ coefs &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="k
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(coefs, <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  Dave Marcis Dick Trickle    Joe Varde 
 ##         0.03        -0.31        -0.15</code></pre>
-<p>Now we fit the Plackett-Luce model to the full data, using the default pseudo-rankings method. In this case the default iterative scaling method does not perform very well, so we switch to the L-BFGS algorithm:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">method =</span> <span class="st">"L-BFGS"</span>)</code></pre></div>
+<p>Now we fit the Plackett-Luce model to the full data, using the default pseudo-rankings method.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)</code></pre></div>
 <p>For items that were in the previous model, we see that the log-worth parameters generally shrink towards zero:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">coefs2 &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">coef</span>(mod2), <span class="dv">2</span>)
 coefs2[<span class="kw">names</span>(coefs)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]]</code></pre></div>
@@ -756,19 +747,18 @@ coefs2[<span class="kw">names</span>(coefs)[<span class="dv">1</span><span class
 <p>Nonetheless, the estimates are finite and have finite standard errors:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(<span class="kw">summary</span>(mod2))[<span class="dv">84</span><span class="op">:</span><span class="dv">87</span>,]</code></pre></div>
 <pre><code>##                  Estimate Std. Error    z value  Pr(&gt;|z|)
-## Andy Hillenburg -2.170992   1.812948 -1.1974929 0.2311145
-## Gary Bradberry  -1.744559   1.855245 -0.9403389 0.3470437
-## Jason Hedlesky  -1.590652   1.881637 -0.8453552 0.3979125
-## Randy Renfrow   -1.768502   1.904798 -0.9284461 0.3531762</code></pre>
+## Andy Hillenburg -2.171065   1.812994 -1.1975029 0.2311106
+## Gary Bradberry  -1.744754   1.855365 -0.9403829 0.3470212
+## Jason Hedlesky  -1.590764   1.881708 -0.8453828 0.3978971
+## Randy Renfrow   -1.768629   1.904871 -0.9284767 0.3531604</code></pre>
 <p>Note that the reference here is simply the driver that comes first alphabetically: A. Cameron. We can plot the quasi-variances for a better comparison:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod2)
 qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="op">$</span>qvframe[<span class="kw">order</span>(<span class="kw">coef</span>(mod2)),]
 <span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>, <span class="dt">xaxt=</span><span class="st">"n"</span>)
 <span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq_len</span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw">rownames</span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.7</span>)</code></pre></div>
 <div class="figure">
-<span id="fig:nascar-qv"></span>
 <img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="672"><p class="caption">
-Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
+Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
 </p>
 </div>
 <p>Although the pseudo-rankings are only necessary to add when the network is incomplete, the default behaviour is always to use them (with a weight of 0.5) because the small shrinkage effect reduces the bias of the estimates.</p>
@@ -777,7 +767,7 @@ Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on qua
 <div id="plackett-luce-trees" class="section level1">
 <h1 class="hasAnchor">
 <a href="#plackett-luce-trees" class="anchor"></a>Plackett-Luce Trees</h1>
-<p>A Plackett-Luce model that assumes the same worth parameters across all rankings may sometimes be an over-simplification. For example, if rankings are made by different judges, the worth parameters may vary between judges with different characteristics. Model-based partitioning provides an automatic way to determine subgroups of the judges with significantly different sets of worth parameters, based on judge covariates. A Plackett-Luce tree is created via the following steps:</p>
+<p>A Plackett-Luce model that assumes the same worth parameters across all rankings may sometimes be an over-simplification. For example, if rankings are made by different judges, the worth parameters may vary between judges with different characteristics. Model-based partitioning provides an automatic way to determine subgroups of the judges with significantly different sets of worth parameters, based on judge covariates. A Plackett-Luce tree is constructed via the following steps:</p>
 <ol style="list-style-type: decimal">
 <li>Fit a Plackett-Luce model to the full data.</li>
 <li>Assess the stability of the worth parameters with respect to each available covariate.</li>
@@ -785,87 +775,18 @@ Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on qua
 <li>Repeat steps 1-3 until there are no more significant instabilities, or a split produces a sub-group below a given size threshold.</li>
 </ol>
 <p>This is an extension of Bradley-Terry trees, implemented in the R package <strong>psychotree</strong> and described in more detail by <span class="citation">Strobl, Wickelmaier, and Zeileis (<a href="#ref-Strobl2011">2011</a>)</span>.</p>
-<p>To illustrate this approach, we consider data from a trial of different varieties of bean in Nicaragua, run by Bioversity International. Farmers were asked to grow three experimental varieties of bean in one of the growing seasons, Primera (May - August), Postrera (September - October) or Apante (November - January). At the end of the season, they were asked which variety they though was best and which variety they thought was worse, to give a ranking of the three varieties. In addition, they were asked to compare each trial variety to the standard local variety and say whether it was better or worse.</p>
-<p>The data are provided as the data set <code>beans</code> in Plackett-Luce. The data require some preparation to collate the rankings. First we consider the best and worst rankings. These give the variety the farmer thought was best or worst, coded as A, B or C for the first, second or third variety assigned to the farmer respectively.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(beans)
-<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
-<pre><code>## # A tibble: 2 x 2
-##    best worst
-##   &lt;chr&gt; &lt;chr&gt;
-## 1     C     A
-## 2     B     A</code></pre>
-<p>We convert these to numeric values, allowing us to impute the middle-ranked variety (a strict ranking is assumed here, so the sum of each row should be 6)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beans &lt;-<span class="st"> </span><span class="kw">within</span>(beans, {
-    best &lt;-<span class="st"> </span><span class="kw">match</span>(best, <span class="kw">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>)) 
-    worst &lt;-<span class="st"> </span><span class="kw">match</span>(worst, <span class="kw">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))
-    middle &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">-</span><span class="st"> </span>best <span class="op">-</span><span class="st"> </span>worst
-})
-<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
-<pre><code>## # A tibble: 2 x 3
-##    best middle worst
-##   &lt;int&gt;  &lt;dbl&gt; &lt;int&gt;
-## 1     3      2     1
-## 2     2      3     1</code></pre>
-<p>This gives an ordering of the three varieties the farmer was given. The names of these varieties are stored in separate columns</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">varieties &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(beans[<span class="kw">c</span>(<span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span>)])
-<span class="kw">head</span>(varieties, <span class="dv">2</span>)</code></pre></div>
-<pre><code>##      variety_a     variety_b         variety_c    
-## [1,] "BRT 103-182" "SJC 730-79"      "PM2 Don Rey"
-## [2,] "INTA Rojo"   "INTA Centro Sur" "INTA Sequia"</code></pre>
-<p>So we can convert the variety IDs to the variety names</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="kw">nrow</span>(beans)
-beans &lt;-<span class="st"> </span><span class="kw">within</span>(beans, {
-    best &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), best)]
-    worst &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), worst)]
-    middle &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), middle)]
-})
-<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
-<pre><code>## # A tibble: 2 x 3
-##              best      middle       worst
-##             &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;
-## 1     PM2 Don Rey  SJC 730-79 BRT 103-182
-## 2 INTA Centro Sur INTA Sequia   INTA Rojo</code></pre>
-<p>Next we convert these orderings to sub-rankings of the full set of varieties, including the local variety as an additional item, so that we can add the paired comparisons shortly:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lab &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"Local"</span>, <span class="kw">sort</span>(<span class="kw">unique</span>(<span class="kw">as.vector</span>(varieties))))
-R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], 
-                 <span class="dt">input =</span> <span class="st">"ordering"</span>, <span class="dt">labels =</span> lab)</code></pre></div>
-<p>The comparisons with the local variety are stored in another set of columns</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span>)], <span class="dv">2</span>)</code></pre></div>
-<pre><code>## # A tibble: 2 x 3
-##   var_a  var_b  var_c
-##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;
-## 1 Worse  Worse Better
-## 2 Worse Better Better</code></pre>
-<p>The following converts each of these columns to a matrix of ordered pairs:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">paired &lt;-<span class="st"> </span><span class="kw">list</span>()
-<span class="cf">for</span> (id <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)){
-    ordering &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="st">"Local"</span>, <span class="dt">nrow =</span> n, <span class="dt">ncol =</span> <span class="dv">2</span>)
-    worse &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"var_"</span>, id)]] <span class="op">==</span><span class="st"> "Worse"</span>
-    ## put trial variety in column 1 when it is not worse than local
-    ordering[<span class="op">!</span>worse, <span class="dv">1</span>] &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"variety_"</span>, id)]][<span class="op">!</span>worse]
-    ## put trial variety in column 2 when it is worse than local
-    ordering[worse, <span class="dv">2</span>] &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"variety_"</span>, id)]][worse]
-    paired[[id]] &lt;-<span class="st"> </span>ordering
-}
-<span class="kw">head</span>(paired[[id]])</code></pre></div>
-<pre><code>##      [,1]          [,2]         
-## [1,] "PM2 Don Rey" "Local"      
-## [2,] "INTA Sequia" "Local"      
-## [3,] "Local"       "BRT 103-182"
-## [4,] "ALS 0532-6"  "Local"      
-## [5,] "SJC 730-79"  "Local"      
-## [6,] "INTA Rojo"   "Local"</code></pre>
-<p>Again we convert these orderings to sub-rankings of the full set of varieties and combine them with the rankings of order three:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">paired &lt;-<span class="st"> </span><span class="kw">lapply</span>(paired, as.rankings, <span class="dt">input =</span> <span class="st">"ordering"</span>, <span class="dt">labels =</span> lab)
-R &lt;-<span class="st"> </span><span class="kw">rbind</span>(R, paired[[<span class="st">"a"</span>]], paired[[<span class="st">"b"</span>]], paired[[<span class="st">"c"</span>]])</code></pre></div>
-<p>In order to fit a Plackett-Luce tree, we need to create a  object, that defines how the rankings map to the covariate values. In this case we wish to group by each record in the original data set, so we create a  object that identifies the record number for each of the four rankings from each farmer ( one ranking of order three plus three pairwise rankings with the local variety):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">G &lt;-<span class="st"> </span><span class="kw"><a href="../reference/grouped_rankings.html">grouped_rankings</a></span>(R, <span class="kw">rep</span>(<span class="kw">seq_len</span>(n), <span class="dv">4</span>))
+<p>To illustrate this approach, we consider data from a trial of different varieties of bean in Nicaragua, run by Bioversity International <span class="citation">(Van Etten et al. <a href="#ref-vanEtten2016">2016</a>)</span>. Farmers were asked to grow three experimental varieties of bean in one of the growing seasons, Primera (May - August), Postrera (September - October) or Apante (November - January). At the end of the season, they were asked which variety they thought was best and which variety they thought was worse, to give a ranking of the three varieties. In addition, they were asked to compare each trial variety to the standard local variety and say whether it was better or worse.</p>
+<p>The data are provided as the dataset <code>beans</code> in Plackett-Luce. The data require some preparation to collate the rankings, which is detailed in Appendix @ref(app:beans). The same code is provided in the examples section of the help file of <code>beans</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">example</span>(<span class="st">"beans"</span>, <span class="dt">package =</span> <span class="st">"PlackettLuce"</span>)</code></pre></div>
+<p>The result is a <code>rankings</code> object <code>R</code> with all rankings of the three experimental varieties and the output of their comparison with the local variety.</p>
+<p>In order to fit a Plackett-Luce tree, we need to create a <code>grouped_rankings</code> object, that defines how the rankings map to the covariate values. In this case we wish to group by each record in the original data set, so we create a <code>"grouped_rankings"</code> object that identifies the record number for each of the four rankings from each farmer ( one ranking of order three plus three pairwise rankings with the local variety):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">G &lt;-<span class="st"> </span><span class="kw"><a href="../reference/grouped_rankings.html">grouped_rankings</a></span>(R, <span class="kw">rep</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(beans)), <span class="dv">4</span>))
 <span class="kw">format</span>(<span class="kw">head</span>(G, <span class="dv">2</span>), <span class="dt">width =</span> <span class="dv">50</span>)</code></pre></div>
 <pre><code>##                                                                   1 
 ##  "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182, Local &gt; BRT 103-182, ..." 
 ##                                                                   2 
 ## "INTA Centro Sur &gt; INTA Sequia &gt; INTA Rojo, Local &gt; INTA Rojo, ..."</code></pre>
-<p>For each record in the original data, we have three covariates:  the season-year the beans were planted,  the year of planting, and  the maximum temperature at night during the vegetative cycle. The following code fits a Plackett-Luce tree with up to three nodes and at least 5% of the records in each node:</p>
+<p>For each record in the original data, we have three covariates: <code>season</code> the season-year the beans were planted, <code>year</code> the year of planting, and <code>maxTN</code> the maximum temperature at night during the vegetative cycle. The following code fits a Plackett-Luce tree with up to three nodes and at least 5% of the records in each node:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beans<span class="op">$</span>year &lt;-<span class="st"> </span><span class="kw">factor</span>(beans<span class="op">$</span>year)
 tree &lt;-<span class="st"> </span><span class="kw"><a href="../reference/pltree.html">pltree</a></span>(G <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> beans[<span class="kw">c</span>(<span class="st">"season"</span>, <span class="st">"year"</span>, <span class="st">"maxTN"</span>)], 
                <span class="dt">minsize =</span> <span class="fl">0.05</span><span class="op">*</span>n, <span class="dt">maxdepth =</span> <span class="dv">3</span>)
@@ -908,25 +829,32 @@ tree</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(tree, <span class="dt">names =</span> <span class="ot">FALSE</span>, <span class="dt">abbreviate =</span> <span class="dv">2</span>)</code></pre></div>
 <pre><code>## Loading required namespace: psychotree</code></pre>
 <div class="figure">
-<span id="fig:plot-pltree"></span>
 <img src="Overview_files/figure-html/plot-pltree-1.png" alt="Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79." width="672"><p class="caption">
-Figure 4: Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
+Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
 </p>
 </div>
+</div>
+<div id="discussion" class="section level1">
+<h1 class="hasAnchor">
+<a href="#discussion" class="anchor"></a>Discussion</h1>
+<p><strong>PlackettLuce</strong> is a feature-rich package for the handling of ranking data. The package provides methods for importing, handling and visualising partial ranking data, and for the estimation and inference from generalizations of the Plackett-Luce model that can handle partial rankings of items and ties of arbitrary order. Disconnected item networks are handled by appropriately augmenting the data with pseudo-rankings for a hypothetical item. The package also allows for the construction of generalized Plackett-Luce trees to account for heterogeneity across the item worth parameters due to ranking-specific covariates.</p>
+<p>Current work involves support for the online estimation from streams of partial-rankings and accounting for spatio-temporal heterogeneity in worth parameters.</p>
 </div>
 <div id="appendix" class="section level1">
 <h1 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h1>
-<p>For the package comparison in Table <a href="#tab:timings-kable">2</a>, the model was fitted to aggregated rankings where possible (PlackettLuce, hyper2, pmr). Arguments were set to obtain the maximum likelihood estimate, using the default iterative scaling algorithm for PlackettLuce. The functions were run with their default convergence criteria; the number of iterations for StatRank was set so that the log-likelihood on exit was equal to the log-likelihood returned by the other functions with relative tolerance 1e-6.</p>
+<div id="app:timings" class="section level2">
+<h2 class="hasAnchor">
+<a href="#app:timings" class="anchor"></a>Timings</h2>
+<p>Data for the package comparison in Table @ref(tab:timings-kable) was downloaded from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span> using the <code>read.soc</code> function provided in <strong>PlackettLuce</strong> to read in files with the “Strict Orders - Complete List” format.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)
 <span class="co"># read in example data sets</span>
 preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span>
 netflix &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"netflix/ED-00004-00000101.soc"</span>))
 tshirt &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"shirt/ED-00012-00000001.soc"</span>))
-sushi &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"sushi/ED-00014-00000001.soc"</span>))
-
-<span class="co"># wrappers for each method</span>
-pl &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){
+sushi &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"sushi/ED-00014-00000001.soc"</span>))</code></pre></div>
+<p>A wrapper was defined for each function in the comparison, to prepare the rankings and run each function with reasonable defaults. The Plackett-Luce model was fitted to aggregated rankings where possible (for <code>PlackettLuce</code>, <code>hyper2</code>, and <code>pmr</code>). Arguments were set to obtain the maximum likelihood estimate, with the default convergence criteria. The default iterative scaling algorithm was used for <code>PlackettLuce</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pl &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){
     <span class="co"># convert ordered items to ranking</span>
     R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(dat[,<span class="op">-</span><span class="dv">1</span>], <span class="st">"ordering"</span>)
     <span class="co"># fit without adding pseudo-rankings, weight rankings by count</span>
@@ -948,11 +876,11 @@ plmix &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){
     <span class="kw">requireNamespace</span>(<span class="st">"PLMIX"</span>)
     <span class="co"># disaggregate data (no functionality for weights or counts)</span>
     r &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(dat)), dat<span class="op">$</span>n)
-    <span class="co"># maximum a posterioi estimate, with non-informative prior, </span>
+    <span class="co"># maximum a posteriori estimate, with non-informative prior</span>
     <span class="co"># K items in each ranking, single component distribution</span>
-    <span class="co"># default starting values do not always work</span>
+    <span class="co"># default starting values do not always work so specify as uniform</span>
     K &lt;-<span class="st"> </span><span class="kw">ncol</span>(dat)
-    PLMIX<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/PLMIX/topics/mapPLMIX">mapPLMIX</a></span>(<span class="kw">as.matrix</span>(dat[r, <span class="op">-</span><span class="dv">1</span>]), <span class="dt">K =</span> K, <span class="dt">G =</span> <span class="dv">1</span>, 
+    PLMIX<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/PLMIX/topics/mapPLMIX">mapPLMIX</a></span>(<span class="kw">as.matrix</span>(dat[r, <span class="op">-</span><span class="dv">1</span>]), <span class="dt">K =</span> K, <span class="dt">G =</span> <span class="dv">1</span>,
                     <span class="dt">init =</span> <span class="kw">list</span>(<span class="dt">p =</span> <span class="kw">rep.int</span>(<span class="dv">1</span><span class="op">/</span>K, K)), <span class="dt">plot_objective =</span> <span class="ot">FALSE</span>)
 }
 pmr &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){
@@ -969,31 +897,130 @@ statrank &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ite
     <span class="kw">requireNamespace</span>(<span class="st">"StatRank"</span>)
     <span class="co"># disaggregate data (no functionality for weights or counts)</span>
     r &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(dat)), dat<span class="op">$</span>n)
-    <span class="kw">capture.output</span>(res &lt;-<span class="st"> </span>StatRank<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/StatRank/topics/Estimation.PL.MLE">Estimation.PL.MLE</a></span>(<span class="kw">as.matrix</span>(dat[r, <span class="op">-</span><span class="dv">1</span>]), 
+    <span class="kw">capture.output</span>(res &lt;-<span class="st"> </span>StatRank<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/StatRank/topics/Estimation.PL.MLE">Estimation.PL.MLE</a></span>(<span class="kw">as.matrix</span>(dat[r, <span class="op">-</span><span class="dv">1</span>]),
                                                       <span class="dt">iter =</span> iter))
     res
-}
-timings &lt;-<span class="st"> </span><span class="cf">function</span>(dat, <span class="dt">iter =</span> <span class="ot">NULL</span>,
+}</code></pre></div>
+<p>When recording timings, the number of iterations for StatRank was set so that the log-likelihood on exit was equal to the log-likelihood returned by the other functions with relative tolerance 1e-6.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timings &lt;-<span class="st"> </span><span class="cf">function</span>(dat, <span class="dt">iter =</span> <span class="ot">NULL</span>,
                     <span class="dt">fun =</span> <span class="kw">c</span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span>)){
     res &lt;-<span class="st"> </span><span class="kw">list</span>()
     <span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span>)){
         <span class="cf">if</span> (nm <span class="op">%in%</span><span class="st"> </span>fun){
-            res[[nm]] &lt;-<span class="st"> </span><span class="kw">try</span>(
-                <span class="kw">system.time</span>(<span class="kw">do.call</span>(nm, <span class="kw">list</span>(dat, iter)))[[<span class="st">"elapsed"</span>]],
-                <span class="dt">silent =</span> <span class="ot">TRUE</span>)
+            res[[nm]] &lt;-<span class="st"> </span><span class="kw">suppressWarnings</span>(
+                <span class="kw">system.time</span>(<span class="kw">do.call</span>(nm, <span class="kw">list</span>(dat, iter)))[[<span class="st">"elapsed"</span>]])
         } <span class="cf">else</span> res[[nm]] &lt;-<span class="st"> </span><span class="ot">NA</span>
     }
     res
-}</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set iter for statrank so that log-likelihood pass `all.equal` with tolerance 1e-6</span>
+}
 netflix_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(netflix, <span class="dv">6</span>)
-tshirt_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(tshirt, <span class="dv">341</span>)
-sushi_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(sushi, <span class="dv">5</span>)</code></pre></div>
+tshirt_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(tshirt, <span class="dv">341</span>, 
+                          <span class="dt">fun =</span> <span class="kw">c</span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span>))
+sushi_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(sushi, <span class="dv">5</span>,
+                         <span class="dt">fun =</span> <span class="kw">c</span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span>))</code></pre></div>
+</div>
+<div id="app:beans" class="section level2">
+<h2 class="hasAnchor">
+<a href="#app:beans" class="anchor"></a><code>beans</code> data preparation</h2>
+<p>First we handle the best and worst rankings. These give the variety the farmer thought was best or worst, coded as A, B or C for the first, second or third variety assigned to the farmer respectively.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(beans)
+<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##    best worst
+##   &lt;chr&gt; &lt;chr&gt;
+## 1     C     A
+## 2     B     A</code></pre>
+<p>We convert these to numeric values, allowing us to impute the middle-ranked variety (a strict ranking is assumed, so the sum of each row must be 6)</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beans &lt;-<span class="st"> </span><span class="kw">within</span>(beans, {
+    best &lt;-<span class="st"> </span><span class="kw">match</span>(best, <span class="kw">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))
+    worst &lt;-<span class="st"> </span><span class="kw">match</span>(worst, <span class="kw">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))
+    middle &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">-</span><span class="st"> </span>best <span class="op">-</span><span class="st"> </span>worst
+})
+<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
+<pre><code>## # A tibble: 2 x 3
+##    best middle worst
+##   &lt;int&gt;  &lt;dbl&gt; &lt;int&gt;
+## 1     3      2     1
+## 2     2      3     1</code></pre>
+<p>This gives an ordering of the three varieties the farmer was given. The names of these varieties are stored in separate columns</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">varieties &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(beans[<span class="kw">c</span>(<span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span>)])
+<span class="kw">head</span>(varieties, <span class="dv">2</span>)</code></pre></div>
+<pre><code>##      variety_a     variety_b         variety_c    
+## [1,] "BRT 103-182" "SJC 730-79"      "PM2 Don Rey"
+## [2,] "INTA Rojo"   "INTA Centro Sur" "INTA Sequia"</code></pre>
+<p>So we can convert the variety IDs to the variety names</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="kw">nrow</span>(beans)
+beans &lt;-<span class="st"> </span><span class="kw">within</span>(beans, {
+    best &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), best)]
+    worst &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), worst)]
+    middle &lt;-<span class="st"> </span>varieties[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(n), middle)]
+})
+<span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</code></pre></div>
+<pre><code>## # A tibble: 2 x 3
+##              best      middle       worst
+##             &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;
+## 1     PM2 Don Rey  SJC 730-79 BRT 103-182
+## 2 INTA Centro Sur INTA Sequia   INTA Rojo</code></pre>
+<p>Next we convert these orderings to sub-rankings of the full set of varieties, including the local variety as an additional item, so that we can add the paired comparisons shortly:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lab &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"Local"</span>, <span class="kw">sort</span>(<span class="kw">unique</span>(<span class="kw">as.vector</span>(varieties))))
+R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(beans[<span class="kw">c</span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)],
+                 <span class="dt">input =</span> <span class="st">"ordering"</span>, <span class="dt">labels =</span> lab)
+<span class="kw">head</span>(R)</code></pre></div>
+<pre><code>## [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
+## [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
+## [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."
+## [4] "INTA Rojo &gt; INTA Centro Sur &gt; ALS 0532-6"
+## [5] "PM2 Don Rey &gt; INTA Sequia &gt; SJC 730-79"  
+## [6] "ALS 0532-6 &gt; INTA Matagalpa &gt; INTA Rojo"</code></pre>
+<p>The comparisons with the local variety are stored in another set of columns</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(beans[<span class="kw">c</span>(<span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span>)], <span class="dv">2</span>)</code></pre></div>
+<pre><code>## # A tibble: 2 x 3
+##   var_a  var_b  var_c
+##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;
+## 1 Worse  Worse Better
+## 2 Worse Better Better</code></pre>
+<p>The following converts each of these columns to a matrix of ordered pairs:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">paired &lt;-<span class="st"> </span><span class="kw">list</span>()
+<span class="cf">for</span> (id <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)){
+    ordering &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="st">"Local"</span>, <span class="dt">nrow =</span> n, <span class="dt">ncol =</span> <span class="dv">2</span>)
+    worse &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"var_"</span>, id)]] <span class="op">==</span><span class="st"> "Worse"</span>
+    ## put trial variety in column 1 when it is not worse than local
+    ordering[<span class="op">!</span>worse, <span class="dv">1</span>] &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"variety_"</span>, id)]][<span class="op">!</span>worse]
+    ## put trial variety in column 2 when it is worse than local
+    ordering[worse, <span class="dv">2</span>] &lt;-<span class="st"> </span>beans[[<span class="kw">paste0</span>(<span class="st">"variety_"</span>, id)]][worse]
+    paired[[id]] &lt;-<span class="st"> </span>ordering
+}
+<span class="kw">head</span>(paired[[<span class="st">"a"</span>]])</code></pre></div>
+<pre><code>##      [,1]              [,2]         
+## [1,] "Local"           "BRT 103-182"
+## [2,] "Local"           "INTA Rojo"  
+## [3,] "INTA Ferroso"    "Local"      
+## [4,] "INTA Centro Sur" "Local"      
+## [5,] "INTA Sequia"     "Local"      
+## [6,] "ALS 0532-6"      "Local"</code></pre>
+<p>Again we convert these orderings to sub-rankings of the full set of varieties and combine them with the rankings of order three:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">paired &lt;-<span class="st"> </span><span class="kw">lapply</span>(paired, as.rankings, <span class="dt">input =</span> <span class="st">"ordering"</span>, <span class="dt">labels =</span> lab)
+R &lt;-<span class="st"> </span><span class="kw">rbind</span>(R, paired[[<span class="st">"a"</span>]], paired[[<span class="st">"b"</span>]], paired[[<span class="st">"c"</span>]])
+<span class="kw">head</span>(R)</code></pre></div>
+<pre><code>## [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
+## [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
+## [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."
+## [4] "INTA Rojo &gt; INTA Centro Sur &gt; ALS 0532-6"
+## [5] "PM2 Don Rey &gt; INTA Sequia &gt; SJC 730-79"  
+## [6] "ALS 0532-6 &gt; INTA Matagalpa &gt; INTA Rojo"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(R)</code></pre></div>
+<pre><code>## [1] "INTA Sequia &gt; Local"    "INTA Sequia &gt; Local"   
+## [3] "BRT 103-182 &gt; Local"    "Local &gt; INTA Matagalpa"
+## [5] "Local &gt; INTA Rojo"      "Local &gt; SJC 730-79"</code></pre>
+</div>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
+<div id="ref-Baker1994">
+<p>Baker, Stuart G. 1994. “The multinomial-Poisson transformation.” <em>Journal of the Royal Statistical Society. Series D (the Statistician)</em> 43 (4): 495–504. doi:<a href="https://doi.org/10.2307/2348134">10.2307/2348134</a>.</p>
+</div>
 <div id="ref-Davidson1970">
 <p>Davidson, Roger R. 1970. “On extending the bradley-terry model to accommodate ties in paired comparison experiments.” <em>Journal of the American Statistical Association</em> 65 (329): 317–28. doi:<a href="https://doi.org/10.1080/01621459.1970.10481082">10.1080/01621459.1970.10481082</a>.</p>
 </div>
@@ -1001,19 +1028,22 @@ sushi_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(sush
 <p>Hunter, David R. 2004. “MM algorithms for generalized Bradley-Terry models.” <em>Annals of Statistics</em> 32 (1): 384–406. doi:<a href="https://doi.org/10.1214/aos/1079120141">10.1214/aos/1079120141</a>.</p>
 </div>
 <div id="ref-Luce1959">
-<p>Luce, R. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. doi:<a href="https://doi.org/10.2307/2282347">10.2307/2282347</a>.</p>
+<p>Luce, R. Duncan. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. doi:<a href="https://doi.org/10.2307/2282347">10.2307/2282347</a>.</p>
 </div>
 <div id="ref-Luce1977">
-<p>Luce, R. Duncan. 1977. “The choice axiom after twenty years.” <em>Journal of Mathematical Psychology</em> 15 (3): 215–33. doi:<a href="https://doi.org/10.1016/0022-2496(77)90032-3">10.1016/0022-2496(77)90032-3</a>.</p>
+<p>———. 1977. “The choice axiom after twenty years.” <em>Journal of Mathematical Psychology</em> 15 (3): 215–33. doi:<a href="https://doi.org/10.1016/0022-2496(77)90032-3">10.1016/0022-2496(77)90032-3</a>.</p>
 </div>
 <div id="ref-Mattei2013">
 <p>Mattei, Nicholas, and Toby Walsh. 2013. “PrefLib: A Library of Preference Data.” In <em>Proceedings of the 3rd International Conference on Algorithmic Decision Theory (Adt 2013)</em>. Lecture Notes in Artificial Intelligence. Springer. <a href="http://preflib.org" class="uri">http://preflib.org</a>.</p>
 </div>
 <div id="ref-Plackett1975">
-<p>Plackett, R. L. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. doi:<a href="https://doi.org/10.2307/2346567">10.2307/2346567</a>.</p>
+<p>Plackett, Robert Lewis. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. doi:<a href="https://doi.org/10.2307/2346567">10.2307/2346567</a>.</p>
 </div>
 <div id="ref-Strobl2011">
-<p>Strobl, C., F. Wickelmaier, and A. Zeileis. 2011. “Accounting for Individual Differences in Bradley-Terry Models by Means of Recursive Partitioning.” <em>Journal of Educational and Behavioral Statistics</em> 36 (2). SAGE PublicationsSage CA: Los Angeles, CA: 135—–153. doi:<a href="https://doi.org/10.3102/1076998609359791">10.3102/1076998609359791</a>.</p>
+<p>Strobl, Carolin, Florian Wickelmaier, and Achim Zeileis. 2011. “Accounting for Individual Differences in Bradley-Terry Models by Means of Recursive Partitioning.” <em>Journal of Educational and Behavioral Statistics</em> 36 (2). SAGE PublicationsSage CA: Los Angeles, CA: 135—–153. doi:<a href="https://doi.org/10.3102/1076998609359791">10.3102/1076998609359791</a>.</p>
+</div>
+<div id="ref-vanEtten2016">
+<p>Van Etten, Jacob, Eskender Beza, Lluís Calderer, Kees van Duijvendijk, Carlo Fadda, Basazen Fantahun, Yosef Gebrehawaryat Kidane, et al. 2016. “First experiences with a novel farmer citizen science approach: crowdsourcing participatory variety selection through on-farm triadic comparisons of technologies (tricot).” <em>Experimental Agriculture</em>, 1–22. doi:<a href="https://doi.org/10.1017/S0014479716000739">10.1017/S0014479716000739</a>.</p>
 </div>
 </div>
 </div>
@@ -1038,7 +1068,13 @@ sushi_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(sush
       </ul>
 </li>
       <li><a href="#plackett-luce-trees">Plackett-Luce Trees</a></li>
-      <li><a href="#appendix">Appendix</a></li>
+      <li><a href="#discussion">Discussion</a></li>
+      <li>
+<a href="#appendix">Appendix</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#app:timings">Timings</a></li>
+      <li><a href="#app:beans"><code>beans</code> data preparation</a></li>
+      </ul>
+</li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>
