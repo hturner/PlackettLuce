@@ -1,4 +1,5 @@
 ---
+output: github_document
 bibliography: ["readme.bib"]
 ---
 
@@ -29,7 +30,7 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
  - Handles disconnected networks, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a 
 hypothetical or ghost item.
 
-```{r, message = FALSE, echo = FALSE, fig.width = 3.5, fig.height = 3.5}
+```{r always-loses, message = FALSE, echo = FALSE, fig.width = 3.5, fig.height = 3.5}
 library(PlackettLuce)
 library(igraph)
 R <- matrix(c(1, 2, 0, 0,

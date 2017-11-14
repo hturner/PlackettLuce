@@ -4,6 +4,8 @@ PlackettLuce
 
 [![Travis-CI Build Status](https://travis-ci.org/hturner/PlackettLuce.svg?branch=master)](https://travis-ci.org/hturner/PlackettLuce) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hturner/PlackettLuce?branch=master&svg=true)](https://ci.appveyor.com/project/hturner/PlackettLuce) [![Coverage Status](https://img.shields.io/codecov/c/github/hturner/PlackettLuce/master.svg)](https://codecov.io/github/hturner/PlackettLuce?branch=master)
 
+Package website: <https://hturner.github.io/PlackettLuce/>.
+
 Overview
 --------
 
@@ -15,11 +17,9 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 
 -   Accommodates ties (of any order) in the rankings, e.g. bananas ≻ {apples, oranges} ≻ pears.
 -   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of items is {apples, bananas, oranges, pears}.
--   Handles disconnected networks, e.g.
+-   Handles disconnected networks, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
 
-    <img src = "vignettes/Overview_files/figure-html/always-loses-1.png" alt = "network where item D always loses", height = "200" width = "200">
-
-    where D always loses. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
+![](README_files/figure-markdown_github-ascii_identifiers/always-loses-1.png) </br>
 
 In addition the package provides methods for
 
@@ -30,6 +30,11 @@ Installation
 ------------
 
 The package may be installed from GitHub via
+
+``` r
+# install.packages("devtools")
+devtools::install_github("hturner/PlackettLuce")
+```
 
 Usage
 -----
@@ -51,7 +56,7 @@ head(netflix, 2)
 
 Each row corresponds to a unique ordering of the four movies in this data set. The number of Netflix users that assigned that ordering is given in the first column, followed by the four movies in preference order. So for example, 68 users ranked movie 2 first, followed by movie 1, then movie 4 and finally movie 3.
 
-`PlackettLuce`, the model-fitting in **PlackettLuce** requires that the data are provided in the form of *rankings* rather than *orderings*, i.e. the rankings are expressed by giving the rank for each item, rather than ordering the items. We can create a `"rankings"` object from a set of orderings as follows
+`PlackettLuce`, the model-fitting function in **PlackettLuce** requires that the data are provided in the form of *rankings* rather than *orderings*, i.e. the rankings are expressed by giving the rank for each item, rather than ordering the items. We can create a `"rankings"` object from a set of orderings as follows
 
 ``` r
 R <- as.rankings(netflix[,-1], input = "ordering")
@@ -64,7 +69,7 @@ R[1:3, as.rankings = FALSE]
     ## 2          1                 2                 4                      3
     ## 3          2                 1                 3                      4
 
-Note that `read.soc` saved the names of the movies in the `"item"` attribute of the `netflix`, so we have used these to label the items. Subsetting the rankings object `R` with `as.rankings = FALSE`, returns the underlying matrix of rankings. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.
+Note that `read.soc` saved the names of the movies in the `"item"` attribute of the `netflix`, so we have used these to label the items. Subsetting the rankings object `R` with `as.rankings = FALSE`, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.
 
 Various methods are provided for `"rankings"` objects, in particular if we subset the rankings without `as.rankings = FALSE`, the result is again a `"rankings"` object and the corresponding print method is used:
 
