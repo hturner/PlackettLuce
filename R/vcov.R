@@ -1,3 +1,4 @@
+#' @rdname  summaries
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom MASS ginv

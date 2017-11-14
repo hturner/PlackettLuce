@@ -8,7 +8,7 @@
 #' model.
 #' @param x unused.
 #' @inheritParams PlackettLuce
-#' @inheritParams coef.PlackettLuce
+#' @inheritParams summaries
 #' @param offset unused.
 #' @param ... additional arguments passed to \code{PlackettLuce}.
 #' @param estfun logical. If \code{TRUE} the empirical estimating functions
@@ -19,6 +19,7 @@
 #' \item{objfun}{ the negative log-likelihood. }
 #' \item{estfun}{ if \code{estfun} the empirical estimating functions. }
 #' \item{object}{ if \code{object} the fitted model. }
+#' @keywords internal
 #' @examples
 #' # rankings
 #' R <- matrix(c(1, 2, 0, 0,
@@ -77,7 +78,7 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
     alpha <- coef[1:N]
     delta <- c(1, coef[-c(1:N)])
     # get choices and alternatives for each ranking
-    choices <- as.choices(x$rankings, names = FALSE)
+    choices <- choices(x$rankings, names = FALSE)
     # derivative wrt to alpha part 1: 1/(size of selected set)
     nr <- nrow(x$rankings)
     A <- matrix(0, nrow = nr, ncol = N,

@@ -60,3 +60,4 @@ plfit(G)
 
 PlackettLuce(R)
 }
+\keyword{internal}

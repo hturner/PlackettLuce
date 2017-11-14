@@ -13,3 +13,5 @@ build_site()
 build_articles()
 
 build_home()
+
+build_reference_index()

@@ -15,7 +15,7 @@
 #' @param object a \code{"PlackettLuce"} object as returned by
 #' \code{PlackettLuce}.
 #' @param ... additional arguments, currently ignored..
-#' @inheritParams coef.PlackettLuce
+#' @inheritParams summaries
 #' @return A list of class \code{"qv"}, with components
 #' \item{covmat}{The full variance-covariance matrix for the item
 #' parameters.}

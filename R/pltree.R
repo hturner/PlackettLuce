@@ -39,6 +39,7 @@
 #' @return An object of class \code{"pltree"} inheriting from \code{"bttree"}
 #' and \code{"modelparty"}.
 #' @seealso \code{\link[psychotree]{bttree}}
+#' @aliases pltree
 #' @examples
 #' # Bradley-Terry example
 #'

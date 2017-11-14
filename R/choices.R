@@ -1,14 +1,22 @@
-#' Choices and alternatives
+#' Choices Object
 #'
-#' coerce a matrix of rankings to a list of choices, alternatives, and
-#' rankings. The choices and the corresponding alternatives is the
-#' exchangeable bit of the Plackett-Luce with ties.
+#' Convert a set of rankings to a list of choices, alternatives, and
+#' rankings. The choices and the corresponding alternatives make up the
+#' exchangeable part of the Plackett-Luce with ties.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
 #' @param names logical: if \code{TRUE} use the object names in the returned
 #' \code{"choices"} object, else use object indices.
-#'
+#' @return A list of class \code{"choices"} with elements:
+#' \item{choices}{ A list where each element represents the set of items
+#' chosen for a single rank in the ranking.}
+#' \item{alternatives}{ A list where each element represents the set of items
+#' to choose from for a single rank in the ranking.}
+#' \item{ranking}{ A list where each element represents the ranking that the
+#' choice belongs to.}
+#' The list stores the number of choices and the names of the objects as the
+#' attributes \code{"nchoices"} and \code{"objects"} respectively.
 #' @examples
 #' R <- matrix(c(1, 2, 0, 0,
 #'               4, 1, 2, 3,
@@ -17,8 +25,8 @@
 #'               2, 1, 1, 0,
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
-#' actual_choices <- as.choices(R, names = TRUE)
-#' coded_choices <- as.choices(R, names = FALSE)
+#' actual_choices <- choices(R, names = TRUE)
+#' coded_choices <- choices(R, names = FALSE)
 #' attr(coded_choices, "objects")
 #'
 #' ## Coercion to tibble is straightforwards
@@ -26,7 +34,7 @@
 #'     as.tibble(coded_choices)
 #' }
 #' @export
-as.choices <- function(rankings, names = FALSE) {
+choices <- function(rankings, names = FALSE) {
     # check rankings are valid
     if (!inherits(rankings, "rankings")) rankings <- as.rankings(rankings)
     # treat as matrix for faster indexing

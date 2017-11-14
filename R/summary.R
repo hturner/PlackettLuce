@@ -1,3 +1,4 @@
+#' @rdname  summaries
 #' @importFrom stats AIC deviance df.residual pnorm
 #' @method summary PlackettLuce
 #' @export

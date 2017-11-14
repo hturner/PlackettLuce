@@ -34,7 +34,7 @@ beans
 }
 \description{
 This is a subset of data from trials of bean varieties in Nicaragua over five
-growing seasons. Farmers were asked to try three variaties of bean from a
+growing seasons. Farmers were asked to try three varieties of bean from a
 total of ten varieties and to rank them in order of preference. In addition,
 for each variety the farmers were asked to compare each trial variety to the
 local variety and state whether they considered it to be better or worse.

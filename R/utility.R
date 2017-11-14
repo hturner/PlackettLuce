@@ -7,7 +7,7 @@
 poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
-    choices <- as.choices(rankings, names = FALSE)
+    choices <- choices(rankings, names = FALSE)
     # include free choices only
     size <- lengths(choices$alternatives)
     free <- size != 1

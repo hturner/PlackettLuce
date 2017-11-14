@@ -2,7 +2,7 @@
 % Please edit documentation in R/PlackettLuce.R
 \name{PlackettLuce}
 \alias{PlackettLuce}
-\title{Fit Plackett-Luce Model}
+\title{Fit a Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,

@@ -1,0 +1,24 @@
+reference:
+- title: Data sets/importing data
+  contents:
+  - beans
+  - nascar
+  - pudding
+  - read.soc
+- title: Handling rankings data
+  contents:
+  - adjacency
+  - choices
+  - connectivity
+  - grouped_rankings
+  - rankings
+- title: Model Fitting
+  contents:
+  - PlackettLuce
+  - pltree
+- title: Model Summary
+  contents:
+  - summaries
+  - fitted.PlackettLuce
+  - itempar.PlackettLuce
+  - qvcalc.PlackettLuce

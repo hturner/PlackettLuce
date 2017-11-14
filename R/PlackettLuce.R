@@ -1,4 +1,4 @@
-#' Fit Plackett-Luce Model
+#' Fit a Plackett-Luce Model
 #'
 #' Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 #' (not all objects ranked) and include ties of any order.

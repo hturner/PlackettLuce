@@ -16,7 +16,7 @@ output:
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
-  generalization accomodates both ties (of any order) and partial rankings
+  generalization accommodates both ties (of any order) and partial rankings
   (rankings of only some items). By default, the implementation adds a set
   pseudo-rankings with a hypothetical item, ensuring that the network of wins
   and losses is always strongly connected, i.e. all items are connected to every
@@ -553,9 +553,9 @@ parameters are estimable. It also has an interpretation as a Bayesian prior, in
 particular a non-informative prior where all items have equal worth.
 
 The `npseudo` argument defines the number of wins and loses with the ghost item
-that are added for each real item. Setting `npseudo = 0 ` doesn't add any
-pseudo-rankings, so `PlackettLuce` will return the standard MLE, if the
-network is strongly connected, and throw an error otherwise. The larger
+that are added for each real item. Setting `npseudo = 0 ` means that no
+pseudo-rankings are added, so `PlackettLuce` will return the standard MLE if the
+network is strongly connected and throw an error otherwise. The larger
 `npseudo` is, the stronger the influence of the prior, by default `npseudo`
 is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to
 connect the network, but is a weak prior. In this toy example, the item
