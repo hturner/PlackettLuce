@@ -9,5 +9,7 @@ source_gist("https://gist.github.com/hturner/3152081e223ade0bb212bcef19f183bf",
 # either a) rebuild whole pkgdown site including help files
 build_site()
 
-# or b) just rebuild vignette
-build_articles() # or build_site()
+# or b) just rebuild part
+build_articles()
+
+build_home()

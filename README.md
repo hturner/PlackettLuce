@@ -17,7 +17,7 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 
 -   Accommodates ties (of any order) in the rankings, e.g. bananas ≻ {apples, oranges} ≻ pears.
 -   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of items is {apples, bananas, oranges, pears}.
--   Handles disconnected networks, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
+-   Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
 
 ![](README_files/figure-markdown_github-ascii_identifiers/always-loses-1.png) </br>
 
@@ -69,7 +69,7 @@ R[1:3, as.rankings = FALSE]
     ## 2          1                 2                 4                      3
     ## 3          2                 1                 3                      4
 
-Note that `read.soc` saved the names of the movies in the `"item"` attribute of the `netflix`, so we have used these to label the items. Subsetting the rankings object `R` with `as.rankings = FALSE`, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.
+Note that `read.soc` saved the names of the movies in the `"item"` attribute of `netflix`, so we have used these to label the items. Subsetting the rankings object `R` with `as.rankings = FALSE`, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.
 
 Various methods are provided for `"rankings"` objects, in particular if we subset the rankings without `as.rankings = FALSE`, the result is again a `"rankings"` object and the corresponding print method is used:
 
