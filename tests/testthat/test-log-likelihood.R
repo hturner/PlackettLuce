@@ -6,6 +6,13 @@ source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
 
 for (file0 in source_files) source(file0)
 
+## Get reference implementations (Davidson, MM algorithms)
+source_files <- dir(system.file("Reference_Implementations",
+                                package = "PlackettLuce"),
+                    full.names = TRUE)
+
+for (file0 in source_files) source(file0)
+
 coef_tol <- 1e-06
 loglik_tol <- 1e-12
 
@@ -122,8 +129,8 @@ M <- matrix(c(1, 2, 0, 0,
               2, 1, 4, 3,
               2, 3, 4, 0,
               1, 2, 3, 0), nrow = 6, byrow = TRUE)
-## via Hunter's MM (unexported function)
-gamma <- PlackettLuce:::PL(M)
+## via Hunter's MM (reference implementation)
+gamma <- PL(M)
 lambda <- log(c(gamma/sum(gamma)))
 lambda <- lambda - lambda[1]
 ## via PlackettLuce
@@ -154,8 +161,8 @@ if (require(StatRank)){
     data(Data.Nascar)
     ## StatRank PL function takes ~10min; not sure how to compare coef
     ## a <- Estimation.PL.MLE(Data.Nascar)$Mean
-    ## via Hunter's MM (unexported function)
-    gamma <- PlackettLuce:::PL(Data.Nascar)
+    ## via Hunter's MM (reference implementation)
+    gamma <- PL(Data.Nascar)
     lambda <- log(c(gamma/sum(gamma)))
     lambda <- lambda - lambda[1]
     ## via PlackettLuce
