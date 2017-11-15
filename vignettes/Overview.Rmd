@@ -417,8 +417,8 @@ mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
 coef(mod, log = FALSE)
 ```
 Note here we specify `log = FALSE` to give the parameterization as in Equation
-\@ref(eq:PL). In the next section we discuss why it is more appropriate to use
-the log scale for inference.
+\@ref(eq:PL). In the next section we discuss why it is more appropriate to put
+the worth parameters on the log scale for inference.
 
 ## Inference
 
@@ -445,9 +445,8 @@ summary(mod)
 
 None of the Z tests for the item parameters provides significant evidence
 against the null hypothesis, which is consistent with the test for equal
-preferences presented in @Davidson1970. The tie parameter is also shown on the
-log scale here, but it is an integral part of the model rather than a parameter
-of interest for inference, and its scale is not relevant.
+preferences presented in @Davidson1970. The tie parameter is still shown on the
+original scale.
 
 The reference level for the item parameters can be changed via the `ref`
 argument, for example setting to `NULL` sets the mean worth as the reference:

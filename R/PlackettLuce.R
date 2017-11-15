@@ -189,7 +189,7 @@ PlackettLuce <- function(rankings,
     # - incorporate ranking weights by weighted count vs simple tabulate
     W <- G <- list() # weight (currently rep count); group of rankings
     nc <- max(rowSums(rankings > 0))
-    S <- logical(nc)  # set sizes present in rankings
+    S <- logical(nc)  # set sizes presenft in rankings
     minrank <- rep.int(1, nr)
     for (i in seq_len(nc)){
         s <- (nc - i + 1)
@@ -383,6 +383,7 @@ PlackettLuce <- function(rankings,
         B[1] <- B[1] - 2*npseudo*N
     }
     res$alpha <- res$alpha/sum(res$alpha)
+    names(res$alpha) <- items
     rank <- N + D - 2
 
     # frequencies of sets selected from, for sizes 2 to max observed
@@ -392,13 +393,6 @@ PlackettLuce <- function(rankings,
     df.residual <- n - sum(freq) - rank
 
     logl <- loglik(unlist(res[c("alpha", "delta")]))
-
-    if (length(res$alpha) < length(items)){
-        out <- rep.int(NA_real_, length(items))
-        names(out) <- items
-        out[colnames(R)] <- res$alpha
-        res$alpha <- out
-    } else names(res$alpha) <- items
 
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),
