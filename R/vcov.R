@@ -6,23 +6,17 @@
 vcov.PlackettLuce <- function(object, ref = 1, ...) {
   ##  A temporary version until we can do it properly
   ##
-  ## only worth parameters on log scale here
-  coefs <- coef(object, ref = ref)
-  ncoefs <- length(coefs)
-  nobj <- ncoefs - object$maxTied + 1
-  ## also put tie parameters on log scale to compute vcov
-  if (ncoefs > nobj){
-      delta <- coefs[-seq_len(nobj)]
-      coefs[-seq_len(nobj)] <- log(delta)
-  }
-  ## design matrix as for log-linear model
   theLongData <- poisson_rankings(object$rankings, object$weights)
+  coefs <- coef(object, ref = ref)
+  na <- is.na(coefs)
+  coefnames <- names(coefs[!na])
+  ncoefs <- sum(!na)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
   w <- theLongData$w
   ##  Compute the fitted values:
-  fit <- as.vector(exp(X %*% as.vector(coefs)))
+  fit <- as.vector(exp(X %*% coefs[!na]))
   totals <- as.vector(tapply(w * y, z, sum))
   fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
   ##  Compute the vcov matrix
@@ -39,18 +33,14 @@ vcov.PlackettLuce <- function(object, ref = 1, ...) {
   ##  The rest is all about presenting the result as the /actual/ vcov matrix
   ##  for a specified set of contrasts (or equivalently a specified constraint
   ##  on the parameters).
-  ## ref already checked in coef method (with error if invalid)
+  nobj <- ncoefs - object$maxTied + 1
+  # ref already checked in coef method (with error if invalid)
   ref <- attr(coefs, "ref")
-  ## Can be done more economically?
+  # Can be done more economically?
   theContrasts <- Diagonal(ncoefs)
   theContrasts[ref, seq_len(nobj)] <-
       theContrasts[ref,  seq_len(nobj)] - 1/length(ref)
   result <- crossprod(theContrasts, result) %*% theContrasts
-  ## Adjust vcov for tie parameters on original scale
-  if (ncoefs > nobj){
-      D <- diag(c(rep(1, nobj), delta))
-      result <- t(D) %*% result %*% D
-  }
-  rownames(result) <- colnames(result) <- names(coefs)
+  rownames(result) <- colnames(result) <- coefnames
   return(as.matrix(result))
 }
