@@ -8,15 +8,13 @@ vcov.PlackettLuce <- function(object, ref = 1, ...) {
   ##
   theLongData <- poisson_rankings(object$rankings, object$weights)
   coefs <- coef(object, ref = ref)
-  na <- is.na(coefs)
-  coefnames <- names(coefs[!na])
-  ncoefs <- sum(!na)
+  ncoefs <- length(coefs)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
   w <- theLongData$w
   ##  Compute the fitted values:
-  fit <- as.vector(exp(X %*% coefs[!na]))
+  fit <- as.vector(exp(X %*% as.vector(coefs)))
   totals <- as.vector(tapply(w * y, z, sum))
   fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
   ##  Compute the vcov matrix
@@ -41,6 +39,6 @@ vcov.PlackettLuce <- function(object, ref = 1, ...) {
   theContrasts[ref, seq_len(nobj)] <-
       theContrasts[ref,  seq_len(nobj)] - 1/length(ref)
   result <- crossprod(theContrasts, result) %*% theContrasts
-  rownames(result) <- colnames(result) <- coefnames
+  rownames(result) <- colnames(result) <- names(coefs)
   return(as.matrix(result))
 }
