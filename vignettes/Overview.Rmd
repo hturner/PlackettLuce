@@ -11,8 +11,10 @@ author:
   affiliation: Department of Statistical Science, UCL, UK
 package: PlackettLuce
 output:
-  BiocStyle::html_document2:
-  BiocStyle::pdf_document2: default
+  BiocStyle::html_document:
+    keep_md: true
+  BiocStyle::pdf_document:
+    keep_tex: true
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
@@ -30,8 +32,8 @@ abstract: |
   identification of subgroups of subjects that rank items differently.
 vignette: |
   %\VignetteIndexEntry{Introduction to PlackettLuce}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
 link-citations: true    
@@ -40,7 +42,7 @@ link-citations: true
 ```{r vignette-setup, include = FALSE}
 library(knitr)
 library(kableExtra)
-options(knitr.table.format = "html")
+options(knitr.table.format = opts_knit$get("rmarkdown.pandoc.to"))
 ```
 
 # Introduction
@@ -219,6 +221,8 @@ sushi_timings <- timings(sushi, 5,
                          fun = c("pl", "hyper2", "plmix", "statrank"))
 ```
 
+(ref:features) Features of example data sets from PrefLib [@Mattei2013]
+
 ```{r data-features, echo = FALSE}
 features <- cbind(c(1256, 30, 5000),
                   c(24, 30, 4926),
@@ -226,9 +230,13 @@ features <- cbind(c(1256, 30, 5000),
 dimnames(features) <- list(c("Netflix", "T-shirt", "Sushi"),
                            c("Rankings", "Unique rankings", "Items"))
 kable(features,
-      caption = "Features of example data sets from PrefLib [@Mattei2013]") %>%
+      caption = "(ref:features)",
+      booktabs = TRUE) %>%
     kable_styling()
 ```
+
+(ref:timings) Timings for fitting the Plackett-Luce model to data sets summarised in 
+Table \@ref(tab:data-features) using different packages. See Appendix \@ref(app:timings) for details and code.
 
 ```{r timings-kable, echo = FALSE}
 res <- data.frame(netflix = round(unlist(netflix_timings), 3),
@@ -241,9 +249,8 @@ dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
                       c("PlackettLuce",
                         "hyper2", "PLMIX", "pmr", "StatRank"))
 
-kable(res, align = c("rrrrr"), caption = "Timings for fitting the
-Plackett-Luce model to data sets summarised in Table \\@ref(tab:data-features) using
-different packages. See Appendix \\@ref(app:timings) for details and code.", escape = FALSE) %>%
+kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)", 
+      escape = FALSE) %>%
     kable_styling() %>%
     add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
     add_footnote("Function fails to complete.", notation = "alphabet")
@@ -269,6 +276,8 @@ nascar <- cbind(n = 1, Data.Nascar)
 nascar_timings <- timings(nascar, fun = c("pl", "hyper2"))
 ```
 
+(ref:nascar) Timings for fitting the Plackett-Luce model to the NASCAR data from @Hunter2004. All rankings are unique.
+
 ```{r nascar, echo = FALSE}
 res <- round(unlist(nascar_timings)[c("pl", "hyper2")], 3)
 res <- data.frame(Rankings = 36,
@@ -277,8 +286,8 @@ res <- data.frame(Rankings = 36,
                   PlackettLuce = res[1],
                   hyper2 = res[2],
                   check.names = FALSE, row.names = NULL)
-kable(res, align = "rrrrr",
-      caption = "Timings for fitting the Plackett-Luce model to the NASCAR data from @Hunter2004. All rankings are unique.") %>%
+kable(res, booktabs = TRUE, align = rep("r", 5),
+      caption = "(ref:nascar)") %>%
     kable_styling() %>%
     add_header_above(c("Features of NASCAR data" = 3, "Time elapsed (s)" = 2))
 ```
@@ -310,7 +319,7 @@ tab <- data.frame(Feature = c("Inference", "Disconnected networks",
                   pmr = c("No", "No", "No", "No", "No"),
                   StatRank = c("No", "No", "No", "No", "No"),
                   PLMIX = c("Bayesian", "Yes", "No", "No", "Mixtures"))
-kable(tab,
+kable(tab, booktabs = TRUE, 
       caption = "Features of packages for fitting the Plackett-Luce model.") %>%
     kable_styling()
 ```

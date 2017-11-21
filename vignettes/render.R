@@ -1,6 +1,8 @@
 # render vignette - result is in inst/doc
 rmarkdown::render("vignettes/Overview.Rmd")
 
+rmarkdown::render("vignettes/Overview.Rmd", "BiocStyle::pdf_document")
+
 library(devtools)
 library(pkgdown)
 source_gist("https://gist.github.com/hturner/3152081e223ade0bb212bcef19f183bf",
