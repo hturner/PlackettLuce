@@ -54,14 +54,7 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/hturner/PlackettLuce">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -92,7 +85,7 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accomodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
+      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accommodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
     </div>
     
 <div class="contents">
@@ -120,6 +113,7 @@
 <p>It is possible to aggregate observations of the same choice from the same set of alternatives, but the number of combinations increases quickly with the number of items.</p>
 <p>Given the issues with applying general methods, custom algorithms and software have been developed. One approach is use Hunter’s <span class="citation">(<a href="#ref-Hunter2004">2004</a>)</span> minorization-maximization (MM) algorithm to maximize the likelihood, which is equivalent to an iterative scaling algorithm; this algorithm is used by the <strong>StatRank</strong> package. Alternatively the likelihood of the observed data under the PlackettLuce model can be maximised directly using a generic optimisation method such the Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as used by both the <strong>pmr</strong> and <strong>hyper2</strong> packages. Finally Bayesian methods can be used to either maximize the posterior distribution via an Expectation Maximization (EM) algorithm or to simulate the posterior distribution using Markov-chain Monte-Carlo (MCMC) techniques, both of which are provided by <strong>PLMIX</strong>. <strong>PlackettLuce</strong> offers both iterative scaling and generic optimization using either BFGS or a limited memory variant (L-BFGS) via the <strong>lbfgs</strong> package.</p>
 <p>Even some of these specialized implementations can scale poorly with the number of items and/or the number of rankings as shown by the example timings in Table <a href="#tab:timings-kable">2</a>. Specifically <code><a href="http://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with a moderate number of items (~10), while the functions from <strong>hyper2</strong> and <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets, though is not quite as fast as <strong>PLMIX</strong> when both the number of items and the number of unique rankings is large.</p>
+
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:data-features">Table 1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>
@@ -188,7 +182,7 @@ Sushi
 </caption>
 <thead>
 <tr>
-<th style="border-bottom:hidden">
+<th style="border-bottom:hidden" colspan="1">
 </th>
 <th style="text-align:center; border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;" colspan="5">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px;">
@@ -222,19 +216,19 @@ StatRank
 Netflix
 </td>
 <td style="text-align:right;">
-0.111
+0.042
 </td>
 <td style="text-align:right;">
-0.077
+0.056
 </td>
 <td style="text-align:right;">
-0.189
+0.165
 </td>
 <td style="text-align:right;">
-0.369
+0.410
 </td>
 <td style="text-align:right;">
-0.810
+0.940
 </td>
 </tr>
 <tr>
@@ -242,19 +236,19 @@ Netflix
 T-shirt
 </td>
 <td style="text-align:right;">
-0.276
+0.024
 </td>
 <td style="text-align:right;">
-0.147
+0.168
 </td>
 <td style="text-align:right;">
-0.062
+0.074
 </td>
 <td style="text-align:right;">
 a
 </td>
 <td style="text-align:right;">
-6.668
+7.681
 </td>
 </tr>
 <tr>
@@ -262,19 +256,19 @@ a
 Sushi
 </td>
 <td style="text-align:right;">
-1.466
+1.587
 </td>
 <td style="text-align:right;">
-88.861
+111.14
 </td>
 <td style="text-align:right;">
-0.163
+0.29
 </td>
 <td style="text-align:right;">
 a
 </td>
 <td style="text-align:right;">
-13.193
+18.769
 </td>
 </tr>
 </tbody>
@@ -285,6 +279,7 @@ a
 </tr></tfoot>
 </table>
 <p>When the number of items is more than ten, it is more common to observe partial rankings than complete rankings. Partial rankings can be of two types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings are accommodated by the standard Plackett-Luce model, while incomplete rankings require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and <strong>hyper2</strong> can handle both types. (<strong>StatRank</strong> supports partial rankings, but it is not clear in which form). Table <a href="#tab:nascar">3</a> demonstrates using the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> that <strong>PlackettLuce</strong> is more efficient than <strong>hyper2</strong> for modelling sub-rankings of a relatively large number of items.</p>
+
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:nascar">Table 3: </span>Timings for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. All rankings are unique.
@@ -331,10 +326,10 @@ hyper2
 42-43
 </td>
 <td style="text-align:right;">
-0.141
+0.156
 </td>
 <td style="text-align:right;">
-43.999
+65.619
 </td>
 </tr></tbody>
 </table>
@@ -491,13 +486,8 @@ Mixtures
 <h3 class="hasAnchor">
 <a href="#pudding-example-with-ties" class="anchor"></a>Pudding example (with ties)</h3>
 <p>When each ranking contains only two items, then the model in Equation <a href="#eq:PL">(1)</a> reduces to extended Bradley-Terry model proposed by <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set, available in <strong>PlackettLuce</strong>, provides the data from Example 2 of that paper, in which respondents were asked to test two brands of chocolate pudding from a total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span> was preferred (<span class="math inline">\(w_{ji}\)</span>) and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)</code></pre></div>
-<pre><code>## 
-## Attaching package: 'PlackettLuce'</code></pre>
-<pre><code>## The following object is masked _by_ '.GlobalEnv':
-## 
-##     nascar</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(pudding)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(PlackettLuce)
+<span class="kw">head</span>(pudding)</code></pre></div>
 <pre><code>##   i j r_ij w_ij w_ji t_ij
 ## 1 1 2   57   19   22   16
 ## 2 1 3   47   16   19   12
@@ -641,7 +631,7 @@ A</code></pre></div>
 <span class="kw">plot</span>(net, <span class="dt">edge.arrow.size =</span> <span class="fl">0.5</span>, <span class="dt">vertex.size =</span> <span class="dv">30</span>)</code></pre></div>
 <div class="figure">
 <span id="fig:always-loses"></span>
-<img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="672"><p class="caption">
+<img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="336"><p class="caption">
 Figure 2: Network representation of toy rankings.
 </p>
 </div>
@@ -679,7 +669,7 @@ Figure 2: Network representation of toy rankings.
 ## Number of iterations: 9</code></pre>
 <p>Note that since <code>R</code> is a rankings object, the rankings are automatically updated when items are dropped, so in this case the paired comparison with item D is dropped.</p>
 <p>By default however <strong>PlackettLuce</strong> provides a way to handle disconnected/weakly connected networks, through the addition of pseudo-rankings. This works by adding a win and a loss between each item and a hypothetical or ghost item with fixed worth. This makes the network strongly connected so all the worth parameters are estimable. It also has an interpretation as a Bayesian prior, in particular a non-informative prior where all items have equal worth.</p>
-<p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> doesn’t add any pseudo-rankings, so <code>PlackettLuce</code> will return the standard MLE, if the network is strongly connected, and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters change quite considerably:</p>
+<p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> means that no pseudo-rankings are added, so <code>PlackettLuce</code> will return the standard MLE if the network is strongly connected and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters change quite considerably:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)
 <span class="kw">coef</span>(mod2)</code></pre></div>
 <pre><code>##          A          B          C          D 
@@ -794,40 +784,6 @@ Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on qua
 tree &lt;-<span class="st"> </span><span class="kw"><a href="../reference/pltree.html">pltree</a></span>(G <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> beans[<span class="kw">c</span>(<span class="st">"season"</span>, <span class="st">"year"</span>, <span class="st">"maxTN"</span>)], 
                <span class="dt">minsize =</span> <span class="fl">0.05</span><span class="op">*</span>n, <span class="dt">maxdepth =</span> <span class="dv">3</span>)
 tree</code></pre></div>
-<pre><code>## Plackett-Luce tree
-## 
-## Model formula:
-## G ~ .
-## 
-## Fitted party:
-## [1] root
-## |   [2] maxTN &lt;= 18.7175
-## |   |   [3] season in Pr - 16: n = 47
-## |   |            ALS 0532-6     BRT 103-182 INTA Centro Sur    INTA Ferroso 
-## |   |          0.0000000000   -1.1402562621   -0.7356643865   -1.1986769267 
-## |   |        INTA Matagalpa     INTA Precoz       INTA Rojo     INTA Sequia 
-## |   |         -0.8016667862    0.1226993743    0.6378654423    0.0003316167 
-## |   |                 Local     PM2 Don Rey      SJC 730-79 
-## |   |          0.4788504283   -1.0636844938   -1.2405493795 
-## |   |   [4] season in Po - 15, Ap - 15, Po - 16, Ap - 16: n = 489
-## |   |            ALS 0532-6     BRT 103-182 INTA Centro Sur    INTA Ferroso 
-## |   |            0.00000000      0.12989016      0.21133554      0.08487525 
-## |   |        INTA Matagalpa     INTA Precoz       INTA Rojo     INTA Sequia 
-## |   |            0.14435408     -0.16024617      0.11497038      0.50611822 
-## |   |                 Local     PM2 Don Rey      SJC 730-79 
-## |   |            0.63702034     -0.11244954      0.15430957 
-## |   [5] maxTN &gt; 18.7175: n = 306
-## |            ALS 0532-6     BRT 103-182 INTA Centro Sur    INTA Ferroso 
-## |            0.00000000      0.38374778      0.43829267      0.01041951 
-## |        INTA Matagalpa     INTA Precoz       INTA Rojo     INTA Sequia 
-## |            0.16107301      0.02310481      0.10892958      0.49692201 
-## |                 Local     PM2 Don Rey      SJC 730-79 
-## |            0.26238130      0.26594549     -0.07345855 
-## 
-## Number of inner nodes:    2
-## Number of terminal nodes: 3
-## Number of parameters per node: 11
-## Objective function (negative log-likelihood): 3152.027</code></pre>
 <p>The algorithm identifies three nodes, with the first split defined by high night-time temperatures, and the second splitting the single Primera season from the others. So for early planting in regions where the night-time temperatures were not too high, INTA Rojo (7) was most preferred, closely followed by the local variety. During the regular growing seasons (Postrera and Apante) in regions where the night-time temperatures were not too high, the local variety was most preferred, closely followed by INTA Sequia (8). Finally in regions where the maximum night-time temperature was high, INTA Sequia (8) was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur (3). A plot method is provided to visualise the tree:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(tree, <span class="dt">names =</span> <span class="ot">FALSE</span>, <span class="dt">abbreviate =</span> <span class="dv">2</span>)</code></pre></div>
 <pre><code>## Loading required namespace: psychotree</code></pre>
@@ -1041,7 +997,7 @@ R &lt;-<span class="st"> </span><span class="kw">rbind</span>(R, paired[[<span c
 <p>Mattei, Nicholas, and Toby Walsh. 2013. “PrefLib: A Library of Preference Data.” In <em>Proceedings of the 3rd International Conference on Algorithmic Decision Theory (Adt 2013)</em>. Lecture Notes in Artificial Intelligence. Springer. <a href="http://preflib.org" class="uri">http://preflib.org</a>.</p>
 </div>
 <div id="ref-Plackett1975">
-<p>Plackett, Robert Lewis. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. doi:<a href="https://doi.org/10.2307/2346567">10.2307/2346567</a>.</p>
+<p>Plackett, Robert L. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. doi:<a href="https://doi.org/10.2307/2346567">10.2307/2346567</a>.</p>
 </div>
 <div id="ref-Strobl2011">
 <p>Strobl, Carolin, Florian Wickelmaier, and Achim Zeileis. 2011. “Accounting for Individual Differences in Bradley-Terry Models by Means of Recursive Partitioning.” <em>Journal of Educational and Behavioral Statistics</em> 36 (2). SAGE PublicationsSage CA: Los Angeles, CA: 135—–153. doi:<a href="https://doi.org/10.3102/1076998609359791">10.3102/1076998609359791</a>.</p>

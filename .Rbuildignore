@@ -3,10 +3,10 @@
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
-^vignettes\*.html
 ^docs$
 ^pkgdown$
 ^CONDUCT\.md$
 ^README.Rmd
 ^README_files$
 ^readme.bib
+^working$
