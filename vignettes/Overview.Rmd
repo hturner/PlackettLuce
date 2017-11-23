@@ -6,9 +6,9 @@ author:
 - name: Jacob van Etten
   affiliation: Bioversity International, Costa Rica
 - name: David Firth 
-  affiliation: Department of Statistics, University of Warwick, UK
+  affiliation: Department of Statistics, University of Warwick, UK; and Alan Turing Institute, London, UK
 - name: Ioannis Kosmidis
-  affiliation: Department of Statistical Science, UCL, UK
+  affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK
 package: PlackettLuce
 output:
   BiocStyle::html_document2:
@@ -17,7 +17,7 @@ abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The 
   generalization accomodates both ties (of any order) and partial rankings 
-  (rankings of only some items). By default, the implementation adds a set
+  (rankings of only some items). By default, the implementation adds a set of
   pseudo-rankings with a hypothetical item, ensuring that the network of wins
   and losses is always strongly connected, i.e. all items are connected to every
   other item by both a path of wins and a path of losses. This means that the 
@@ -51,7 +51,7 @@ options(knitr.table.format = "html")
 Rankings data, in which each observation is an ordering of a set of items, 
 arises in a range of applications, for example sports tournaments and consumer 
 studies. A classic model for such data is the Plackett-Luce model. This model
-depends on Luce's axiom of choice [@Luce1977] which states that the odds of 
+depends on Luce's axiom of choice [@Luce1959, @Luce1977] which states that the odds of 
 choosing item 1 over item 2 do not depend on the set of items from which the
 choice is made. Suppose we have a set of items
 
@@ -62,9 +62,9 @@ Then under Luce's axiom, the probability of selecting item $j$ is given by
 $$P(i_j | S_j) = \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
 
 where $\alpha_j$ represents the **worth** of item $j$. Viewing a ranking of $K$ 
-items as a sequence of choices---first choosing the top-ranked item from all 
+items as a sequence of choices --- first choosing the top-ranked item from all 
 items, then choosing the second-ranked item from the remaining items and so 
-on---it follows that the probability of a ranking ${i_1 > \ldots > i_K}$ is 
+on --- it follows that the probability of a ranking ${i_1 > \ldots > i_K}$ is 
 given by
 
 $$\prod_{j=1}^K \frac{\alpha_{i_j}}{\sum_{c \in S_j} \alpha_c}$$
@@ -94,7 +94,7 @@ number of difficulties with this. Firstly, dummy variables must be set up to
 represent the presence or absence of each item in each choice and a factor 
 created to identify each choice, which is a non-standard task. Secondly the 
 factor identifying each choice will have many levels: greater than the number 
-of rankings for rankings of more than two objects. Thus there are many 
+of rankings, for rankings of more than two objects. Thus there are many 
 parameters to estimate and a standard function such as `glm` will be slow to 
 fit the model, or may even fail as the corresponding model matrix will be too 
 large to fit in memory. This issue can be circumvented by using the `gnm` 
@@ -141,6 +141,8 @@ a moderate number of items (~10), while the functions from **hyper2** and
 rankings. **PlackettLuce** copes well with these moderately-sized data sets, 
 though is not quite as fast as **PLMIX** when both the number of items and the
 number of unique rankings is large.
+
+[//]: # (Is that last comment really just related to the stopping rule for PLMIX, though?  DF)
 
 ```{r wrappers, echo = FALSE, cache = TRUE}
 library(PlackettLuce)
@@ -356,6 +358,15 @@ When the worth parameters are constrained to sum to one, they represent the
 probability that the corresponding item comes first in a ranking of all items,
 given that first place is not tied.
 
+The 2-way tie prevalence parameter $\delta_2$ is interpretable via the probability
+that two given items *of equal worth* tie for first place, given that the
+first place is not a 3-way or higher tie.  Specifically, that probability is $\delta_2/(2 + \delta_2)$.
+
+The 3-way and higher tie-prevalence parameters are interpretable similarly, in terms of
+tie probabilities among equal-worth items.
+
+[//]: # (Do we need/want to give the full detail there?  It gets a bit complicated.  I guess we'll need that for version to submit for publication, though.  DF)
+
 ### Pudding example (with ties)
 
 When each ranking contains only two items, then the model in Equation 
@@ -428,7 +439,7 @@ the log scale for inference.
 
 ## Inference
 
-A standard way to report model parameters is to report them along with their 
+A standard way to report model parameter estimates is to report them along with their 
 corresponding standard error. This is an indication of the estimate's precision,
 however implicitly this invites comparison with zero. Such comparison is made 
 explicit in many summary methods for models in R, with the addition of 
@@ -476,11 +487,12 @@ the `qvcalc` function from the **qvalc** package:
 
 ```{r}
 qv <- qvcalc(mod)
-qv
+summary(qv)
 ```
 
 Again by default, the first item is taken as the reference, but this may be 
-changed via a `ref` argument. The plot method for the returned object visualizes
+changed via a `ref` argument. 
+The plot method for the returned object visualizes
 the item parameters (log-worth parameters) along with comparison intervals -
 item parameters for which the comparison intervals do not cross are 
 significantly different:
@@ -488,6 +500,8 @@ significantly different:
 ```{r pudding-qv, fig.cap = "Worth of brands of chocolate pudding. Intervals based on quasi-standard errors."}
 plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
 ```
+The quasi-variances allow comparisons that are *approximately* correct, for every possible contrast among the parameters.  The routine error report in the last two lines printed above by `summary(qv)` tells us that, in this example, the approximation error is always very small: the approximation error for the standard error of any simple
+contrast among the parameters is less than 0.8%.
 
 ## Disconnected networks
 
@@ -517,21 +531,23 @@ library(igraph)
 net <- graph_from_adjacency_matrix(A)
 plot(net, edge.arrow.size = 0.5, vertex.size = 30)
 ```
-For the worth parameters to have finite maximum likelihood estimates (MLEs) and 
+For the worth parameters (on the log scale) to have finite maximum likelihood estimates (MLEs) and 
 standard errors, the network must be strongly connected, i.e. there must be a 
 path of wins and a path of losses between each pair of items. In the example 
 above, A, B and C are strongly connected. For example, C directly loses against 
 B and although C never directly beats B, it does beat A and A in turn beats B, 
 so C indirectly beats B. Similar paths of wins and losses can be found for all 
 pairs of A, B and C. On the other hand D is only observed to lose, therefore the
-MLE of the worth would be zero, with infinite standard error.
+MLE of the log-worth would be $-\infty$, with infinite standard error.
 
-If one item always wins, the MLE of the worth would be one with infinite 
+If one item always wins, the MLE of the log-worth would be $+\infty$ with infinite 
 standard error. Or if there are clusters of items that are strongly connected
 with each other, but disconnected or connected only by wins or only by loses 
 (weakly connected) to other clusters, then the maximum likelihood estimates are
 undefined, because there is no information on the relative worth of the 
 clusters or one cluster is infinitely worse than the other.
+
+[//]: # (I have corrected what I think were errors in the above two paragraphs, in the statements about finiteness of estimates.  This is most straightforwardly stated on the log scale, I think.  DF)
 
 The connectivity of the network can be checked with the `connectivity` function
 from **PlackettLuce**
@@ -539,7 +555,7 @@ from **PlackettLuce**
 connectivity(A)
 ```
 If the network is not strongly connected, information on the clusters within 
-the network is returned. In this case a model could be estimated excluding item
+the network is returned. In this case a model could be estimated by excluding item
 D:
 ```{r}
 R2 <- R[, -4]
@@ -556,7 +572,7 @@ connected networks, through the addition of pseudo-rankings. This works by
 adding a win and a loss between each item and a hypothetical or ghost item with
 fixed worth. This makes the network strongly connected so all the worth 
 parameters are estimable. It also has an interpretation as a Bayesian prior, in 
-particular a non-informative prior where all items have equal worth. 
+particular an exchangeable prior in which all items have equal worth. 
 
 The `npseudo` argument defines the number of wins and loses with the ghost item 
 that are added for each real item. Setting `npseudo = 0 ` doesn't add any 
@@ -572,7 +588,7 @@ coef(mod2)
 ```
 This is because there are only 5 rankings, so there is not much information in 
 the data. In more realistic examples, the default prior will have a weak 
-shrinkage effect, shrinking the item parameters towards $1/N$, where $N$ is the
+shrinkage effect, shrinking the items' worth parameters towards $1/N$, where $N$ is the
 number of items.
 
 For a practical example, we consider the NASCAR data from @Hunter2004. This 
@@ -645,9 +661,12 @@ qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
 axis(1, at = seq_len(87), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.7)
 ```
-Although the pseudo-rankings are only necessary to add when the network is 
+As in the previous example, we can use `summary(qv)` to see a report on the accuracy of the quasi-variance approximation.  In this example the error of approximation, across the standard errors of all of the 3741 possible simple contrasts (contrasts between pairs of the 87 driver-specific parameters), ranges between -0.7% and +6.7% --- which is still remarkably accurate, and which means that the plot of comparison intervals is a good visual guide to the uncertainty about drivers' relative abilities. [The results of using `summary(qv)` are not shown here, as they would occupy too much space on the page.]
+
+Although the prior pseudo-rankings are only necessary to add when the network is 
 incomplete, the default behaviour is always to use them (with a weight of 0.5) 
-because the small shrinkage effect reduces the bias of the estimates.
+because the small shrinkage effect that the pseudo-data provides 
+also reduces both the bias and the variance of the estimates.
 
 # Plackett-Luce Trees
 
