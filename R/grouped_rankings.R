@@ -131,11 +131,13 @@ ranking_stats <- function(rankings){
             return(.subset(attr(x, "rankings"), cbind(i1, i2)))
         }
         # convert index of groups to index of rankings
-        value <- .subset(x, i)
-        i <- attr(x, "index") %in% value # or match(value, x)
-        # update index to remove omitted groups
-        index <- match(attr(x, "index")[i], value)
-        value <- seq_len(length(value))
+        g <- .subset(x, i)
+        # create index for rankings matrix
+        groups <- split(seq_along(attr(x, "index")), attr(x, "index"))[g]
+        i <- unname(unlist(groups))
+        # update value and index to remove omitted groups
+        value <- seq_along(groups)
+        index <- rep(value, lengths(groups))
     } else {
         if (missing(j)) return(x)
         value <- x
