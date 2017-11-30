@@ -19,7 +19,7 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 -   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of items is {apples, bananas, oranges, pears}.
 -   Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
 
-![](README_files/figure-markdown_github-ascii_identifiers/always-loses-1.png) </br>
+![](README_files/figure-markdown_github/always-loses-1.png) </br>
 
 In addition the package provides methods for
 
@@ -139,9 +139,16 @@ qv <- qvcalc(mod)
 plot(qv)
 ```
 
-![](README_files/figure-markdown_github-ascii_identifiers/qv-1.png)
+![](README_files/figure-markdown_github/qv-1.png)
 
 If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users' preference for these last two movies.
+
+Going Further
+-------------
+
+The full functionality of **PlackettLuce** is illustrated in the package vignette, along with details of the model used in the package and a comparison to other packages. The vignette can be found on the [package website](https://hturner.github.io/PlackettLuce/) or from within R once the package has been installed, e.g. via
+
+    vignette("Overview", package = "PlackettLuce")
 
 Code of Conduct
 ---------------
