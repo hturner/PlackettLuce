@@ -145,7 +145,6 @@ a moderate number of items (~10), while the functions from **hyper2** and
 rankings. **PlackettLuce** copes well with these moderately-sized data sets,
 though is not quite as fast as **PLMIX** when both the number of items and the
 number of unique rankings is large.
-[//]: # (Is that last comment really just related to the stopping rule for PLMIX, though?  DF)
 
 ```{r soc, eval = eval_all, echo = FALSE}
 library(PlackettLuce)
@@ -571,8 +570,6 @@ with each other, but disconnected or connected only by wins or only by loses
 (weakly connected) to other clusters, then the maximum likelihood estimates are
 undefined, because there is no information on the relative worth of the
 clusters or one cluster is infinitely worse than the other.
-
-[//]: # (I have corrected what I think were errors in the above two paragraphs, in the statements about finiteness of estimates.  This is most straightforwardly stated on the log scale, I think.  DF)
 
 The connectivity of the network can be checked with the `connectivity` function
 from **PlackettLuce**
