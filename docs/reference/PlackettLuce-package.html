@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read Strict Orders - Complete List Data from File — read.soc • PlackettLuce</title>
+<title>Plackett-Luce Models for Rankings — PlackettLuce-package • PlackettLuce</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,66 +90,56 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read Strict Orders - Complete List Data from File</h1>
+    <h1>Plackett-Luce Models for Rankings</h1>
     </div>
 
     
-    <p>Read data from a "Strict Orders - Complete List" file, as provided by
-<a href='http://www.preflib.org'>{PrefLib}: A Library for Preferences</a>.</p>
+    <p>Plackett-Luce provides functions to prepare rankings data in order to fit
+the Plackett-Luce model or Plackett-Luce trees. The implementation can handle
+ties, sub-rankings and rankings that imply disconnected or weakly connected
+preference networks. Methods are provided for summary and inference.</p>
     
 
-    <pre class="usage"><span class='fu'>read.soc</span>(<span class='no'>file</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>file</th>
-      <td><p>a path or url for the Strict Orders - Complete List file,
-conventionally with a <code>.soc</code> extension.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+        
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>a data frame with first column <code>n</code>, giving the frequency of
-the ranking in that row, and remaining columns <code>Rank 1</code> &#8230;
-<code>Rank p</code> giving the items ranked from first to last place in that
-ranking. The data frame has an attribute <code>"item"</code> giving the labels
-corresponding to each item number.</p>
+    <p>The main function in the package is the model-fitting function
+<code><a href='PlackettLuce.html'>PlackettLuce</a></code> and the help file for that function provides
+details of the Plackett-Luce model, which is extended here to accommodate
+ties.</p>
+<p>Rankings data must be passed to <code>PlackettLuce</code> in a specific form, see
+<code><a href='rankings.html'>rankings</a></code> for more details. Other functions for handling
+rankings include <code>choices</code> to express the rankings as
+choices from alternatives; <code>adjacency</code> to create an adjacency matrix of
+wins and losses implied by the rankings and <code>connectivity</code> to check the
+connectivity of the underlying preference network.</p>
+<p>Several methods are available to inspect fitted Plackett-Luce models, help
+files are available for less common methods or where arguments may be
+specified: <code>coef</code>, <code>deviance</code>, <code>fitted</code>,
+<code><a href='http://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code>, <code>logLik</code>, <code>print</code>,
+<code><a href='http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></code>, <code>summary</code>, <code>vcov</code>.</p>
+<p>PlackettLuce also provides the function <code>pltree</code> to fit a Plackett-Luce
+tree i.e. a tree that partitions the subjects by covariate values,
+identifying subgroups with different sets of worth parameters for the items.
+In this case the data must be prepared as <code><a href='grouped_rankings.html'>grouped_rankings</a></code>.</p>
+<p>Several data sets are provided in the package: <code><a href='beans.html'>beans</a></code>,
+<code><a href='nascar.html'>nascar</a></code>, <code><a href='pudding.html'>pudding</a></code>. The help files for these give
+further illustration of preparing rankings data for modelling. The
+<code><a href='read.soc.html'>read.soc</a></code> function enables further example data sets of
+"Strict Orders - Complete List" format (i.e. complete rankings with no ties)
+to be downloaded from <a href='PrefLib'>http://www.preflib.org</a>.</p>
+<p>A full explanation of the methods with illustrations using the package data
+sets is given in the vignette,
+<code><a href='https://cran.rstudio.com/web/packages/PlackettLuce/vignettes/Overview.html'>vignette("Overview", package = "PlackettLuce")</a></code>.</p>
     
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
-<em>Proceedings of Third International Conference on Algorithmic Decision
-Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-# can take a little while depending on speed of internet connection
-</div><span class='co'># NOT RUN {</span>
-<span class='co'># url for preflib data in the "Election Data" category</span>
-<span class='no'>preflib</span> <span class='kw'>&lt;-</span> <span class='st'>"http://www.preflib.org/data/election/"</span>
-
-<span class='co'># strict orderings of four films on Netflix</span>
-<span class='no'>netflix</span> <span class='kw'>&lt;-</span> <span class='fu'>read.soc</span>(<span class='fu'>file.path</span>(<span class='no'>preflib</span>, <span class='st'>"netflix/ED-00004-00000101.soc"</span>))
-<span class='fu'>head</span>(<span class='no'>netflix</span>)
-<span class='fu'>attr</span>(<span class='no'>netflix</span>, <span class='st'>"item"</span>)
-<span class='co'># }</span><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#references">References</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read Strict Orders - Complete List Data from File — read.soc • PlackettLuce</title>
+<title>Plackett-Luce Model Summaries — summaries • PlackettLuce</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,66 +90,71 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read Strict Orders - Complete List Data from File</h1>
+    <h1>Plackett-Luce Model Summaries</h1>
     </div>
 
     
-    <p>Read data from a "Strict Orders - Complete List" file, as provided by
-<a href='http://www.preflib.org'>{PrefLib}: A Library for Preferences</a>.</p>
+    <p>Obtain the coefficients, model summary or coefficient variance-covariance
+matrix for a model fitted by <code>PlackettLuce</code>.</p>
     
 
-    <pre class="usage"><span class='fu'>read.soc</span>(<span class='no'>file</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for PlackettLuce</span>
+<span class='fu'>coef</span>(<span class='no'>object</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"all"</span>,
+  <span class='no'>...</span>)
+
+<span class='co'># S3 method for PlackettLuce</span>
+<span class='fu'>summary</span>(<span class='no'>object</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for PlackettLuce</span>
+<span class='fu'>vcov</span>(<span class='no'>object</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>file</th>
-      <td><p>a path or url for the Strict Orders - Complete List file,
-conventionally with a <code>.soc</code> extension.</p></td>
+      <th>object</th>
+      <td><p>an object of class "PlackettLuce" as returned by
+<code>PlackettLuce</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ref</th>
+      <td><p>an integer or character string specifying the reference item (for
+which log worth will be set to zero). If <code>NULL</code> the sum of the log worth
+parameters is set to zero.</p></td>
+    </tr>
+    <tr>
+      <th>log</th>
+      <td><p>a logical indicating whether to return parameters on the log scale
+with the item specified by <code>ref</code> set to zero.</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>the type of coefficients to return: one of <code>"ties"</code>,
+<code>"worth"</code> or <code>"all"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments, currently ignored.</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>a data frame with first column <code>n</code>, giving the frequency of
-the ranking in that row, and remaining columns <code>Rank 1</code> &#8230;
-<code>Rank p</code> giving the items ranked from first to last place in that
-ranking. The data frame has an attribute <code>"item"</code> giving the labels
-corresponding to each item number.</p>
-    
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
-<em>Proceedings of Third International Conference on Algorithmic Decision
-Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
+    <p>By default, parameters are returned on the log scale, as most suited for
+inference. If <code>log = FALSE</code>, the worth parameters are returned,
+constrained to sum to one so that they represent the probability that
+the corresponding item comes first in a ranking of all items, given that
+first place is not tied.</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-# can take a little while depending on speed of internet connection
-</div><span class='co'># NOT RUN {</span>
-<span class='co'># url for preflib data in the "Election Data" category</span>
-<span class='no'>preflib</span> <span class='kw'>&lt;-</span> <span class='st'>"http://www.preflib.org/data/election/"</span>
-
-<span class='co'># strict orderings of four films on Netflix</span>
-<span class='no'>netflix</span> <span class='kw'>&lt;-</span> <span class='fu'>read.soc</span>(<span class='fu'>file.path</span>(<span class='no'>preflib</span>, <span class='st'>"netflix/ED-00004-00000101.soc"</span>))
-<span class='fu'>head</span>(<span class='no'>netflix</span>)
-<span class='fu'>attr</span>(<span class='no'>netflix</span>, <span class='st'>"item"</span>)
-<span class='co'># }</span><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#references">References</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>

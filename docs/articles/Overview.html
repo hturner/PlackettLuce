@@ -73,9 +73,9 @@
             <address class="author_afil">
       Bioversity International, Costa Rica<br><h4 class="author">David Firth</h4>
             <address class="author_afil">
-      Department of Statistics, University of Warwick, UK<br><h4 class="author">Ioannis Kosmidis</h4>
+      Department of Statistics, University of Warwick, UK; and Alan Turing Institute, London, UK<br><h4 class="author">Ioannis Kosmidis</h4>
             <address class="author_afil">
-      Department of Statistical Science, UCL, UK<br>
+      Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK<br>
 </address>
 </address>
 </address>
@@ -85,25 +85,25 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accommodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
+      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The generalization accommodates both ties (of any order) and partial rankings (rankings of only some items). By default, the implementation adds a set of pseudo-rankings with a hypothetical item, ensuring that the network of wins and losses is always strongly connected, i.e. all items are connected to every other item by both a path of wins and a path of losses. This means that the worth of each item is always estimable with finite standard error. It also has a shrinkage effect, regularizing the estimated parameters. In addition to standard methods for model summary, <strong>PlackettLuce</strong> provides a method to estimate quasi-standard errors for the item parameters, so that comparison intervals can be derived even when a reference item is set. Finally the package provides a method for model-based partitioning, enabling the identification of subgroups of subjects that rank items differently.</p>
     </div>
     
 <div class="contents">
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Rankings data, in which each observation is an ordering of a set of items, arises in a range of applications, for example sports tournaments and consumer studies. A classic model for such data is the Plackett-Luce model. This model depends on Luce’s axiom of choice <span class="citation">(Luce <a href="#ref-Luce1977">1977</a>)</span> which states that the odds of choosing item 1 over item 2 do not depend on the set of items from which the choice is made. Suppose we have a set of <span class="math inline">\(J\)</span> items</p>
+<p>Rankings data, in which each observation is an ordering of a set of items, arises in a range of applications, for example sports tournaments and consumer studies. A classic model for such data is the Plackett-Luce model. This model depends on Luce’s axiom of choice <span class="citation">(Luce <a href="#ref-Luce1959">1959</a>, <span class="citation">Luce (<a href="#ref-Luce1977">1977</a>)</span>)</span> which states that the odds of choosing item 1 over item 2 do not depend on the set of items from which the choice is made. Suppose we have a set of <span class="math inline">\(J\)</span> items</p>
 <p><span class="math display">\[S = \{i_1, i_2, \ldots, i_J\}.\]</span></p>
 <p>Then under Luce’s axiom, the probability of selecting some item <span class="math inline">\(j\)</span> from <span class="math inline">\(S\)</span> is given by</p>
 <p><span class="math display">\[P(j | S) = \frac{\alpha_{j}}{\sum_{i \in S} \alpha_i}\]</span></p>
-<p>where <span class="math inline">\(\alpha_i\)</span> represents the <strong>worth</strong> of item <span class="math inline">\(i\)</span>. Viewing a ranking of <span class="math inline">\(J\)</span> items as a sequence of choices —first choosing the top-ranked item from all items, then choosing the second-ranked item from the remaining items and so on— it follows that the probability of the ranking <span class="math inline">\({i_1 \succ \ldots \succ i_J}\)</span> is</p>
+<p>where <span class="math inline">\(\alpha_i\)</span> represents the <strong>worth</strong> of item <span class="math inline">\(i\)</span>. Viewing a ranking of <span class="math inline">\(J\)</span> items as a sequence of choices — first choosing the top-ranked item from all items, then choosing the second-ranked item from the remaining items and so on — it follows that the probability of the ranking <span class="math inline">\({i_1 \succ \ldots \succ i_J}\)</span> is</p>
 <p><span class="math display">\[\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}\]</span></p>
 <p>where <span class="math inline">\(A_j\)</span> is the set of alternatives <span class="math inline">\(\{i_j, i_{j + 1}, \ldots, i_J\}\)</span> from which item <span class="math inline">\(i_j\)</span> is chosen. The above model is also derived in <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span>, hence the name Plackett-Luce model.</p>
 <p>The <strong>PlackettLuce</strong> package implements a novel extension of the Plackett-Luce model that accommodates tied rankings, which may be applied to either full or partial rankings. Pseudo-rankings are utilised to obtain estimates in cases where the maximum likelihood estimates do not exist, or do not have finite standard errors. Methods are provided to obtain different parameterizations with corresponding standard errors or quasi-standard errors (that are independent of parameter constraints). There is also a method to work with the <strong>psychotree</strong> package to fit Plackett-Luce trees.</p>
 <div id="comparison-with-other-packages" class="section level2">
 <h2 class="hasAnchor">
 <a href="#comparison-with-other-packages" class="anchor"></a>Comparison with other packages</h2>
-<p>Even though the Plackett-Luce model is a well-established method for analysing rankings, the software available to fit the model is limited. By considering each choice in the ranking as a multinomial observation, with one item observed out of a possible set, the “Poisson trick” <span class="citation">(see, for example, Baker <a href="#ref-Baker1994">1994</a>)</span> can be applied to express the model as a log-linear model, where the response is the count (one or zero) of each possible outcome within each choice. In theory, the model can then be fitted using standard software for generalized linear models. However there are a number of difficulties with this. Firstly, dummy variables must be set up to represent the presence or absence of each item in each choice and a factor created to identify each choice, which is a non-standard task. Secondly the factor identifying each choice will have many levels: greater than the number of rankings for rankings of more than two objects. Thus there are many parameters to estimate and a standard function such as <code>glm</code> will be slow to fit the model, or may even fail as the corresponding model matrix will be too large to fit in memory. This issue can be circumvented by using the <code>gnm</code> function from <strong>gnm</strong>, which provides an <code>eliminate</code> argument to efficiently estimate the effects of such a factor. Even then, the model-fitting may be relatively slow, given the expansion in the number of observations converting from rankings to counts. For example, the ranking {item 3 <span class="math inline">\(\prec\)</span> item 1 <span class="math inline">\(\prec\)</span> item 2} expands to two choices with five counts all together:</p>
+<p>Even though the Plackett-Luce model is a well-established method for analysing rankings, the software available to fit the model is limited. By considering each choice in the ranking as a multinomial observation, with one item observed out of a possible set, the “Poisson trick” <span class="citation">(see, for example, Baker <a href="#ref-Baker1994">1994</a>)</span> can be applied to express the model as a log-linear model, where the response is the count (one or zero) of each possible outcome within each choice. In theory, the model can then be fitted using standard software for generalized linear models. However there are a number of difficulties with this. Firstly, dummy variables must be set up to represent the presence or absence of each item in each choice and a factor created to identify each choice, which is a non-standard task. Secondly the factor identifying each choice will have many levels: greater than the number of rankings, for rankings of more than two objects. Thus there are many parameters to estimate and a standard function such as <code>glm</code> will be slow to fit the model, or may even fail as the corresponding model matrix will be too large to fit in memory. This issue can be circumvented by using the <code>gnm</code> function from <strong>gnm</strong>, which provides an <code>eliminate</code> argument to efficiently estimate the effects of such a factor. Even then, the model-fitting may be relatively slow, given the expansion in the number of observations converting from rankings to counts. For example, the ranking {item 3 <span class="math inline">\(\prec\)</span> item 1 <span class="math inline">\(\prec\)</span> item 2} expands to two choices with five counts all together:</p>
 <pre><code>##      choice item 1 item 2 item 3 count
 ## [1,]      1      1      0      0     0
 ## [2,]      1      0      1      0     0
@@ -482,6 +482,8 @@ Mixtures
 \end{equation}\]</span>
 <p>where <span class="math inline">\(D_j\)</span> is the cardinality of <span class="math inline">\(C_j\)</span>, <span class="math inline">\(A_j\)</span> is the set of alternatives from which <span class="math inline">\(C_j\)</span> is chosen, and <span class="math inline">\(A_j \choose k\)</span> is all the possible choices of <span class="math inline">\(k\)</span> items from <span class="math inline">\(A_j\)</span>. The value of <span class="math inline">\(D\)</span> can be set to the maximum number of tied items observed in the data, so that <span class="math inline">\(\delta_n = 0\)</span> for <span class="math inline">\(n &gt; D\)</span>.</p>
 <p>When the worth parameters are constrained to sum to one, they represent the probability that the corresponding item comes first in a ranking of all items, given that first place is not tied.</p>
+<p>The 2-way tie prevalence parameter <span class="math inline">\(\delta_2\)</span> is interpretable via the probability that two given items <em>of equal worth</em> tie for first place, given that the first place is not a 3-way or higher tie. Specifically, that probability is <span class="math inline">\(\delta_2/(2 + \delta_2)\)</span>.</p>
+<p>The 3-way and higher tie-prevalence parameters are interpretable similarly, in terms of tie probabilities among equal-worth items.</p>
 <div id="pudding-example-with-ties" class="section level3">
 <h3 class="hasAnchor">
 <a href="#pudding-example-with-ties" class="anchor"></a>Pudding example (with ties)</h3>
@@ -536,7 +538,7 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 <div id="inference" class="section level2">
 <h2 class="hasAnchor">
 <a href="#inference" class="anchor"></a>Inference</h2>
-<p>A standard way to report model parameters is to report them along with their corresponding standard error. This is an indication of the estimate’s precision, however implicitly this invites comparison with zero. Such comparison is made explicit in many summary methods for models in R, with the addition of partial t or Z tests testing the null hypothesis that the parameter is equal to zero, given the other parameters in the model. However this hypothesis is generally not of interest for the worth parameters in a Plackett-Luce model: we expect most items to have <em>some</em> worth, the question is whether the items differ in their worth. In addition, a Z test based on asymptotic normality of the maximum likelihood estimate will not be appropriate for worth parameters near zero or one, since it does not take account of the fact that the parameters cannot be outside of these limits.</p>
+<p>A standard way to report model parameter estimates is to report them along with their corresponding standard error. This is an indication of the estimate’s precision, however implicitly this invites comparison with zero. Such comparison is made explicit in many summary methods for models in R, with the addition of partial t or Z tests testing the null hypothesis that the parameter is equal to zero, given the other parameters in the model. However this hypothesis is generally not of interest for the worth parameters in a Plackett-Luce model: we expect most items to have <em>some</em> worth, the question is whether the items differ in their worth. In addition, a Z test based on asymptotic normality of the maximum likelihood estimate will not be appropriate for worth parameters near zero or one, since it does not take account of the fact that the parameters cannot be outside of these limits.</p>
 <p>On the log scale however, there are no bounds on the parameters and we can set a reference level to provide meaningful comparisons. By default, the summary method for <code>"PlackettLuce"</code> objects sets the first item as the reference:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod)</code></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7)
@@ -579,14 +581,17 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 <p>As can be seen from the output above, the standard error of the item parameters changes with the reference level. Therefore in cases where there is not a natural reference (e.g. own brand versus competitor’s brands), the inference can depend on an arbitrary choice. This problem can be handled through the use of <em>quasi standard errors</em> that remain constant for a given item regardless of the reference. In addition quasi standard errors are defined for the reference item, so even in cases where there is a natural reference, the uncertainty around the worth of that item can still be represented.</p>
 <p>Quasi standard errors for the item parameters are implemented via a method for the <code>qvcalc</code> function from the <strong>qvcalc</strong> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)
-qv</code></pre></div>
-<pre><code>##    estimate        SE   quasiSE   quasiVar
-## 1 0.0000000 0.0000000 0.1328834 0.01765799
-## 2 0.2189744 0.1872050 0.1327324 0.01761790
-## 3 0.1521861 0.1935076 0.1395693 0.01947959
-## 4 0.1740489 0.1881999 0.1330195 0.01769418
-## 5 0.1331303 0.1926938 0.1399200 0.01957760
-## 6 0.3742162 0.1923830 0.1391874 0.01937314</code></pre>
+<span class="kw">summary</span>(qv)</code></pre></div>
+<pre><code>## Model call:  PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7) 
+##        estimate        SE   quasiSE   quasiVar
+##     1 0.0000000 0.0000000 0.1328834 0.01765799
+##     2 0.2189744 0.1872050 0.1327324 0.01761790
+##     3 0.1521861 0.1935076 0.1395693 0.01947959
+##     4 0.1740489 0.1881999 0.1330195 0.01769418
+##     5 0.1331303 0.1926938 0.1399200 0.01957760
+##     6 0.3742162 0.1923830 0.1391874 0.01937314
+## Worst relative errors in SEs of simple contrasts (%):  -0.8 0.8 
+## Worst relative errors over *all* contrasts (%):  -1.7 1.7</code></pre>
 <p>Again by default, the first item is taken as the reference, but this may be changed via a <code>ref</code> argument. The plot method for the returned object visualizes the item parameters (log-worth parameters) along with comparison intervals - item parameters for which the comparison intervals do not cross are significantly different:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(qv, <span class="dt">xlab =</span> <span class="st">"Brand of pudding"</span>, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</code></pre></div>
 <div class="figure">
@@ -595,6 +600,7 @@ qv</code></pre></div>
 Figure 1: Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
 </p>
 </div>
+<p>The quasi-variances allow comparisons that are <em>approximately</em> correct, for every possible contrast among the parameters. The routine error report in the last two lines printed above by <code>summary(qv)</code> tells us that, in this example, the approximation error is always very small: the approximation error for the standard error of any simple contrast among the parameters is less than 0.8%.</p>
 </div>
 <div id="disconnected-networks" class="section level2">
 <h2 class="hasAnchor">
@@ -635,8 +641,8 @@ A</code></pre></div>
 Figure 2: Network representation of toy rankings.
 </p>
 </div>
-<p>For the worth parameters to have finite maximum likelihood estimates (MLEs) and standard errors, the network must be strongly connected, i.e. there must be a path of wins and a path of losses between each pair of items. In the example above, A, B and C are strongly connected. For example, C directly loses against B and although C never directly beats B, it does beat A and A in turn beats B, so C indirectly beats B. Similar paths of wins and losses can be found for all pairs of A, B and C. On the other hand D is only observed to lose, therefore the MLE of the worth would be zero, with infinite standard error.</p>
-<p>If one item always wins, the MLE of the worth would be one with infinite standard error. Or if there are clusters of items that are strongly connected with each other, but disconnected or connected only by wins or only by loses (weakly connected) to other clusters, then the maximum likelihood estimates are undefined, because there is no information on the relative worth of the clusters or one cluster is infinitely worse than the other.</p>
+<p>For the worth parameters (on the log scale) to have finite maximum likelihood estimates (MLEs) and standard errors, the network must be strongly connected, i.e. there must be a path of wins and a path of losses between each pair of items. In the example above, A, B and C are strongly connected. For example, C directly loses against B and although C never directly beats B, it does beat A and A in turn beats B, so C indirectly beats B. Similar paths of wins and losses can be found for all pairs of A, B and C. On the other hand D is only observed to lose, therefore the MLE of the log-worth would be <span class="math inline">\(-\infty\)</span>, with infinite standard error.</p>
+<p>If one item always wins, the MLE of the log-worth would be <span class="math inline">\(+\infty\)</span> with infinite standard error. Or if there are clusters of items that are strongly connected with each other, but disconnected or connected only by wins or only by loses (weakly connected) to other clusters, then the maximum likelihood estimates are undefined, because there is no information on the relative worth of the clusters or one cluster is infinitely worse than the other.</p>
 <p>The connectivity of the network can be checked with the <code>connectivity</code> function from <strong>PlackettLuce</strong></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/connectivity.html">connectivity</a></span>(A)</code></pre></div>
 <pre><code>## Network of items is not strongly connected</code></pre>
@@ -649,7 +655,7 @@ Figure 2: Network representation of toy rankings.
 ## 
 ## $no
 ## [1] 2</code></pre>
-<p>If the network is not strongly connected, information on the clusters within the network is returned. In this case a model could be estimated excluding item D:</p>
+<p>If the network is not strongly connected, information on the clusters within the network is returned. In this case a model could be estimated by excluding item D:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">R2 &lt;-<span class="st"> </span>R[, <span class="op">-</span><span class="dv">4</span>]</code></pre></div>
 <pre><code>## Removed rankings with less than 2 items</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">R2</code></pre></div>
@@ -668,13 +674,13 @@ Figure 2: Network representation of toy rankings.
 ## AIC:  9.1356 
 ## Number of iterations: 9</code></pre>
 <p>Note that since <code>R</code> is a rankings object, the rankings are automatically updated when items are dropped, so in this case the paired comparison with item D is dropped.</p>
-<p>By default however <strong>PlackettLuce</strong> provides a way to handle disconnected/weakly connected networks, through the addition of pseudo-rankings. This works by adding a win and a loss between each item and a hypothetical or ghost item with fixed worth. This makes the network strongly connected so all the worth parameters are estimable. It also has an interpretation as a Bayesian prior, in particular a non-informative prior where all items have equal worth.</p>
+<p>By default however <strong>PlackettLuce</strong> provides a way to handle disconnected/weakly connected networks, through the addition of pseudo-rankings. This works by adding a win and a loss between each item and a hypothetical or ghost item with fixed worth. This makes the network strongly connected so all the worth parameters are estimable. It also has an interpretation as a Bayesian prior, in particular an exchangeable prior in which all items have equal worth.</p>
 <p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> means that no pseudo-rankings are added, so <code>PlackettLuce</code> will return the standard MLE if the network is strongly connected and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters change quite considerably:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)
 <span class="kw">coef</span>(mod2)</code></pre></div>
 <pre><code>##          A          B          C          D 
 ##  0.0000000  0.5184180  0.1354701 -1.1537567</code></pre>
-<p>This is because there are only 5 rankings, so there is not much information in the data. In more realistic examples, the default prior will have a weak shrinkage effect, shrinking the item parameters towards <span class="math inline">\(1/N\)</span>, where <span class="math inline">\(N\)</span> is the number of items.</p>
+<p>This is because there are only 5 rankings, so there is not much information in the data. In more realistic examples, the default prior will have a weak shrinkage effect, shrinking the items’ worth parameters towards <span class="math inline">\(1/N\)</span>, where <span class="math inline">\(N\)</span> is the number of items.</p>
 <p>For a practical example, we consider the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. This collects the results of the 36 races in the 2002 NASCAR season in the United States. Each race involves 43 drivers out of a total of 87 drivers. The <code>d_nascar</code> data provided by <strong>PlackettLuce</strong> records the results as an ordering of the drivers in each race:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(nascar)
 nascar[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">45</span>]</code></pre></div>
@@ -754,7 +760,8 @@ qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="
 Figure 3: Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
 </p>
 </div>
-<p>Although the pseudo-rankings are only necessary to add when the network is incomplete, the default behaviour is always to use them (with a weight of 0.5) because the small shrinkage effect reduces the bias of the estimates.</p>
+<p>As in the previous example, we can use <code>summary(qv)</code> to see a report on the accuracy of the quasi-variance approximation. In this example the error of approximation, across the standard errors of all of the 3741 possible simple contrasts (contrasts between pairs of the 87 driver-specific parameters), ranges between -0.7% and +6.7% — which is still remarkably accurate, and which means that the plot of comparison intervals is a good visual guide to the uncertainty about drivers’ relative abilities. [The results of using <code>summary(qv)</code> are not shown here, as they would occupy too much space.]</p>
+<p>Although the prior pseudo-rankings are only necessary to add when the network is incomplete, the default behaviour is always to use them (with a weight of 0.5) because the small shrinkage effect that the pseudo-data provides also reduces both the bias and the variance of the estimates.</p>
 </div>
 </div>
 <div id="plackett-luce-trees" class="section level1">

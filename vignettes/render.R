@@ -1,8 +1,8 @@
 # render vignette - result is in inst/doc
-rmarkdown::render("vignettes/Overview.Rmd", output_dir = "working")
+rmarkdown::render("vignettes/Overview.Rmd", output_dir = "vignettes_tmp_output")
 
 rmarkdown::render("vignettes/Overview.Rmd", "BiocStyle::pdf_document",
-                  output_dir = "working")
+                  output_dir = "vignettes_tmp_output")
 
 library(devtools)
 library(pkgdown)

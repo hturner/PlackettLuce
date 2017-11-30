@@ -3,23 +3,109 @@
 #' Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 #' (not all objects ranked) and include ties of any order.
 #'
-#' In order for the maximum likelihood estimate of an object's ability to be
+#' @section Model definition:
+#'
+#' A single ranking is given by
+#' \deqn{R = \{C_1, C_2, \ldots, C_J\}}{R = {C_1, C_2, \ldots, C_J}}
+#' where the items in set \eqn{C_1} are ranked higher than (better than) the
+#' items in \eqn{C_2}, and so on. If there are multiple objects in set \eqn{C_j}
+#' these items are tied in the ranking.
+#'
+#' For a set if items \eqn{S}, let
+#' \deqn{f(S) = \delta_{|S|}
+#'       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}}{
+#'       f(S) = d_{|S|} * (prod_{i in S} a_i)^(1/|S|)}
+#' where \eqn{|S|} is the cardinality (size) of the set, \eqn{\delta_n}{d_n} is a
+#' parameter representing the prevalence of ties of order \eqn{n}, and
+#' \eqn{\alpha_i}{a_i} is a parameter representing the worth of item \eqn{i}.
+#' Then under an extension of the Plackett-Luce model allowing ties up to order
+#' \eqn{D}, the probability of the ranking \eqn{R} is given by
+#' \deqn{\prod_{j = 1}^J \frac{f(C_j)}{
+#'       \sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}}{
+#'       prod_{j = 1}^J f(C_j)/
+#'       (sum_{k = 1}^{min(D_j, D)} sum_{S in choose(A_j, k)} f(S))}
+#' where \eqn{D_j} is the cardinality of \eqn{C_j}, \eqn{A_j} is the set of
+#' alternatives from which \eqn{C_j} is chosen, and
+#' \eqn{A_j \choose k}{choose(A_j, k)} is all the possible choices of \eqn{k}
+#' items from \eqn{A_j}. The value of \eqn{D} can be set to the maximum number
+#' of tied items observed in the data, so that \eqn{\delta_n = 0}{d_n = 0} for
+#' \eqn{n > D}.
+#'
+#' When the worth parameters are constrained to sum to one, they represent the
+#' probability that the corresponding item comes first in a ranking of all
+#' items, given that first place is not tied.
+#'
+#' The 2-way tie prevalence parameter \eqn{\delta_2}{d_2}$ is interpretable
+#' via the probability that two given items \emph{of equal worth} tie for
+#' first place, given that the first place is not a 3-way or higher tie.
+#' Specifically, that probability is
+#' \eqn{\delta_2/(2 + \delta_2)}{d_2/(2 + d_2}.
+#'
+#' The 3-way and higher tie-prevalence parameters are interpretable similarly,
+#' in terms of tie probabilities among equal-worth items.
+#'
+#' @section Pseudo-rankings:
+#'
+#' In order for the maximum likelihood estimate of an object's worth to be
 #' defined, the network of rankings must be strongly connected. This means that
 #' in every possible partition of the objects into two nonempty subsets, some
-#' object in the second set is ranked higher than some objects in the first set
+#' object in the second set is ranked higher than some object in the first set
 #' at least once.
 #'
-#' If the network of rankings is not strongly connected, or the network is
-#' sparse, then pseudodata may be used to connect the network and reduce the
-#' bias in the ability estimates. This approach posits a hypothetical object
-#' with log-ability 0 and adds \code{npseudo} wins and \code{npseudo} losses
-#' to the set of rankings.
+#' If the network of rankings is not strongly connected then pseudo-rankings
+#' may be used to connect the network. This approach posits a hypothetical
+#' object with log-worth 0 and adds \code{npseudo} wins and \code{npseudo}
+#' losses to the set of rankings.
 #'
 #' The parameter \code{npseudo} is the prior strength.  With \code{npseudo = 0}
-#' we have the MLE as the posterior mode.  As \code{npseudo} approaches
-#' infinity the log-ability estimates all shrink towards 0. The default,
+#' the MLE is the posterior mode.  As \code{npseudo} approaches
+#' infinity the log-worth estimates all shrink towards 0. The default,
 #' \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
-#' shrinkage effect.
+#' shrinkage effect. Thus even for networks that are already connected, adding
+#' pseudo-rankings reduces both the bias and variance of the estimates.
+#'
+#' @section Controlling the fit:
+#'
+#' Using \code{nspseudo = 0} will use standard maximum likelihood, if the
+#' network is connected (and throw an error otherwise).
+#'
+#' The fitting algorithm is set by the \code{method} argument. The default
+#' method \code{"iterative scaling"} is a slow but reliable approach. In
+#' addition, this has the most control on the accuracy of the final fit, since
+#' convergence is determined by direct comparison of the observed and expected
+#' values of the sufficient statistics for the worth parameters, rather than a
+#' tolerance on change in the log-likelihood.
+#'
+#' The \code{"iterative scaling"} algorithm is slow because it is a first order
+#' method (does not use derivatives of the likelihood). From a set of starting
+#' values that are "close enough" to the final solution, the algorithm can be
+#' accelerated using
+#' \href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
+#' \code{PlackettLuce} applies Steffensen's acceleration when all differences
+#' between the observed and expected values of the sufficient statistics are
+#' less than \code{steffensen}. This is an ad-hoc rule and in some cases may
+#' cause the algorithm to go off course. In this case \code{steffensen} can be
+#' reduced or set to \code{0} to turn off acceleration all together.
+#'
+#' The \code{"BFGS"} and \code{"L-BFGS"} algorithms are second order methods,
+#' therefore can be quicker than the default method. Control parameters can be
+#' passed on to \code{\link[stats]{optim}} or \code{\link[lbfgs]{lbfgs}}.
+#'
+#' @seealso
+#'
+#' Handling rankings: \code{\link{rankings}}, \code{choices}, \code{adjacency},
+#' \code{connectivity}.
+#'
+#' Inspect fitted Plackett-Luce models: \code{\link{coef}}, \code{deviance},
+#' \code{\link{fitted}}, \code{\link{itempar}}, \code{logLik}, \code{print},
+#' \code{\link{qvcalc}}, \code{\link{summary}}, \code{\link{vcov}}.
+#'
+#' Fit Plackett-Luce tree: \code{\link{grouped_rankings}}, \code{pltree}.
+#'
+#' Example data sets: \code{\link{beans}}, \code{\link{nascar}},
+#' \code{\link{pudding}}, \code{\link{read.soc}}.
+#'
+#' Vignette: \code{vignette("Overview", package = "PlackettLuce")}.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
@@ -40,8 +126,14 @@
 #' following elements:
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }
-#' \item{loglik}{ The log-likelihood. }
+#' \item{loglik}{ The maximized log-likelihood. }
+#' \item{df.residual}{ The residual degrees of freedom. }
+#' \item{rank}{ The rank of the model. }
 #' \item{iter}{ The number of iterations run. }
+#' \item{rankings}{ The rankings passed to \code{rankings}, converted to a
+#' \code{"rankings"} object if necessary. }
+#' \item{weights}{ The weights applied to each ranking in the fitting. }
+#' \item{maxTied}{ The maximum number of objects observed in a tie. }
 #'
 #' @examples
 #' # Six partial rankings of four objects, 1 is top rank, e.g
