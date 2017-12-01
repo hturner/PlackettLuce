@@ -6,7 +6,7 @@
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 1e-04, maxit = 200, trace = FALSE, verbose = TRUE)
+  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -31,7 +31,12 @@ apply Steffensen acceleration to the iterative scaling updates.}
 
 \item{trace}{logical, if \code{TRUE} show trace of iterations.}
 
-\item{verbose}{logical, if \code{TRUE} show messages from validity checks.}
+\item{verbose}{logical, if \code{TRUE} show messages from validity checks on
+the rankings.}
+
+\item{...}{additional arguments passed to \code{optim} or \code{lbfgs}.
+In particular the convergence tolerance may be adjusted using e.g.
+\code{control = list(reltol = 1e-10)}.}
 }
 \value{
 An object of class "PlackettLuce", which is a list containing the
@@ -46,6 +51,10 @@ following elements:
 \code{"rankings"} object if necessary. }
 \item{weights}{ The weights applied to each ranking in the fitting. }
 \item{maxTied}{ The maximum number of objects observed in a tie. }
+\item{conv}{ The convergence code: 0 for sucessful convergence; 1 if reached
+\code{maxit} iterations without convergence; 2 if Steffensen acceleration
+cause log-likelihood to increase; negative number if L-BFGS algorithm failed
+for other reason.}
 }
 \description{
 Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
@@ -134,11 +143,14 @@ method (does not use derivatives of the likelihood). From a set of starting
 values that are "close enough" to the final solution, the algorithm can be
 accelerated using
 \href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
-\code{PlackettLuce} applies Steffensen's acceleration when all differences
-between the observed and expected values of the sufficient statistics are
-less than \code{steffensen}. This is an ad-hoc rule and in some cases may
-cause the algorithm to go off course. In this case \code{steffensen} can be
-reduced or set to \code{0} to turn off acceleration all together.
+\code{PlackettLuce} attempts to apply Steffensen's acceleration when all
+differences between the observed and expected values of the sufficient
+statistics are less than \code{steffensen}. This is an ad-hoc rule defining
+"close enough" and in some cases the acceleration update may produce negative
+worth parameters or decrease the log-likelihood. In this case the
+acceleration is not applied in that iteration, but \code{PlackettLuce} will
+continue to attempt the acceleration in all following iterations and
+apply where it is valid, which still results in fewer iterations.
 
 The \code{"BFGS"} and \code{"L-BFGS"} algorithms are second order methods,
 therefore can be quicker than the default method. Control parameters can be

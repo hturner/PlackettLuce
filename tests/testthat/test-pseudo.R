@@ -84,6 +84,32 @@ if (require(gnm) & require(sandwich)){
               })
 }
 
+model5 <- PlackettLuce(rankings = G, npseudo = 0.5, method = "BFGS",
+                       control = list(reltol = 1e-10))
+test_that("pseudo data works with BFGS [weakly connected network]",
+          {
+              # coef
+              expect_equal(coef(model3), coef(model5),
+                           tolerance = coef_tol)
+              # log-likelihood
+              expect_equal(logLik(model3), logLik(model5),
+                           tolerance = loglik_tol)
+          })
+
+model6 <- PlackettLuce(rankings = G, npseudo = 0.5, method = "BFGS",
+                       control = list(reltol = 1e-10))
+test_that("pseudo data works with L-BFGS [weakly connected network]",
+          {
+              # coef
+              expect_equal(coef(model3), coef(model6),
+                           tolerance = coef_tol)
+              # log-likelihood
+              expect_equal(logLik(model3), logLik(model6),
+                           tolerance = loglik_tol)
+          })
+
+
+
 ## simple BT model
 R <- matrix(c(1, 2, 0, 0,
               2, 0, 1, 0,

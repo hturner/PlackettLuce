@@ -81,11 +81,14 @@
 #' values that are "close enough" to the final solution, the algorithm can be
 #' accelerated using
 #' \href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
-#' \code{PlackettLuce} applies Steffensen's acceleration when all differences
-#' between the observed and expected values of the sufficient statistics are
-#' less than \code{steffensen}. This is an ad-hoc rule and in some cases may
-#' cause the algorithm to go off course. In this case \code{steffensen} can be
-#' reduced or set to \code{0} to turn off acceleration all together.
+#' \code{PlackettLuce} attempts to apply Steffensen's acceleration when all
+#' differences between the observed and expected values of the sufficient
+#' statistics are less than \code{steffensen}. This is an ad-hoc rule defining
+#' "close enough" and in some cases the acceleration update may produce negative
+#' worth parameters or decrease the log-likelihood. In this case the
+#' acceleration is not applied in that iteration, but \code{PlackettLuce} will
+#' continue to attempt the acceleration in all following iterations and
+#' apply where it is valid, which still results in fewer iterations.
 #'
 #' The \code{"BFGS"} and \code{"L-BFGS"} algorithms are second order methods,
 #' therefore can be quicker than the default method. Control parameters can be
@@ -120,7 +123,11 @@
 #' apply Steffensen acceleration to the iterative scaling updates.
 #' @param maxit the maximum number of iterations.
 #' @param trace logical, if \code{TRUE} show trace of iterations.
-#' @param verbose logical, if \code{TRUE} show messages from validity checks.
+#' @param verbose logical, if \code{TRUE} show messages from validity checks on
+#' the rankings.
+#' @param ... additional arguments passed to \code{optim} or \code{lbfgs}.
+#' In particular the convergence tolerance may be adjusted using e.g.
+#' \code{control = list(reltol = 1e-10)}.
 #'
 #' @return An object of class "PlackettLuce", which is a list containing the
 #' following elements:
@@ -134,6 +141,10 @@
 #' \code{"rankings"} object if necessary. }
 #' \item{weights}{ The weights applied to each ranking in the fitting. }
 #' \item{maxTied}{ The maximum number of objects observed in a tie. }
+#' \item{conv}{ The convergence code: 0 for sucessful convergence; 1 if reached
+#' \code{maxit} iterations without convergence; 2 if Steffensen acceleration
+#' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
+#' for other reason.}
 #'
 #' @examples
 #' # Six partial rankings of four objects, 1 is top rank, e.g
@@ -159,8 +170,8 @@ PlackettLuce <- function(rankings,
                          weights = NULL,
                          start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
-                         epsilon = 1e-7, steffensen = 1e-4, maxit = 200,
-                         trace = FALSE, verbose = TRUE){
+                         epsilon = 1e-7, steffensen = 0.1, maxit = 500,
+                         trace = FALSE, verbose = TRUE, ...){
     call <- match.call()
 
     # check rankings
@@ -376,23 +387,28 @@ PlackettLuce <- function(rankings,
     method <- match.arg(method, c("iterative scaling", "BFGS", "L-BFGS"))
 
     if (method == "BFGS"){
-        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS")
-        conv <- res$convergence == 0
+        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS", ...)
+        conv <- res$convergence
         iter <- res$counts
         res <- list(alpha = exp(res$par[1:N]),
-                    delta = c(1, exp(res$par[-(1:N)])))
+                    delta = c(1, exp(res$par[-(1:N)])),
+                    logl = -res$value)
 
     } else if (method == "L-BFGS"){
         # will give an error if lbfgs not available
-        res <- lbfgs::lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1)
-        conv <- res$convergence == 0
+        res <- lbfgs::lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1,
+                            ...)
+        conv <- res$convergence
         iter <- NULL
         res <- list(alpha = exp(res$par[1:N]),
-                    delta = c(1, exp(res$par[-(1:N)])))
+                    delta = c(1, exp(res$par[-(1:N)])),
+                    logl = -res$value)
     } else {
         res <- list(alpha = alpha, delta = delta)
-        res[c("expA", "expB")] <-
-            expectation(c("alpha", "delta"), alpha, delta, N, D, S, R, G, W)
+        res[c("expA", "expB", "theta")] <-
+            expectation("all", alpha, delta, N, D, S, R, G, W)
+        res$logl <- sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+            sum(res$theta)
         oneUpdate <- function(res){
             # update all alphas
             res$alpha <- res$alpha*A/res$expA
@@ -402,9 +418,11 @@ PlackettLuce <- function(rankings,
                     expectation("delta", res$alpha, res$delta,
                                 N, D, S, R, G, W)$expB
             }
-            res[c("expA", "expB")] <-
-                expectation(c("alpha", "delta"), res$alpha, res$delta,
+            res[c("expA", "expB", "theta")] <-
+                expectation("all", res$alpha, res$delta,
                             N, D, S, R, G, W)
+            res$logl <- sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+                sum(res$theta)
             res
         }
         accelerate <- function(p, p1, p2){
@@ -417,47 +435,56 @@ PlackettLuce <- function(rankings,
         checkConv <- function(res){
             eps <- abs(c(A, B[-1]) - c(res$expA, res$delta[-1]*res$expB))
             assign("eps", eps, envir = parent.env(environment()))
-            all(eps < epsilon)
+            ifelse(all(eps < epsilon), 0, 1)
         }
-        if (conv <- checkConv(res)) {
-            maxit <- iter <- 0
-        } else iter <- 1
-        updateIter <- function(){
-            if (trace) message("iter: ", iter)
+        iter <- 0
+        if ((conv <- checkConv(res)) == 0) maxit <- 0
+        updateIter <- function(res){
+            if (trace) message("iter ", iter, ", loglik: ", res$logl)
             assign("iter", iter + 1,
                    envir = parent.env(environment()))
         }
         eps <- c(A, B[-1])
         doSteffensen <- FALSE
-        while(iter <= maxit){
+        while(iter < maxit){
+            updateIter(res)
             res <- oneUpdate(res)
-            if (conv <- checkConv(res)) break
+            if ((conv <- checkConv(res)) == 0) break
             if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
             # steffensen
             if (doSteffensen){
                 res1 <- oneUpdate(res)
-                if (conv <- checkConv(res1)) break
+                if ((conv <- checkConv(res1)) == 0) {
+                    res <- res1
+                    break
+                }
                 res2 <- oneUpdate(res1)
-                if (conv <- checkConv(res2)) break
-                updateIter()
-                if (npseudo > 0){
-                    res$alpha[-1] <-
-                        accelerate(res$alpha, res1$alpha, res2$alpha)[-1]
-                } else res$alpha <-
-                        accelerate(res$alpha, res1$alpha, res2$alpha)
-                res$delta[-1] <-
-                    accelerate(res$delta, res1$delta, res2$delta)[-1]
-                res[c("expA", "expB")] <-
-                    expectation(c("alpha", "delta"), res$alpha, res$delta,
-                                N, D, S, R, G, W)
-                if (conv <- checkConv(res)) break
-            } else{
-                updateIter()
+                if ((conv <- checkConv(res2)) == 0) {
+                    res <- res2
+                    break
+                }
+                # if negative worth or log-likelihood decreased,
+                # don't apply Steffensen
+                res$alpha <-
+                    accelerate(res$alpha, res1$alpha, res2$alpha)
+                if (all(res$alpha > 0)) {
+                    res$delta[-1] <-
+                        accelerate(res$delta, res1$delta, res2$delta)[-1]
+                    res[c("expA", "expB", "theta")] <-
+                        expectation("all", res$alpha, res$delta,
+                                    N, D, S, R, G, W)
+                    res$logl <-
+                        sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+                        sum(res$theta)
+                    if (res$logl < res2$logl) {
+                        res <- res2
+                    } else if ((conv <-  checkConv(res)) == 0) break
+                } else res <- res2
             }
         }
     }
-    if (!conv)
-        warning("Iterations have not converged.")
+    if (trace) message("iter ", iter, ", loglik: ", res$logl)
+    if (conv == 1) warning("Iterations have not converged.")
 
     res$delta <- structure(res$delta, names = paste0("tie", 1:D))[-1]
 
@@ -478,23 +505,26 @@ PlackettLuce <- function(rankings,
     names(res$alpha) <- items
     rank <- N + D - 2
 
+    # recompute log-likelihood based on constrained alpha
+    # (will differ slightly when npseudo = 0, otherwise needs computing anyway)
+    logl <- loglik(unlist(res[c("alpha", "delta")]))
+
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- vapply(W[S], sum, 1)
     # number of possible selections overall
     n <- sum(vapply(S, choose, numeric(D), k = seq(D)) %*% freq)
     df.residual <- n - sum(freq) - rank
 
-    logl <- loglik(unlist(res[c("alpha", "delta")]))
-
     fit <- list(call = call,
                 coefficients = c(res$alpha, res$delta),
-                loglik = unname(logl),
+                loglik = logl,
                 df.residual = df.residual,
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
                 weights = weights,
-                maxTied = D)
+                maxTied = D,
+                conv = conv)
     class(fit) <- "PlackettLuce"
     fit
 }
@@ -620,7 +650,6 @@ expectation <- function(par, # par to compute expectations for
             z <- z + nr
         }
     }
-    c(list(expA = expA)[keepAlpha],
-      list(expB = expB)[keepDelta],
-      list(theta = theta)[keepTheta])
+    list(expA = if (keepAlpha) expA, expB = if (keepDelta) expB,
+         theta = if (keepTheta) theta)
 }

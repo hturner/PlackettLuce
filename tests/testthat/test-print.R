@@ -14,6 +14,6 @@ model_fruits1 <- PlackettLuce(rankings = R)
 test_that("output of print.coef.PlackettLuce is correct", {
     expect_output(print(coef(model_fruits1)),
                   paste0("     apple     banana     orange       tie2 \n",
-                         " 0.0000000  0.2867991 -0.4636684 -1.0701129 "))
+                         " 0.0000000  0.2867987 -0.4636687 -1.0701129 "))
 })
 

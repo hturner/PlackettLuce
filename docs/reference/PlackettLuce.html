@@ -100,7 +100,7 @@
 
     <pre class="usage"><span class='fu'>PlackettLuce</span>(<span class='no'>rankings</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"iterative scaling"</span>, <span class='st'>"BFGS"</span>, <span class='st'>"L-BFGS"</span>), <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>,
-  <span class='kw'>steffensen</span> <span class='kw'>=</span> <span class='fl'>1e-04</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>200</span>, <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>steffensen</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -147,7 +147,14 @@ apply Steffensen acceleration to the iterative scaling updates.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>logical, if <code>TRUE</code> show messages from validity checks.</p></td>
+      <td><p>logical, if <code>TRUE</code> show messages from validity checks on
+the rankings.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments passed to <code>optim</code> or <code>lbfgs</code>.
+In particular the convergence tolerance may be adjusted using e.g.
+<code>control = list(reltol = 1e-10)</code>.</p></td>
     </tr>
     </table>
     
@@ -165,6 +172,10 @@ following elements:</p>
 <code>"rankings"</code> object if necessary.</p></dd>
 <dt>weights</dt><dd><p>The weights applied to each ranking in the fitting.</p></dd>
 <dt>maxTied</dt><dd><p>The maximum number of objects observed in a tie.</p></dd>
+<dt>conv</dt><dd><p>The convergence code: 0 for sucessful convergence; 1 if reached
+<code>maxit</code> iterations without convergence; 2 if Steffensen acceleration
+cause log-likelihood to increase; negative number if L-BFGS algorithm failed
+for other reason.</p></dd>
 
     
     <h2 class="hasAnchor" id="model-definition"><a class="anchor" href="#model-definition"></a>Model definition</h2>
@@ -237,11 +248,14 @@ method (does not use derivatives of the likelihood). From a set of starting
 values that are "close enough" to the final solution, the algorithm can be
 accelerated using
 <a href='https://en.wikipedia.org/wiki/Steffensen%27s_method'>Steffensen's method</a>.
-<code>PlackettLuce</code> applies Steffensen's acceleration when all differences
-between the observed and expected values of the sufficient statistics are
-less than <code>steffensen</code>. This is an ad-hoc rule and in some cases may
-cause the algorithm to go off course. In this case <code>steffensen</code> can be
-reduced or set to <code>0</code> to turn off acceleration all together.</p>
+<code>PlackettLuce</code> attempts to apply Steffensen's acceleration when all
+differences between the observed and expected values of the sufficient
+statistics are less than <code>steffensen</code>. This is an ad-hoc rule defining
+"close enough" and in some cases the acceleration update may produce negative
+worth parameters or decrease the log-likelihood. In this case the
+acceleration is not applied in that iteration, but <code>PlackettLuce</code> will
+continue to attempt the acceleration in all following iterations and
+apply where it is valid, which still results in fewer iterations.</p>
 <p>The <code>"BFGS"</code> and <code>"L-BFGS"</code> algorithms are second order methods,
 therefore can be quicker than the default method. Control parameters can be
 passed on to <code><a href='http://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> or <code><a href='http://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>.</p>
@@ -272,9 +286,8 @@ passed on to <code><a href='http://www.rdocumentation.org/packages/stats/topics/
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'>colnames</span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
 
-<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>)
-<span class='fu'>coef</span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
-#&gt;  0.00000000  0.25287391 -0.61350669 -0.08688459 -2.15068110 -0.79245357 </div></pre>
+<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='output co'>#&gt; <span class='warning'>Warning: longer object length is not a multiple of shorter object length</span></div><div class='input'><span class='fu'>coef</span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
+#&gt;  0.00000000  0.25287380 -0.61350684 -0.08688469 -2.15068112 -0.79245362 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
