@@ -19,7 +19,7 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 -   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of items is {apples, bananas, oranges, pears}.
 -   Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.
 
-![](README_files/figure-markdown_github/always-loses-1.png) </br>
+![](man/figures/always-loses-1.png) </br>
 
 In addition the package provides methods for
 
@@ -128,7 +128,7 @@ summary(mod)
     ## 
     ## Residual deviance:  3493.5  on  3525  degrees of freedom
     ## AIC:  3499.5 
-    ## Number of iterations: 13
+    ## Number of iterations: 5
 
 In this way, Mean Girls is treated as the reference movie, the positive parameter for Beverly Hills Cop shows this was more popular among the users, while the negative parameters for the other two movies show these were less popular.
 
@@ -139,7 +139,7 @@ qv <- qvcalc(mod)
 plot(qv)
 ```
 
-![](README_files/figure-markdown_github/qv-1.png)
+![](man/figures/qv-1.png)
 
 If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users' preference for these last two movies.
 

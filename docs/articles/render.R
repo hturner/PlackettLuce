@@ -18,3 +18,5 @@ build_articles() #vignette
 build_home()
 
 build_reference_index()
+
+build_reference()

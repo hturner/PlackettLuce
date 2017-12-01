@@ -21,7 +21,7 @@
 #' Then under an extension of the Plackett-Luce model allowing ties up to order
 #' \eqn{D}, the probability of the ranking \eqn{R} is given by
 #' \deqn{\prod_{j = 1}^J \frac{f(C_j)}{
-#'       \sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}}{
+#'       \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}}{
 #'       prod_{j = 1}^J f(C_j)/
 #'       (sum_{k = 1}^{min(D_j, D)} sum_{S in choose(A_j, k)} f(S))}
 #' where \eqn{D_j} is the cardinality of \eqn{C_j}, \eqn{A_j} is the set of
@@ -84,11 +84,9 @@
 #' \code{PlackettLuce} attempts to apply Steffensen's acceleration when all
 #' differences between the observed and expected values of the sufficient
 #' statistics are less than \code{steffensen}. This is an ad-hoc rule defining
-#' "close enough" and in some cases the acceleration update may produce negative
-#' worth parameters or decrease the log-likelihood. In this case the
-#' acceleration is not applied in that iteration, but \code{PlackettLuce} will
-#' continue to attempt the acceleration in all following iterations and
-#' apply where it is valid, which still results in fewer iterations.
+#' "close enough" and in some cases the acceleration may produce negative
+#' worth parameters or decrease the log-likelihood. \code{PlackettLuce} will
+#' only apply the update when it makes an improvement.
 #'
 #' The \code{"BFGS"} and \code{"L-BFGS"} algorithms are second order methods,
 #' therefore can be quicker than the default method. Control parameters can be
@@ -141,7 +139,7 @@
 #' \code{"rankings"} object if necessary. }
 #' \item{weights}{ The weights applied to each ranking in the fitting. }
 #' \item{maxTied}{ The maximum number of objects observed in a tie. }
-#' \item{conv}{ The convergence code: 0 for sucessful convergence; 1 if reached
+#' \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
 #' \code{maxit} iterations without convergence; 2 if Steffensen acceleration
 #' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 #' for other reason.}

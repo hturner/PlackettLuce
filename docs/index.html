@@ -160,7 +160,7 @@ R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, a
 ## 
 ## Residual deviance:  3493.5  on  3525  degrees of freedom
 ## AIC:  3499.5 
-## Number of iterations: 13</code></pre>
+## Number of iterations: 5</code></pre>
 <p>In this way, Mean Girls is treated as the reference movie, the positive parameter for Beverly Hills Cop shows this was more popular among the users, while the negative parameters for the other two movies show these were less popular.</p>
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)
@@ -172,7 +172,7 @@ R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, a
 <h2 class="hasAnchor">
 <a href="#going-further" class="anchor"></a>Going Further</h2>
 <p>The full functionality of <strong>PlackettLuce</strong> is illustrated in the package vignette, along with details of the model used in the package and a comparison to other packages. The vignette can be found on the <a href="https://hturner.github.io/PlackettLuce/">package website</a> or from within R once the package has been installed, e.g. via</p>
-<pre><code><a href="https://cran.rstudio.com/web/packages/PlackettLuce/vignettes/Overview.html">vignette("Overview", package = "PlackettLuce")</a></code></pre>
+<pre><code>vignette("Overview", package = "PlackettLuce")</code></pre>
 </div>
 <div id="code-of-conduct" class="section level2">
 <h2 class="hasAnchor">

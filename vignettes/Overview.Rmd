@@ -34,9 +34,6 @@ vignette: |
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
-header-includes:
-- \usepackage{chngcntr}
-- \counterwithout{figure}{chapter}    
 link-citations: true    
 ---
 
@@ -254,8 +251,9 @@ Table \@ref(tab:data-features) using different packages. See Appendix \@ref(app:
 
 ```{r timings-kable, echo = FALSE}
 res <- data.frame(netflix = round(unlist(netflix_timings), 3),
-                  tshirt = round(unlist(tshirt_timings), 3),
-                  sushi = round(unlist(sushi_timings), 3))
+                  tshirt = format(unlist(tshirt_timings), 3),
+                  sushi = round(unlist(sushi_timings), 3),
+                  stringsAsFactors = FALSE)
 res["pmr", "tshirt"] <- "a"
 res["pmr", "sushi"] <- "a"
 res <- t(as.matrix(res))
@@ -540,7 +538,7 @@ R <- matrix(c(1, 2, 0, 0,
 R <- as.rankings(R)
 ```
 
-The `adjacency` function from **PlacketLuce** can be used to convert these to an
+The `adjacency` function from **PlackettLuce** can be used to convert these to an
 adjacency matrix where element $(i, j)$ is the number of times item $i$ is
 ranked higher than item $j$:
 ```{r}

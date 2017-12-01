@@ -216,19 +216,19 @@ StatRank
 Netflix
 </td>
 <td style="text-align:right;">
-0.042
+0.010
 </td>
 <td style="text-align:right;">
-0.056
+0.046
 </td>
 <td style="text-align:right;">
-0.165
+0.020
 </td>
 <td style="text-align:right;">
-0.410
+0.297
 </td>
 <td style="text-align:right;">
-0.940
+0.360
 </td>
 </tr>
 <tr>
@@ -236,19 +236,19 @@ Netflix
 T-shirt
 </td>
 <td style="text-align:right;">
-0.024
+0.030
 </td>
 <td style="text-align:right;">
-0.168
+0.278
 </td>
 <td style="text-align:right;">
-0.074
+0.010
 </td>
 <td style="text-align:right;">
 a
 </td>
 <td style="text-align:right;">
-7.681
+7.317
 </td>
 </tr>
 <tr>
@@ -256,19 +256,19 @@ a
 Sushi
 </td>
 <td style="text-align:right;">
-1.587
+1.644
 </td>
 <td style="text-align:right;">
-111.14
+102.304
 </td>
 <td style="text-align:right;">
-0.29
+0.151
 </td>
 <td style="text-align:right;">
 a
 </td>
 <td style="text-align:right;">
-18.769
+13.17
 </td>
 </tr>
 </tbody>
@@ -326,10 +326,10 @@ hyper2
 42-43
 </td>
 <td style="text-align:right;">
-0.156
+0.197
 </td>
 <td style="text-align:right;">
-65.619
+56.956
 </td>
 </tr></tbody>
 </table>
@@ -531,7 +531,7 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## have not converged.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <pre><code>##         1         2         3         4         5         6      tie2 
-## 0.1389750 0.1729960 0.1618192 0.1653960 0.1587648 0.2020490 0.7466951</code></pre>
+## 0.1388005 0.1729985 0.1617420 0.1653930 0.1586805 0.2023855 0.7468147</code></pre>
 <p>Note here we specify <code>log = FALSE</code> to give the parameterization as in Equation <a href="#eq:PL">(1)</a>. In the next section we discuss why it is more appropriate to use the log scale for inference.</p>
 </div>
 </div>
@@ -546,18 +546,18 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## Coefficients:
 ##      Estimate Std. Error z value Pr(&gt;|z|)    
 ## 1      0.0000         NA      NA       NA    
-## 2      0.2190     0.1872   1.170 0.242120    
-## 3      0.1522     0.1935   0.786 0.431598    
-## 4      0.1741     0.1882   0.925 0.355065    
-## 5      0.1331     0.1927   0.691 0.489634    
-## 6      0.3742     0.1924   1.945 0.051755 .  
-## tie2  -0.2921     0.0825  -3.541 0.000399 ***
+## 2      0.2202     0.1872   1.176 0.239429    
+## 3      0.1530     0.1935   0.790 0.429271    
+## 4      0.1753     0.1882   0.931 0.351683    
+## 5      0.1339     0.1927   0.695 0.487298    
+## 6      0.3771     0.1924   1.960 0.049983 *  
+## tie2  -0.2919     0.0825  -3.539 0.000402 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual deviance:  1619.4  on  1484  degrees of freedom
 ## AIC:  1631.4 
-## Number of iterations: 8</code></pre>
+## Number of iterations: 7</code></pre>
 <p>None of the Z tests for the item parameters provides significant evidence against the null hypothesis, which is consistent with the test for equal preferences presented in <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>. The tie parameter is also shown on the log scale here, but it is an integral part of the model rather than a parameter of interest for inference, and its scale is not relevant.</p>
 <p>The reference level for the item parameters can be changed via the <code>ref</code> argument, for example setting to <code>NULL</code> sets the mean worth as the reference:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mod, <span class="dt">ref =</span> <span class="ot">NULL</span>)</code></pre></div>
@@ -565,31 +565,31 @@ R[<span class="kw">cbind</span>(<span class="kw">seq_len</span>(nr), j)] &lt;-<s
 ## 
 ## Coefficients:
 ##       Estimate Std. Error z value Pr(&gt;|z|)    
-## 1    -0.175426   0.121939  -1.439 0.150253    
-## 2     0.043548   0.121813   0.358 0.720715    
-## 3    -0.023240   0.126818  -0.183 0.854599    
-## 4    -0.001377   0.121998  -0.011 0.990994    
-## 5    -0.042296   0.127049  -0.333 0.739203    
-## 6     0.198790   0.126580   1.570 0.116305    
-## tie2 -0.292098   0.082500  -3.541 0.000399 ***
+## 1    -0.176581   0.121949  -1.448 0.147619    
+## 2     0.043664   0.121818   0.358 0.720019    
+## 3    -0.023617   0.126823  -0.186 0.852274    
+## 4    -0.001295   0.122003  -0.011 0.991533    
+## 5    -0.042726   0.127054  -0.336 0.736657    
+## 6     0.200555   0.126594   1.584 0.113140    
+## tie2 -0.291938   0.082499  -3.539 0.000402 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Residual deviance:  1619.4  on  1484  degrees of freedom
 ## AIC:  1631.4 
-## Number of iterations: 8</code></pre>
+## Number of iterations: 7</code></pre>
 <p>As can be seen from the output above, the standard error of the item parameters changes with the reference level. Therefore in cases where there is not a natural reference (e.g. own brand versus competitor’s brands), the inference can depend on an arbitrary choice. This problem can be handled through the use of <em>quasi standard errors</em> that remain constant for a given item regardless of the reference. In addition quasi standard errors are defined for the reference item, so even in cases where there is a natural reference, the uncertainty around the worth of that item can still be represented.</p>
 <p>Quasi standard errors for the item parameters are implemented via a method for the <code>qvcalc</code> function from the <strong>qvcalc</strong> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)
 <span class="kw">summary</span>(qv)</code></pre></div>
 <pre><code>## Model call:  PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7) 
 ##        estimate        SE   quasiSE   quasiVar
-##     1 0.0000000 0.0000000 0.1328834 0.01765799
-##     2 0.2189744 0.1872050 0.1327324 0.01761790
-##     3 0.1521861 0.1935076 0.1395693 0.01947959
-##     4 0.1740489 0.1881999 0.1330195 0.01769418
-##     5 0.1331303 0.1926938 0.1399200 0.01957760
-##     6 0.3742162 0.1923830 0.1391874 0.01937314
+##     1 0.0000000 0.0000000 0.1328950 0.01766108
+##     2 0.2202447 0.1872168 0.1327373 0.01761919
+##     3 0.1529644 0.1935181 0.1395740 0.01948091
+##     4 0.1752864 0.1882110 0.1330240 0.01769538
+##     5 0.1338550 0.1927043 0.1399253 0.01957908
+##     6 0.3771362 0.1924059 0.1392047 0.01937796
 ## Worst relative errors in SEs of simple contrasts (%):  -0.8 0.8 
 ## Worst relative errors over *all* contrasts (%):  -1.7 1.7</code></pre>
 <p>Again by default, the first item is taken as the reference, but this may be changed via a <code>ref</code> argument. The plot method for the returned object visualizes the item parameters (log-worth parameters) along with comparison intervals - item parameters for which the comparison intervals do not cross are significantly different:</p>
@@ -613,7 +613,7 @@ Figure 1: Worth of brands of chocolate pudding. Intervals based on quasi-standar
               <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="dt">byrow =</span> <span class="ot">TRUE</span>, <span class="dt">ncol =</span> <span class="dv">4</span>,
             <span class="dt">dimnames =</span> <span class="kw">list</span>(<span class="ot">NULL</span>, LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>]))
 R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(R)</code></pre></div>
-<p>The <code>adjacency</code> function from <strong>PlacketLuce</strong> can be used to convert these to an adjacency matrix where element <span class="math inline">\((i, j)\)</span> is the number of times item <span class="math inline">\(i\)</span> is ranked higher than item <span class="math inline">\(j\)</span>:</p>
+<p>The <code>adjacency</code> function from <strong>PlackettLuce</strong> can be used to convert these to an adjacency matrix where element <span class="math inline">\((i, j)\)</span> is the number of times item <span class="math inline">\(i\)</span> is ranked higher than item <span class="math inline">\(j\)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw"><a href="../reference/adjacency.html">adjacency</a></span>(R)
 A</code></pre></div>
 <pre><code>##   A B C D
@@ -672,14 +672,14 @@ Figure 2: Network representation of toy rankings.
 ## 
 ## Residual deviance:  5.1356  on  2  degrees of freedom
 ## AIC:  9.1356 
-## Number of iterations: 9</code></pre>
+## Number of iterations: 3</code></pre>
 <p>Note that since <code>R</code> is a rankings object, the rankings are automatically updated when items are dropped, so in this case the paired comparison with item D is dropped.</p>
 <p>By default however <strong>PlackettLuce</strong> provides a way to handle disconnected/weakly connected networks, through the addition of pseudo-rankings. This works by adding a win and a loss between each item and a hypothetical or ghost item with fixed worth. This makes the network strongly connected so all the worth parameters are estimable. It also has an interpretation as a Bayesian prior, in particular an exchangeable prior in which all items have equal worth.</p>
 <p>The <code>npseudo</code> argument defines the number of wins and loses with the ghost item that are added for each real item. Setting <code>npseudo = 0</code> means that no pseudo-rankings are added, so <code>PlackettLuce</code> will return the standard MLE if the network is strongly connected and throw an error otherwise. The larger <code>npseudo</code> is, the stronger the influence of the prior, by default <code>npseudo</code> is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to connect the network, but is a weak prior. In this toy example, the item parameters change quite considerably:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)
 <span class="kw">coef</span>(mod2)</code></pre></div>
 <pre><code>##          A          B          C          D 
-##  0.0000000  0.5184180  0.1354701 -1.1537567</code></pre>
+##  0.0000000  0.5184185  0.1354708 -1.1537568</code></pre>
 <p>This is because there are only 5 rankings, so there is not much information in the data. In more realistic examples, the default prior will have a weak shrinkage effect, shrinking the items’ worth parameters towards <span class="math inline">\(1/N\)</span>, where <span class="math inline">\(N\)</span> is the number of items.</p>
 <p>For a practical example, we consider the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. This collects the results of the 36 races in the 2002 NASCAR season in the United States. Each race involves 43 drivers out of a total of 87 drivers. The <code>d_nascar</code> data provided by <strong>PlackettLuce</strong> records the results as an ordering of the drivers in each race:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(nascar)
@@ -745,9 +745,9 @@ coefs2[<span class="kw">names</span>(coefs)[<span class="dv">1</span><span class
 <p>Nonetheless, the estimates are finite and have finite standard errors:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(<span class="kw">summary</span>(mod2))[<span class="dv">84</span><span class="op">:</span><span class="dv">87</span>,]</code></pre></div>
 <pre><code>##                  Estimate Std. Error    z value  Pr(&gt;|z|)
-## Andy Hillenburg -2.171065   1.812994 -1.1975029 0.2311106
+## Andy Hillenburg -2.171065   1.812994 -1.1975028 0.2311106
 ## Gary Bradberry  -1.744754   1.855365 -0.9403829 0.3470212
-## Jason Hedlesky  -1.590764   1.881708 -0.8453828 0.3978971
+## Jason Hedlesky  -1.590764   1.881708 -0.8453828 0.3978972
 ## Randy Renfrow   -1.768629   1.904871 -0.9284767 0.3531604</code></pre>
 <p>Note that the reference here is simply the driver that comes first alphabetically: A. Cameron. We can plot the quasi-variances for a better comparison:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod2)

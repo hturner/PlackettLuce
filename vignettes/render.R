@@ -11,6 +11,8 @@ source_gist("https://gist.github.com/hturner/3152081e223ade0bb212bcef19f183bf",
 
 # either a) rebuild whole pkgdown site including help files
 build_site()
+file.remove("vignettes/Overview.knit.md")
+file.remove("vignettes/Overview.utf8.md")
 
 # or b) just rebuild part
 build_articles() #vignette

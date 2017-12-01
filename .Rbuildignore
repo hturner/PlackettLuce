@@ -7,6 +7,5 @@
 ^pkgdown$
 ^CONDUCT\.md$
 ^README.Rmd
-^README_files$
 ^readme.bib
 ^vignettes_tmp_output$

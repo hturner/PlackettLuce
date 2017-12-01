@@ -3,6 +3,10 @@ output: github_document
 bibliography: ["readme.bib"]
 ---
 
+```{r rmd-setup, include = FALSE}
+knitr::opts_chunk$set(fig.path = "man/figures/")
+```
+
 # PlackettLuce
 
 [![Travis-CI Build Status](https://travis-ci.org/hturner/PlackettLuce.svg?branch=master)](https://travis-ci.org/hturner/PlackettLuce)

@@ -172,7 +172,7 @@ following elements:</p>
 <code>"rankings"</code> object if necessary.</p></dd>
 <dt>weights</dt><dd><p>The weights applied to each ranking in the fitting.</p></dd>
 <dt>maxTied</dt><dd><p>The maximum number of objects observed in a tie.</p></dd>
-<dt>conv</dt><dd><p>The convergence code: 0 for sucessful convergence; 1 if reached
+<dt>conv</dt><dd><p>The convergence code: 0 for successful convergence; 1 if reached
 <code>maxit</code> iterations without convergence; 2 if Steffensen acceleration
 cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 for other reason.</p></dd>
@@ -195,7 +195,7 @@ parameter representing the prevalence of ties of order \(n\), and
 Then under an extension of the Plackett-Luce model allowing ties up to order
 \(D\), the probability of the ranking \(R\) is given by
 $$\prod_{j = 1}^J \frac{f(C_j)}{
-      \sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}$$
+      \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}$$
 where \(D_j\) is the cardinality of \(C_j\), \(A_j\) is the set of
 alternatives from which \(C_j\) is chosen, and
 \(A_j \choose k\) is all the possible choices of \(k\)
@@ -251,11 +251,9 @@ accelerated using
 <code>PlackettLuce</code> attempts to apply Steffensen's acceleration when all
 differences between the observed and expected values of the sufficient
 statistics are less than <code>steffensen</code>. This is an ad-hoc rule defining
-"close enough" and in some cases the acceleration update may produce negative
-worth parameters or decrease the log-likelihood. In this case the
-acceleration is not applied in that iteration, but <code>PlackettLuce</code> will
-continue to attempt the acceleration in all following iterations and
-apply where it is valid, which still results in fewer iterations.</p>
+"close enough" and in some cases the acceleration may produce negative
+worth parameters or decrease the log-likelihood. <code>PlackettLuce</code> will
+only apply the update when it makes an improvement.</p>
 <p>The <code>"BFGS"</code> and <code>"L-BFGS"</code> algorithms are second order methods,
 therefore can be quicker than the default method. Control parameters can be
 passed on to <code><a href='http://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> or <code><a href='http://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>.</p>
