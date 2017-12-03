@@ -22,12 +22,12 @@ abstract: |
   and losses is always strongly connected, i.e. all items are connected to every
   other item by both a path of wins and a path of losses. This means that the
   worth of each item is always estimable with finite standard error. It also has
-  a shrinkage effect, regularizing the estimated parameters. In addition to
+  a regularization effect, shirnking the estimated parameters towards equal item worth. In addition to
   standard methods for model summary, **PlackettLuce** provides a method to
   estimate quasi-standard errors for the item parameters, so that comparison
   intervals can be derived even when a reference item is set. Finally the
-  package provides a method for model-based partitioning, enabling the
-  identification of subgroups of subjects that rank items differently.
+  package provides a method for model-based partitioning using ranking-specific covariates, enabling the
+  identification of subgroups where items have been ranked differently.
 vignette: |
   %\VignetteIndexEntry{Introduction to PlackettLuce}
   %\VignetteEncoding{UTF-8}
@@ -50,7 +50,7 @@ Rankings data, in which each observation is an ordering of a set of items,
 arises in a range of applications, for example sports tournaments and consumer
 studies. A classic model for such data is the Plackett-Luce model. This model
 depends on Luce's axiom of choice [@Luce1959; @Luce1977] which states that the odds of
-choosing item 1 over item 2 do not depend on the set of items from which the
+choosing an item over another do not depend on the set of items from which the
 choice is made. Suppose we have a set of $J$ items
 
 $$S = \{i_1, i_2, \ldots, i_J\}.$$
@@ -88,7 +88,7 @@ rankings, the software available to fit the model is limited. By considering
 each choice in the ranking as a multinomial observation, with one item observed
 out of a possible set, the "Poisson trick" [see, for example, @Baker1994] can be
 applied to express the model as a log-linear model, where the response is the
-count (one or zero) of each possible outcome within each choice. In theory, the
+count (one or zero) of each possible outcome within each choice. In principle, the
 model can then be fitted using standard software for generalized linear
 models. However there are a number of difficulties with this. Firstly, dummy
 variables must be set up to represent the presence or absence of each item in
@@ -101,7 +101,7 @@ model matrix will be too large to fit in memory. This issue can be circumvented
 by using the `gnm` function from **gnm**, which provides an `eliminate` argument
 to efficiently estimate the effects of such a factor. Even then, the
 model-fitting may be relatively slow, given the expansion in the number of
-observations converting from rankings to counts. For example, the ranking {item
+observations when rankings are converted to counts. For example, the ranking {item
 3 $\prec$ item 1 $\prec$ item 2} expands to two choices with five counts all
 together:
 
@@ -119,14 +119,14 @@ alternatives, but the number of combinations increases quickly with the number
 of items.
 
 Given the issues with applying general methods, custom algorithms and software
-have been developed. One approach is use Hunter's [-@Hunter2004]
+have been developed. One approach is using Hunter's [-@Hunter2004]
 minorization-maximization (MM) algorithm to maximize the likelihood, which is
 equivalent to an iterative scaling algorithm; this algorithm is used by the
 **StatRank** package. Alternatively
 the likelihood of the observed data under the PlackettLuce model can be
 maximised directly using a generic optimisation method such the
-Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as used by both the **pmr**
-and **hyper2** packages. Finally Bayesian methods can be used to either
+Broyden–Fletcher–Goldfarb–Shanno (BFGS) algorithm, as is done by the **pmr**
+and **hyper2** packages. Finally, Bayesian methods can be used to either
 maximize the posterior distribution via an Expectation Maximization (EM)
 algorithm or to simulate the posterior distribution using
 Markov-chain Monte-Carlo (MCMC) techniques, both of which are provided by
@@ -268,7 +268,7 @@ kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)",
     add_footnote("Function fails to complete.", notation = "alphabet")
 ```
 
-When the number of items is more than ten, it is more common to
+As the number of items increases, it is typically more common to
 observe partial rankings than complete rankings. Partial rankings can be of two
 types: *sub-rankings*, where only a subset of items are ranked each time, and
 *incomplete rankings*, where the top $n$ items are selected and the remaining
@@ -276,9 +276,8 @@ items are unranked, but implicitly ranked lower than the top $n$. Sub-rankings
 are accommodated by the standard Plackett-Luce model, while incomplete rankings
 require an extension of the Plackett-Luce model. **PlackettLuce** handles
 sub-rankings only, while **PLMIX** handles incomplete rankings only and
-**hyper2** can handle both types. (**StatRank** supports partial rankings, but
-it is not clear in which form). Table \@ref(tab:nascar) demonstrates using the
-NASCAR data from @Hunter2004 that **PlackettLuce** is more efficient than
+**hyper2** can handle both types. **StatRank** seems to support partial rankings, but
+the extend of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustate that **PlackettLuce** is more efficient than
 **hyper2** for modelling sub-rankings of a relatively large number of items.
 
 ```{r timings-sub, eval = eval_all, echo = FALSE, message = FALSE, warning = FALSE}
@@ -314,8 +313,8 @@ kable(res, booktabs = TRUE, align = rep("r", 5),
 
 **PlackettLuce** is the only package out of those based on maximum likelihood
 estimation with the functionality to compute standard errors for the item
-parameters and thereby the facility to conduct inference on these parameters.
-Using **PLMIX**, inference may be based on the posterior distribution. In some
+parameters and thereby the facility to conduct inference about these parameters.
+**PLMIX** allows for inference based on the posterior distribution. In some
 cases, when the network of wins and losses is disconnected or weakly connected,
 the maximum likelihood estimate does not exist, or has infinite standard
 error; such issues are handled in **PlackettLuce** by utilising pseudo-rankings.
@@ -329,7 +328,7 @@ facility to model heterogeneous populations of subjects that have different sets
 of worth parameters via mixture models. This is similar in spirit to the
 model-based partitioning offered by **PlackettLuce**, except here the
 sub-populations are defined by binary splits on subject attributes. A summary of
-the package features is given in Table \@ref(tab:package-summary).
+the features of the various packages for Plackett-Luce models is given in Table \@ref(tab:package-summary).
 
 ```{r package-summary, echo = FALSE}
 tab <- data.frame(Feature = c("Inference", "Disconnected networks",
@@ -358,7 +357,7 @@ are tied in the ranking. For a set $S$, let
 
 $$f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
 
-where $|S|$ is the cardinality of the set, $\delta_n$ is a parameter
+where $|S|$ is the cardinality of the set $S$, $\delta_n$ is a parameter
 representing the prevalence of ties of order $n$, and $\alpha_i$ is a parameter
 representing the worth of item $i$. Then under an extension of the
 Plackett-Luce model allowing ties up to order $D$, the probability of the
@@ -366,7 +365,7 @@ ranking $R$ is given by
 
 \begin{equation}
 \prod_{j = 1}^J \frac{f(C_j)}{
-\sum_{k = 1}^{\text{min}(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
+\sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
 (\#eq:PL)
 \end{equation}
 
@@ -420,7 +419,7 @@ tail(R, 3)
 ```
 The matrix `R` represents first the wins of $i$ over $j$, then the wins of
 $j$ over $i$ and finally the ties, so is three times as long as the original
-data. Each column represents a brand. In each row `0` represents an
+data. Each column represents a brand. In each row, `0` represents an
 unranked brand (not in the comparison), `1` represents the brand(s) ranked
 in first place and `2` represents the brand in second place, if applicable.
 
@@ -454,7 +453,7 @@ iterations to obtain the same worth parameters as @Davidson1970:
 mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
 coef(mod, log = FALSE)
 ```
-Note here we specify `log = FALSE` to give the parameterization as in Equation
+Note here that we have specified `log = FALSE` in order to report the estimates in the parameterization of Equation
 \@ref(eq:PL). In the next section we discuss why it is more appropriate to use
 the log scale for inference.
 
@@ -475,17 +474,17 @@ cannot be outside of these limits.
 
 On the log scale however, there are no bounds on the parameters and we can set
 a reference level to provide meaningful comparisons. By default, the summary
-method for `"PlackettLuce"` objects sets the first item as the reference:
+method for `"PlackettLuce"` objects sets the alphabetically first item as the reference:
 
 ```{r}
 summary(mod)
 ```
 
 None of the Z tests for the item parameters provides significant evidence
-against the null hypothesis, which is consistent with the test for equal
+against the null hypothesis of no difference from the worth of item 1, which is consistent with the test for equal
 preferences presented in @Davidson1970. The tie parameter is also shown on the
 log scale here, but it is an integral part of the model rather than a parameter
-of interest for inference, and its scale is not relevant.
+of interest for inference, and its scale is not as relevant as that of the worth parameters.
 
 The reference level for the item parameters can be changed via the `ref`
 argument, for example setting to `NULL` sets the mean worth as the reference:
@@ -496,7 +495,7 @@ summary(mod, ref = NULL)
 
 As can be seen from the output above, the standard error of the item parameters
 changes with the reference level. Therefore in cases where there is not a
-natural reference (e.g. own brand versus competitor's brands), the inference can
+natural reference (like for example in comparisons of own brand versus competitor's brands), inference can
 depend on an arbitrary choice. This problem can be handled through the use of
 *quasi standard errors* that remain constant for a given item regardless of the
 reference. In addition quasi standard errors are defined for the reference item,
@@ -520,7 +519,7 @@ significantly different:
 ```{r pudding-qv, fig.cap = "Worth of brands of chocolate pudding. Intervals based on quasi-standard errors."}
 plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
 ```
-The quasi-variances allow comparisons that are *approximately* correct, for every possible contrast among the parameters.  The routine error report in the last two lines printed above by `summary(qv)` tells us that, in this example, the approximation error is always very small: the approximation error for the standard error of any simple
+The quasi-variances allow comparisons that are *approximately* correct, for every possible contrast among the parameters.  The routine error report in the last two lines printed above by `summary(qv)` tells us that, in this example, the approximation error has been very small: the approximation error for the standard error of any simple
 contrast among the parameters is less than 0.8%.
 
 ## Disconnected networks
@@ -688,13 +687,13 @@ approximation, across the standard errors of all of the 3741 possible simple
 contrasts (contrasts between pairs of the 87 driver-specific parameters),
 ranges between -0.7% and +6.7% --- which is still remarkably accurate, and which
 means that the plot of comparison intervals is a good visual guide to the
-uncertainty about drivers' relative abilities. [The results of using
-`summary(qv)` are not shown here, as they would occupy too much space.]
+uncertainty about drivers' relative abilities. The results of using
+`summary(qv)` are not shown here, as they would occupy too much space.
 
 Although the prior pseudo-rankings are only necessary to add when the network is
 incomplete, the default behaviour is always to use them (with a weight of 0.5)
-because the small shrinkage effect that the pseudo-data provides
-also reduces both the bias and the variance of the estimates.
+because the small shrinkage effect that the pseudo-data delivers
+has also a beneficial impact in terms of reducing the bias and the variance of the estimators.
 
 # Plackett-Luce Trees
 
@@ -702,8 +701,8 @@ A Plackett-Luce model that assumes the same worth parameters across all rankings
 may sometimes be an over-simplification. For example, if rankings are made by
 different judges, the worth parameters may vary between judges with different
 characteristics. Model-based partitioning provides an automatic way to determine
-subgroups of the judges with significantly different sets of worth parameters,
-based on judge covariates. A Plackett-Luce tree is constructed via the following
+subgroups of rankings with significantly different sets of worth parameters,
+based on ranking-specific covariates. A Plackett-Luce tree is constructed via the following
 steps:
 
 1. Fit a Plackett-Luce model to the full data.
@@ -745,8 +744,7 @@ In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
 object, that defines how the rankings map to the covariate values. In this case
 we wish to group by each record in the original data set, so we create a
 `"grouped_rankings"` object that
-identifies the record number for each of the four rankings from each farmer (
-one ranking of order three plus three pairwise rankings with the local variety):
+identifies the record number for each of the four rankings from each farmer (one ranking of order three plus three pairwise rankings with the local variety):
 ```{r}
 G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 format(head(G, 2), width = 50)
@@ -799,7 +797,7 @@ for heterogeneity across the item worth parameters due to ranking-specific
 covariates.
 
 Current work involves support for the online estimation from streams of
-partial-rankings and accounting for spatio-temporal heterogeneity in worth
+partial-rankings and formally accounting for spatio-temporal heterogeneity in worth
 parameters.
 
 # Appendix
