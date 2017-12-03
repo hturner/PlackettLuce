@@ -5,7 +5,7 @@ author:
   affiliation: Department of Statistics, University of Warwick, UK
 - name: Jacob van Etten
   affiliation: Bioversity International, Costa Rica
-- name: David Firth 
+- name: David Firth
   affiliation: Department of Statistics, University of Warwick, UK; and Alan Turing Institute, London, UK
 - name: Ioannis Kosmidis
   affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK
@@ -15,12 +15,12 @@ output:
   BiocStyle::pdf_document: default
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
-  attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The 
-  generalization accommodates both ties (of any order) and partial rankings 
+  attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
+  generalization accommodates both ties (of any order) and partial rankings
   (rankings of only some items). By default, the implementation adds a set of
   pseudo-rankings with a hypothetical item, ensuring that the network of wins
   and losses is always strongly connected, i.e. all items are connected to every
-  other item by both a path of wins and a path of losses. This means that the 
+  other item by both a path of wins and a path of losses. This means that the
   worth of each item is always estimable with finite standard error. It also has
   a shrinkage effect, regularizing the estimated parameters. In addition to
   standard methods for model summary, **PlackettLuce** provides a method to
@@ -34,7 +34,7 @@ vignette: |
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
-link-citations: true    
+link-citations: true
 ---
 
 ```{r vignette-setup, include = FALSE}
@@ -49,7 +49,7 @@ options(knitr.table.format = opts_knit$get("rmarkdown.pandoc.to"))
 Rankings data, in which each observation is an ordering of a set of items,
 arises in a range of applications, for example sports tournaments and consumer
 studies. A classic model for such data is the Plackett-Luce model. This model
-depends on Luce's axiom of choice [@Luce1959, @Luce1977] which states that the odds of 
+depends on Luce's axiom of choice [@Luce1959; @Luce1977] which states that the odds of
 choosing item 1 over item 2 do not depend on the set of items from which the
 choice is made. Suppose we have a set of $J$ items
 
@@ -63,13 +63,13 @@ $$P(j | S) = \frac{\alpha_{j}}{\sum_{i \in S} \alpha_i}$$
 where $\alpha_i$ represents the **worth** of item $i$. Viewing a ranking of $J$
 items as a sequence of choices --- first choosing the top-ranked item from all
 items, then choosing the second-ranked item from the remaining items and so
-on --- it follows that the probability of the ranking 
+on --- it follows that the probability of the ranking
 ${i_1 \succ \ldots \succ i_J}$ is
 
 $$\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}$$
 
-where $A_j$ is the set of alternatives $\{i_j, i_{j + 1}, \ldots, i_J\}$ from 
-which item $i_j$ is chosen. The above model is also derived in @Plackett1975, 
+where $A_j$ is the set of alternatives $\{i_j, i_{j + 1}, \ldots, i_J\}$ from
+which item $i_j$ is chosen. The above model is also derived in @Plackett1975,
 hence the name Plackett-Luce model.
 
 The **PlackettLuce** package implements a novel extension of the Plackett-Luce
@@ -102,7 +102,7 @@ by using the `gnm` function from **gnm**, which provides an `eliminate` argument
 to efficiently estimate the effects of such a factor. Even then, the
 model-fitting may be relatively slow, given the expansion in the number of
 observations converting from rankings to counts. For example, the ranking {item
-3 $\prec$ item 1 $\prec$ item 2} expands to two choices with five counts all 
+3 $\prec$ item 1 $\prec$ item 2} expands to two choices with five counts all
 together:
 
 ```{r, echo = FALSE}
@@ -214,7 +214,7 @@ timings <- function(dat, iter = NULL,
     res
 }
 netflix_timings <- timings(netflix, 6)
-tshirt_timings <- timings(tshirt, 341, 
+tshirt_timings <- timings(tshirt, 341,
                           fun = c("pl", "hyper2", "plmix", "statrank"))
 sushi_timings <- timings(sushi, 5,
                          fun = c("pl", "hyper2", "plmix", "statrank"))
@@ -246,7 +246,7 @@ kable(features,
     kable_styling()
 ```
 
-(ref:timings) Timings for fitting the Plackett-Luce model to data sets summarised in 
+(ref:timings) Timings for fitting the Plackett-Luce model to data sets summarised in
 Table \@ref(tab:data-features) using different packages. See Appendix \@ref(app:timings) for details and code.
 
 ```{r timings-kable, echo = FALSE}
@@ -261,7 +261,7 @@ dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
                       c("PlackettLuce",
                         "hyper2", "PLMIX", "pmr", "StatRank"))
 
-kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)", 
+kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)",
       escape = FALSE) %>%
     kable_styling() %>%
     add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
@@ -339,7 +339,7 @@ tab <- data.frame(Feature = c("Inference", "Disconnected networks",
                   pmr = c("No", "No", "No", "No", "No"),
                   StatRank = c("No", "No", "No", "No", "No"),
                   PLMIX = c("Bayesian", "Yes", "No", "No", "Mixtures"))
-kable(tab, booktabs = TRUE, 
+kable(tab, booktabs = TRUE,
       caption = "Features of packages for fitting the Plackett-Luce model.") %>%
     kable_styling()
 ```
@@ -460,7 +460,7 @@ the log scale for inference.
 
 ## Inference
 
-A standard way to report model parameter estimates is to report them along with their 
+A standard way to report model parameter estimates is to report them along with their
 corresponding standard error. This is an indication of the estimate's precision,
 however implicitly this invites comparison with zero. Such comparison is made
 explicit in many summary methods for models in R, with the addition of
@@ -552,17 +552,17 @@ net <- graph_from_adjacency_matrix(A)
 plot(net, edge.arrow.size = 0.5, vertex.size = 30)
 ```
 
-For the worth parameters (on the log scale) to have finite 
-maximum likelihood estimates (MLEs) and 
-standard errors, the network must be strongly connected, i.e. there must be a 
-path of wins and a path of losses between each pair of items. In the example 
-above, A, B and C are strongly connected. For example, C directly loses against 
-B and although C never directly beats B, it does beat A and A in turn beats B, 
-so C indirectly beats B. Similar paths of wins and losses can be found for all 
+For the worth parameters (on the log scale) to have finite
+maximum likelihood estimates (MLEs) and
+standard errors, the network must be strongly connected, i.e. there must be a
+path of wins and a path of losses between each pair of items. In the example
+above, A, B and C are strongly connected. For example, C directly loses against
+B and although C never directly beats B, it does beat A and A in turn beats B,
+so C indirectly beats B. Similar paths of wins and losses can be found for all
 pairs of A, B and C. On the other hand D is only observed to lose, therefore the
 MLE of the log-worth would be $-\infty$, with infinite standard error.
 
-If one item always wins, the MLE of the log-worth would be $+\infty$ with infinite 
+If one item always wins, the MLE of the log-worth would be $+\infty$ with infinite
 standard error. Or if there are clusters of items that are strongly connected
 with each other, but disconnected or connected only by wins or only by loses
 (weakly connected) to other clusters, then the maximum likelihood estimates are
@@ -575,8 +575,8 @@ from **PlackettLuce**
 connectivity(A)
 ```
 
-If the network is not strongly connected, information on the clusters within 
-the network is returned. In this case a model could be estimated by excluding 
+If the network is not strongly connected, information on the clusters within
+the network is returned. In this case a model could be estimated by excluding
 item D:
 ```{r}
 R2 <- R[, -4]
@@ -591,9 +591,9 @@ D is dropped.
 By default however **PlackettLuce** provides a way to handle disconnected/weakly
 connected networks, through the addition of pseudo-rankings. This works by
 adding a win and a loss between each item and a hypothetical or ghost item with
-fixed worth. This makes the network strongly connected so all the worth 
-parameters are estimable. It also has an interpretation as a Bayesian prior, in 
-particular an exchangeable prior in which all items have equal worth. 
+fixed worth. This makes the network strongly connected so all the worth
+parameters are estimable. It also has an interpretation as a Bayesian prior, in
+particular an exchangeable prior in which all items have equal worth.
 
 The `npseudo` argument defines the number of wins and loses with the ghost item
 that are added for each real item. Setting `npseudo = 0 ` means that no
@@ -608,9 +608,9 @@ parameters change quite considerably:
 mod2 <- PlackettLuce(R)
 coef(mod2)
 ```
-This is because there are only 5 rankings, so there is not much information in 
-the data. In more realistic examples, the default prior will have a weak 
-shrinkage effect, shrinking the items' worth parameters towards $1/N$, 
+This is because there are only 5 rankings, so there is not much information in
+the data. In more realistic examples, the default prior will have a weak
+shrinkage effect, shrinking the items' worth parameters towards $1/N$,
 where $N$ is the number of items.
 
 For a practical example, we consider the NASCAR data from @Hunter2004. This
@@ -682,18 +682,18 @@ qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
 axis(1, at = seq_len(87), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.7)
 ```
-As in the previous example, we can use `summary(qv)` to see a report on the 
-accuracy of the quasi-variance approximation.  In this example the error of 
-approximation, across the standard errors of all of the 3741 possible simple 
-contrasts (contrasts between pairs of the 87 driver-specific parameters), 
-ranges between -0.7% and +6.7% --- which is still remarkably accurate, and which 
+As in the previous example, we can use `summary(qv)` to see a report on the
+accuracy of the quasi-variance approximation.  In this example the error of
+approximation, across the standard errors of all of the 3741 possible simple
+contrasts (contrasts between pairs of the 87 driver-specific parameters),
+ranges between -0.7% and +6.7% --- which is still remarkably accurate, and which
 means that the plot of comparison intervals is a good visual guide to the
-uncertainty about drivers' relative abilities. [The results of using 
+uncertainty about drivers' relative abilities. [The results of using
 `summary(qv)` are not shown here, as they would occupy too much space.]
 
-Although the prior pseudo-rankings are only necessary to add when the network is 
-incomplete, the default behaviour is always to use them (with a weight of 0.5) 
-because the small shrinkage effect that the pseudo-data provides 
+Although the prior pseudo-rankings are only necessary to add when the network is
+incomplete, the default behaviour is always to use them (with a weight of 0.5)
+because the small shrinkage effect that the pseudo-data provides
 also reduces both the bias and the variance of the estimates.
 
 # Plackett-Luce Trees
@@ -707,7 +707,7 @@ based on judge covariates. A Plackett-Luce tree is constructed via the following
 steps:
 
 1. Fit a Plackett-Luce model to the full data.
-2. Assess the stability of the worth parameters with respect to each available 
+2. Assess the stability of the worth parameters with respect to each available
 covariate.
 3. If there is significant instability, split the full data by the covariate
 with the strongest instability and use the cut-point with the highest
@@ -719,7 +719,7 @@ This is an extension of Bradley-Terry trees, implemented in the R package
 **psychotree** and described in more detail by @Strobl2011.
 
 To illustrate this approach, we consider data from a trial of different
-varieties of bean in Nicaragua, run by Bioversity International [@vanEtten2016]. 
+varieties of bean in Nicaragua, run by Bioversity International [@vanEtten2016].
 Farmers were
 asked to grow three experimental varieties of bean in one of the growing
 seasons, Primera (May - August), Postrera (September - October) or Apante
@@ -730,7 +730,7 @@ trial variety to the standard local variety and say whether it was better or
 worse.
 
 The data are provided as the dataset `beans` in Plackett-Luce. The data require
-some preparation to collate the rankings, which is detailed in 
+some preparation to collate the rankings, which is detailed in
 Appendix \@ref(app:beans).
 The same code is provided in the examples section of the help file of
 `beans`
@@ -744,7 +744,7 @@ variety.
 In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
 object, that defines how the rankings map to the covariate values. In this case
 we wish to group by each record in the original data set, so we create a
-`"grouped_rankings"` object that 
+`"grouped_rankings"` object that
 identifies the record number for each of the four rankings from each farmer (
 one ranking of order three plus three pairwise rankings with the local variety):
 ```{r}
@@ -752,14 +752,14 @@ G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 format(head(G, 2), width = 50)
 ```
 
-For each record in the original data, we have three covariates: `season` 
+For each record in the original data, we have three covariates: `season`
 the season-year the beans were planted, `year` the year of planting,
-and `maxTN` the maximum temperature at night during the vegetative cycle. 
-The following code fits a Plackett-Luce tree with up to three nodes and at 
+and `maxTN` the maximum temperature at night during the vegetative cycle.
+The following code fits a Plackett-Luce tree with up to three nodes and at
 least 5% of the records in each node:
 ```{r pltree, eval = eval_all}
 beans$year <- factor(beans$year)
-tree <- pltree(G ~ ., data = beans[c("season", "year", "maxTN")], 
+tree <- pltree(G ~ ., data = beans[c("season", "year", "maxTN")],
                minsize = 0.05*n, maxdepth = 3)
 tree
 ```
@@ -772,15 +772,15 @@ if (eval_all){
 }
 ```
 
-The algorithm identifies three nodes, with the first split defined by high 
-night-time temperatures, and the second splitting the single Primera season 
-from the others. So for early planting in regions where the night-time 
-temperatures were not too high, INTA Rojo (7) was most preferred, closely 
+The algorithm identifies three nodes, with the first split defined by high
+night-time temperatures, and the second splitting the single Primera season
+from the others. So for early planting in regions where the night-time
+temperatures were not too high, INTA Rojo (7) was most preferred, closely
 followed by the local variety. During the regular growing seasons (Postrera and
-Apante) in regions where the night-time temperatures were not too high, the 
+Apante) in regions where the night-time temperatures were not too high, the
 local variety was most preferred, closely followed by INTA Sequia (8). Finally
-in regions where the maximum night-time temperature was high, INTA Sequia (8) 
-was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur 
+in regions where the maximum night-time temperature was high, INTA Sequia (8)
+was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur
 (3). A plot method is provided to visualise the tree:
 ```{r plot-pltree, fig.wide = TRUE, fig.cap = "Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79."}
 plot(tree, names = FALSE, abbreviate = 2)
@@ -802,25 +802,25 @@ Current work involves support for the online estimation from streams of
 partial-rankings and accounting for spatio-temporal heterogeneity in worth
 parameters.
 
-# Appendix 
+# Appendix
 
 ## Timings {#app:timings}
 
 Data for the package comparison in Table \@ref(tab:timings-kable) was downloaded
-from PrefLib [@Mattei2013] using the `read.soc` function provided in 
-**PlackettLuce** to read in files with the "Strict Orders - Complete List" 
+from PrefLib [@Mattei2013] using the `read.soc` function provided in
+**PlackettLuce** to read in files with the "Strict Orders - Complete List"
 format.
 
 ```{r show-soc}
 ```{r soc, eval = FALSE}
 ```
 
-A wrapper was defined for each function in the comparison, to prepare the 
+A wrapper was defined for each function in the comparison, to prepare the
 rankings and run each function with reasonable defaults. The Plackett-Luce model
-was fitted to aggregated rankings where possible (for `PlackettLuce`, `hyper2`, 
-and `pmr`). Arguments were set to obtain the maximum likelihood estimate, with 
-the default convergence criteria. The default iterative scaling algorithm was 
-used for `PlackettLuce`. 
+was fitted to aggregated rankings where possible (for `PlackettLuce`, `hyper2`,
+and `pmr`). Arguments were set to obtain the maximum likelihood estimate, with
+the default convergence criteria. The default iterative scaling algorithm was
+used for `PlackettLuce`.
 
 ```{r chunk2}
 ```{r wrappers, eval = FALSE}
