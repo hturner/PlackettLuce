@@ -551,9 +551,9 @@ net <- graph_from_adjacency_matrix(A)
 plot(net, edge.arrow.size = 0.5, vertex.size = 30)
 ```
 
-For the worth parameters (on the log scale) to have finite
+A sufficient condition for the worth parameters (on the log scale) to have finite
 maximum likelihood estimates (MLEs) and
-standard errors, the network must be strongly connected, i.e. there must be a
+standard errors is that the network is strongly connected, i.e. there is a
 path of wins and a path of losses between each pair of items. In the example
 above, A, B and C are strongly connected. For example, C directly loses against
 B and although C never directly beats B, it does beat A and A in turn beats B,
