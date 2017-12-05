@@ -95,9 +95,9 @@
 
     
     <p>Create an object of class <code>"grouped_rankings"</code> which associates a
-subject index with an object of class <code>"rankings"</code>. This allows the
-rankings to be linked to subject covariates as the basis for
-model-based recursive partitioning, see <code><a href='pltree.html'>pltree</a></code>.</p>
+group index with an object of class <code>"rankings"</code>. This allows the
+rankings to be linked to covariates with group-specific values as the basis
+for model-based recursive partitioning, see <code><a href='pltree.html'>pltree</a></code>.</p>
     
 
     <pre class="usage">grouped_rankings(rankings, index, ...)
@@ -154,8 +154,8 @@ by <code>[</code>.</p></td>
     </tr>
     <tr>
       <th>as.grouped_rankings</th>
-      <td><p>if <code>TRUE</code> return a rankings object, otherwise
-return a matrix/vector.</p></td>
+      <td><p>if <code>TRUE</code> return a grouped_rankings object,
+otherwise return a matrix/vector.</p></td>
     </tr>
     <tr>
       <th>max</th>
@@ -196,18 +196,18 @@ by each ranking.</p></dd>
                           <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
                           <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 <span class='fu'>length</span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='no'>R</span></div><div class='output co'>#&gt; [1] "1 &gt; 2"     "3 &gt; 2"     "3 &gt; 4"     "2 &gt; 1"     "2 &gt; 3 &gt; 4"</div><div class='input'>
-<span class='co'># grouped rankings (1st 3 from subject 1, next 2 from subject 2)</span>
+<span class='co'># grouped rankings (first three in group 1, next two in group 2)</span>
 <span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'>grouped_rankings</span>(<span class='no'>R</span>, <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'>length</span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'><span class='co'>## by default up to 2 rankings are shown per subject, "..." indicates if</span>
+<span class='fu'>length</span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'><span class='co'>## by default up to 2 rankings are shown per group, "..." indicates if</span>
 <span class='co'>## there are further rankings</span>
 <span class='no'>G</span></div><div class='output co'>#&gt;                   1                   2 
 #&gt; "1 &gt; 2, 3 &gt; 2, ..."  "2 &gt; 1, 2 &gt; 3 &gt; 4" </div><div class='input'><span class='fu'>print</span>(<span class='no'>G</span>, <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;            1            2 
-#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'><span class='co'>## select rankings from subject 1</span>
+#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'><span class='co'>## select rankings from group 1</span>
 <span class='no'>G</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt;                   1 
 #&gt; "1 &gt; 2, 3 &gt; 2, ..." </div><div class='input'><span class='co'>## exclude item 3 from ranking</span>
 <span class='no'>G</span>[, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Removed rankings with less than 2 items</span></div><div class='output co'>#&gt;              1              2 
-#&gt;        "1 &gt; 2" "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## rankings from subject 2, excluding item 3</span>
-<span class='co'>## - note subject 2 becomes the first subject</span>
+#&gt;        "1 &gt; 2" "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## rankings from group 2, excluding item 3</span>
+<span class='co'>## - note group 2 becomes the first group</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt;              1 
 #&gt; "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## index underlying rankings without creating new grouped_rankings object</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>, <span class='kw'>as.grouped_rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      1 2 4

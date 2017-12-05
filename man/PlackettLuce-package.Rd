@@ -30,7 +30,7 @@ specified: \code{\link{coef}}, \code{deviance}, \code{\link{fitted}},
 \code{\link{qvcalc}}, \code{\link{summary}}, \code{\link{vcov}}.
 
 PlackettLuce also provides the function \code{pltree} to fit a Plackett-Luce
-tree i.e. a tree that partitions the subjects by covariate values,
+tree i.e. a tree that partitions the rankings by covariate values,
 identifying subgroups with different sets of worth parameters for the items.
 In this case the data must be prepared as \code{\link{grouped_rankings}}.
 

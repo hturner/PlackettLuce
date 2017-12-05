@@ -109,7 +109,9 @@
     <tr>
       <th>formula</th>
       <td><p>a symbolic description of the model to be fitted, of the form
-<code>y ~ x1 + ... + xn</code> where <code>y</code> should be an object of class <code><a href='grouped_rankings.html'>grouped_rankings</a></code> and <code>x1</code>, &#8230;, <code>xn</code> are used as partitioning variables.</p></td>
+<code>y ~ x1 + ... + xn</code> where <code>y</code> should be an object of class
+<code><a href='grouped_rankings.html'>grouped_rankings</a></code> and <code>x1</code>, &#8230;, <code>xn</code> are used as
+ partitioning variables.</p></td>
     </tr>
     <tr>
       <th>data</th>
@@ -131,7 +133,8 @@ covariances in the parameter stability tests, see <code><a href='http://www.rdoc
     </tr>
     <tr>
       <th>ref</th>
-      <td><p>an integer or character string specifying the reference item (for which log ability will be set to zero). If NULL the first item is used.</p></td>
+      <td><p>an integer or character string specifying the reference item (for
+which log ability will be set to zero). If NULL the first item is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -166,10 +169,11 @@ and <code>"modelparty"</code>.</p>
 
     <p>Plackett-Luce trees are an application of model-based recursive partitioning
 (implemented in <code><a href='http://www.rdocumentation.org/packages/partykit/topics/mob'>mob</a></code>) to Plackett-Luce models for
-rankings. The partitioning is based on attributes of the subjects ranking the
-items. Thus the response should be a
-<code><a href='grouped_rankings.html'>grouped_rankings</a></code> object that groups rankings by subject. This
-may be included in a data frame alongside the subject covariates.</p>
+rankings. The partitioning is based on ranking covariates, e.g. attributes of
+the judge making the ranking, or conditions under which the ranking is made.
+The response should be a <code><a href='grouped_rankings.html'>grouped_rankings</a></code> object that groups
+rankings with common covariate values. This may be included in a data frame
+alongside the covariates.</p>
 <p>Various methods are provided for <code>"pltree"</code> objects, most of them
 inherited from <code>"modelparty"</code> objects (e.g. <code>print</code>,
 <code>summary</code>), or <code>"bttree"</code> objects (<code>plot</code>). <code>itempar</code>
@@ -191,6 +195,10 @@ panel-generating function.</p>
     <span class='fu'>data</span>(<span class='st'>"Topmodel2007"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"psychotree"</span>)
     <span class='co'>## convert paircomp object to grouped rankings</span>
     <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grouped_rankings.html'>as.grouped_rankings</a></span>(<span class='no'>Topmodel2007</span>$<span class='no'>preference</span>)
+    <span class='co'>## rankings are grouped by judge</span>
+    <span class='fu'>print</span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>,], <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>6</span>)
+    <span class='co'>## Topmodel2007[, -1] gives covariate values for each judge</span>
+    <span class='fu'>head</span>(<span class='no'>Topmodel2007</span>[, -<span class='fl'>1</span>], <span class='fl'>2</span>)
 
     <span class='co'>## fit partition model based on all variables except preference</span>
     <span class='co'>## set npseudo = 0 as all judges rank all models</span>
@@ -221,7 +229,10 @@ panel-generating function.</p>
     <span class='co'>### node the judge belongs to</span>
     <span class='fu'>predict</span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"node"</span>)
 
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotree</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: partykit</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: grid</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotools</span></div><div class='img'><img src='pltree-1.png' alt='' width='700' height='432.632880098887' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='432.632880098887' /></div><div class='output co'>#&gt;   1   2   3 
+}</div><div class='output co'>#&gt;                                                                                               1 
+#&gt; "Barbara &gt; Anni, Barbara &gt; Hana, Anni &gt; Hana, Barbara &gt; Fiona, Fiona &gt; Anni, Fiona &gt; Hana, ..." 
+#&gt;                                                                                               2 
+#&gt; "Anni &gt; Barbara, Hana &gt; Barbara, Hana &gt; Anni, Fiona &gt; Barbara, Anni &gt; Fiona, Hana &gt; Fiona, ..." </div><div class='img'><img src='pltree-3.png' alt='' width='700' height='432.632880098887' /></div><div class='img'><img src='pltree-4.png' alt='' width='700' height='432.632880098887' /></div><div class='output co'>#&gt;   1   2   3 
 #&gt; "7" "3" "3" </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

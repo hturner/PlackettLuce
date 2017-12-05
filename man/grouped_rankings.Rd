@@ -41,8 +41,8 @@ by \code{\link{[}}.}
 
 \item{drop}{if \code{TRUE} return single row/column matrices as a vector.}
 
-\item{as.grouped_rankings}{if \code{TRUE} return a rankings object, otherwise
-return a matrix/vector.}
+\item{as.grouped_rankings}{if \code{TRUE} return a grouped_rankings object,
+otherwise return a matrix/vector.}
 
 \item{max}{the maximum number of rankings to format per subject.}
 
@@ -63,9 +63,9 @@ by each ranking. }
 }
 \description{
 Create an object of class \code{"grouped_rankings"} which associates a
-subject index with an object of class \code{"rankings"}. This allows the
-rankings to be linked to subject covariates as the basis for
-model-based recursive partitioning, see \code{\link{pltree}}.
+group index with an object of class \code{"rankings"}. This allows the
+rankings to be linked to covariates with group-specific values as the basis
+for model-based recursive partitioning, see \code{\link{pltree}}.
 }
 \examples{
 
@@ -78,19 +78,19 @@ R <- as.rankings(matrix(c(1, 2, 0, 0,
 length(R)
 R
 
-# grouped rankings (1st 3 from subject 1, next 2 from subject 2)
+# grouped rankings (first three in group 1, next two in group 2)
 G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
 length(G)
-## by default up to 2 rankings are shown per subject, "..." indicates if
+## by default up to 2 rankings are shown per group, "..." indicates if
 ## there are further rankings
 G
 print(G, max = 1)
-## select rankings from subject 1
+## select rankings from group 1
 G[1,]
 ## exclude item 3 from ranking
 G[, -3]
-## rankings from subject 2, excluding item 3
-## - note subject 2 becomes the first subject
+## rankings from group 2, excluding item 3
+## - note group 2 becomes the first group
 G[2, -3]
 ## index underlying rankings without creating new grouped_rankings object
 G[2, -3, as.grouped_rankings = FALSE]
