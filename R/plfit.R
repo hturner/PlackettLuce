@@ -30,13 +30,17 @@
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
 #'
-#' # group by subject
+#' # group rankings into two groups
 #' G <- grouped_rankings(R, rep(1:2, 3))
 #'
 #' # plfit() gives the same results as PlackettLuce()
-#' plfit(G)
+#' pl <- plfit(G)
+#' pl$coefficients
+#' -pl$objfun
 #'
-#' PlackettLuce(R)
+#' mod <- PlackettLuce(R)
+#' coef(mod)
+#' logLik(mod)
 #' @export
 plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
                    offset = NULL, ..., estfun = FALSE, object = FALSE) {

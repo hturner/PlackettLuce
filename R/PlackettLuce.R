@@ -405,7 +405,7 @@ PlackettLuce <- function(rankings,
         res <- list(alpha = alpha, delta = delta)
         res[c("expA", "expB", "theta")] <-
             expectation("all", alpha, delta, N, D, S, R, G, W)
-        res$logl <- sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+        res$logl <- sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
             sum(res$theta)
         oneUpdate <- function(res){
             # update all alphas
@@ -419,7 +419,7 @@ PlackettLuce <- function(rankings,
             res[c("expA", "expB", "theta")] <-
                 expectation("all", res$alpha, res$delta,
                             N, D, S, R, G, W)
-            res$logl <- sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+            res$logl <- sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
                 sum(res$theta)
             res
         }
@@ -472,7 +472,7 @@ PlackettLuce <- function(rankings,
                         expectation("all", res$alpha, res$delta,
                                     N, D, S, R, G, W)
                     res$logl <-
-                        sum(B[-1]*log(res$delta)) + sum(A*log(res$alpha)) -
+                        sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
                         sum(res$theta)
                     if (res$logl < res2$logl) {
                         res <- res2

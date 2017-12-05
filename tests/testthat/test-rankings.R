@@ -7,7 +7,7 @@ R <- as.rankings(matrix(c(1, 2, 0, 0,
                           2, 1, 0, 0,
                           0, 1, 2, 3), ncol = 4, byrow = TRUE))
 
-# grouped rankings (1st 3 from subject 1, next 2 from subject 2)
+# grouped rankings (1st 3 from group 1, next 2 from group 2)
 G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
 
 test_that("].grouped_rankings allows replicates [fake partial rankings]", {

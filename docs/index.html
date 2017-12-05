@@ -86,11 +86,11 @@
 <li>Accommodates sub-rankings, e.g. pears <span class="math inline">\(\succ\)</span> apples, when the full set of items is {apples, bananas, oranges, pears}.</li>
 <li>Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.</li>
 </ul>
-<p><img src="index_files/figure-html/always-loses-1.png" width="336"></p>
+<p><img src="reference/figures/always-loses-1.png" width="336"></p>
 <p>In addition the package provides methods for</p>
 <ul>
 <li>Obtaining quasi-standard errors, that don’t depend on the constraints applied to the worth parameters for identifiability.</li>
-<li>Fitting Plackett-Luce trees, i.e. a tree that partitions the subjects (e.g. consumers, race tracks) by covariate values, identifying subgroups with different sets of worth parameters for the items.</li>
+<li>Fitting Plackett-Luce trees, i.e. a tree that partitions the rankings by covariate values, such as consumer attributes or racing conditions, identifying subgroups with different sets of worth parameters for the items.</li>
 </ul>
 </div>
 <div id="installation" class="section level2">
@@ -165,7 +165,7 @@ R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, a
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)
 <span class="kw">plot</span>(qv)</code></pre></div>
-<p><img src="index_files/figure-html/qv-1.png" width="864"></p>
+<p><img src="reference/figures/qv-1.png" width="864"></p>
 <p>If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users’ preference for these last two movies.</p>
 </div>
 <div id="going-further" class="section level2">

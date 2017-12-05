@@ -24,7 +24,7 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 In addition the package provides methods for
 
 -   Obtaining quasi-standard errors, that don't depend on the constraints applied to the worth parameters for identifiability.
--   Fitting Plackett-Luce trees, i.e. a tree that partitions the subjects (e.g. consumers, race tracks) by covariate values, identifying subgroups with different sets of worth parameters for the items.
+-   Fitting Plackett-Luce trees, i.e. a tree that partitions the rankings by covariate values, such as consumer attributes or racing conditions, identifying subgroups with different sets of worth parameters for the items.
 
 Installation
 ------------

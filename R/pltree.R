@@ -4,10 +4,11 @@
 #'
 #' Plackett-Luce trees are an application of model-based recursive partitioning
 #' (implemented in \code{\link[partykit]{mob}}) to Plackett-Luce models for
-#' rankings. The partitioning is based on attributes of the subjects ranking the
-#' items. Thus the response should be a
-#' \code{\link{grouped_rankings}} object that groups rankings by subject. This
-#' may be included in a data frame alongside the subject covariates.
+#' rankings. The partitioning is based on ranking covariates, e.g. attributes of
+#' the judge making the ranking, or conditions under which the ranking is made.
+#' The response should be a \code{\link{grouped_rankings}} object that groups
+#' rankings with common covariate values. This may be included in a data frame
+#' alongside the covariates.
 #'
 #' Various methods are provided for \code{"pltree"} objects, most of them
 #' inherited from \code{"modelparty"} objects (e.g. \code{print},
@@ -18,14 +19,17 @@
 #' panel-generating function.
 #'
 #' @param formula a symbolic description of the model to be fitted, of the form
-#' \code{y ~ x1 + ... + xn} where \code{y} should be an object of class \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as partitioning variables.
+#' \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
+#' \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as
+#'  partitioning variables.
 #' @param data an optional data frame containing the variables in the model.
 #' @param subset A specification of the rows to be used, passed to
 #' \code{\link{model.frame}}.
 #' @param na.action how NAs are treated, passed to \code{\link{model.frame}}.
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
 #' covariances in the parameter stability tests, see \code{\link{mob}}.
-#' @param ref an integer or character string specifying the reference item (for which log ability will be set to zero). If NULL the first item is used.
+#' @param ref an integer or character string specifying the reference item (for
+#' which log ability will be set to zero). If NULL the first item is used.
 #' @param ... additional arguments, passed to \code{\link{PlackettLuce}} by
 #' \code{pltree} and to \code{\link{itempar}} by \code{predict}.
 #' @param object a fitted model object of class \code{"pltree"}.
@@ -48,6 +52,10 @@
 #'     data("Topmodel2007", package = "psychotree")
 #'     ## convert paircomp object to grouped rankings
 #'     R <- as.grouped_rankings(Topmodel2007$preference)
+#'     ## rankings are grouped by judge
+#'     print(R[1:2,], max = 6)
+#'     ## Topmodel2007[, -1] gives covariate values for each judge
+#'     head(Topmodel2007[, -1], 2)
 #'
 #'     ## fit partition model based on all variables except preference
 #'     ## set npseudo = 0 as all judges rank all models
