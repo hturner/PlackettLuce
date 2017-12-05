@@ -277,7 +277,7 @@ are accommodated by the standard Plackett-Luce model, while incomplete rankings
 require an extension of the Plackett-Luce model. **PlackettLuce** handles
 sub-rankings only, while **PLMIX** handles incomplete rankings only and
 **hyper2** can handle both types. **StatRank** seems to support partial rankings, but
-the extent of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustate that **PlackettLuce** is more efficient than
+the extent of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustrate that **PlackettLuce** is more efficient than
 **hyper2** for modelling sub-rankings of a relatively large number of items.
 
 ```{r timings-sub, eval = eval_all, echo = FALSE, message = FALSE, warning = FALSE}
