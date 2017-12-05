@@ -22,7 +22,7 @@ abstract: |
   and losses is always strongly connected, i.e. all items are connected to every
   other item by both a path of wins and a path of losses. This means that the
   worth of each item is always estimable with finite standard error. It also has
-  a regularization effect, shirnking the estimated parameters towards equal item worth. In addition to
+  a regularization effect, shrinking the estimated parameters towards equal item worth. In addition to
   standard methods for model summary, **PlackettLuce** provides a method to
   estimate quasi-standard errors for the item parameters, so that comparison
   intervals can be derived even when a reference item is set. Finally the
@@ -277,7 +277,7 @@ are accommodated by the standard Plackett-Luce model, while incomplete rankings
 require an extension of the Plackett-Luce model. **PlackettLuce** handles
 sub-rankings only, while **PLMIX** handles incomplete rankings only and
 **hyper2** can handle both types. **StatRank** seems to support partial rankings, but
-the extend of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustate that **PlackettLuce** is more efficient than
+the extent of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustate that **PlackettLuce** is more efficient than
 **hyper2** for modelling sub-rankings of a relatively large number of items.
 
 ```{r timings-sub, eval = eval_all, echo = FALSE, message = FALSE, warning = FALSE}
@@ -474,7 +474,8 @@ cannot be outside of these limits.
 
 On the log scale however, there are no bounds on the parameters and we can set
 a reference level to provide meaningful comparisons. By default, the summary
-method for `"PlackettLuce"` objects sets the alphabetically first item as the reference:
+method for `"PlackettLuce"` objects sets the first item (the first element of
+`colnames(R)`) as the reference:
 
 ```{r}
 summary(mod)
