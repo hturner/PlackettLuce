@@ -9,3 +9,4 @@
 ^README.Rmd
 ^readme.bib
 ^vignettes_tmp_output$
+^cran-comments.md$
