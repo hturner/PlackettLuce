@@ -1,7 +1,9 @@
-#' Extract Coefficients of Plackett-Luce Model
+#' Plackett-Luce Model Summaries
 #'
-#' Extract the coefficients of a model fitted by \code{PlackettLuce}. By
-#' default, parameters are returned on the log scale, as most suited for
+#' Obtain the coefficients, model summary or coefficient variance-covariance
+#' matrix for a model fitted by \code{PlackettLuce}.
+#'
+#' By default, parameters are returned on the log scale, as most suited for
 #' inference. If \code{log = FALSE}, the worth parameters are returned,
 #' constrained to sum to one so that they represent the probability that
 #' the corresponding item comes first in a ranking of all items, given that
@@ -18,6 +20,7 @@
 #' \code{"worth"} or \code{"all"}.
 #' @param ... additional arguments, currently ignored.
 #'
+#' @name summaries
 #' @export
 coef.PlackettLuce <- function(object, ref = 1, log = TRUE,
                               type = "all", ...){

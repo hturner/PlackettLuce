@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit Plackett-Luce Model — PlackettLuce • PlackettLuce</title>
+<title>Fit a Plackett-Luce Model — PlackettLuce • PlackettLuce</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -78,12 +78,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/hturner/PlackettLuce">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -95,7 +90,7 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit Plackett-Luce Model</h1>
+    <h1>Fit a Plackett-Luce Model</h1>
     </div>
 
     
@@ -105,7 +100,7 @@
 
     <pre class="usage"><span class='fu'>PlackettLuce</span>(<span class='no'>rankings</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"iterative scaling"</span>, <span class='st'>"BFGS"</span>, <span class='st'>"L-BFGS"</span>), <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>,
-  <span class='kw'>steffensen</span> <span class='kw'>=</span> <span class='fl'>1e-04</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>200</span>, <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>steffensen</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -152,7 +147,14 @@ apply Steffensen acceleration to the iterative scaling updates.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>logical, if <code>TRUE</code> show messages from validity checks.</p></td>
+      <td><p>logical, if <code>TRUE</code> show messages from validity checks on
+the rankings.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments passed to <code>optim</code> or <code>lbfgs</code>.
+In particular the convergence tolerance may be adjusted using e.g.
+<code>control = list(reltol = 1e-10)</code>.</p></td>
     </tr>
     </table>
     
@@ -162,27 +164,111 @@ apply Steffensen acceleration to the iterative scaling updates.</p></td>
 following elements:</p>
 <dt>call</dt><dd><p>The matched call.</p></dd>
 <dt>coefficients</dt><dd><p>The model coefficients.</p></dd>
-<dt>loglik</dt><dd><p>The log-likelihood.</p></dd>
+<dt>loglik</dt><dd><p>The maximized log-likelihood.</p></dd>
+<dt>df.residual</dt><dd><p>The residual degrees of freedom.</p></dd>
+<dt>rank</dt><dd><p>The rank of the model.</p></dd>
 <dt>iter</dt><dd><p>The number of iterations run.</p></dd>
+<dt>rankings</dt><dd><p>The rankings passed to <code>rankings</code>, converted to a
+<code>"rankings"</code> object if necessary.</p></dd>
+<dt>weights</dt><dd><p>The weights applied to each ranking in the fitting.</p></dd>
+<dt>maxTied</dt><dd><p>The maximum number of objects observed in a tie.</p></dd>
+<dt>conv</dt><dd><p>The convergence code: 0 for successful convergence; 1 if reached
+<code>maxit</code> iterations without convergence; 2 if Steffensen acceleration
+cause log-likelihood to increase; negative number if L-BFGS algorithm failed
+for other reason.</p></dd>
 
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="model-definition"><a class="anchor" href="#model-definition"></a>Model definition</h2>
 
-    <p>In order for the maximum likelihood estimate of an object's ability to be
+    
+    <p>A single ranking is given by
+$$R = \{C_1, C_2, \ldots, C_J\}$$
+where the items in set \(C_1\) are ranked higher than (better than) the
+items in \(C_2\), and so on. If there are multiple objects in set \(C_j\)
+these items are tied in the ranking.</p>
+<p>For a set if items \(S\), let
+$$f(S) = \delta_{|S|}
+      \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
+where \(|S|\) is the cardinality (size) of the set, \(\delta_n\) is a
+parameter representing the prevalence of ties of order \(n\), and
+\(\alpha_i\) is a parameter representing the worth of item \(i\).
+Then under an extension of the Plackett-Luce model allowing ties up to order
+\(D\), the probability of the ranking \(R\) is given by
+$$\prod_{j = 1}^J \frac{f(C_j)}{
+      \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}$$
+where \(D_j\) is the cardinality of \(C_j\), \(A_j\) is the set of
+alternatives from which \(C_j\) is chosen, and
+\(A_j \choose k\) is all the possible choices of \(k\)
+items from \(A_j\). The value of \(D\) can be set to the maximum number
+of tied items observed in the data, so that \(\delta_n = 0\) for
+\(n &gt; D\).</p>
+<p>When the worth parameters are constrained to sum to one, they represent the
+probability that the corresponding item comes first in a ranking of all
+items, given that first place is not tied.</p>
+<p>The 2-way tie prevalence parameter \(\delta_2\)$ is interpretable
+via the probability that two given items <em>of equal worth</em> tie for
+first place, given that the first place is not a 3-way or higher tie.
+Specifically, that probability is
+\(\delta_2/(2 + \delta_2)\).</p>
+<p>The 3-way and higher tie-prevalence parameters are interpretable similarly,
+in terms of tie probabilities among equal-worth items.</p>
+    
+    <h2 class="hasAnchor" id="pseudo-rankings"><a class="anchor" href="#pseudo-rankings"></a>Pseudo-rankings</h2>
+
+    
+    <p>In order for the maximum likelihood estimate of an object's worth to be
 defined, the network of rankings must be strongly connected. This means that
 in every possible partition of the objects into two nonempty subsets, some
-object in the second set is ranked higher than some objects in the first set
+object in the second set is ranked higher than some object in the first set
 at least once.</p>
-<p>If the network of rankings is not strongly connected, or the network is
-sparse, then pseudodata may be used to connect the network and reduce the
-bias in the ability estimates. This approach posits a hypothetical object
-with log-ability 0 and adds <code>npseudo</code> wins and <code>npseudo</code> losses
-to the set of rankings.</p>
+<p>If the network of rankings is not strongly connected then pseudo-rankings
+may be used to connect the network. This approach posits a hypothetical
+object with log-worth 0 and adds <code>npseudo</code> wins and <code>npseudo</code>
+losses to the set of rankings.</p>
 <p>The parameter <code>npseudo</code> is the prior strength.  With <code>npseudo = 0</code>
-we have the MLE as the posterior mode.  As <code>npseudo</code> approaches
-infinity the log-ability estimates all shrink towards 0. The default,
+the MLE is the posterior mode.  As <code>npseudo</code> approaches
+infinity the log-worth estimates all shrink towards 0. The default,
 <code>npseudo = 0.5</code>, is sufficient to connect the network and has a weak
-shrinkage effect.</p>
+shrinkage effect. Thus even for networks that are already connected, adding
+pseudo-rankings reduces both the bias and variance of the estimates.</p>
+    
+    <h2 class="hasAnchor" id="controlling-the-fit"><a class="anchor" href="#controlling-the-fit"></a>Controlling the fit</h2>
+
+    
+    <p>Using <code>nspseudo = 0</code> will use standard maximum likelihood, if the
+network is connected (and throw an error otherwise).</p>
+<p>The fitting algorithm is set by the <code>method</code> argument. The default
+method <code>"iterative scaling"</code> is a slow but reliable approach. In
+addition, this has the most control on the accuracy of the final fit, since
+convergence is determined by direct comparison of the observed and expected
+values of the sufficient statistics for the worth parameters, rather than a
+tolerance on change in the log-likelihood.</p>
+<p>The <code>"iterative scaling"</code> algorithm is slow because it is a first order
+method (does not use derivatives of the likelihood). From a set of starting
+values that are "close enough" to the final solution, the algorithm can be
+accelerated using
+<a href='https://en.wikipedia.org/wiki/Steffensen%27s_method'>Steffensen's method</a>.
+<code>PlackettLuce</code> attempts to apply Steffensen's acceleration when all
+differences between the observed and expected values of the sufficient
+statistics are less than <code>steffensen</code>. This is an ad-hoc rule defining
+"close enough" and in some cases the acceleration may produce negative
+worth parameters or decrease the log-likelihood. <code>PlackettLuce</code> will
+only apply the update when it makes an improvement.</p>
+<p>The <code>"BFGS"</code> and <code>"L-BFGS"</code> algorithms are second order methods,
+therefore can be quicker than the default method. Control parameters can be
+passed on to <code><a href='http://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> or <code><a href='http://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p>Handling rankings: <code><a href='rankings.html'>rankings</a></code>, <code>choices</code>, <code>adjacency</code>,
+<code>connectivity</code>.</p>
+<p>Inspect fitted Plackett-Luce models: <code>coef</code>, <code>deviance</code>,
+<code>fitted</code>, <code><a href='http://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code>, <code>logLik</code>, <code>print</code>,
+<code><a href='http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></code>, <code>summary</code>, <code>vcov</code>.</p>
+<p>Fit Plackett-Luce tree: <code><a href='grouped_rankings.html'>grouped_rankings</a></code>, <code>pltree</code>.</p>
+<p>Example data sets: <code><a href='beans.html'>beans</a></code>, <code><a href='nascar.html'>nascar</a></code>,
+<code><a href='pudding.html'>pudding</a></code>, <code><a href='read.soc.html'>read.soc</a></code>.</p>
+<p>Vignette: <code><a href='https://cran.rstudio.com/web/packages/PlackettLuce/vignettes/Overview.html'>vignette("Overview", package = "PlackettLuce")</a></code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -200,7 +286,7 @@ shrinkage effect.</p>
 
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>)
 <span class='fu'>coef</span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
-#&gt;  0.00000000  0.25287391 -0.61350669 -0.08688459 -2.15068110 -0.79245357 </div></pre>
+#&gt;  0.00000000  0.25287380 -0.61350684 -0.08688469 -2.15068112 -0.79245362 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -209,7 +295,13 @@ shrinkage effect.</p>
       
       <li><a href="#value">Value</a></li>
 
-      <li><a href="#details">Details</a></li>
+      <li><a href="#model-definition">Model definition</a></li>
+
+      <li><a href="#pseudo-rankings">Pseudo-rankings</a></li>
+
+      <li><a href="#controlling-the-fit">Controlling the fit</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

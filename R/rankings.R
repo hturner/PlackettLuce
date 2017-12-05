@@ -1,4 +1,4 @@
-#' Rankings Objects
+#' Rankings Object
 #'
 #' Create a \code{"rankings"} object from data or convert a matrix of rankings
 #' or ordered items to a \code{"rankings"} object.

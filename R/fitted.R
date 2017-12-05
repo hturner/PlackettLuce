@@ -1,4 +1,4 @@
-#' Fitted probabilities for PlackettLuce objects
+#' Fitted Probabilities for PlackettLuce Objects
 #'
 #' Fitted probabilities for all choice/alternative combinations in the data.
 #'
@@ -16,11 +16,11 @@
 #' \item{n}{If \code{aggregate = TRUE}, the number of rankings including this
 #' choice.}
 #' \item{fitted}{The fitted probability of making this choice.}
-#' @seealso as.choices
+#' @seealso choices
 #' @export
 fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
-    choices <- as.choices(object$rankings, names = FALSE)
+    choices <- choices(object$rankings, names = FALSE)
     # get parameters
     id <- seq(length(object$coefficients) - object$maxTied + 1)
     alpha <- object$coefficients[id]

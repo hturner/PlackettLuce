@@ -1,6 +1,6 @@
-#' Convert Rankings to an Adjacency Matrix
+#' Create an Adjacency Matrix for a set of Rankings
 #'
-#' Convert a \code{"rankings"} object to an adjacency matrix summarising wins
+#' Convert a set of rankings to an adjacency matrix summarising wins
 #' and losses between pairs of items.
 #'
 #' For a \code{"rankings"} object based on N items, the adjacency matrix is an

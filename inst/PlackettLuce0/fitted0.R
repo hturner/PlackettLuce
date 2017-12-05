@@ -11,13 +11,13 @@
 #' \code{\link{PlackettLuce}}.
 #' @param ... further arguments passed to method (ignored).
 #'
-#' @seealso as.choices
+#' @seealso choices
 #' @importFrom tibble as.tibble
 #' @export
 library(tibble)
 fitted.PlackettLuce0 <- function(object, ...) {
     patterns <- object$patterns
-    choices <- as.choices(object$rankings, names = FALSE)
+    choices <- choices(object$rankings, names = FALSE)
     choices <- as.tibble(choices)
     objects <- attr(choices, "objects")
     choices$D <- unlist(lapply(choices[["choices"]], length))

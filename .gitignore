@@ -21,6 +21,8 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+vignettes/*.log
+vignettes/*.tex
 inst/doc/*.Rmd
 
 # cache copied over by pkgdown

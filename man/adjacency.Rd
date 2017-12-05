@@ -2,7 +2,7 @@
 % Please edit documentation in R/adjacency.R
 \name{adjacency}
 \alias{adjacency}
-\title{Convert Rankings to an Adjacency Matrix}
+\title{Create an Adjacency Matrix for a set of Rankings}
 \usage{
 adjacency(object, weights = NULL, ...)
 }
@@ -18,7 +18,7 @@ coerced by \code{as.rankings}.}
 an N by N matrix, where N is the number of items that can be ranked.
 }
 \description{
-Convert a \code{"rankings"} object to an adjacency matrix summarising wins
+Convert a set of rankings to an adjacency matrix summarising wins
 and losses between pairs of items.
 }
 \details{

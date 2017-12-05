@@ -4,7 +4,7 @@
 #' \href{http://www.preflib.org}{\{PrefLib\}: A Library for Preferences}.
 #'
 #' @param file a path or url for the Strict Orders - Complete List file,
-#' conventionally with a \code{.soc} extenstion.
+#' conventionally with a \code{.soc} extension.
 #'
 #' @return a data frame with first column \code{n}, giving the frequency of
 #' the ranking in that row, and remaining columns \code{Rank 1} \ldots

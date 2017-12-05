@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitted.R
 \name{fitted.PlackettLuce}
 \alias{fitted.PlackettLuce}
-\title{Fitted probabilities for PlackettLuce objects}
+\title{Fitted Probabilities for PlackettLuce Objects}
 \usage{
 \method{fitted}{PlackettLuce}(object, aggregate = TRUE, free = TRUE, ...)
 }
@@ -31,5 +31,5 @@ choice.}
 Fitted probabilities for all choice/alternative combinations in the data.
 }
 \seealso{
-as.choices
+choices
 }

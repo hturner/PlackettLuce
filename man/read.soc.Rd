@@ -8,7 +8,7 @@ read.soc(file)
 }
 \arguments{
 \item{file}{a path or url for the Strict Orders - Complete List file,
-conventionally with a \code{.soc} extenstion.}
+conventionally with a \code{.soc} extension.}
 }
 \value{
 a data frame with first column \code{n}, giving the frequency of

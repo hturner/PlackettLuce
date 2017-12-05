@@ -8,7 +8,7 @@
 \alias{[.rankings}
 \alias{format.rankings}
 \alias{rbind.rankings}
-\title{Rankings Objects}
+\title{Rankings Object}
 \usage{
 rankings(data, id, item, rank, verbose = TRUE, ...)
 

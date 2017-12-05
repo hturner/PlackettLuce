@@ -5,18 +5,26 @@ Version: 0.2-0
 Authors@R: c(person("Heather", "Turner", email =
         "ht@heatherturner.net", role = c("aut", "cre")),
         person("Ioannis", "Kosmidis", role = "aut"), person("David",
-        "Firth", role = "aut"))
-URL: https://github.com/hturner/PlackettLuce
+        "Firth", role = "aut"), person("Jacob", "van Etten", role = "ctb"))
+URL: https://hturner.github.io/PlackettLuce/
 BugReports: https://github.com/hturner/PlackettLuce/issues
-Description: Specify and fit Plackett-Luce models for rankings data.
+Description: Functions to prepare rankings data and fit the Plackett-Luce model.
+    The standard Plackett-Luce model is generalized to accommodate ties of any
+    order in the ranking. Partial rankings, in which only a subset of items are
+    ranked in each ranking, are also accommodated in the implementation. 
+    Disconnected/weakly connected networks implied by the rankings are handled
+    by adding pseudo-rankings with a hypothetical item. Methods are provided to
+    estimate standard errors or quasi-standard errors for inference as well as 
+    to fit Plackett-Luce trees. See the package website or vignette for full 
+    details.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
 Imports: MASS, Matrix, igraph, partykit, psychotools, rARPACK, qvcalc,
         sandwich, stats
-Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils,
-        StatRank, covr, kableExtra, knitr, lbfgs, gnm, psychotree, rmarkdown, 
-        testthat, tibble
+Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, Matrix.utils, PLMIX,
+        StatRank, covr, hyper2, kableExtra, knitr, lbfgs, gnm, pmr, psychotree, 
+        rmarkdown, testthat, tibble
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

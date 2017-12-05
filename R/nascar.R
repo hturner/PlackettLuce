@@ -8,7 +8,7 @@
 #' corresponding to the positions. Columns 1 to 43 contain the ID for the driver
 #' that came first to last place respectively. Columns 44 to 87 are zero, since
 #' only 43 out of 87 drivers participated in each race. The \code{"drivers"}
-#' attribut
+#' attribute contains the names of the 87 drivers.
 #' @references
 #' Hunter, D. R. (2004) MM algorithms for generalized Bradley-Terry models.
 #' \emph{The Annals of Statistics}, \bold{32(1)}, 384--406.

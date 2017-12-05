@@ -34,7 +34,7 @@ beans
 }
 \description{
 This is a subset of data from trials of bean varieties in Nicaragua over five
-growing seasons. Farmers were asked to try three variaties of bean from a
+growing seasons. Farmers were asked to try three varieties of bean from a
 total of ten varieties and to rank them in order of preference. In addition,
 for each variety the farmers were asked to compare each trial variety to the
 local variety and state whether they considered it to be better or worse.
@@ -51,34 +51,46 @@ commonly planted in the Postrera or Apante seasons.
 }
 \examples{
 
-# convert best and worse variety to numeric (A = 1, B = 2, C = 3)
-# infer value of middle variety (given values must sum to 6)
+# Consider the best and worst rankings. These give the variety the
+# farmer thought was best or worst, coded as A, B or C for the
+# first, second or third variety assigned to the farmer
+# respectively.
+data(beans)
+head(beans[c("best", "worst")], 2)
+
+# Convert these to numeric values, allowing us to impute the
+# middle-ranked variety (a strict ranking is assumed here, so the
+# sum of each row should be 6)
 beans <- within(beans, {
-    best <- match(best, c("A", "B", "C"))
-    worst <- match(worst, c("A", "B", "C"))
-    middle <- 6 - best - worst
+   best <- match(best, c("A", "B", "C"))
+   worst <- match(worst, c("A", "B", "C"))
+   middle <- 6 - best - worst
 })
-head(beans[c("best", "middle", "worst")], 3)
+head(beans[c("best", "middle", "worst")], 2)
 
-
-# convert numeric ordering to ordering of variety names
-n <- nrow(beans)
+# This gives an ordering of the three varieties the farmer was
+# given. The names of these varieties are stored in separate
+# columns
 varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+head(varieties, 2)
+
+# So we can convert the variety IDs to the variety names
+n <- nrow(beans)
 beans <- within(beans, {
     best <- varieties[cbind(seq_len(n), best)]
     worst <- varieties[cbind(seq_len(n), worst)]
     middle <- varieties[cbind(seq_len(n), middle)]
 })
-head(beans[c("best", "middle", "worst")], 3)
+head(beans[c("best", "middle", "worst")], 2)
 
-# create rankings object from rankings of order three
-## each ranking is a ranking of three varieties from the full set
+# Create a rankings object from the rankings of order three
+## each ranking is a sub-ranking of three varieties from the full set
 lab <- c("Local", sort(unique(as.vector(varieties))))
 R <- as.rankings(beans[c("best", "middle", "worst")],
                  input = "ordering", labels = lab)
 head(R)
 
-# convert worse/better columns to ordered pairs
+# Convert worse/better columns to ordered pairs
 head(beans[c("var_a", "var_b", "var_c")], 2)
 paired <- list()
 for (id in c("a", "b", "c")){
@@ -92,7 +104,7 @@ for (id in c("a", "b", "c")){
 }
 head(paired[["a"]])
 
-# convert orderings to sub-rankings of full set and combine all rankings
+# Convert orderings to sub-rankings of full set and combine all rankings
 paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 head(R)
