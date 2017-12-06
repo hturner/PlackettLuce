@@ -1,4 +1,34 @@
-# PlackettLuce 0.2
+# PlackettLuce 0.2-1
+
+## New features
+
+* Add **pkgdown** site.
+* Add content to README (fixes #5).
+* Add `plot.PlackettLuce` method so that plotting works for a saved 
+`"PlackettLuce"` object
+
+## Improvements
+
+* Improved vignette, particularly example based on `beans` data (which has been
+updated).
+* Improved help files particularly `?PlackettLuce` and new 
+`package?PlackettLuce`. (Fixes #14 and #21).
+
+## Changes in behaviour
+
+* `maxit` defaults to 500 in `PlackettLuce`.
+* Steffensen acceleration only applied in iterations where it will increase the 
+log-likelihood (still only attempted once iterations have reached a solution 
+that is "close enough" as specified by `steffensen` argument).
+
+## Bug fixes
+
+* `coef.pltree()` now respects `log = TRUE` argument (fixes #19).
+* Fix bug causes lack of convergence with iterative scaling plus 
+pseudo-rankings.
+* `[.grouped_rankings]` now works for replicated indices.
+
+# PlackettLuce 0.2-0
 
 ## New Features
 
