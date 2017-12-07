@@ -1,6 +1,7 @@
 
 # PlackettLuce
 
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
 [![Travis-CI Build
 Status](https://travis-ci.org/hturner/PlackettLuce.svg?branch=master)](https://travis-ci.org/hturner/PlackettLuce)
 [![AppVeyor Build
