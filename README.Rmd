@@ -152,7 +152,7 @@ the log-worth parameters with comparison intervals based on quasi standard
 errors.
 ```{r qv, fig.width = 9}
 qv <- qvcalc(mod)
-plot(qv)
+plot(qv, ylab = "Worth (log)", main = NULL)
 ```
 
 If the intervals overlap there is no significant difference. So we can see that 

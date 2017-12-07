@@ -196,7 +196,7 @@ quasi standard errors.
 
 ``` r
 qv <- qvcalc(mod)
-plot(qv)
+plot(qv, ylab = "Worth (log)", main = NULL)
 ```
 
 ![](man/figures/qv-1.png)<!-- -->

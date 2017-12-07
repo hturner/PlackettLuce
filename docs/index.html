@@ -155,7 +155,7 @@
 <p>In this way, Mean Girls is treated as the reference movie, the positive parameter for Beverly Hills Cop shows this was more popular among the users, while the negative parameters for the other two movies show these were less popular.</p>
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
 <pre class="sourceCode r" id="cb15"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw">plot</span>(qv)</a></code></pre>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw">plot</span>(qv, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</a></code></pre>
 <p><img src="reference/figures/qv-1.png" width="864"></p>
 <p>If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users’ preference for these last two movies.</p>
 </section><section id="going-further" class="level2"><h2>Going Further</h2>
