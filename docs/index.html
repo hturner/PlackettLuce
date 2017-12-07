@@ -88,38 +88,40 @@
 <li>Obtaining quasi-standard errors, that don’t depend on the constraints applied to the worth parameters for identifiability.</li>
 <li>Fitting Plackett-Luce trees, i.e. a tree that partitions the rankings by covariate values, such as consumer attributes or racing conditions, identifying subgroups with different sets of worth parameters for the items.</li>
 </ul></section><section id="installation" class="level2"><h2>Installation</h2>
-<p>The package may be installed from GitHub via</p>
-<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install.packages("devtools")</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"hturner/PlackettLuce"</span>)</a></code></pre>
+<p>The package may be installed from CRAN via</p>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">"PlackettLuce"</span>)</a></code></pre>
+<p>The development version can be installed via</p>
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># install.packages("devtools")</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"hturner/PlackettLuce"</span>)</a></code></pre>
 </section><section id="usage" class="level2"><h2>Usage</h2>
 <p>The <a href="http://www.netflixprize.com/">Netflix Prize</a> was a competition devised by Netflix to improve the accuracy of its recommendation system. To facilitate this they released ratings about movies from the users of the system that have been transformed to preference data and are available from <a href="http://www.preflib.org/data/election/netflix/">PrefLib</a>. Each data set comprises rankings of a set of 3 or 4 movies selected at random. Here we consider rankings for just one set of movies to illustrate the functionality of <strong>PlackettLuce</strong>.</p>
 <p>The data can be read in using the <code>read.soc</code> function in <strong>PlackettLuce</strong></p>
-<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(PlackettLuce)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">netflix &lt;-<span class="st"> </span><span class="kw"><a href="reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"netflix/ED-00004-00000138.soc"</span>))</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">head</span>(netflix, <span class="dv">2</span>)</a></code></pre>
+<pre class="sourceCode r" id="cb3"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(PlackettLuce)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">netflix &lt;-<span class="st"> </span><span class="kw"><a href="reference/read.soc.html">read.soc</a></span>(<span class="kw">file.path</span>(preflib, <span class="st">"netflix/ED-00004-00000138.soc"</span>))</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">head</span>(netflix, <span class="dv">2</span>)</a></code></pre>
 <pre><code>##    n Rank 1 Rank 2 Rank 3 Rank 4
 ## 1 68      2      1      4      3
 ## 2 53      1      2      4      3</code></pre>
 <p>Each row corresponds to a unique ordering of the four movies in this data set. The number of Netflix users that assigned that ordering is given in the first column, followed by the four movies in preference order. So for example, 68 users ranked movie 2 first, followed by movie 1, then movie 4 and finally movie 3.</p>
 <p><code>PlackettLuce</code>, the model-fitting function in <strong>PlackettLuce</strong> requires that the data are provided in the form of <em>rankings</em> rather than <em>orderings</em>, i.e. the rankings are expressed by giving the rank for each item, rather than ordering the items. We can create a <code>"rankings"</code> object from a set of orderings as follows</p>
-<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="reference/rankings.html">as.rankings</a></span>(netflix[,<span class="op">-</span><span class="dv">1</span>], <span class="dt">input =</span> <span class="st">"ordering"</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">colnames</span>(R) &lt;-<span class="st"> </span><span class="kw">attr</span>(netflix, <span class="st">"item"</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, as.rankings =<span class="st"> </span><span class="ot">FALSE</span>]</a></code></pre>
+<pre class="sourceCode r" id="cb5"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="reference/rankings.html">as.rankings</a></span>(netflix[,<span class="op">-</span><span class="dv">1</span>], <span class="dt">input =</span> <span class="st">"ordering"</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">colnames</span>(R) &lt;-<span class="st"> </span><span class="kw">attr</span>(netflix, <span class="st">"item"</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, as.rankings =<span class="st"> </span><span class="ot">FALSE</span>]</a></code></pre>
 <pre><code>##   Mean Girls Beverly Hills Cop The Mummy Returns Mission: Impossible II
 ## 1          2                 1                 4                      3
 ## 2          1                 2                 4                      3
 ## 3          2                 1                 3                      4</code></pre>
 <p>Note that <code>read.soc</code> saved the names of the movies in the <code>"item"</code> attribute of <code>netflix</code>, so we have used these to label the items. Subsetting the rankings object <code>R</code> with <code>as.rankings = FALSE</code>, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.</p>
 <p>Various methods are provided for <code>"rankings"</code> objects, in particular if we subset the rankings without <code>as.rankings = FALSE</code>, the result is again a <code>"rankings"</code> object and the corresponding print method is used:</p>
-<pre class="sourceCode r" id="cb6"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a></code></pre>
+<pre class="sourceCode r" id="cb7"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a></code></pre>
 <pre><code>##                                          1 
 ## "Beverly Hills Cop &gt; Mean Girls &gt; Mis ..." 
 ##                                          2 
 ## "Mean Girls &gt; Beverly Hills Cop &gt; Mis ..." 
 ##                                          3 
 ## "Beverly Hills Cop &gt; Mean Girls &gt; The ..."</code></pre>
-<pre class="sourceCode r" id="cb8"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">print</span>(R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="dt">width =</span> <span class="dv">60</span>)</a></code></pre>
+<pre class="sourceCode r" id="cb9"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">print</span>(R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="dt">width =</span> <span class="dv">60</span>)</a></code></pre>
 <pre><code>##                                                              1 
 ## "Beverly Hills Cop &gt; Mean Girls &gt; Mission: Impossible II  ..." 
 ##                                                              2 
@@ -127,15 +129,15 @@
 ##                                                              3 
 ## "Beverly Hills Cop &gt; Mean Girls &gt; The Mummy Returns &gt; Mis ..."</code></pre>
 <p>The rankings can now be passed to <code>PlackettLuce</code> to fit the Plackett-Luce model. The counts of each ranking provided in the downloaded data are used as weights when fitting the model.</p>
-<pre class="sourceCode r" id="cb10"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> netflix<span class="op">$</span>n)</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">coef</span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</a></code></pre>
+<pre class="sourceCode r" id="cb11"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> netflix<span class="op">$</span>n)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">coef</span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</a></code></pre>
 <pre><code>##             Mean Girls      Beverly Hills Cop      The Mummy Returns 
 ##              0.2306285              0.4510655              0.1684719 
 ## Mission: Impossible II 
 ##              0.1498342</code></pre>
 <p>Calling <code>coef</code> with <code>log = FALSE</code> gives the worth parameters, constrained to sum to one. These parameters represent the probability that each movie is ranked first.</p>
 <p>For inference these parameters are converted to the log scale, by default setting the first parameter to zero so that the standard errors are estimable:</p>
-<pre class="sourceCode r" id="cb12"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">summary</span>(mod)</a></code></pre>
+<pre class="sourceCode r" id="cb13"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">summary</span>(mod)</a></code></pre>
 <pre><code>## Call: PlackettLuce(rankings = R, weights = netflix$n)
 ## 
 ## Coefficients:
@@ -152,13 +154,13 @@
 ## Number of iterations: 5</code></pre>
 <p>In this way, Mean Girls is treated as the reference movie, the positive parameter for Beverly Hills Cop shows this was more popular among the users, while the negative parameters for the other two movies show these were less popular.</p>
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
-<pre class="sourceCode r" id="cb14"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">plot</span>(qv)</a></code></pre>
+<pre class="sourceCode r" id="cb15"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw">plot</span>(qv)</a></code></pre>
 <p><img src="reference/figures/qv-1.png" width="864"></p>
 <p>If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users’ preference for these last two movies.</p>
 </section><section id="going-further" class="level2"><h2>Going Further</h2>
 <p>The full functionality of <strong>PlackettLuce</strong> is illustrated in the package vignette, along with details of the model used in the package and a comparison to other packages. The vignette can be found on the <a href="https://hturner.github.io/PlackettLuce/">package website</a> or from within R once the package has been installed, e.g. via</p>
-<pre><code>vignette("Overview", package = "PlackettLuce")</code></pre>
+<pre><code><a href="https://cran.rstudio.com/web/packages/PlackettLuce/vignettes/Overview.html">vignette("Overview", package = "PlackettLuce")</a></code></pre>
 </section><section id="code-of-conduct" class="level2"><h2>Code of Conduct</h2>
 <p>Please note that this project is released with a <a href="CONDUCT.md">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
 </section><section id="references" class="level2 unnumbered"><h2>References</h2>

@@ -47,7 +47,13 @@ In addition the package provides methods for
 
 ## Installation
 
-The package may be installed from GitHub via
+The package may be installed from CRAN via
+
+``` r
+install.packages("PlackettLuce")
+```
+
+The development version can be installed via
 
 ``` r
 # install.packages("devtools")
