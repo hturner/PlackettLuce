@@ -75,7 +75,8 @@ choices <- function(rankings, names = FALSE) {
     ## Alow weights per choice/alternatives combination?
 }
 
-## extend to print subset?
+#' @method print choices
+#' @export
 print.choices <- function(x, ...) {
     rankings <- x$ranking
     for (i in unique(rankings)) {
