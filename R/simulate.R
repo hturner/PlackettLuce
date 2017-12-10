@@ -25,8 +25,11 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
 
         opt <- seq_len(N)
         sets <- apply(rankings, 1, function(x) opt[x > 0])
+##:ess-bp-start::browser@nil:##
+browser(expr=is.null(.ESSBP.[["@15@"]]));##:ess-bp-end:##
 
         ## Get all possible combinations of objects
+        ## NOTE, IK 10/12/2017: This is an awful computation with many objects
         combinations <- NULL
         for (j in opt) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
