@@ -58,7 +58,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
     }
 
     ## Unormalized probabilities
-    probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/j))
+    probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
     n_choices <- length(probs)
 
     ## NOTE, IK 10/12/2017: Normalization will be done internally by sample.int
