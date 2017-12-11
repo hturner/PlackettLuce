@@ -20,6 +20,7 @@
 #'
 #' identical(s1[1:2], s2[1:2])
 #'
+#' @importFrom stats simulate
 #' @method simulate PlackettLuce
 #' @export
 simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
