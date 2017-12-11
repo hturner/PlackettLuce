@@ -2,6 +2,8 @@
 #'
 #' @inheritParams stats::simulate
 #'
+#' @return An object of class \code{\link{rankings}} of the same dimension as \code{object$rankings}
+#'
 #' @examples
 #' R <- matrix(c(1, 2, 0, 0,
 #'               4, 1, 2, 3,
@@ -34,6 +36,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
     rankings <- unclass(object$rankings)
     N <- ncol(rankings)
     n_rankings <- nrow(rankings)
+    n_choices <- 2^N - 1
     id <- seq(length(object$coefficients) - object$maxTied + 1)
     alpha <- object$coefficients[id]
     delta <- numeric(N)
@@ -57,17 +60,17 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
         combinations <- c(combinations, combn(opt, j, simplify = FALSE))
     }
 
-    ## Unormalized probabilities
+    ## Unormalized probabilities of all combinations
     probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
-    n_choices <- length(probs)
 
-    ## NOTE, IK 10/12/2017: Normalization will be done internally by sample.int
+    ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
     sampler <- function(objects) {
         v <- numeric(N)
         j <- 1
+        indices <- rep(TRUE, n_choices)
         while (length(objects)) {
             ## find out which combinations have all of their objects included in `objects`
-            indices <- sapply(combinations, function(x) {
+            indices[indices] <- sapply(combinations[indices], function(x) {
                 all(x %in% objects)
             })
             ## sample, after setting the probability of all other combinations to zero

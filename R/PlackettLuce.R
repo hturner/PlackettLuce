@@ -127,7 +127,7 @@
 #' In particular the convergence tolerance may be adjusted using e.g.
 #' \code{control = list(reltol = 1e-10)}.
 #'
-#' @return An object of class "PlackettLuce", which is a list containing the
+#' @return An object of class \code{PlackettLuce}, which is a list containing the
 #' following elements:
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }

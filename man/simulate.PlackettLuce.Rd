@@ -23,6 +23,9 @@
 
 \item{...}{additional optional arguments.}
 }
+\value{
+An object of class \code{\link{rankings}} of the same dimension as \code{object$rankings}
+}
 \description{
 Simulate from \code{PlackettLuce} fitted objects
 }
