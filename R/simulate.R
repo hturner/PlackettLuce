@@ -45,9 +45,9 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
     }
     len <- lengths(sets)
 
-    ## NOTE, IK 10/12/2017: This is an awful computation with potentially massive objects
+    ## NOTE, IK 10/12/2017: This is an inefficient computation with potentially massive objects
     ## FIX, IK 10/12/2017: Remove dependence on all combinations. For now
-    ## a preventive clause if categories are more than 10
+    ## a preventive stop if more than 10 objects have been ranked
     if (any(len > (max_items <- 10))) {
         stop(paste("detected more than", max_items, "items per ranking; current implementation of simulate.PlackettLuce is not apropriate for large number of items"))
     }
