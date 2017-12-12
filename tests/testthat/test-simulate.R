@@ -43,3 +43,28 @@ test_that("simulation results are consistent to first version", {
 
 ## par(mfrow = c(3, 3))
 ## for (j in 1:9) { hist(coefs[j,], main = paste(j)); abline(v = coef(mod1)[j]) }
+
+## ## ## No ties
+## R <- PlackettLuce:::generate_rankings(maxi = 10, n_rankings = 100, tie = 1000, seed = 123)
+## mod1 <- PlackettLuce(R)
+
+## ## Using Diaconis (1998). Chapter 9D
+## samples <- simulate(mod1, 1000, seed = 123, multinomial = FALSE)
+## fits <- mclapply(samples, PlackettLuce, npseudo = 0.5, mc.cores = 4)
+## coefs <- sapply(fits, function(fit) {
+##     cc <- coef(fit)
+##     cc
+## })
+## result_biases <- unname(unclass(rowMeans(coefs) - coef(mod1)))
+
+## ## Using multinomial sampling
+## samples2 <- simulate(mod1, 1000, seed = 123, multinomial = TRUE)
+## fits2 <- mclapply(samples2, PlackettLuce, npseudo = 0.5, mc.cores = 4)
+## coefs2 <- sapply(fits2, function(fit) {
+##     cc <- coef(fit)
+##     cc
+## })
+## result_biases2 <- unname(unclass(rowMeans(coefs2) - coef(mod1)))
+
+
+

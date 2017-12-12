@@ -2,6 +2,8 @@
 #'
 #' @inheritParams stats::simulate
 #'
+#' @param multinomial use multinomial sampling anyway? Default is \code{FALSE}
+#'
 #' @return An object of class \code{\link{rankings}} of the same dimension as \code{object$rankings}
 #'
 #' @examples
@@ -23,7 +25,7 @@
 #' @importFrom stats simulate
 #' @method simulate PlackettLuce
 #' @export
-simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
+simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, ...) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
         runif(1)
     if (is.null(seed))
@@ -49,41 +51,53 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, ...) {
     }
     len <- lengths(sets)
 
-    ## NOTE, IK 10/12/2017: This is an inefficient computation with potentially massive objects
-    ## FIX, IK 10/12/2017: Remove dependence on all combinations. For now
-    ## a preventive stop if more than 10 objects have been ranked
-    if (any(len > (max_items <- 10))) {
-        stop(paste("detected more than", max_items, "items per ranking; current implementation of simulate.PlackettLuce is not apropriate for large number of items"))
-    }
-    ## Get all possible combinations of objects
-    combinations <- NULL
-    for (j in seq_len(max(len))) {
-        combinations <- c(combinations, combn(opt, j, simplify = FALSE))
-    }
-
-    ## Unormalized probabilities of all combinations
-    probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
-
-    ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
-    sampler <- function(objects) {
-        v <- numeric(N)
-        j <- 1
-        indices <- rep(TRUE, n_choices)
-        while (length(objects)) {
-            ## find out which combinations have all of their objects included in `objects`
-            indices[indices] <- sapply(combinations[indices], function(x) {
-                all(x %in% objects)
-            })
-            ## sample, after setting the probability of all other combinations to zero
-            sampled <- combinations[[sample.int(n_choices, 1, prob = probs * indices)]]
-            ## remove the sampled objects from `objects`
-            objects <- objects[-match(sampled, objects, nomatch = 0)]
-            v[sampled] <- j
-            j <- j + 1
+    ## If there are no ties use Louis Gordon (1983, Annals of Stat); Diaconis (1988, Chapter 9D)
+    if (object$maxTied == 1 & !multinomial) {
+        sampler <- function(objects) {
+            v <- numeric(N)
+            len <- length(objects)
+            ordering <- objects[order(rexp(len, rate = 1)/alpha[objects], decreasing = FALSE)]
+            v[ordering] <- seq.int(len)
+            v
         }
-        v
     }
+    ## otherwise
+    else {
+        ## NOTE, IK 10/12/2017: This is an inefficient computation with potentially massive objects
+        ## FIX, IK 10/12/2017: Remove dependence on all combinations. For now
+        ## a preventive stop if more than 10 objects have been ranked
+        if (any(len > (max_items <- 10))) {
+            stop(paste("detected more than", max_items, "items per ranking; current implementation of simulate.PlackettLuce is not apropriate for large number of items"))
+        }
+        ## Get all possible combinations of objects
+        combinations <- NULL
+        for (j in seq_len(max(len))) {
+            combinations <- c(combinations, combn(opt, j, simplify = FALSE))
+        }
 
+        ## Unormalized probabilities of all combinations
+        probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
+
+        ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
+        sampler <- function(objects) {
+            v <- numeric(N)
+            j <- 1
+            indices <- rep(TRUE, n_choices)
+            while (length(objects)) {
+                ## find out which combinations have all of their objects included in `objects`
+                indices[indices] <- sapply(combinations[indices], function(x) {
+                    all(x %in% objects)
+                })
+                ## sample, after setting the probability of all other combinations to zero
+                sampled <- combinations[[sample.int(n_choices, 1, prob = probs * indices)]]
+                ## remove the sampled objects from `objects`
+                objects <- objects[-match(sampled, objects, nomatch = 0)]
+                v[sampled] <- j
+                j <- j + 1
+            }
+            v
+        }
+    }
     out <- replicate(nsim, {
         R <- t(sapply(sets, sampler))
         colnames(R) <- colnames(rankings)
