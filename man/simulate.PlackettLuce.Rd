@@ -4,7 +4,8 @@
 \alias{simulate.PlackettLuce}
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
-\method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL, ...)
+\method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL,
+  multinomial = FALSE, ...)
 }
 \arguments{
 \item{object}{an object representing a fitted model.}
@@ -20,6 +21,8 @@
     random generator state, and return \code{\link{.Random.seed}} as the
     \code{"seed"} attribute, see \sQuote{Value}.
   }
+
+\item{multinomial}{use multinomial sampling anyway? Default is \code{FALSE}}
 
 \item{...}{additional optional arguments.}
 }
