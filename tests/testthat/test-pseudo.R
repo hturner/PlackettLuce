@@ -4,6 +4,7 @@ context("implementation [pseudo-data]")
 source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
                     full.names = TRUE)
 
+## N.B. fitted0 requires tibble but unused in tests
 for (file0 in source_files) source(file0)
 
 

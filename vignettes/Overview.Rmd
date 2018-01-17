@@ -11,8 +11,11 @@ author:
   affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK
 package: PlackettLuce
 output:
-  BiocStyle::html_document: default
-  BiocStyle::pdf_document: default
+  if (requireNamespace("BiocStyle", quietly = TRUE)) {
+    BiocStyle::html_document
+  } else if (requireNamespace("bookdown", quietly = TRUE)) {
+    bookdown::html_document2
+  } else html_document
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
@@ -39,9 +42,9 @@ link-citations: true
 
 ```{r vignette-setup, include = FALSE}
 library(knitr)
-library(kableExtra)
 eval_all <- FALSE # evaluate all timings and pltree?
 options(knitr.table.format = opts_knit$get("rmarkdown.pandoc.to"))
+opts_chunk$set(message = FALSE)
 ```
 
 # Introduction
@@ -240,16 +243,18 @@ features <- cbind(c(1256, 30, 5000),
                   c(4, 11, 10))
 dimnames(features) <- list(c("Netflix", "T-shirt", "Sushi"),
                            c("Rankings", "Unique rankings", "Items"))
-kable(features,
-      caption = "(ref:features)",
-      booktabs = TRUE) %>%
-    kable_styling()
+kab <- kable(features,
+             caption = "(ref:features)",
+             booktabs = TRUE) 
+if (requireNamespace("kableExtra")){
+    kableExtra::kable_styling(kab)
+} else kab
 ```
 
-(ref:timings) Timings for fitting the Plackett-Luce model to data sets summarised in
-Table \@ref(tab:data-features) using different packages. See Appendix \@ref(app:timings) for details and code.
+(ref:timings) Timings in seconds for fitting the Plackett-Luce model to data sets summarised in
+Table \@ref(tab:data-features) using different packages. See Appendix [5.1](#app:timings) for details and code.
 
-```{r timings-kable, echo = FALSE}
+```{r timings-kable, echo = FALSE, results = "asis"}
 res <- data.frame(netflix = round(unlist(netflix_timings), 3),
                   tshirt = format(unlist(tshirt_timings), 3),
                   sushi = round(unlist(sushi_timings), 3),
@@ -261,11 +266,17 @@ dimnames(res) <- list(c("Netflix", "T-shirt", "Sushi"),
                       c("PlackettLuce",
                         "hyper2", "PLMIX", "pmr", "StatRank"))
 
-kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)",
-      escape = FALSE) %>%
-    kable_styling() %>%
-    add_header_above(c(" " = 1, "Time elapsed (s)" = 5)) %>%
-    add_footnote("Function fails to complete.", notation = "alphabet")
+kab <- kable(res, booktabs = TRUE, align = rep("r", 6), caption = "(ref:timings)",
+             escape = FALSE)
+if (requireNamespace("kableExtra")){
+    kab <- kableExtra::kable_styling(kab)
+    kab <- kableExtra::add_header_above(kab, c(" " = 1, "Time elapsed (s)" = 5))
+    kableExtra::add_footnote(kab, "Function fails to complete.", 
+                             notation = "alphabet")
+} else {
+    cat("**Time elapsed (s)**\n", kab, "\n^a Function fails to complete.", 
+        sep = "\n")
+}
 ```
 
 As the number of items increases, it is typically more common to
@@ -295,7 +306,7 @@ if (eval_all){
 }
 ```
 
-(ref:nascar) Timings for fitting the Plackett-Luce model to the NASCAR data from @Hunter2004. All rankings are unique.
+(ref:nascar) Timings in seconds for fitting the Plackett-Luce model to the NASCAR data from @Hunter2004 using different packages. All rankings are unique.
 
 ```{r nascar, echo = FALSE}
 res <- round(unlist(nascar_timings)[c("pl", "hyper2")], 3)
@@ -305,10 +316,13 @@ res <- data.frame(Rankings = 36,
                   PlackettLuce = res[1],
                   hyper2 = res[2],
                   check.names = FALSE, row.names = NULL)
-kable(res, booktabs = TRUE, align = rep("r", 5),
-      caption = "(ref:nascar)") %>%
-    kable_styling() %>%
-    add_header_above(c("Features of NASCAR data" = 3, "Time elapsed (s)" = 2))
+kab <- kable(res, booktabs = TRUE, align = rep("r", 5),
+      caption = "(ref:nascar)") 
+if (requireNamespace("kableExtra")){
+    kab <- kableExtra::kable_styling(kab)
+    kableExtra::add_header_above(kab, c("Features of NASCAR data" = 3, 
+                                        "Time elapsed (s)" = 2))
+} else kab
 ```
 
 **PlackettLuce** is the only package out of those based on maximum likelihood
@@ -338,9 +352,11 @@ tab <- data.frame(Feature = c("Inference", "Disconnected networks",
                   pmr = c("No", "No", "No", "No", "No"),
                   StatRank = c("No", "No", "No", "No", "No"),
                   PLMIX = c("Bayesian", "Yes", "No", "No", "Mixtures"))
-kable(tab, booktabs = TRUE,
-      caption = "Features of packages for fitting the Plackett-Luce model.") %>%
-    kable_styling()
+kab <- kable(tab, booktabs = TRUE,
+      caption = "Features of packages for fitting the Plackett-Luce model.")
+if (requireNamespace("kableExtra")){
+    kableExtra::kable_styling(kab)
+} else kab
 ```
 
 # Methods
@@ -520,6 +536,7 @@ significantly different:
 ```{r pudding-qv, fig.cap = "Worth of brands of chocolate pudding. Intervals based on quasi-standard errors."}
 plot(qv, xlab = "Brand of pudding", ylab = "Worth (log)", main = NULL)
 ```
+
 The quasi-variances allow comparisons that are *approximately* correct, for every possible contrast among the parameters.  The routine error report in the last two lines printed above by `summary(qv)` tells us that, in this example, the approximation error has been very small: the approximation error for the standard error of any simple
 contrast among the parameters is less than 0.8%.
 
@@ -682,6 +699,7 @@ qv$qvframe <- qv$qvframe[order(coef(mod2)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL, xaxt="n")
 axis(1, at = seq_len(87), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.7)
 ```
+
 As in the previous example, we can use `summary(qv)` to see a report on the
 accuracy of the quasi-variance approximation.  In this example the error of
 approximation, across the standard errors of all of the 3741 possible simple
@@ -731,7 +749,7 @@ worse.
 
 The data are provided as the dataset `beans` in Plackett-Luce. The data require
 some preparation to collate the rankings, which is detailed in
-Appendix \@ref(app:beans).
+Appendix [5.2](#app:beans).
 The same code is provided in the examples section of the help file of
 `beans`
 ```{r beans-preparation, results = "hide"}

@@ -14,11 +14,10 @@
 #' @seealso choices
 #' @importFrom tibble as.tibble
 #' @export
-library(tibble)
 fitted.PlackettLuce0 <- function(object, ...) {
     patterns <- object$patterns
     choices <- choices(object$rankings, names = FALSE)
-    choices <- as.tibble(choices)
+    choices <- tibble::as.tibble(choices)
     objects <- attr(choices, "objects")
     choices$D <- unlist(lapply(choices[["choices"]], length))
     choices$T <- unlist(lapply(choices[["alternatives"]], length))
