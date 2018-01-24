@@ -22,7 +22,7 @@
 #'
 #' identical(s1[1:2], s2[1:2])
 #'
-#' @importFrom stats simulate
+#' @importFrom stats rexp runif simulate
 #' @method simulate PlackettLuce
 #' @export
 simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, ...) {

@@ -105,6 +105,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
 
 ## A quick way to generate arbitrary ranking data to experinment with
 ## The larger tie is the lower the chance of a tie is
+#' @importFrom stats runif
 generate_rankings <- function(maxi, n_rankings = 10, tie = 5, seed = NULL) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
         runif(1)

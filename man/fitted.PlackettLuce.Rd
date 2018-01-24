@@ -4,7 +4,7 @@
 \alias{fitted.PlackettLuce}
 \title{Fitted Probabilities for PlackettLuce Objects}
 \usage{
-fitted.PlackettLuce(object, aggregate = TRUE, free = TRUE, ...)
+\method{fitted}{PlackettLuce}(object, aggregate = TRUE, free = TRUE, ...)
 }
 \arguments{
 \item{object}{a \code{"PlackettLuce"} object as returned by
