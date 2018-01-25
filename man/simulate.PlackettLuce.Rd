@@ -38,12 +38,12 @@ Simulate from \code{PlackettLuce} fitted objects
 \details{
 The current implementation will throw an error if more than
 \code{max_items} (default is 10) items are present in the
-\code{PlackettLuce} object, when \code{multinomial = TRUE} and/or
-\code{object$maxTied > 1}. This is a hard-coded condition to
-prevent issues relating to the creation of massive objects in
-memory.
+\code{PlackettLuce} object and/or \code{object$maxTied > 1}. This
+is a hard-coded exit to prevent issues relating to the creation of
+massive objects in memory.
 
-If \code{object$maxTied > 1} then \code{multinomial} is taken as
+If \code{object$maxTied > 1} the user's setting for
+\code{multinomial} is overridden and \code{multinomial} is taken as
 \code{TRUE}.
 }
 \examples{
