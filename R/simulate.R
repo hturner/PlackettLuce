@@ -2,9 +2,23 @@
 #'
 #' @inheritParams stats::simulate
 #'
-#' @param multinomial use multinomial sampling anyway? Default is \code{FALSE}
+#' @param multinomial use multinomial sampling anyway? Default is \code{FALSE}. see Details.
+#' @param max_items a positive number (default is 10). See Details.
 #'
-#' @return An object of class \code{\link{rankings}} of the same dimension as \code{object$rankings}
+#' @details
+#'
+#' The current implementation will throw an error if more than
+#' \code{max_items} (default is 10) items are present in the
+#' \code{PlackettLuce} object, when \code{multinomial = TRUE} and/or
+#' \code{object$maxTied > 1}. This is a hard-coded condition to
+#' prevent issues relating to the creation of massive objects in
+#' memory.
+#'
+#' If \code{object$maxTied > 1} then \code{multinomial} is taken as
+#' \code{TRUE}.
+#'
+#' @return An object of class \code{\link{rankings}} of the same
+#'     dimension as \code{object$rankings}
 #'
 #' @examples
 #' R <- matrix(c(1, 2, 0, 0,
@@ -25,7 +39,7 @@
 #' @importFrom stats rexp runif simulate
 #' @method simulate PlackettLuce
 #' @export
-simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, ...) {
+simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, max_items = 10, ...) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
         runif(1)
     if (is.null(seed))
@@ -61,12 +75,11 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
             v
         }
     }
-    ## otherwise
     else {
         ## NOTE, IK 10/12/2017: This is an inefficient computation with potentially massive objects
         ## FIX, IK 10/12/2017: Remove dependence on all combinations. For now
-        ## a preventive stop if more than 10 objects have been ranked
-        if (any(len > (max_items <- 10))) {
+        ## a preventive stop if more than max_items objects have been ranked
+        if (any(len > max_items)) {
             stop(paste("detected more than", max_items, "items per ranking; current implementation of simulate.PlackettLuce is not apropriate for large number of items"))
         }
         ## Get all possible combinations of objects
@@ -74,10 +87,8 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         for (j in seq_len(max(len))) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
         }
-
         ## Unormalized probabilities of all combinations
         probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
-
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
         sampler <- function(objects) {
             v <- numeric(N)
@@ -98,6 +109,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
             v
         }
     }
+
     out <- replicate(nsim, {
         R <- t(sapply(sets, sampler))
         colnames(R) <- colnames(rankings)

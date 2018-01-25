@@ -5,7 +5,7 @@
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
 \method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL,
-  multinomial = FALSE, ...)
+  multinomial = FALSE, max_items = 10, ...)
 }
 \arguments{
 \item{object}{an object representing a fitted model.}
@@ -22,15 +22,29 @@
     \code{"seed"} attribute, see \sQuote{Value}.
   }
 
-\item{multinomial}{use multinomial sampling anyway? Default is \code{FALSE}}
+\item{multinomial}{use multinomial sampling anyway? Default is \code{FALSE}. see Details.}
+
+\item{max_items}{a positive number (default is 10). See Details.}
 
 \item{...}{additional optional arguments.}
 }
 \value{
-An object of class \code{\link{rankings}} of the same dimension as \code{object$rankings}
+An object of class \code{\link{rankings}} of the same
+    dimension as \code{object$rankings}
 }
 \description{
 Simulate from \code{PlackettLuce} fitted objects
+}
+\details{
+The current implementation will throw an error if more than
+\code{max_items} (default is 10) items are present in the
+\code{PlackettLuce} object, when \code{multinomial = TRUE} and/or
+\code{object$maxTied > 1}. This is a hard-coded condition to
+prevent issues relating to the creation of massive objects in
+memory.
+
+If \code{object$maxTied > 1} then \code{multinomial} is taken as
+\code{TRUE}.
 }
 \examples{
 R <- matrix(c(1, 2, 0, 0,
