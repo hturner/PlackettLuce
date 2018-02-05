@@ -25,7 +25,7 @@
 #' \code{multinomial} is overridden and \code{multinomial} is taken as
 #' \code{TRUE}.
 #'
-#' @return An object of class \code{\link{rankings}} of the same
+#' @return A \code{data.frame} of \code{\link{rankings}} objects of the same
 #'     dimension as \code{object$rankings}
 #'
 #' @examples
