@@ -13,23 +13,22 @@
 \item{nsim}{number of response vectors to simulate.  Defaults to \code{1}.}
 
 \item{seed}{an object specifying if and how the random number
-    generator should be initialized (\sQuote{seeded}).\cr
-    For the "lm" method, either \code{NULL} or an integer that will be
-    used in a call to \code{set.seed} before simulating the response
-    vectors.  If set, the value is saved as the \code{"seed"} attribute
-    of the returned value.  The default, \code{NULL} will not change the
-    random generator state, and return \code{\link{.Random.seed}} as the
-    \code{"seed"} attribute, see \sQuote{Value}.
-  }
+generator should be initialized. Either \code{NULL} or an
+integer that will be used in a call to \code{set.seed} before
+simulating the rankings If set, the value is saved as the
+\code{seed}’ attribute of the returned value.  The default,
+\code{NULL} will not change the random generator state, and
+return \code{.Random.seed} as the \code{seed} attribute.}
 
-\item{multinomial}{use multinomial sampling anyway? Default is \code{FALSE}. see Details.}
+\item{multinomial}{use multinomial sampling anyway? Default is
+\code{FALSE}. see Details.}
 
 \item{max_items}{a positive number (default is 10). See Details.}
 
 \item{...}{additional optional arguments.}
 }
 \value{
-An object of class \code{\link{rankings}} of the same
+A \code{data.frame} of \code{\link{rankings}} objects of the same
     dimension as \code{object$rankings}
 }
 \description{
