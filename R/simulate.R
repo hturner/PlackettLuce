@@ -53,7 +53,6 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
     rankings <- unclass(object$rankings)
     N <- ncol(rankings)
     n_rankings <- nrow(rankings)
-    n_choices <- 2^N - 1
     id <- seq(length(object$coefficients) - object$maxTied + 1)
     alpha <- object$coefficients[id]
     delta <- numeric(N)
@@ -87,6 +86,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         for (j in seq_len(max(len))) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
         }
+        n_choices <- length(combinations)
         ## Unormalized probabilities of all combinations
         probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
