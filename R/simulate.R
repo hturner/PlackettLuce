@@ -95,7 +95,6 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         for (j in seq_len(max(len))) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
         }
-
         ## Unormalized probabilities of all combinations
         probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
@@ -124,6 +123,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         colnames(R) <- colnames(rankings)
         as.rankings(R)
     }, simplify = FALSE)
+    out <- data.frame(out)
     names(out) <- paste("sim", seq_len(nsim), sep = "_")
     attr(out, "seed") <- RNGstate
     out
