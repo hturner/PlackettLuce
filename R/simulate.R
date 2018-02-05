@@ -2,8 +2,16 @@
 #'
 #' @inheritParams stats::simulate
 #'
-#' @param multinomial use multinomial sampling anyway? Default is \code{FALSE}. see Details.
+#' @param multinomial use multinomial sampling anyway? Default is
+#'     \code{FALSE}. see Details.
 #' @param max_items a positive number (default is 10). See Details.
+#' @param seed an object specifying if and how the random number
+#'     generator should be initialized. Either \code{NULL} or an
+#'     integer that will be used in a call to \code{set.seed} before
+#'     simulating the rankings If set, the value is saved as the
+#'     \code{seed}’ attribute of the returned value.  The default,
+#'     \code{NULL} will not change the random generator state, and
+#'     return \code{.Random.seed} as the \code{seed} attribute.
 #'
 #' @details
 #'
@@ -87,6 +95,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         for (j in seq_len(max(len))) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
         }
+
         ## Unormalized probabilities of all combinations
         probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
@@ -116,6 +125,7 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         as.rankings(R)
     }, simplify = FALSE)
     names(out) <- paste("sim", seq_len(nsim), sep = "_")
+    attr(out, "seed") <- RNGstate
     out
 }
 
