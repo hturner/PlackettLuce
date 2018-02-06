@@ -78,13 +78,13 @@
 #'
 #' The \code{"iterative scaling"} algorithm is slow because it is a first order
 #' method (does not use derivatives of the likelihood). From a set of starting
-#' values that are "close enough" to the final solution, the algorithm can be
+#' values that are 'close enough' to the final solution, the algorithm can be
 #' accelerated using
 #' \href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
 #' \code{PlackettLuce} attempts to apply Steffensen's acceleration when all
 #' differences between the observed and expected values of the sufficient
 #' statistics are less than \code{steffensen}. This is an ad-hoc rule defining
-#' "close enough" and in some cases the acceleration may produce negative
+#' 'close enough' and in some cases the acceleration may produce negative
 #' worth parameters or decrease the log-likelihood. \code{PlackettLuce} will
 #' only apply the update when it makes an improvement.
 #'
@@ -127,7 +127,7 @@
 #' In particular the convergence tolerance may be adjusted using e.g.
 #' \code{control = list(reltol = 1e-10)}.
 #'
-#' @return An object of class "PlackettLuce", which is a list containing the
+#' @return An object of class \code{PlackettLuce}, which is a list containing the
 #' following elements:
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }
