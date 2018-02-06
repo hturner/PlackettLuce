@@ -19,7 +19,7 @@
 #' If \code{multinomial} is \code{FALSE} (default) and there are no
 #' tie parameters in the object (i.e. \code{object$maxTied == 1}),
 #' then rankings are sampled by ordering exponential random variates
-#' with rate 1, scaled by the estimated item-worth parameters
+#' with rate 1 scaled by the estimated item-worth parameters
 #' \code{object$coefficients} (see, Diaconis, 1988, Chapter 9D) for
 #' details.
 #'
@@ -35,6 +35,12 @@
 #'
 #' @return A \code{data.frame} of \code{\link{rankings}} objects of the same
 #'     dimension as \code{object$rankings}
+#'
+#' @references
+#'
+#' Diaconis (1988). _Group Representations in Probability and
+#' Statistics_. Institute of Mathematical Statistics Lecture Notes
+#' 11. Hayward, CA.
 #'
 #' @examples
 #' R <- matrix(c(1, 2, 0, 0,
@@ -55,7 +61,7 @@
 #' @importFrom stats rexp runif simulate
 #' @method simulate PlackettLuce
 #' @export
-simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, max_combinations = 2 * 1e+04, ...) {
+simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, max_combinations = 2e+04, ...) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
         runif(1)
     if (is.null(seed))

@@ -5,7 +5,7 @@
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
 \method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL,
-  multinomial = FALSE, max_combinations = 2 * 10000, ...)
+  multinomial = FALSE, max_combinations = 20000, ...)
 }
 \arguments{
 \item{object}{an object representing a fitted model.}
@@ -39,7 +39,7 @@ Simulate from \code{PlackettLuce} fitted objects
 If \code{multinomial} is \code{FALSE} (default) and there are no
 tie parameters in the object (i.e. \code{object$maxTied == 1}),
 then rankings are sampled by ordering exponential random variates
-with rate 1, scaled by the estimated item-worth parameters
+with rate 1 scaled by the estimated item-worth parameters
 \code{object$coefficients} (see, Diaconis, 1988, Chapter 9D) for
 details.
 
@@ -69,4 +69,9 @@ s2 <- simulate(mod, 2, seed = 112)
 
 identical(s1[1:2], s2[1:2])
 
+}
+\references{
+Diaconis (1988). _Group Representations in Probability and
+Statistics_. Institute of Mathematical Statistics Lecture Notes
+11. Hayward, CA.
 }
