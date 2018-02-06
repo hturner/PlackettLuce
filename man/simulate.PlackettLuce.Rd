@@ -5,7 +5,7 @@
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
 \method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL,
-  multinomial = FALSE, max_items = 10, ...)
+  multinomial = FALSE, max_combinations = 2 * 10000, ...)
 }
 \arguments{
 \item{object}{an object representing a fitted model.}
@@ -13,17 +13,18 @@
 \item{nsim}{number of response vectors to simulate.  Defaults to \code{1}.}
 
 \item{seed}{an object specifying if and how the random number
-generator should be initialized. Either \code{NULL} or an
+generator should be initialised. Either \code{NULL} or an
 integer that will be used in a call to \code{set.seed} before
 simulating the rankings If set, the value is saved as the
-\code{seed}’ attribute of the returned value.  The default,
+\code{seed} attribute of the returned value.  The default,
 \code{NULL} will not change the random generator state, and
 return \code{.Random.seed} as the \code{seed} attribute.}
 
 \item{multinomial}{use multinomial sampling anyway? Default is
 \code{FALSE}. see Details.}
 
-\item{max_items}{a positive number (default is 10). See Details.}
+\item{max_combinations}{a positive number. Default is
+\code{20000}. See Details.}
 
 \item{...}{additional optional arguments.}
 }
@@ -35,15 +36,22 @@ A \code{data.frame} of \code{\link{rankings}} objects of the same
 Simulate from \code{PlackettLuce} fitted objects
 }
 \details{
-The current implementation will throw an error if more than
-\code{max_items} (default is 10) items are present in the
-\code{PlackettLuce} object and/or \code{object$maxTied > 1}. This
-is a hard-coded exit to prevent issues relating to the creation of
-massive objects in memory.
+If \code{multinomial} is \code{FALSE} (default) and there are no
+tie parameters in the object (i.e. \code{object$maxTied == 1}),
+then rankings are sampled by ordering exponential random variates
+with rate 1, scaled by the estimated item-worth parameters
+\code{object$coefficients} (see, Diaconis, 1988, Chapter 9D) for
+details.
+
+In all other cases, the current implementation uses direct
+multinomial sampling, and will throw an error if there are more
+than \code{max_combinations} combinations of items that the sampler
+has to decide from. This is a hard-coded exit to prevent issues
+relating to the creation of massive objects in memory.
 
 If \code{object$maxTied > 1} the user's setting for
-\code{multinomial} is overridden and \code{multinomial} is taken as
-\code{TRUE}.
+\code{multinomial} and \code{simulate.PlackettLuce} operates as if
+\code{multinomial} is \code{TRUE}.
 }
 \examples{
 R <- matrix(c(1, 2, 0, 0,
