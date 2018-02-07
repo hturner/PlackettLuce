@@ -30,7 +30,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
         agg <- c("choices", "alternatives")
         choices[agg] <- lapply(choices[agg], function(x) x[keep])
         choices$n <- tabulate(g)
-        choices$w <- as.integer(rowsum(choices$w[keep], g[keep]))
+        choices$w <- as.numeric(rowsum(choices$w[keep], g[keep]))
         size <- lengths(unique_alternatives)
     } else {
         choices$n <- 1

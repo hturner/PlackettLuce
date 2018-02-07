@@ -1,5 +1,9 @@
 # PlackettLuce dev version
 
+## Bug fixes
+
+* `vcov.PlackettLuce` now works for models with non-integer weights (fixes #25).
+
 # PlackettLuce 0.2-1
 
 ## New features
