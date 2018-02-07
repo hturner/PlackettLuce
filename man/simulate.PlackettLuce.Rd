@@ -15,9 +15,9 @@
 \item{seed}{an object specifying if and how the random number
 generator should be initialised. Either \code{NULL} or an
 integer that will be used in a call to \code{set.seed} before
-simulating the rankings If set, the value is saved as the
+simulating the rankings. If set, the value is saved as the
 \code{seed} attribute of the returned value.  The default,
-\code{NULL} will not change the random generator state, and
+\code{NULL}, will not change the random generator state, and
 return \code{.Random.seed} as the \code{seed} attribute.}
 
 \item{multinomial}{use multinomial sampling anyway? Default is
@@ -30,7 +30,7 @@ return \code{.Random.seed} as the \code{seed} attribute.}
 }
 \value{
 A \code{data.frame} of \code{\link{rankings}} objects of the same
-    dimension as \code{object$rankings}
+    dimension as \code{object$rankings}.
 }
 \description{
 Simulate from \code{PlackettLuce} fitted objects
@@ -40,8 +40,8 @@ If \code{multinomial} is \code{FALSE} (default) and there are no
 tie parameters in the object (i.e. \code{object$maxTied == 1}),
 then rankings are sampled by ordering exponential random variates
 with rate 1 scaled by the estimated item-worth parameters
-\code{object$coefficients} (see, Diaconis, 1988, Chapter 9D) for
-details.
+\code{object$coefficients} (see, Diaconis, 1988, Chapter 9D for
+details).
 
 In all other cases, the current implementation uses direct
 multinomial sampling, and will throw an error if there are more
@@ -50,7 +50,7 @@ has to decide from. This is a hard-coded exit to prevent issues
 relating to the creation of massive objects in memory.
 
 If \code{object$maxTied > 1} the user's setting for
-\code{multinomial} and \code{simulate.PlackettLuce} operates as if
+\code{multinomial} is ignored and \code{simulate.PlackettLuce} operates as if
 \code{multinomial} is \code{TRUE}.
 }
 \examples{

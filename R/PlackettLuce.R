@@ -522,7 +522,8 @@ PlackettLuce <- function(rankings,
                 rankings = rankings,
                 weights = weights,
                 maxTied = D,
-                conv = conv)
+                conv = conv,
+                ref = 1)
     class(fit) <- "PlackettLuce"
     fit
 }

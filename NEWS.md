@@ -3,6 +3,7 @@
 ## Bug fixes
 
 * `vcov.PlackettLuce` now works for models with non-integer weights (fixes #25).
+* `plot.pltree` now works for `worth = TRUE` with psychotree version 0.15-2 (currently pre-release on https://r-forge.r-project.org/R/?group_id=330)
 
 # PlackettLuce 0.2-1
 
