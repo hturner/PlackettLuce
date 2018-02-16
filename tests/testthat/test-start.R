@@ -35,6 +35,8 @@ mod <- PlackettLuce(R, npseudo = 0.5)
 mod2 <- PlackettLuce(R, start = coef(mod, log = FALSE), npseudo = 0.5)
 mod3 <- PlackettLuce(R, start = coef(mod), npseudo = 0.5)
 mod4 <- PlackettLuce(R, start = unclass(coef(mod, log = FALSE)), npseudo = 0.5)
+mod5 <- PlackettLuce(R, start = unclass(coef(mod, log = FALSE)), npseudo = 0.5,
+                     maxit = 0)
 
 test_that("starting at solution returns same solution [npseudo = 0.5]",
           {
@@ -48,6 +50,10 @@ test_that("starting at solution returns same solution [npseudo = 0.5]",
               # => will iterate a little, to equivalent answer
               expect_gt(mod4$iter, 0)
               expect_equivalent(coef(mod), coef(mod4), tol = coef_tol)
+
+              # here prevent further iterations so fix at starting val
+              expect_equal(mod5$iter, 0)
+              expect_equivalent(coef(mod), coef(mod5))
           })
 
 if (require(psychotree) & require(sandwich)){
