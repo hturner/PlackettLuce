@@ -28,7 +28,7 @@ test_that("starting at solution returns same solution [npseudo = 0]",
 
               # in this case const will change as starting values not rescaled
               expect_equal(mod4$iter, 0)
-              expect_equivalent(coef(mod), coef(mod4))
+              expect_equivalent(coef(mod), coef(mod4), tol = coef_tol)
           })
 
 mod <- PlackettLuce(R, npseudo = 0.5)
@@ -47,7 +47,7 @@ test_that("starting at solution returns same solution [npseudo = 0.5]",
               # in this case generic start for hypothetical item
               # => will iterate a little, to equivalent answer
               expect_gt(mod4$iter, 0)
-              expect_equivalent(coef(mod), coef(mod4)) # attr const will change
+              expect_equivalent(coef(mod), coef(mod4), tol = coef_tol)
           })
 
 if (require(psychotree) & require(sandwich)){
