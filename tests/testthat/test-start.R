@@ -65,5 +65,16 @@ if (require(psychotree) & require(sandwich)){
                   expect_equal(plmod2$object$iter, 0)
                   expect_equal(coef(plmod), coef(plmod2))
               })
+
+    plmod <- plfit(G, npseudo = 0.5, ref = "Anja", estfun = TRUE, object = TRUE)
+
+    plmod2 <- plfit(G, npseudo = 0.5, ref = "Anja", estfun = TRUE, object = TRUE,
+                    start = coef(plmod))
+
+    test_that("plfit works with start, npseudo > 0 [Topmodel2007]",
+              {
+                  expect_equal(plmod2$object$iter, 0)
+                  expect_equal(coef(plmod), coef(plmod2))
+              })
 }
 
