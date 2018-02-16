@@ -177,17 +177,52 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 #' @importFrom stats model.frame
 #' @export
 predict.pltree <- function(object, newdata = NULL,
-                           type = c("itempar", "rank", "best", "node"), ...) {
+                           type = c("itempar", "rank", "best", "node", "aic"),
+                           ...) {
         type <- match.arg(type)
-        if (type == "node"){
+        if (type %in% c("aic", "node")){
             res <- partykit::predict.modelparty(object,
                                                 newdata = newdata,
                                                 type = "node")
-            return(structure(as.character(res),
-                             names = as.character(seq_along(res))))
+            if (type == "node"){
+                return(structure(as.character(res),
+                                 names = as.character(seq_along(res))))
+            }
         }
         if (is.null(newdata))
             newdata <- model.frame(object)
+        if (type == "aic"){
+            cf <- itempar(object)
+            nodes <- rownames(cf)
+            dots <- object$info$dots
+            G <- model.response(newdata) # requires model.frame
+            w <- model.weights(newdata)
+            if (is.null(w)) w <- rep.int(1, length(G))
+            LL <- df <- numeric(length(nodes))
+            for (i in seq_along(nodes)){
+                # fit model with coef fixed to get logLik
+                # suppress warning due to fixing maxit
+                fit <- suppressWarnings(
+                    do.call("plfit",
+                            c(list(y = G[res == nodes[i],],
+                                   start = cf[i,],
+                                   weights = w[res == nodes[i]],
+                                   maxit = 0),
+                                   dots)))
+                LL[i] <- -fit$objfun
+                #$`3`
+                #'log Lik.' -312.7584 (df=5)
+                # $`5`
+                # 'log Lik.' -700.2343 (df=5)
+                # $`6`
+                # 'log Lik.' -530.2829 (df=5)
+                # $`7`
+                # 'log Lik.' -285.3573 (df=5)
+            }
+            # compute AIC based on total log likelihood of data
+            # and df of original model fit
+            return(-2*sum(LL) + 2*attr(logLik(object), "df"))
+        }
         pred <- switch(type,
                        itempar = function(obj, ...) {
                            t(as.matrix(itempar(obj, ...)))

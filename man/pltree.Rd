@@ -8,7 +8,7 @@
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
 
 \method{predict}{pltree}(object, newdata = NULL, type = c("itempar", "rank",
-  "best", "node"), ...)
+  "best", "node", "aic"), ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted, of the form
