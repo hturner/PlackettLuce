@@ -49,7 +49,7 @@ plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
     if (x || offset)
         warning("unused argument(s): ",
                 paste(c("x"[x], "offset"[offset]), collapse = ","))
-    res <- PlackettLuce(y, weights = weights, ...)
+    res <- PlackettLuce(y, start = start, weights = weights, ...)
     if (object) {
         # returning in order to compute final vcov etc, so can aggregate now
         uniq <- !duplicated(attr(y, "id"))

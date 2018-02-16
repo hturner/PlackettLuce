@@ -19,28 +19,30 @@
 #' @param type the type of coefficients to return: one of \code{"ties"},
 #' \code{"worth"} or \code{"all"}.
 #' @param ... additional arguments, currently ignored.
-#'
 #' @name summaries
 #' @export
 coef.PlackettLuce <- function(object, ref = 1, log = TRUE,
                               type = "all", ...){
   type <-  match.arg(type, c("ties", "worth", "all"))
+  ncoefs <- length(object$coefficients)
+  id <- seq_len(ncoefs - object$maxTied + 1)
   if (!log) {
       # ignore ref here, always return probabilities
-      coefs <- object$coefficients
+      const <- sum(object$coefficients[id])
+      coefs <- c(object$coefficients[id]/const, object$coefficients[-id])
   } else {
+      const <- mean(log(object$coefficients[id])[ref])
       item <- itempar.PlackettLuce(object, ref = ref, log = log, vcov = FALSE)
       ref <- attr(item, "ref")
-      nitem <- length(item)
-      coefs <- c(item, log(object$coefficients[-seq_len(nitem)]))
+      coefs <- c(item, log(object$coefficients[-id]))
   }
-  ncoefs <- length(coefs)
-  id <- seq_len(ncoefs - object$maxTied + 1)
   cls <- c("coef.PlackettLuce", "numeric")
   switch(type,
          "ties" = return(coefs[-id]),
-         "worth" = return(structure(coefs[id], ref = ref, class = cls)),
-         "all" = return(structure(coefs, ref = ref, class = cls)))
+         "worth" = return(structure(coefs[id], ref = ref, log = log,
+                                    const = const, class = cls)),
+         "all" = return(structure(coefs, ref = ref, log = log,
+                                  const = const, class = cls)))
 }
 
 #' @method print coef.PlackettLuce

@@ -17,7 +17,7 @@ model.}
 which log worth will be set to zero). If \code{NULL} the sum of the log worth
 parameters is set to zero.}
 
-\item{start}{starting values for the worth parameters and the tie parameters.}
+\item{start}{starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.}
 
 \item{weights}{an optional vector of weights for each ranking.}
 

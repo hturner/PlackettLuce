@@ -113,7 +113,7 @@
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param weights an optional vector of weights for each ranking.
-#' @param start starting values for the worth parameters and the tie parameters.
+#' @param start starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
@@ -127,7 +127,7 @@
 #' In particular the convergence tolerance may be adjusted using e.g.
 #' \code{control = list(reltol = 1e-10)}.
 #'
-#' @return An object of class \code{PlackettLuce}, which is a list containing the
+#' @return An object of class \code{"PlackettLuce"}, which is a list containing the
 #' following elements:
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }
@@ -202,10 +202,9 @@ PlackettLuce <- function(rankings,
         # items ranked from last to 1st place
         R <- t(apply(rankings, 1, order, decreasing = TRUE))
 
-        if (is.null(start)) {
-            # adjacency matrix: wins over rest
-            X <- adjacency(rankings, weights = weights)
-        }
+        # adjacency matrix: wins over rest
+        # N.B. need even if `start` specified; used to check connectivity
+        X <- adjacency(rankings, weights = weights)
 
         # sizes of selected sets
         S <- apply(rankings, 1, function(x){
@@ -231,13 +230,11 @@ PlackettLuce <- function(rankings,
         B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
     } else {
-        if (is.null(start)){
-            # adjacency matrix: wins over rest
-            # (id extracted from grouped_rankings object)
-            X <- matrix(0, N, N)
-            for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
-            class(X) <- c("adjacency", "matrix")
-        }
+        # adjacency matrix: wins over rest
+        # (id extracted from grouped_rankings object)
+        X <- matrix(0, N, N)
+        for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
+        class(X) <- c("adjacency", "matrix")
 
         # replicate ranking weight for each choice in ranking
         # (S extracted from grouped_rankings object)
@@ -325,19 +322,42 @@ PlackettLuce <- function(rankings,
         A <- c(A + npseudo, N*npseudo)
         # update B: 2*npseudo untied choices
         B[1] <- B[1] + 2*npseudo*N
-        N <- N + 1
     }
 
     if (is.null(start)){
         # (scaled, un-damped) PageRank based on underlying paired comparisons
         alpha <- drop(abs(eigs(X/colSums(X), 1,
                                opts = list(ncv = min(nrow(X), 10)))$vectors))
-        delta <- rep.int(0.1, D)
+        delta <- c(1, rep.int(0.1, D - 1))
     } else {
+        # if not "coef.PlackettLuce" object, assume on raw scale
+        # (with ability of hypothetical item 1), i.e. as returned coefficients)
         alpha <- start[seq_len(N)]
-        delta <- c(0.1, start[-seq_len(N)])
+        delta <- start[-seq_len(N)]
+        if (inherits(start, "coef.PlackettLuce")){
+            # reverse identifiability constraints and put on raw scale
+            if (attr(start, "log")){
+                alpha <- exp(alpha + attr(start, "const"))
+                delta <- exp(delta)
+            } else {
+                alpha <- alpha*attr(start, "const")
+            }
+        }
+        delta <- c(1, delta)
+        if (npseudo > 0) {
+            # set alpha for hypothetical item to 1 as in original fit
+            if (inherits(start, "coef.PlackettLuce")){
+                alpha <- c(alpha, 1)
+            } else {
+                # set to geometric mean as neutral position
+                alpha <- c(alpha, exp(mean(log(alpha))))
+            }
+        }
     }
-    delta[1] <- 1
+    if (npseudo) {
+        N <- N + 1
+        alpha <- alpha/alpha[N]
+    }
 
     # quasi-newton methods ---
 
@@ -410,6 +430,7 @@ PlackettLuce <- function(rankings,
         oneUpdate <- function(res){
             # update all alphas
             res$alpha <- res$alpha*A/res$expA
+            if (npseudo) res$alpha <- res$alpha/res$alpha[N]
             # update all deltas
             if (D > 1) {
                 res$delta[-1] <- B[-1]/
@@ -499,13 +520,13 @@ PlackettLuce <- function(rankings,
         A <- A[-(N + 1)] - npseudo
         B[1] <- B[1] - 2*npseudo*N
     }
-    res$alpha <- res$alpha/sum(res$alpha)
     names(res$alpha) <- items
     rank <- N + D - 2
 
-    # recompute log-likelihood based on constrained alpha
-    # (will differ slightly when npseudo = 0, otherwise needs computing anyway)
-    logl <- loglik(unlist(res[c("alpha", "delta")]))
+    # recompute log-likelihood
+    if (npseudo > 0) {
+        logl <- loglik(unlist(res[c("alpha", "delta")]))
+    } else logl <- res$logl
 
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- vapply(W[S], sum, 1)

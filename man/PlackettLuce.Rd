@@ -17,7 +17,7 @@ between each object and a hypothetical reference object.}
 
 \item{weights}{an optional vector of weights for each ranking.}
 
-\item{start}{starting values for the worth parameters and the tie parameters.}
+\item{start}{starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 
@@ -39,7 +39,7 @@ In particular the convergence tolerance may be adjusted using e.g.
 \code{control = list(reltol = 1e-10)}.}
 }
 \value{
-An object of class \code{PlackettLuce}, which is a list containing the
+An object of class \code{"PlackettLuce"}, which is a list containing the
 following elements:
 \item{call}{ The matched call. }
 \item{coefficients}{ The model coefficients. }
