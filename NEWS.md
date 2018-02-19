@@ -1,5 +1,10 @@
 # PlackettLuce dev version
 
+## New features
+
+* Add `AIC.PlackettLuce` to enable computation of AIC on new observations (e.g.
+data held out in cross-validation).
+
 ## Bug fixes
 
 * `vcov.PlackettLuce` now works for models with non-integer weights (fixes #25).

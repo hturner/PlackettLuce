@@ -16,7 +16,10 @@
 #' extracts the abilities or item parameters from the Plackett-Luce models in
 #' each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 #' method employs the \code{\link[psychotree]{node_btplot}}
-#' panel-generating function.
+#' panel-generating function. \code{AIC} computes
+#' \eqn{-2L + 2df}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
+#' the observed rankings under the tree model and \eqn{df} is the degrees of
+#' freedom used to fit the tree model.
 #'
 #' @param formula a symbolic description of the model to be fitted, of the form
 #' \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
@@ -31,10 +34,11 @@
 #' @param ref an integer or character string specifying the reference item (for
 #' which log ability will be set to zero). If NULL the first item is used.
 #' @param ... additional arguments, passed to \code{\link{PlackettLuce}} by
-#' \code{pltree} and to \code{\link{itempar}} by \code{predict}.
+#' \code{pltree}; to \code{\link{itempar}} by \code{predict}, and to
+#' \code{\link{model.frame}} by \code{AIC}.
 #' @param object a fitted model object of class \code{"pltree"}.
-#' @param newdata an optional data frame to use for prediction instead of the
-#' original data.
+#' @param newdata an optional data frame to use instead of the
+#' original data. For \code{AIC} this must include the response variable.
 #' @param type the type of prediction to return for each group, one of:
 #' \code{"itempar"} to give the result of \code{\link{itempar}} (by default the
 #' fitted probability of each item being ranked first out of all objects),
@@ -174,46 +178,25 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 
 #' @rdname pltree
 #' @method predict pltree
-#' @importFrom stats model.frame model.response model.weights
 #' @export
 predict.pltree <- function(object, newdata = NULL,
-                           type = c("itempar", "rank", "best", "node", "aic"),
+                           type = c("itempar", "rank", "best", "node"),
                            ...) {
         type <- match.arg(type)
-        if (type %in% c("aic", "node")){
+        if (type == "node"){
             res <- partykit::predict.modelparty(object,
                                                 newdata = newdata,
                                                 type = "node")
-            if (type == "node"){
-                return(structure(as.character(res),
-                                 names = as.character(seq_along(res))))
-            }
+            return(structure(as.character(res),
+                             names = as.character(seq_along(res))))
         }
-        if (is.null(newdata))
+        if (is.null(newdata)) {
             newdata <- model.frame(object)
-        if (type == "aic"){
-            cf <- itempar(object)
-            nodes <- rownames(cf)
-            dots <- object$info$dots
-            G <- model.response(newdata) # requires model.frame
-            w <- model.weights(newdata)
-            if (is.null(w)) w <- rep.int(1, length(G))
-            LL <- df <- numeric(length(nodes))
-            for (i in seq_along(nodes)){
-                # fit model with coef fixed to get logLik
-                # suppress warning due to fixing maxit
-                fit <- suppressWarnings(
-                    do.call("plfit",
-                            c(list(y = G[res == nodes[i],],
-                                   start = cf[i,],
-                                   weights = w[res == nodes[i]],
-                                   maxit = 0),
-                                   dots)))
-                LL[i] <- -fit$objfun
-            }
-            # compute AIC based on total log likelihood of data
-            # and df of original model fit
-            return(-2*sum(LL) + 2*attr(logLik.PlackettLuce(object), "df"))
+        } else if (type == "aic"){
+            response <- as.character(formula(object)[[2]])
+            if (!response %in% colnames(newdata))
+                stop("`newdata` must include response when `type = \"aic\"`")
+            newdata <- model.frame(formula(object), data = newdata)
         }
         pred <- switch(type,
                        itempar = function(obj, ...) {
@@ -228,4 +211,53 @@ predict.pltree <- function(object, newdata = NULL,
                        })
         partykit::predict.modelparty(object, newdata = newdata, type = pred,
                                      ...)
+}
+
+
+#' @rdname pltree
+#' @method AIC pltree
+#' @importFrom stats formula logLik model.frame model.response model.weights
+#' @export
+AIC.pltree <- function(object, newdata = NULL, ...) {
+    if (is.null(newdata)) {
+        return(NextMethod(object, ...))
     }
+    # create model.frame from newdata
+    response <- as.character(formula(object)[[2]])
+    if (!response %in% colnames(newdata))
+        stop("`newdata` must include response")
+    f <- formula(object)
+    environment(f) <- parent.frame()
+    newdata <- model.frame(f, data = newdata, ...)
+    # predict node for each grouped ranking
+    node <- partykit::predict.modelparty(object,
+                                        newdata = newdata,
+                                        type = "node")
+    # set up to refit models based on newdata
+    cf <- itempar(object)
+    nodes <- rownames(cf)
+    dots <- object$info$dots
+    G <- model.response(newdata)
+    w <- model.weights(newdata)
+    if (is.null(w)) w <- rep.int(1, length(G))
+    LL <- df <- numeric(length(nodes))
+    for (i in seq_along(nodes)){
+        # fit model with coef fixed to get logLik
+        # suppress warning due to fixing maxit
+        id <- node == nodes[i]
+        if (sum(id)) {
+            fit <- suppressWarnings(
+                do.call("plfit",
+                        c(list(y = G[id,],
+                               start = cf[i,],
+                               weights = w[id],
+                               maxit = 0),
+                          dots)))
+            LL[i] <- -fit$objfun
+        }
+    }
+    # compute AIC based on total log likelihood of data
+    # and df of original model fit
+    -2*sum(LL) + 2*attr(logLik(object), "df")
+}
+

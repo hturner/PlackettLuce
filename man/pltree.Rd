@@ -3,12 +3,15 @@
 \name{pltree}
 \alias{pltree}
 \alias{predict.pltree}
+\alias{AIC.pltree}
 \title{Plackett-Luce Trees}
 \usage{
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
 
 \method{predict}{pltree}(object, newdata = NULL, type = c("itempar", "rank",
-  "best", "node", "aic"), ...)
+  "best", "node"), ...)
+
+\method{AIC}{pltree}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted, of the form
@@ -30,12 +33,13 @@ covariances in the parameter stability tests, see \code{\link{mob}}.}
 which log ability will be set to zero). If NULL the first item is used.}
 
 \item{...}{additional arguments, passed to \code{\link{PlackettLuce}} by
-\code{pltree} and to \code{\link{itempar}} by \code{predict}.}
+\code{pltree}; to \code{\link{itempar}} by \code{predict}, and to
+\code{\link{model.frame}} by \code{AIC}.}
 
 \item{object}{a fitted model object of class \code{"pltree"}.}
 
-\item{newdata}{an optional data frame to use for prediction instead of the
-original data.}
+\item{newdata}{an optional data frame to use instead of the
+original data. For \code{AIC} this must include the response variable.}
 
 \item{type}{the type of prediction to return for each group, one of:
 \code{"itempar"} to give the result of \code{\link{itempar}} (by default the
@@ -65,7 +69,10 @@ inherited from \code{"modelparty"} objects (e.g. \code{print},
 extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 method employs the \code{\link[psychotree]{node_btplot}}
-panel-generating function.
+panel-generating function. \code{AIC} computes
+\eqn{-2L + 2df}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
+the observed rankings under the tree model and \eqn{df} is the degrees of
+freedom used to fit the tree model.
 }
 \examples{
 # Bradley-Terry example
