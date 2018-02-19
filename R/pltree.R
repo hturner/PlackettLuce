@@ -174,7 +174,7 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 
 #' @rdname pltree
 #' @method predict pltree
-#' @importFrom stats model.frame
+#' @importFrom stats model.frame model.response model.weights
 #' @export
 predict.pltree <- function(object, newdata = NULL,
                            type = c("itempar", "rank", "best", "node", "aic"),
@@ -210,18 +210,10 @@ predict.pltree <- function(object, newdata = NULL,
                                    maxit = 0),
                                    dots)))
                 LL[i] <- -fit$objfun
-                #$`3`
-                #'log Lik.' -312.7584 (df=5)
-                # $`5`
-                # 'log Lik.' -700.2343 (df=5)
-                # $`6`
-                # 'log Lik.' -530.2829 (df=5)
-                # $`7`
-                # 'log Lik.' -285.3573 (df=5)
             }
             # compute AIC based on total log likelihood of data
             # and df of original model fit
-            return(-2*sum(LL) + 2*attr(logLik(object), "df"))
+            return(-2*sum(LL) + 2*attr(logLik.PlackettLuce(object), "df"))
         }
         pred <- switch(type,
                        itempar = function(obj, ...) {
