@@ -2,20 +2,23 @@
 #'
 #' Fitted probabilities for all choice/alternative combinations in the data.
 #'
-#' @param object a \code{"PlackettLuce"} object as returned by
-#' \code{\link{PlackettLuce}}.
+#' @param object an object as returned by
+#' \code{\link{PlackettLuce}} or \code{\link{"pltree"}}.
 #' @param aggregate logical; if \code{TRUE} observations of the same choice from
 #' the same set of alternatives are aggregated.
 #' @param free logical; if \code{TRUE} only free choices are included, i.e.
 #' choices of one item from a set of one item are excluded.
 #' @param ... further arguments passed to method (ignored).
-#' @return a list with the following components
+#' @return A list with the following components
 #' \item{choices}{The selected item(s).}
 #' \item{alternatives}{The set of item(s) that the choice was made from.}
 #' \item{ranking}{The ranking(s) including this choice.}
 #' \item{n}{If \code{aggregate = TRUE}, the number of rankings including this
 #' choice.}
 #' \item{fitted}{The fitted probability of making this choice.}
+#' If \code{object} was a \code{"pltree"} object, the list has an
+#' additional element \code{node}, specifying which node the ranking corresponds
+#' to.
 #' @seealso choices
 #' @export
 fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {

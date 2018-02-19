@@ -261,3 +261,23 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     -2*sum(LL) + 2*attr(logLik(object), "df")
 }
 
+#' @rdname fitted.PlackettLuce
+#' @method fitted pltree
+#' @importFrom partykit nodeapply refit.modelparty
+#' @export
+fitted.pltree <- function(object, aggregate = TRUE, free = TRUE, ...)  {
+    node <- predict.pltree(object, type = "node")
+    ids <- nodeids(object, terminal = TRUE)
+    if ("object" %in% object$info$control$terminal) {
+        fit <- nodeapply(object, ids,
+                         function(n) fitted.PlackettLuce(info_node(n)$object))
+    } else {
+        fit <- lapply(refit.modelparty(object, ids, drop = FALSE),
+                      fitted.PlackettLuce)
+    }
+    # combine fitted from each node
+    n <- vapply(fit, function(x) length(x[[1]]), 1)
+    fit <- do.call(Map, c(c, fit))
+    fit$node <- rep.int(ids, n)
+    fit
+}
