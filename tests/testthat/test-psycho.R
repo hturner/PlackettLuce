@@ -106,6 +106,19 @@ if (require(psychotree) & require(sandwich)){
                   expect_equal(predict(bt_tree, newdata = newdata,
                                        type = "node"), tmp)
               })
+    test_that('AIC.pltree works [Topmodel2007]',
+              {
+                  Topmodel2007$G <- G
+                  aic1 <- AIC(pl_tree)
+                  aic2 <- AIC(pl_tree, newdata = Topmodel2007)
+                  expect_equal(aic1, aic2)
+
+                  node <- predict(pl_tree, type = "node")
+                  aic1 <- AIC(pl_tree, newdata = Topmodel2007[node == "3", -1])
+                  aic2 <- -2*as.numeric(logLik(pl_tree[[3]])) +
+                      2*attr(logLik(pl_tree), "df")
+                  expect_equal(aic1, aic2)
+              })
     # coef pltree
     test_that('coef pltree works with log = FALSE [Topmodel2007]',
               {
@@ -115,3 +128,47 @@ if (require(psychotree) & require(sandwich)){
                                coef(bt_tree))
               })
 }
+
+# example with weights
+example(beans, package = "PlackettLuce")
+G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
+
+weights <- c(rep(0.3, 400), rep(1, 442))
+
+pl_tree <- pltree(G ~ maxTN,
+               data = beans, alpha = 0.05, weights = weights )
+
+# maybe use vdiffr in future
+test_that('plot.pltree works w/ weights [beans]',
+          {
+              expect_null(plot(pl_tree))
+          })
+
+test_that('itempar.pltree works w/ weights [beans]',
+          {
+              # same results with newdata as original data
+              pred1 <- predict(pl_tree, newdata = beans)
+              pred2 <- predict(pl_tree)
+              expect_equal(pred1, pred2)
+
+              itempar1 <- unique(pred2)
+              itempar2 <- itempar(pl_tree)
+              expect_equivalent(itempar1[order(itempar1[,1]),],
+                                itempar2[order(itempar2[,1]),])
+          })
+
+test_that('AIC.pltree works w/ weights [beans]',
+          {
+              beans$G <- G
+              aic1 <- AIC(pl_tree)
+              aic2 <- AIC(pl_tree, newdata = beans, weights = weights)
+              expect_equal(aic1, aic2)
+
+              node <- predict(pl_tree, type = "node")
+              id <- node == "3"
+              aic1 <- AIC(pl_tree, newdata = beans[id, -1],
+                          weights = weights[id])
+              aic2 <- -2*as.numeric(logLik(pl_tree[[3]])) +
+                  2*attr(logLik(pl_tree), "df")
+              expect_equal(aic1, aic2)
+          })

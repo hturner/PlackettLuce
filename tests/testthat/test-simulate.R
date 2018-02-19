@@ -37,8 +37,7 @@ test_biases <- c(0.000000000, -0.014515877, -0.022463593, 0.010276173, -0.063401
 
 test_that("simulation results are consistent to first version", {
     result_biases <- unname(unclass(rowMeans(coefs) - coef(mod1)))
-    attr(result_biases, "ref") <- NULL
-    expect_equal(result_biases, test_biases, tolerance = 1e-06)
+    expect_equivalent(result_biases, test_biases, tolerance = 1e-06)
 })
 
 ## par(mfrow = c(3, 3))

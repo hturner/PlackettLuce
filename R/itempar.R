@@ -101,7 +101,7 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
         alias <- ref[1]
         names(alias) <- names(coefs)[id[ref[1]]]
         coefs <- coefs[-alias]
-        V <- V[-alias, -alias]
+        if (vcov) V <- V[-alias, -alias]
     }
     structure(coefs, class = "itempar", model = "PlackettLuce",
               ref = ref, alias = alias, vcov = if (vcov) V)

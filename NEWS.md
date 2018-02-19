@@ -1,9 +1,17 @@
 # PlackettLuce dev version
 
+## New features
+
+* Add `AIC.PlackettLuce` to enable computation of AIC on new observations (e.g.
+data held out in cross-validation).
+* Add `fitted.pltree` to return combined fitted probabilities for each choice within each ranking, for each node in a Plackett-Luce tree.
+
 ## Bug fixes
 
 * `vcov.PlackettLuce` now works for models with non-integer weights (fixes #25).
 * `plot.pltree` now works for `worth = TRUE` with psychotree version 0.15-2 (currently pre-release on https://r-forge.r-project.org/R/?group_id=330)
+* `PlackettLuce` and `plfit` now work when `start` argument is set.
+* `itempar.PlackettLuce` now works with `alias = FALSE`
 
 # PlackettLuce 0.2-1
 
