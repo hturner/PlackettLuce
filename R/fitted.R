@@ -3,7 +3,7 @@
 #' Fitted probabilities for all choice/alternative combinations in the data.
 #'
 #' @param object an object as returned by
-#' \code{\link{PlackettLuce}} or \code{\link{"pltree"}}.
+#' \code{\link{PlackettLuce}} or \code{\link{pltree}}.
 #' @param aggregate logical; if \code{TRUE} observations of the same choice from
 #' the same set of alternatives are aggregated.
 #' @param free logical; if \code{TRUE} only free choices are included, i.e.

@@ -11,7 +11,7 @@
 }
 \arguments{
 \item{object}{an object as returned by
-\code{\link{PlackettLuce}} or \code{\link{"pltree"}}.}
+\code{\link{PlackettLuce}} or \code{\link{pltree}}.}
 
 \item{aggregate}{logical; if \code{TRUE} observations of the same choice from
 the same set of alternatives are aggregated.}
