@@ -7,13 +7,16 @@ biblio
 BiocStyle
 Biometrika
 Bioversity
+bookdown
 Broyden
 BRT
 Centro
 CGIAR
 Decarli
+Diaconis
 doi
 eq
+estimate's
 etc
 Etten
 frac
@@ -31,6 +34,7 @@ knitr
 Kosmidis
 lbfgs
 ldots
+Luce's
 Mattei
 Menezes
 minorization
@@ -53,6 +57,7 @@ psychotree
 quasiSE
 quasiVar
 qvcalc
+requireNamespace
 Ridout
 rmarkdown
 Rojo
@@ -61,6 +66,7 @@ Shanno
 Stat
 StatRank
 Steffensen
+Steffensen's
 Strobl
 succ
 Sur

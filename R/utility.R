@@ -1,5 +1,5 @@
-# utility functions to create ranking data structures/X matrix for log-linear models
-# maybe just for testing or at some point could be tidied up and exported
+# utility functions to create ranking data structures/X matrix for log-linear
+# models maybe just for testing or at some point could be tidied up and exported
 
 # okay to aggregate for vcov computation, but not for logLik
 #' @importFrom utils combn
@@ -125,7 +125,8 @@ generate_rankings <- function(maxi, n_rankings = 10, tie = 5, seed = NULL) {
         v[sample(maxi, min(m, maxi))] <- s
         v0 <- v==0
         if (length(v0))
-            v[v0] <- sample(0:max(s), sum(v0), replace = TRUE, prob = c(tie, rep(1/max(s), max(s))))
+            v[v0] <- sample(0:max(s), sum(v0), replace = TRUE,
+                            prob = c(tie, rep(1/max(s), max(s))))
         v
     })
     as.rankings(t(mat))

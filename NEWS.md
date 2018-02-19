@@ -1,4 +1,4 @@
-# PlackettLuce dev version
+# PlackettLuce 0.2-2
 
 ## New features
 

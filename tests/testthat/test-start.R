@@ -74,8 +74,8 @@ if (require(psychotree) & require(sandwich)){
 
     plmod <- plfit(G, npseudo = 0.5, ref = "Anja", estfun = TRUE, object = TRUE)
 
-    plmod2 <- plfit(G, npseudo = 0.5, ref = "Anja", estfun = TRUE, object = TRUE,
-                    start = coef(plmod))
+    plmod2 <- plfit(G, npseudo = 0.5, ref = "Anja", estfun = TRUE,
+                    object = TRUE, start = coef(plmod))
 
     test_that("plfit works with start, npseudo > 0 [Topmodel2007]",
               {

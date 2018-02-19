@@ -61,7 +61,9 @@
 #' @importFrom stats rexp runif simulate
 #' @method simulate PlackettLuce
 #' @export
-simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = FALSE, max_combinations = 2e+04, ...) {
+simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL,
+                                  multinomial = FALSE,
+                                  max_combinations = 2e+04, ...) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
         runif(1)
     if (is.null(seed))
@@ -86,12 +88,14 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
     }
     len <- lengths(sets)
 
-    ## If there are no ties use Louis Gordon (1983, Annals of Stat); Diaconis (1988, Chapter 9D)
+    ## If there are no ties use Louis Gordon (1983, Annals of Stat);
+    ## Diaconis (1988, Chapter 9D)
     if (object$maxTied == 1 & !multinomial) {
         sampler <- function(objects) {
             v <- numeric(N)
             len <- length(objects)
-            ordering <- objects[order(rexp(len, rate = 1)/alpha[objects], decreasing = FALSE)]
+            ordering <- objects[order(rexp(len, rate = 1)/alpha[objects],
+                                      decreasing = FALSE)]
             v[ordering] <- seq.int(len)
             v
         }
@@ -104,7 +108,10 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         n_combinations <- sum(choose(N, seq_len(max(len)))
                               )
         if (n_combinations > max_combinations) {
-            stop(paste("simulate.PlackettLuce needs to decide between", n_combinations, "combinations of items, but 'max_combinations' is", max_combinations))
+            stop(paste("simulate.PlackettLuce needs to decide between",
+                       n_combinations,
+                       "combinations of items, but 'max_combinations' is",
+                       max_combinations))
         }
 
         ## Get all possible combinations of objects
@@ -114,19 +121,24 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL, multinomial = F
         }
 
         ## Unormalized probabilities of all combinations
-        probs <- sapply(combinations, function(z) delta[length(z)] * prod(alpha[z])^(1/length(z)))
+        probs <- vapply(combinations, function(z) {
+            delta[length(z)] * prod(alpha[z])^(1/length(z))
+        }, 1)
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
         sampler <- function(objects) {
             v <- numeric(N)
             j <- 1
             indices <- rep(TRUE, n_combinations)
             while (length(objects)) {
-                ## find out which combinations have all of their objects included in `objects`
-                indices[indices] <- sapply(combinations[indices], function(x) {
+                ## find out which combinations have all of their objects
+                ## included in `objects`
+                indices[indices] <- vapply(combinations[indices], function(x) {
                     all(x %in% objects)
-                })
-                ## sample, after setting the probability of all other combinations to zero
-                sampled <- combinations[[sample.int(n_combinations, 1, prob = probs * indices)]]
+                }, TRUE)
+                ## sample, after setting the probability of all other
+                ## combinations to zero
+                sampled <- combinations[[sample.int(n_combinations, 1,
+                                                    prob = probs * indices)]]
                 ## remove the sampled objects from `objects`
                 objects <- objects[-match(sampled, objects, nomatch = 0)]
                 v[sampled] <- j
