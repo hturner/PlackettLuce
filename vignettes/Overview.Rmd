@@ -43,7 +43,10 @@ link-citations: true
 ```{r vignette-setup, include = FALSE}
 library(knitr)
 eval_all <- FALSE # evaluate all timings and pltree?
-options(knitr.table.format = opts_knit$get("rmarkdown.pandoc.to"))
+# if render using rmarkdown, use output format to decide table format
+table.format <- opts_knit$get("rmarkdown.pandoc.to")
+if (!identical(table.format, "latex")) table.format <- "html"
+opts_knit$set(knitr.table.format = table.format)
 opts_chunk$set(message = FALSE)
 ```
 
