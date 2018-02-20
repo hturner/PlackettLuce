@@ -4,7 +4,7 @@
 
 ## New features
 
-* Add `AIC.PlackettLuce` to enable computation of AIC on new observations (e.g.
+* Add `AIC.pltree` to enable computation of AIC on new observations (e.g.
 data held out in cross-validation).
 * Add `fitted.pltree` to return combined fitted probabilities for each choice within each ranking, for each node in a Plackett-Luce tree.
 
