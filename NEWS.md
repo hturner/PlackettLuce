@@ -1,5 +1,9 @@
 # PlackettLuce Development version
 
+## Bug fixes
+
+* Correct vcov for weighted rankings of more than two items.
+
 # PlackettLuce 0.2-2
 
 ## New features

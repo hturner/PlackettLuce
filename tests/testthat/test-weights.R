@@ -63,6 +63,25 @@ if (require(gnm)){
               })
 }
 
+## netflix data (as in vignett) is in tests/netflix.rda
+load("../netflix.rda")
+r <- rep(seq_len(nrow(netflix)), netflix$n)
+R <- as.rankings(netflix[r,-1], "ordering")
+R2 <- as.rankings(netflix[,-1], "ordering")
+w <- netflix$n
+## fit PlackettLuce model
+## - one ranking per row
+mod0 <- PlackettLuce(R, npseudo = 0)
+## - aggregated to unique rankings
+mod1 <- PlackettLuce(R2, weights = w, npseudo = 0)
+test_that("fit is the same for aggregated data [netflix]",
+          {
+              expect_equal(coef(mod0), coef(mod1), tolerance = coef_tol)
+              expect_equal(logLik(mod0), logLik(mod1),
+                           tolerance = loglik_tol)
+              expect_equal(vcov(mod0), vcov(mod1))
+          })
+
 if (require(psychotree)){
     ## Germany's Next Topmodel 2007 data
     data("Topmodel2007", package = "psychotree")
