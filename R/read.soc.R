@@ -44,3 +44,17 @@ read.soc <- function(file){
                        check.names = FALSE),
               item = item)
 }
+
+read.soi <- function(file){
+    # read one line to find number of items
+    p <- as.integer(read.csv(file, nrows = 1, header = FALSE))
+    # get items
+    item <- read.csv(file, skip = 1, nrows = p, header = FALSE,
+                     stringsAsFactors = FALSE, strip.white = TRUE)[,2]
+    names(item) <- seq_len(p)
+    # read counts and ordered items
+    structure(read.csv(file, col.names = c("n", paste("Rank", seq_len(p))),
+                       skip = p + 2, header = FALSE,
+                       check.names = FALSE),
+              item = item)
+}

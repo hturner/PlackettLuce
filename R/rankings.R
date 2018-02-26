@@ -169,13 +169,14 @@ as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
             rm(x)
             x <- array(value, dim = att$dim, dimnames = att$dimnames)
         }
-        m <- max(x)
+        m <- max(x, na.rm = TRUE)
         if (!is.null(labels) && length(labels) > m){
             unused <- length(labels) - m
             x <- cbind(x, matrix(0, nrow = nrow(x), ncol = unused))
             m <- m + unused
         }
-        m <- ifelse(!is.null(labels), length(labels), max(x))
+        m <- ifelse(!is.null(labels), length(labels),
+                    max(x, na.rm = TRUE))
         item <- seq_len(m)
         x <- t(apply(x, 1, function(x) match(item, x, nomatch = 0)))
         if (!is.null(labels)) colnames(x) <- labels
