@@ -3,6 +3,7 @@
 ## Bug fixes
 
 * Correct vcov for weighted rankings of more than two items.
+* Enable `AIC.pltree` to work on `"pltree"` object with one node.
 
 # PlackettLuce 0.2-2
 

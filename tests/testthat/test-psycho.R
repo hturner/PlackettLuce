@@ -136,7 +136,7 @@ G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 weights <- c(rep(0.3, 400), rep(1, 442))
 
 pl_tree <- pltree(G ~ maxTN,
-               data = beans, alpha = 0.05, weights = weights )
+                  data = beans, alpha = 0.05, weights = weights )
 
 # maybe use vdiffr in future
 test_that('plot.pltree works w/ weights [beans]',
@@ -170,5 +170,15 @@ test_that('AIC.pltree works w/ weights [beans]',
                           weights = weights[id])
               aic2 <- -2*as.numeric(logLik(pl_tree[[3]])) +
                   2*attr(logLik(pl_tree), "df")
+              expect_equal(aic1, aic2)
+          })
+
+pl_tree1 <- pltree(G ~ maxTN, data = beans, alpha = 0)
+
+test_that('AIC.pltree works w/ single node [beans]',
+          {
+              beans$G <- G
+              aic1 <- AIC(pl_tree1)
+              aic2 <- AIC(pl_tree1, newdata = beans)
               expect_equal(aic1, aic2)
           })

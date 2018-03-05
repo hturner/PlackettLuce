@@ -176,6 +176,13 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
     }
 }
 
+#' @method itempar pltree
+#' @export
+itempar.pltree <- function (object, ...){
+    requireNamespace("psychotree")
+    NextMethod()
+}
+
 #' @rdname pltree
 #' @method predict pltree
 #' @export
@@ -192,11 +199,6 @@ predict.pltree <- function(object, newdata = NULL,
         }
         if (is.null(newdata)) {
             newdata <- model.frame(object)
-        } else if (type == "aic"){
-            response <- as.character(formula(object)[[2]])
-            if (!response %in% colnames(newdata))
-                stop("`newdata` must include response when `type = \"aic\"`")
-            newdata <- model.frame(formula(object), data = newdata)
         }
         pred <- switch(type,
                        itempar = function(obj, ...) {
@@ -231,11 +233,12 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     newdata <- model.frame(f, data = newdata, ...)
     # predict node for each grouped ranking
     node <- partykit::predict.modelparty(object,
-                                        newdata = newdata,
-                                        type = "node")
+                                         newdata = newdata,
+                                         type = "node")
     # set up to refit models based on newdata
     cf <- itempar(object)
-    nodes <- rownames(cf)
+    if (is.null(dim(cf))) cf <- t(as.matrix(cf))
+    nodes <- partykit::nodeids(object, terminal = TRUE)
     dots <- object$info$dots
     G <- model.response(newdata)
     w <- model.weights(newdata)
