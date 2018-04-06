@@ -34,18 +34,26 @@ print.summary.PlackettLuce <-  function(x,
                                         digits = max(3L,
                                                      getOption("digits") - 3L),
                                         ...) {
-    cat("Call: ", deparse(x$call), "\n", sep = "", fill = TRUE)
+    w <- getOption("width") - 6
+    string <- deparse(x$call, width = w)
+    string[1] <- paste("Call:", string[1])
+    while (w >= 22 & max(nchar(string)) > getOption("width")){
+        w <- w - 2
+        string <- deparse(x$call, width = w)
+        string[1] <- paste("Call:", string[1])
+    }
+    cat(string, sep = "\n")
 
     if (length(coef(x))) {
-        cat("Coefficients:\n")
+        cat("\nCoefficients:\n")
         printCoefmat(x$coefficients, digits = digits, na.print = "NA", ...)
     }
-    else cat("No coefficients\n")
+    else cat("\nNo coefficients\n")
 
-    cat("\nResidual deviance: ",
+    cat("\nResidual deviance:  ",
         format(x$deviance, digits = max(5, digits + 1)), " on ",
         format(x$df.residual, digits = max(5, digits + 1)),
-        " degrees of freedom\n")
+        " degrees of freedom", fill = TRUE, sep = "")
     cat("AIC: ", format(x$aic, digits = max(4, digits + 1)), "\n")
 
     cat("Number of iterations: ",  x$iter, "\n", sep = "")
