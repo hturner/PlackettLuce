@@ -34,15 +34,7 @@ print.summary.PlackettLuce <-  function(x,
                                         digits = max(3L,
                                                      getOption("digits") - 3L),
                                         ...) {
-    w <- getOption("width") - 6
-    string <- deparse(x$call, width = w)
-    string[1] <- paste("Call:", string[1])
-    while (w >= 22 & max(nchar(string)) > getOption("width")){
-        w <- w - 2
-        string <- deparse(x$call, width = w)
-        string[1] <- paste("Call:", string[1])
-    }
-    cat(string, sep = "\n")
+    cat(format_call(x$call), sep = "\n")
 
     if (length(coef(x))) {
         cat("\nCoefficients:\n")
