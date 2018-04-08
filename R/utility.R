@@ -2,8 +2,9 @@
 # models maybe just for testing or at some point could be tidied up and exported
 
 # okay to aggregate for vcov computation, but not for logLik
+#' @importFrom methods cbind2
 #' @importFrom utils combn
-#' @importFrom Matrix sparseMatrix cBind
+#' @importFrom Matrix sparseMatrix
 poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
@@ -75,7 +76,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
             tied[[d]] <- which(size == (d + 1))
         }
         B <- sparseMatrix(i = unlist(tied), p = c(0, cumsum(lengths(tied))))
-        X <- cBind(A, B)
+        X <- cbind2(A, B)
     } else X <- A
     # counts
     if (aggregate){
