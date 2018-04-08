@@ -5,12 +5,11 @@ print.PlackettLuce <- function(x,
                                digits = max(3, getOption("digits") - 3),
                                ...) {
     cat(format_call(x$call), sep = "\n")
-    if (length(coef(x))) {
-        cat("\nCoefficients:\n")
-        print.default(format(coef(x), digits = digits),
-                      print.gap = 2L, quote = FALSE)
-    }
-    else cat("\nNo coefficients\n")
+
+    cat("\nCoefficients:\n")
+    print.default(format(coef(x), digits = digits),
+                  print.gap = 2L, quote = FALSE)
+
     invisible(x)
 }
 

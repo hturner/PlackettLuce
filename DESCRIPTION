@@ -34,3 +34,4 @@ Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable,
     lbfgs, gnm, pmr, rmarkdown, testthat, tibble
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Language: en-GB

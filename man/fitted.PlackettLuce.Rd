@@ -26,8 +26,8 @@ A list with the following components
 \item{choices}{The selected item(s).}
 \item{alternatives}{The set of item(s) that the choice was made from.}
 \item{ranking}{The ranking(s) including this choice.}
-\item{n}{If \code{aggregate = TRUE}, the number of rankings including this
-choice.}
+\item{n}{The weighted count of rankings including this
+choice (equal to the ranking weight if \code{aggregate = FALSE}.}
 \item{fitted}{The fitted probability of making this choice.}
 If \code{object} was a \code{"pltree"} object, the list has an
 additional element \code{node}, specifying which node the ranking corresponds

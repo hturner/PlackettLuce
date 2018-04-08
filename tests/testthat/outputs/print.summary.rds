@@ -1,0 +1,12 @@
+Call: PlackettLuce(rankings = R)
+
+Coefficients:
+       Estimate Std. Error z value Pr(>|z|)
+apple    0.0000         NA      NA       NA
+banana   0.2868     1.0129   0.283    0.777
+orange  -0.4637     1.0280  -0.451    0.652
+tie2    -1.0701     0.9043  -1.183    0.237
+
+Residual deviance:  21.61 on 25 degrees of freedom
+AIC:  27.61 
+Number of iterations: 5

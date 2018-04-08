@@ -1,0 +1,5 @@
+Call: PlackettLuce(rankings = R)
+
+Coefficients:
+  apple   banana   orange     tie2  
+ 0.0000   0.2868  -0.4637  -1.0701  

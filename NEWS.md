@@ -4,6 +4,9 @@
 
 * Print methods for `"PlackettLuce"` and `"summary.PlacketLuce"` objects now respect `options("width")`.
 
+## Changes in Behaviour
+
+* `fitted` always returns `n` which is now weighted count of rankings (previously only returned unweighted count with argument `aggregate = TRUE`).
 
 ## Bug fixes
 

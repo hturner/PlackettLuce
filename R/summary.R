@@ -36,11 +36,8 @@ print.summary.PlackettLuce <-  function(x,
                                         ...) {
     cat(format_call(x$call), sep = "\n")
 
-    if (length(coef(x))) {
-        cat("\nCoefficients:\n")
-        printCoefmat(x$coefficients, digits = digits, na.print = "NA", ...)
-    }
-    else cat("\nNo coefficients\n")
+    cat("\nCoefficients:\n")
+    printCoefmat(x$coefficients, digits = digits, na.print = "NA", ...)
 
     cat("\nResidual deviance:  ",
         format(x$deviance, digits = max(5, digits + 1)), " on ",

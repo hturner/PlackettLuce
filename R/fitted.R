@@ -13,13 +13,14 @@
 #' \item{choices}{The selected item(s).}
 #' \item{alternatives}{The set of item(s) that the choice was made from.}
 #' \item{ranking}{The ranking(s) including this choice.}
-#' \item{n}{If \code{aggregate = TRUE}, the number of rankings including this
-#' choice.}
+#' \item{n}{The weighted count of rankings including this
+#' choice (equal to the ranking weight if \code{aggregate = FALSE}.}
 #' \item{fitted}{The fitted probability of making this choice.}
 #' If \code{object} was a \code{"pltree"} object, the list has an
 #' additional element \code{node}, specifying which node the ranking corresponds
 #' to.
 #' @seealso choices
+#' @importFrom stats xtabs
 #' @export
 fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
@@ -59,6 +60,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     h <- match(choices$alternatives, unique_alternatives)
     denominator <- theta[h]
     choices$fitted <- numerator/denominator
+    choices$n <- as.integer(object$weights[unlist(choices$ranking)])
     if (aggregate){
         g <- paste(g, h, sep = ":")
         g <- match(g, unique(g))
@@ -66,7 +68,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
         keep <- !duplicated(g)
         agg <- c("choices", "alternatives", "fitted")
         choices[agg] <- lapply(choices[agg], function(x) x[keep])
-        choices$n <- as.integer(table(g))
+        choices$n <- as.integer(xtabs(choices$n ~ g))
         class(choices) <- c("aggregated_choices", "list")
     }
     choices
