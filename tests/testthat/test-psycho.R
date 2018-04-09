@@ -19,7 +19,7 @@ if (require(psychotree) & require(sandwich)){
                   # coef
                   expect_equal(coef(btmod), coef(plmod)[-6])
                   # estfun - only agree if last level taken as ref in btmodel
-                  E1 <- estfun(btmod)
+                  E1 <- psychotools::estfun.btmodel(btmod)
                   E2 <- plmod$estfun
                   expect_equal(unname(E1), unname(E2))
                   # worth and vcov
