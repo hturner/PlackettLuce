@@ -2,8 +2,7 @@
 
 language: R
 r: bioc-release
-repos:
-  CRAN: https://cloud.r-project.org
+cran: https://cloud.r-project.org
 sudo: false
 cache: packages
 after_success:
