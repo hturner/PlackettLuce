@@ -7,8 +7,8 @@
 \alias{vcov.PlackettLuce}
 \title{Plackett-Luce Model Summaries}
 \usage{
-\method{coef}{PlackettLuce}(object, ref = 1, log = TRUE, type = "all",
-  ...)
+\method{coef}{PlackettLuce}(object, ref = 1, log = TRUE,
+  type = "all", ...)
 
 \method{summary}{PlackettLuce}(object, ref = 1, ...)
 

@@ -8,8 +8,8 @@
 \usage{
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
 
-\method{predict}{pltree}(object, newdata = NULL, type = c("itempar", "rank",
-  "best", "node"), ...)
+\method{predict}{pltree}(object, newdata = NULL, type = c("itempar",
+  "rank", "best", "node"), ...)
 
 \method{AIC}{pltree}(object, newdata = NULL, ...)
 }

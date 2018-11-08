@@ -1,7 +1,7 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.2-3
+Version: 0.2-3.9000
 Authors@R: c(person("Heather", "Turner", 
         email = "ht@heatherturner.net", role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-1256-3375")),
@@ -32,6 +32,6 @@ Imports: MASS, Matrix, igraph, methods, partykit, psychotools,
 Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, 
     Matrix.utils, PLMIX, StatRank, covr, hyper2, kableExtra, knitr, 
     lbfgs, gnm, pmr, rmarkdown, testthat, tibble
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Language: en-GB
