@@ -5,7 +5,8 @@
 \alias{fitted.pltree}
 \title{Fitted Probabilities for PlackettLuce Objects}
 \usage{
-\method{fitted}{PlackettLuce}(object, aggregate = TRUE, free = TRUE, ...)
+\method{fitted}{PlackettLuce}(object, aggregate = TRUE, free = TRUE,
+  ...)
 
 \method{fitted}{pltree}(object, aggregate = TRUE, free = TRUE, ...)
 }

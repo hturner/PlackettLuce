@@ -6,7 +6,8 @@
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE, ...)
+  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE,
+  ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be

@@ -49,6 +49,15 @@ if (require("Matrix") & requireNamespace("igraph") &
         # log-likelihood
         expect_equal(logLik(model0), logLik(model1), tolerance = loglik_tol)
     })
+    ## fit null model via glm
+    dat <- poisson_rankings(R, aggregate = FALSE, as.data.frame = TRUE)
+    test_that("null deviance matches glm [fake partial rankings with ties]", {
+        model2 <- glm(y ~ -1 + z, family = poisson, data = dat)
+        ## null deviance
+        expect_equal(-2*model1$null.loglik, model2$deviance)
+        ## null df
+        expect_equal(model1$df.null, model2$df.residual)
+    })
 }
 
 
@@ -91,6 +100,16 @@ if (require(gnm) & require(BradleyTerry2) &
                      attr(logLik_poisson.gnm(mod2), "df"))
         expect_equal(logLik(mod3), logLik_poisson.gnm(mod2),
                      check.attributes = FALSE,tolerance = 1e-12)
+    })
+    ## fit null model via glm
+    mod5 <- glm(y ~ -1 + z, family = poisson, data = dat)
+    test_that("null deviance matches glm, BTm [fake paired comparisons]", {
+        ## null deviance
+        expect_equal(-2*mod1$null.loglik, mod3$null.deviance)
+        expect_equal(-2*mod1$null.loglik, mod5$deviance)
+        ## null df
+        expect_equal(mod1$df.null, mod3$df.null)
+        expect_equal(mod1$df.null, mod5$df.residual)
     })
 }
 
@@ -147,7 +166,7 @@ if (require(gnm)){
                      tolerance = coef_tol)
         expect_equal(unname(c(coef(mod1))), lambda, tolerance = coef_tol)
     })
-    test_that("logLik matches Hunter's MM, gnm [fake partial rankings no ties]",
+    test_that("logLik matches gnm [fake partial rankings no ties]",
               {
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
                                check.attributes = FALSE, tolerance = loglik_tol)
@@ -174,13 +193,13 @@ if (require(StatRank)){
                                            as.data.frame = TRUE)
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
-    test_that("coef match Hunter's MM, gnm [fake partial rankings no ties]", {
+    test_that("coef match Hunter's MM, gnm [nascar]", {
         expect_equal(unname(coef(mod1))[-1], unname(coef(mod2))[-1],
                      tolerance = coef_tol)
         expect_equal(unname(c(coef(mod1))), lambda, tolerance = coef_tol,
                      check.attributes = FALSE)
     })
-    test_that("logLik matches Hunter's MM, gnm [fake partial rankings no ties]",
+    test_that("logLik matches gnm [nascar]",
               {
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
                                check.attributes = FALSE, tolerance = loglik_tol)

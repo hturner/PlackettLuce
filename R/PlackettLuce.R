@@ -523,10 +523,14 @@ PlackettLuce <- function(rankings,
     names(res$alpha) <- items
     rank <- N + D - 2
 
+    cf <- c(res$alpha, res$delta)
+
     # recompute log-likelihood
     if (npseudo > 0) {
-        logl <- loglik(unlist(res[c("alpha", "delta")]))
+        logl <- loglik(cf)
     } else logl <- res$logl
+    # null log-likelihood
+    null.loglik <- loglik(rep.int(1, length(cf)))
 
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- vapply(W[S], sum, 1)
@@ -535,9 +539,11 @@ PlackettLuce <- function(rankings,
     df.residual <- n - sum(freq) - rank
 
     fit <- list(call = call,
-                coefficients = c(res$alpha, res$delta),
+                coefficients = cf,
                 loglik = logl,
+                null.loglik = null.loglik,
                 df.residual = df.residual,
+                df.null = n - sum(freq), #naming consistent with glm
                 rank = rank,
                 iter = iter,
                 rankings = rankings,
