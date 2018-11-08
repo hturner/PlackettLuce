@@ -132,7 +132,10 @@
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }
 #' \item{loglik}{ The maximized log-likelihood. }
+#' \item{null.loglik}{ The maximized log-likelihood for the null model (all
+#' alternatives including ties have equal probability). }
 #' \item{df.residual}{ The residual degrees of freedom. }
+#' \item{df.null}{ The residual degrees of freedom for the null model. }
 #' \item{rank}{ The rank of the model. }
 #' \item{iter}{ The number of iterations run. }
 #' \item{rankings}{ The rankings passed to \code{rankings}, converted to a
@@ -549,8 +552,7 @@ PlackettLuce <- function(rankings,
                 rankings = rankings,
                 weights = weights,
                 maxTied = D,
-                conv = conv,
-                ref = 1)
+                conv = conv)
     class(fit) <- "PlackettLuce"
     fit
 }
