@@ -5,9 +5,7 @@
 \name{reexports}
 \alias{reexports}
 \alias{itempar}
-\alias{reexports}
 \alias{qvcalc}
-\alias{reexports}
 \alias{str}
 \title{Objects exported from other packages}
 \keyword{internal}
