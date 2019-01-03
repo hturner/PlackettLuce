@@ -1,3 +1,7 @@
+# PlackettLuce 0.2-3.9000
+
+* Return log-likelihood and degrees of freedom of null model (where all alternatives including ties have equal probability).
+
 # PlackettLuce 0.2-3
 
 ## Improvements
