@@ -170,6 +170,7 @@ PlackettLuce <- function(rankings,
                          npseudo = 0.5,
                          weights = NULL,
                          start = NULL,
+                         prior = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 0.1, maxit = 500,
                          trace = FALSE, verbose = TRUE, ...){
@@ -362,6 +363,14 @@ PlackettLuce <- function(rankings,
         alpha <- alpha/alpha[N]
     }
 
+    method <- match.arg(method, c("iterative scaling", "BFGS", "L-BFGS"))
+    if (!is.null(prior) && method == "iterative scaling"){
+        if (method %in% names(call)){
+            stop("when `prior` is specified, `method` cannot be ",
+                 "`\"iterative scaling\"`")
+        } else method <- "BFGS"
+    }
+
     # quasi-newton methods ---
 
     key_quantities <- function(par) {
@@ -378,19 +387,28 @@ PlackettLuce <- function(rankings,
     # log-likelihood and score functions
     # Within optim or nlminb use obj and gr wrappers below
     #
+    if (!is.null(prior)){
+        Rinv <- solve(chol(prior$K))
+        Kinv <- Rinv %*% t(Rinv)
+    }
     # assign key quantities to function environment to re-use
     loglik <- function(par) {
         assign("fit", key_quantities(par), envir = parent.env(environment()))
-        b_contr <- sum(B[-1]*log(fit$delta)) + sum(A*log(fit$alpha))
-        b_contr - fit$c_contr
+        res <- sum(B[-1]*log(fit$delta)) + sum(A*log(fit$alpha))- fit$c_contr
+        if (is.null(prior)) return(res)
+        # -0.5 * (s - mu)^T K^{-1} (s - mu) + standard logL
+        res - 0.5*tcrossprod((log(fit$alpha) - prior$mu) %*% Rinv)[1]
     }
 
     # log-likelihood derivatives
     score <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)]
-        c(A/alpha - fit$expA/alpha,
-          B[-1]/delta - fit$expB)
+        res <- c(A/alpha - fit$expA/alpha, B[-1]/delta - fit$expB)
+        if (is.null(prior)) return(res)
+        # deriv first part wrt log alpha (s) : [-1/nobs K^{-1} (s - mu)]
+        res[1:N] <- res[1:N] - Kinv %*% (log(alpha) - prior$mu)/alpha
+        res
     }
 
     # Alternative optimization via
@@ -405,10 +423,10 @@ PlackettLuce <- function(rankings,
         -score(c(al, de)) * c(al, de)
     }
 
-    method <- match.arg(method, c("iterative scaling", "BFGS", "L-BFGS"))
-
     if (method == "BFGS"){
-        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS", ...)
+        contr <- call$control
+        res <- optim(log(c(alpha, delta[-1])), obj, gr, method = "BFGS",
+                     control = c(eval(contr), list(maxit = maxit)))
         conv <- res$convergence
         iter <- res$counts
         res <- list(alpha = exp(res$par[1:N]),
@@ -418,7 +436,7 @@ PlackettLuce <- function(rankings,
     } else if (method == "L-BFGS"){
         # will give an error if lbfgs not available
         res <- lbfgs::lbfgs(obj, gr, log(c(alpha, delta[-1])), invisible = 1,
-                            ...)
+                            max_iterations = maxit, ...)
         conv <- res$convergence
         iter <- NULL
         res <- list(alpha = exp(res$par[1:N]),
