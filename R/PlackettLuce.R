@@ -283,6 +283,13 @@ PlackettLuce <- function(rankings,
     # set nspeudo to 0 if prior is specified
     if (!is.null(prior)){
         npseudo <- 0
+        stopifnot(names(prior) == c("mu", "Sigma"))
+        if (length(prior$mu) != length(N))
+            stop("`length(prior$mu)` is not equal to the number of items")
+        if (!identical(dim(Sigma), c(N, N)))
+            stop("`prior$Sigma` is not a square matrix with number of rows ",
+                 "equal to the number of items")
+
     }
 
     # check connectivity if npseudo = 0 and prior not specified
