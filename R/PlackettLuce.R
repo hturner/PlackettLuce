@@ -130,7 +130,12 @@
 #' the mean and covariance matrix of a multivariate normal prior on the
 #' _log_ worths.
 #' @param weights an optional vector of weights for each ranking.
-#' @param start starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.
+#' @param start starting values for the worth parameters and the tie parameters
+#' on the raw scale (worth parameters need not be scaled to sum to 1). If
+#' `prior` is specified, `exp(prior$mu)` is used starting values for the worth
+#' parameters. Coefficients from a previous fit can be passed as the result of
+#' a call to  \code{coef.PlackettLuce}, or the \code{coefficients} element of a
+#' \code{"PlackettLuce"} object.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
 #' @param epsilon the maximum absolute difference between the observed and
 #' expected sufficient statistics for the ability parameters at convergence.
@@ -352,9 +357,13 @@ PlackettLuce <- function(rankings,
     }
 
     if (is.null(start)){
-        # (scaled, un-damped) PageRank based on underlying paired comparisons
-        alpha <- drop(abs(eigs(X/colSums(X), 1,
-                               opts = list(ncv = min(nrow(X), 10)))$vectors))
+        if (!is.null(prior)) {
+            alpha <- prior$mu
+        } else {
+            # (scaled, un-damped) PageRank based on underlying paired comparisons
+            alpha <- drop(abs(eigs(X/colSums(X), 1,
+                                   opts = list(ncv = min(nrow(X), 10)))$vectors))
+        }
         delta <- c(1, rep.int(0.1, D - 1))
     } else {
         # if not "coef.PlackettLuce" object, assume on raw scale
