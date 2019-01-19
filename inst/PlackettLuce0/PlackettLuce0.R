@@ -177,7 +177,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
         pattern[[j]] <- uniquecol(M >= j)
     }
     rep <- unlist(lapply(pattern, attr, "rep"))
-    pattern <- uniquecol(do.call("cBind", pattern), rep = FALSE)
+    pattern <- uniquecol(do.call("cbind", pattern), rep = FALSE)
     rep <- c(rowsum(rep, attr(pattern, "ind")))
     S <- length(rep)
 

@@ -4,10 +4,10 @@
 \alias{PlackettLuce}
 \title{Fit a Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
-  method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE,
-  ...)
+PlackettLuce(rankings, npseudo = 0.5, prior = NULL, weights = NULL,
+  start = NULL, method = c("iterative scaling", "BFGS", "L-BFGS"),
+  epsilon = 1e-07, steffensen = 0.1, maxit = 500, trace = FALSE,
+  verbose = TRUE, ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -15,6 +15,10 @@ coerced by \code{as.rankings}.}
 
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
+
+\item{prior}{a optional list with elements named `mu` and `Sigma` specifying
+the mean and covariance matrix of a multivariate normal prior on the
+_log_ worths.}
 
 \item{weights}{an optional vector of weights for each ranking.}
 
@@ -127,6 +131,22 @@ infinity the log-worth estimates all shrink towards 0. The default,
 \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 shrinkage effect. Thus even for networks that are already connected, adding
 pseudo-rankings reduces both the bias and variance of the estimates.
+}
+
+\section{Incorporating prior information}{
+
+
+Prior information can be incorporated by using `prior` to specify a
+multivariate normal prior on the log-worths. The log-worths are then
+estimated by maximum apriori estimation. Model summaries (deviance, AIC,
+standard errors) are based on the log-likelihood evaluated at the MAP
+estimates, resulting in a finite sample bias that should disappear as
+the number of rankings increases. Inference based on these model summaries
+is valid as long as the prior is considered fixed and not tuned as part of
+the model.
+
+Incorporating a prior is an alternative method of penalization, therefore
+`npseudo` is set to zero when a prior is specified.
 }
 
 \section{Controlling the fit}{

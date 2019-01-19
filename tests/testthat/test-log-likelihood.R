@@ -205,3 +205,4 @@ if (require(StatRank)){
                                check.attributes = FALSE, tolerance = loglik_tol)
               })
 }
+

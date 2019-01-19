@@ -64,6 +64,20 @@
 #' shrinkage effect. Thus even for networks that are already connected, adding
 #' pseudo-rankings reduces both the bias and variance of the estimates.
 #'
+#' @section Incorporating prior information:
+#'
+#' Prior information can be incorporated by using `prior` to specify a
+#' multivariate normal prior on the log-worths. The log-worths are then
+#' estimated by maximum apriori estimation. Model summaries (deviance, AIC,
+#' standard errors) are based on the log-likelihood evaluated at the MAP
+#' estimates, resulting in a finite sample bias that should disappear as
+#' the number of rankings increases. Inference based on these model summaries
+#' is valid as long as the prior is considered fixed and not tuned as part of
+#' the model.
+#'
+#' Incorporating a prior is an alternative method of penalization, therefore
+#' `npseudo` is set to zero when a prior is specified.
+#'
 #' @section Controlling the fit:
 #'
 #' Using \code{nspseudo = 0} will use standard maximum likelihood, if the
@@ -112,6 +126,9 @@
 #' coerced by \code{as.rankings}.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
+#' @param prior a optional list with elements named `mu` and `Sigma` specifying
+#' the mean and covariance matrix of a multivariate normal prior on the
+#' _log_ worths.
 #' @param weights an optional vector of weights for each ranking.
 #' @param start starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.
 #' @param method  the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).
@@ -137,6 +154,7 @@
 #' \item{df.residual}{ The residual degrees of freedom. }
 #' \item{df.null}{ The residual degrees of freedom for the null model. }
 #' \item{rank}{ The rank of the model. }
+#' \item{logposterior}{ If a prior was specified, the maximised log posterior.}
 #' \item{iter}{ The number of iterations run. }
 #' \item{rankings}{ The rankings passed to \code{rankings}, converted to a
 #' \code{"rankings"} object if necessary. }
@@ -168,9 +186,9 @@
 #' @export
 PlackettLuce <- function(rankings,
                          npseudo = 0.5,
+                         prior = NULL,
                          weights = NULL,
                          start = NULL,
-                         prior = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 0.1, maxit = 500,
                          trace = FALSE, verbose = TRUE, ...){
@@ -257,8 +275,13 @@ PlackettLuce <- function(rankings,
     D <- length(B)
     B <- B/seq(D)
 
-    # check connectivity if npseudo = 0
-    if (npseudo == 0){
+    # set nspeudo to 0 if prior is specified
+    if (!is.null(prior)){
+        npseudo <- 0
+    }
+
+    # check connectivity if npseudo = 0 and prior not specified
+    if (npseudo == 0 & is.null(prior)){
         out <- connectivity(X, verbose = FALSE)
         if (out$no > 1)
             stop("Network is not fully connected - cannot estimate all ",
@@ -388,7 +411,7 @@ PlackettLuce <- function(rankings,
     # Within optim or nlminb use obj and gr wrappers below
     #
     if (!is.null(prior)){
-        Rinv <- solve(chol(prior$K))
+        Rinv <- solve(chol(prior$Sigma))
         Kinv <- Rinv %*% t(Rinv)
     }
     # assign key quantities to function environment to re-use
@@ -396,7 +419,7 @@ PlackettLuce <- function(rankings,
         assign("fit", key_quantities(par), envir = parent.env(environment()))
         res <- sum(B[-1]*log(fit$delta)) + sum(A*log(fit$alpha))- fit$c_contr
         if (is.null(prior)) return(res)
-        # -0.5 * (s - mu)^T K^{-1} (s - mu) + standard logL
+        # -0.5 * (s - mu)^T Sigma^{-1} (s - mu) + standard logL
         res - 0.5*tcrossprod((log(fit$alpha) - prior$mu) %*% Rinv)[1]
     }
 
@@ -406,7 +429,7 @@ PlackettLuce <- function(rankings,
         delta <- par[-c(1:N)]
         res <- c(A/alpha - fit$expA/alpha, B[-1]/delta - fit$expB)
         if (is.null(prior)) return(res)
-        # deriv first part wrt log alpha (s) : [-1/nobs K^{-1} (s - mu)]
+        # deriv first part wrt log alpha (s) : [-1/nobs Sigma^{-1} (s - mu)]
         res[1:N] <- res[1:N] - Kinv %*% (log(alpha) - prior$mu)/alpha
         res
     }
@@ -546,8 +569,11 @@ PlackettLuce <- function(rankings,
 
     cf <- c(res$alpha, res$delta)
 
-    # recompute log-likelihood
-    if (npseudo > 0) {
+    # recompute log-likelihood excluding pseudo-observations/prior component
+    logp <- NULL
+    if (npseudo > 0 | !is.null(prior)) {
+        prior <- NULL
+        logp <- res$logl
         logl <- loglik(cf)
     } else logl <- res$logl
     # null log-likelihood
@@ -566,6 +592,7 @@ PlackettLuce <- function(rankings,
                 df.residual = df.residual,
                 df.null = n - sum(freq), #naming consistent with glm
                 rank = rank,
+                logposterior = logp,
                 iter = iter,
                 rankings = rankings,
                 weights = weights,
