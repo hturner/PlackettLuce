@@ -38,13 +38,24 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     unique_choices <- unique(choices$choices)
     g <- match(choices$choices, unique_choices)
     # compute numerators
-    n <- lengths(unique_choices)
-    numerator <- (delta[n] *
-        vapply(unique_choices, function(x) prod(alpha[x]), 1)^(1/n))[g]
+    if (!is.null(object$adherence)){
+        n <- lengths(choices$choices)
+        a <- rep(object$adherence, tabulate(choices$ranking))
+        numerator <- delta[n] *
+            (vapply(unique_choices, function(x) prod(alpha[x]), 1))[g]^a/n
+    } else {
+        n <- lengths(unique_choices)
+        a <- NULL
+        numerator <- (delta[n] *
+            vapply(unique_choices, function(x) prod(alpha[x]), 1)^(1/n))[g]
+    }
     # id unique alternatives
     size <- lengths(choices$alternatives)
     ord <- order(size)
-    unique_alternatives <- unique(choices$alternatives[ord])
+    if (!is.null(object$adherence)){
+        # don't group
+        unique_alternatives <- choices$alternatives
+    } else unique_alternatives <- unique(choices$alternatives[ord])
     # for now work theta out - could perhaps save in object
     na <- lengths(unique_alternatives)
     R <- matrix(0, nrow = length(na), ncol = max(na))
@@ -55,13 +66,21 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     S <- setdiff(unique(na), 1)
     D <- object$maxTied
     N <- ncol(object$rankings)
-    theta <- expectation("theta", alpha, delta, N, D, S, R, G)$theta
-    denominator <- numeric(length(numerator))
-    h <- match(choices$alternatives, unique_alternatives)
-    denominator <- theta[h]
+    theta <- expectation("theta", alpha, delta, N, D, S, R, G, a)$theta
+    if (!is.null(object$adherence)){
+        denominator <- theta[order(unlist(G[S]))]
+    } else {
+        denominator <- numeric(length(numerator))
+        h <- match(choices$alternatives, unique_alternatives)
+        denominator <- theta[h]
+    }
     choices$fitted <- numerator/denominator
     choices$n <- as.integer(object$weights[unlist(choices$ranking)])
     if (aggregate){
+        if (!is.null(object$adherence)) {
+            warning("`aggregate` ignored when `object$adherence` is not `NULL`")
+            return(choices)
+        }
         g <- paste(g, h, sep = ":")
         g <- match(g, unique(g))
         choices$ranking <- split(choices$ranking, g)

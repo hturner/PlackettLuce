@@ -5,9 +5,9 @@
 \title{Fit a Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, prior = NULL, weights = NULL,
-  start = NULL, method = c("iterative scaling", "BFGS", "L-BFGS"),
-  epsilon = 1e-07, steffensen = 0.1, maxit = 500, trace = FALSE,
-  verbose = TRUE, ...)
+  adherence = NULL, start = NULL, method = c("iterative scaling",
+  "BFGS", "L-BFGS"), epsilon = 1e-07, steffensen = 0.1, maxit = 500,
+  trace = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -22,7 +22,14 @@ _log_ worths.}
 
 \item{weights}{an optional vector of weights for each ranking.}
 
-\item{start}{starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.}
+\item{adherence}{an optional vector of adherence values for each ranking.}
+
+\item{start}{starting values for the worth parameters and the tie parameters
+on the raw scale (worth parameters need not be scaled to sum to 1). If
+`prior` is specified, `exp(prior$mu)` is used starting values for the worth
+parameters. Coefficients from a previous fit can be passed as the result of
+a call to  \code{coef.PlackettLuce}, or the \code{coefficients} element of a
+\code{"PlackettLuce"} object.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 
@@ -54,6 +61,7 @@ alternatives including ties have equal probability). }
 \item{df.residual}{ The residual degrees of freedom. }
 \item{df.null}{ The residual degrees of freedom for the null model. }
 \item{rank}{ The rank of the model. }
+\item{logposterior}{ If a prior was specified, the maximised log posterior.}
 \item{iter}{ The number of iterations run. }
 \item{rankings}{ The rankings passed to \code{rankings}, converted to a
 \code{"rankings"} object if necessary. }

@@ -130,6 +130,7 @@
 #' the mean and covariance matrix of a multivariate normal prior on the
 #' _log_ worths.
 #' @param weights an optional vector of weights for each ranking.
+#' @param adherence an optional vector of adherence values for each ranking.
 #' @param start starting values for the worth parameters and the tie parameters
 #' on the raw scale (worth parameters need not be scaled to sum to 1). If
 #' `prior` is specified, `exp(prior$mu)` is used starting values for the worth
@@ -193,6 +194,7 @@ PlackettLuce <- function(rankings,
                          npseudo = 0.5,
                          prior = NULL,
                          weights = NULL,
+                         adherence = NULL,
                          start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 0.1, maxit = 500,
@@ -205,7 +207,14 @@ PlackettLuce <- function(rankings,
         # weights are per group id - expand to be per ranking
         if (!is.null(weights)) {
             stopifnot(length(weights) == max(attr(rankings, "index")))
+            stopifnot(all(weights > 0))
             weights <- weights[attr(rankings, "index")]
+        }
+        # same for adherence
+        if (!is.null(adherence)) {
+            stopifnot(length(adherence) == max(attr(rankings, "index")))
+            stopifnot(all(adherence > 0))
+            adherence <- adherence[attr(rankings, "index")]
         }
         R <- attr(rankings, "R")
         S <- attr(rankings, "S")
@@ -225,6 +234,11 @@ PlackettLuce <- function(rankings,
         weights <- rep.int(1, nr)
     } else stopifnot(length(weights) == nrow(rankings))
 
+    # adherence
+    if (!is.null(adherence)){
+       stopifnot(length(adherence) == nrow(adherence))
+    }
+
     if (!grouped_rankings){
         # items ranked from last to 1st place
         R <- t(apply(rankings, 1, order, decreasing = TRUE))
@@ -243,16 +257,19 @@ PlackettLuce <- function(rankings,
         })
         ind <- unlist(lapply(S, `[[`, "ind"))
         S <- lapply(S, `[[`, "x")
-        ## replicate ranking weight for each choice in ranking
+        ## replicate ranking weight and adherences for each choice in ranking
         w <- rep(weights, lengths(S))
+        if (!is.null(adherence)) a <- rep(adherence, lengths(S))
         S <- unlist(S)
 
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of
-        # selected set
+        # selected set (weighted by adherence)
         A <- numeric(N)
         i <- sort(unique(ind))
-        A[i] <- unname(rowsum(w/S, ind)[,1])
+        if (!is.null(adherence)){
+            A[i] <- unname(rowsum((a*w)/S, ind)[,1])
+        } else A[i] <- unname(rowsum(w/S, ind)[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- as.vector(unname(rowsum(w, S)))
         rm(S, ind)
@@ -263,16 +280,19 @@ PlackettLuce <- function(rankings,
         for (i in seq_along(id)) X[id[[i]]] <- X[id[[i]]] + weights[i]
         class(X) <- c("adjacency", "matrix")
 
-        # replicate ranking weight for each choice in ranking
+        # replicate ranking weight and adherence for each choice in ranking
         # (S extracted from grouped_rankings object)
         w <- rep(weights, rowSums(S > 0))
+        if (!is.null(adherence)) a <- rep(adherence, rowSums(S > 0))
 
         # sufficient statistics
         # for alpha i, sum over all sets st object i is in selected set/size of
-        # selected set
+        # selected set (weighted by adherence)
         A <- numeric(N)
         i <- sort(unique(R[as.logical(S)]))
-        A[i] <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
+        if (!is.null(adherence)){
+            A[i] <- unname(rowsum((a*w)/S[as.logical(S)], R[as.logical(S)])[,1])
+        } else A[i] <- unname(rowsum(w/S[as.logical(S)], R[as.logical(S)])[,1])
         # for delta d, number of sets with cardinality d/cardinality
         B <- tabulate(S[as.logical(S)])
         rm(S)
@@ -335,6 +355,10 @@ PlackettLuce <- function(rankings,
         S[s] <- s != 1 && length(r)
         if (!S[s]) next
         g <- uniquerow(set[r, , drop = FALSE])
+        if (!is.null(adherence)){
+            x <- adherence[r]/log10(max(adherence[r]) + 1) + g # combine groupings
+            g <- match(x, x)
+        }
         W[[s]] <- as.vector(unname(rowsum(weights[r], g)))
         G[[s]] <- r[!duplicated(g)]
         minrank[r] <- minrank[r] + 1
@@ -353,13 +377,16 @@ PlackettLuce <- function(rankings,
         # update X with npseudo wins and losses  with hypothetical item
         X <- cbind(X, npseudo)
         X <- rbind(X, c(rep.int(npseudo, N), 0))
+        # update adherence: set to 1 for ghost rater
+        if (!is.null(adherence)) adherence <- c(adherence, rep.int(1, N))
         # update weights: 2*npseudo comparisons of each pair
         W[[2]] <- c(W[[2]], rep.int(2*npseudo, N))
         # update indices
         G[[2]] <- c(G[[2]], (nr + 1):(nr + N))
-        # update A: npseudo wins for item N + 1; npseudo wins for other items
+        # update A: npseudo wins for item N + 1 against each other item;
+        # npseudo wins for other items
         A <- c(A + npseudo, N*npseudo)
-        # update B: 2*npseudo untied choices
+        # update B: 2*npseudo untied choices per item
         B[1] <- B[1] + 2*npseudo*N
     }
 
@@ -415,7 +442,8 @@ PlackettLuce <- function(rankings,
     key_quantities <- function(par) {
         alpha <- par[1:N]
         delta <- par[-c(1:N)] # includes delta1
-        res <- expectation("all", alpha, c(1, delta), N, D, S, R, G, W)
+        res <- expectation("all", alpha, c(1, delta), N, D, S, R, G,
+                           adherence, W)
         # sum of (log(normalising_constants_per_set) * rep)
         c_contr <- sum(res$theta)
         list(alpha = alpha, delta = delta, c_contr = c_contr,
@@ -484,7 +512,7 @@ PlackettLuce <- function(rankings,
     } else {
         res <- list(alpha = alpha, delta = delta)
         res[c("expA", "expB", "theta")] <-
-            expectation("all", alpha, delta, N, D, S, R, G, W)
+            expectation("all", alpha, delta, N, D, S, R, G, adherence, W)
         res$logl <- sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
             sum(res$theta)
         oneUpdate <- function(res){
@@ -495,11 +523,11 @@ PlackettLuce <- function(rankings,
             if (D > 1) {
                 res$delta[-1] <- B[-1]/
                     expectation("delta", res$alpha, res$delta,
-                                N, D, S, R, G, W)$expB
+                                N, D, S, R, G, adherence, W)$expB
             }
             res[c("expA", "expB", "theta")] <-
                 expectation("all", res$alpha, res$delta,
-                            N, D, S, R, G, W)
+                            N, D, S, R, G, adherence, W)
             res$logl <- sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
                 sum(res$theta)
             res
@@ -551,7 +579,7 @@ PlackettLuce <- function(rankings,
                         accelerate(res$delta, res1$delta, res2$delta)[-1]
                     res[c("expA", "expB", "theta")] <-
                         expectation("all", res$alpha, res$delta,
-                                    N, D, S, R, G, W)
+                                    N, D, S, R, G, adherence, W)
                     res$logl <-
                         sum(B[-1]*log(res$delta)[-1]) + sum(A*log(res$alpha)) -
                         sum(res$theta)
@@ -579,6 +607,8 @@ PlackettLuce <- function(rankings,
         # remove contribution to A and B
         A <- A[-(N + 1)] - npseudo
         B[1] <- B[1] - 2*npseudo*N
+        # remove adherence for ghost rater
+        if (!is.null(adherence)) adherence <- adherence[seq(N)]
     }
     names(res$alpha) <- items
     rank <- N + D - 2
@@ -612,6 +642,7 @@ PlackettLuce <- function(rankings,
                 iter = iter,
                 rankings = rankings,
                 weights = weights,
+                adherence = adherence,
                 maxTied = D,
                 conv = conv)
     class(fit) <- "PlackettLuce"
@@ -619,7 +650,7 @@ PlackettLuce <- function(rankings,
 }
 
 # function to compute expectations of the sufficient statistics of the alphas/deltas
-# if ranking weight is NULL, do not aggregate across rankings
+# (for fixed adherence) if ranking weight is NULL, do not aggregate across rankings
 expectation <- function(par, # par to compute expectations for
                         alpha, # alpha par
                         delta, # delta par
@@ -628,6 +659,7 @@ expectation <- function(par, # par to compute expectations for
                         S, # set sizes in representative rankings
                         R, # items in each ranking, from last to first place
                         G, # group of rankings to include; list for each S
+                        a = NULL, # adherence for each ranking
                         W = NULL){ # weight of rankings; list for each S
     keepAlpha <- any(par %in% c("alpha", "all"))
     keepDelta <- D > 1 && any(par %in% c("delta", "all"))
@@ -652,6 +684,7 @@ expectation <- function(par, # par to compute expectations for
         nr <- length(r)
         x1 <- matrix(alpha[R[r, 1:s]],
                      nrow = nr, ncol = s)
+        if (!is.null(a)) x1 <- x1^a[r]
         ## denominators
         z1 <- rowSums(x1)
         # D > 1
@@ -679,7 +712,9 @@ expectation <- function(par, # par to compute expectations for
                     # ignore if already recorded
                     if (k < id2) next
                     # add to numerators/denominators for sets of order s
-                    v2 <- v1^(1/k)
+                    if (!is.null(a)) {
+                        v2 <- v1^(a[r]/k)
+                    } else v2 <- v1^(1/k)
                     v3 <- delta[k]*v2
                     if (keepAlpha) {
                         # add to numerators for objects in sets

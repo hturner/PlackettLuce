@@ -83,7 +83,7 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
     delta <- c(1, coef[-c(1:N)])
     # get choices and alternatives for each ranking
     choices <- choices(x$rankings, names = FALSE)
-    # derivative wrt to alpha part 1: 1/(size of selected set)
+    # derivative wrt to log alpha part 1: 1/(size of selected set)
     nr <- nrow(x$rankings)
     A <- matrix(0, nrow = nr, ncol = N,
                 dimnames = list(NULL, names(alpha)))
@@ -91,7 +91,9 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
     for (i in seq_len(nr)){
         r <- choices$choices[[i]]
         len <- lengths(r)
-        A[i, unlist(r)] <- rep(1/len, len)
+        if (!is.null(x$adherence)){
+            A[i, unlist(r)] <- rep(x$adherence[i]/len, len)
+        } else A[i, unlist(r)] <- rep(1/len, len)
     }
     # derivative wrt delta part 1: row TRUE where selected set has cardinality d
     if (D > 1){
@@ -102,20 +104,31 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
         }
     }
     # derivatives part 2: expectation of alpha | delta per set to choose from
-    # id unique alternatives - need to see how weights would fit in
     size <- lengths(choices$alternatives)
     ord <- order(size)
-    unique_alternatives <- unique(choices$alternatives[ord])
+    if (!is.null(x$adherence)){
+        # don't group
+        a <- rep(x$adherence, tabulate(choices$ranking))
+        unique_alternatives <- choices$alternatives
+    } else {
+        a <- NULL
+        unique_alternatives <- unique(choices$alternatives[ord])
+    }
     na <- lengths(unique_alternatives)
     R <- matrix(0, nrow = length(na), ncol = max(na))
     R[cbind(rep(seq_along(unique_alternatives), na), sequence(na))] <-
         unlist(unique_alternatives)
     G <- seq_along(unique_alternatives)
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
-    S <- setdiff(unique(na), 1)
+    S <- unique(na)
     res <- expectation(c("alpha", "delta"), alpha, delta,
-                       N = N, D = D, S = unique(na), R, G)
-    h <- match(choices$alternatives, unique_alternatives)
+                       N, D, S, R, G, a)
+
+    if (!is.null(x$adherence)){
+        h <- order(unlist(G[S]))
+    } else {
+        h <- match(choices$alternatives, unique_alternatives)
+    }
     A <- A - rowsum(res$expA[h,], choices$ranking)
     if (!is.null(ref) && ref %in% names(alpha)) {
         ref <- which(names(alpha) == ref)
