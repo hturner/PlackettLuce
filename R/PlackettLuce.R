@@ -284,9 +284,9 @@ PlackettLuce <- function(rankings,
     if (!is.null(prior)){
         npseudo <- 0
         stopifnot(names(prior) == c("mu", "Sigma"))
-        if (length(prior$mu) != length(N))
+        if (length(prior$mu) != N)
             stop("`length(prior$mu)` is not equal to the number of items")
-        if (!identical(dim(Sigma), c(N, N)))
+        if (!identical(dim(prior$Sigma), c(N, N)))
             stop("`prior$Sigma` is not a square matrix with number of rows ",
                  "equal to the number of items")
 
