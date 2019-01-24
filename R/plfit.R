@@ -120,12 +120,12 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
         unlist(unique_alternatives)
     G <- seq_along(unique_alternatives)
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
-    S <- unique(na)
+    P <- unique(na)
     res <- expectation(c("alpha", "delta"), alpha, delta,
-                       N, D, S, R, G, a)
+                       a, N, D, P, R, G)
 
     if (!is.null(x$adherence)){
-        h <- order(unlist(G[S]))
+        h <- order(unlist(G[P]))
     } else {
         h <- match(choices$alternatives, unique_alternatives)
     }

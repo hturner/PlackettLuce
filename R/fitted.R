@@ -66,7 +66,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     S <- setdiff(unique(na), 1)
     D <- object$maxTied
     N <- ncol(object$rankings)
-    theta <- expectation("theta", alpha, delta, N, D, S, R, G, a)$theta
+    theta <- expectation("theta", alpha, delta, a, N, D, S, R, G)$theta
     if (!is.null(object$adherence)){
         denominator <- theta[order(unlist(G[S]))]
     } else {

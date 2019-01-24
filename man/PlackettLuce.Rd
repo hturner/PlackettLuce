@@ -4,10 +4,11 @@
 \alias{PlackettLuce}
 \title{Fit a Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, npseudo = 0.5, prior = NULL, weights = NULL,
-  adherence = NULL, start = NULL, method = c("iterative scaling",
-  "BFGS", "L-BFGS"), epsilon = 1e-07, steffensen = 0.1, maxit = 500,
-  trace = FALSE, verbose = TRUE, ...)
+PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
+  adherence = NULL, weights = NULL, start = NULL,
+  method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
+  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE,
+  ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -16,13 +17,20 @@ coerced by \code{as.rankings}.}
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
 
-\item{prior}{a optional list with elements named `mu` and `Sigma` specifying
-the mean and covariance matrix of a multivariate normal prior on the
-_log_ worths.}
+\item{normal}{a optional list with elements named `mu` and `Sigma`
+specifying the mean and covariance matrix of a multivariate normal prior on
+the _log_ worths.}
+
+\item{gamma}{a optional list with elements named `shape` and `rate`
+specifying parameters of a Gamma prior on adherence parameters for each
+ranker (use `grouped_rankings` to group multiple rankings by ranker). If
+`NULL`, adherence is fixed to `adherence` for all rankers.}
+
+\item{adherence}{an optional vector of adherence values for each ranker. If
+missing, adherence is fixed to 1 for all rankers. If `gamma != NULL` this is
+taken as the starting values for the adherence.}
 
 \item{weights}{an optional vector of weights for each ranking.}
-
-\item{adherence}{an optional vector of adherence values for each ranking.}
 
 \item{start}{starting values for the worth parameters and the tie parameters
 on the raw scale (worth parameters need not be scaled to sum to 1). If
