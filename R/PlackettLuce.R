@@ -525,7 +525,6 @@ PlackettLuce <- function(rankings,
                     delta = c(1, exp(res$par[-(1:N)])),
                     logl = -res$value)
         if (!is.null(gamma)) res$obj <- -res2$value
-
     } else {
         res <- list(alpha = alpha, delta = delta)
         res[c("expA", "expB", "theta")] <-
@@ -577,12 +576,12 @@ PlackettLuce <- function(rankings,
             if (all(eps < steffensen & !doSteffensen)) doSteffensen <- TRUE
             # steffensen
             if (doSteffensen){
-                res <- oneUpdate(res)
-                if ((conv <- checkConv(res)) == 0) {
-                    res <- res
+                res1 <- oneUpdate(res)
+                if ((conv <- checkConv(res1)) == 0) {
+                    res <- res1
                     break
                 }
-                res2 <- oneUpdate(res)
+                res2 <- oneUpdate(res1)
                 if ((conv <- checkConv(res2)) == 0) {
                     res <- res2
                     break
@@ -590,10 +589,10 @@ PlackettLuce <- function(rankings,
                 # if negative worth or log-likelihood decreased,
                 # don't apply Steffensen
                 res$alpha <-
-                    accelerate(res$alpha, res$alpha, res2$alpha)
+                    accelerate(res$alpha, res1$alpha, res2$alpha)
                 if (all(res$alpha > 0)) {
                     res$delta[-1] <-
-                        accelerate(res$delta, res$delta, res2$delta)[-1]
+                        accelerate(res$delta, res1$delta, res2$delta)[-1]
                     res[c("expA", "expB", "theta")] <-
                         expectation("all", res$alpha, res$delta,
                                     a, N, D, P, R, G, W)
