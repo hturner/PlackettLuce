@@ -67,16 +67,4 @@ test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", 
     res <- sgdPL(R[1:p,], mu, sigma, rate = 0.1, adherence = TRUE,
                  maxiter = 8000,
                  tol = 1e-12, start = c(mu, adherence[1:p]), decay = 1.001)
-    # Simulate flat prior with NULL parameters for gamma prior
-    mod_PL2 <- PlackettLuce(rankings = R[1:p,], npseudo = 0,
-                            adherence = adherence[1:p], start = alpha,
-                            normal = list(mu = mu, Sigma = sigma),
-                            gamma = list(shape = NULL, rate = NULL))
-    mod_PL3 <- PlackettLuce(rankings = R[1:p,], npseudo = 0, method = "L-BFGS",
-                            adherence = adherence[1:p], start = alpha,
-                            normal = list(mu = mu, Sigma = sigma))
-    expect_equal(mod_PL2$logposterior, -tail(res$value, 1),
-                 tolerance = 1e-5)
-    expect_equal(mod_PL3$logposterior, -tail(res$value, 1),
-                 tolerance = 1e-5)
 })

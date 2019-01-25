@@ -514,15 +514,16 @@ PlackettLuce <- function(rankings,
         repeat{
             # fit model with fixed adherence (a)
             res <- opt(log(c(alpha, delta[-1])), obj_common, gr_common, ...)
-            conv1[i + 1] <- res$convergence
 
             if (i == maxit[2] | is.null(gamma)) break
             if (!is.null(gamma)){
                 # update alpha, delta & sufficient statistics for adherence
                 alpha <- exp(res$par[1:N])
-                delta <- exp(res$par[-(1:N)])
+                delta <- c(1, exp(res$par[-(1:N)]))
                 Z <- unname(rowsum(unlist(S)*log(alpha[item_id]),
                                    ranker_id)[,1])
+
+                conv1[i + 1] <- res$convergence
                 if (i > 0) logp_old <- logp
                 # log-posterior after worth update
                 logp <- -res$value + (gamma$shape - 1)*sum(log(adherence)) -
