@@ -33,7 +33,7 @@ test_that("logLik matches agRank [fake triple comparisons]", {
 })
 
 # Triple comparisons, no ties
-prior <- list(mu = c(0, -0.05, -2, -3),
+prior <- list(mu = c(-0.05, -0.05, -2, -3),
               Sigma = matrix(c(1, 0.5, 0.1, -0.5,
                            0.5, 1.1, 0.1, 0.1,
                            0.1, 0.1, 1.2, 0.2,
@@ -41,19 +41,22 @@ prior <- list(mu = c(0, -0.05, -2, -3),
 
 test_that("logLik matches agRank with normal prior [fake triple comparisons]", {
     # Fit model using sgdPL from AgRank
+    ### N.B. as stochastic gradient, gradients are 1/nobs * full gradient
     res <- sgdPL(R, prior$mu, prior$Sigma, rate = 0.1, adherence = FALSE,
-                 maxiter = 0, #maxiter = 8000,
+                 maxiter = 8000,
                  tol = 1e-12, start = prior$mu, decay = 1.001)
     ###oscillating behaviour
     ###plot(res$value, type = "l")
     # Fit Plackett-Luce with standard maximum likelihood (BFGS)
-    mod_PL <- PlackettLuce(rankings = R, npseudo = 0, normal = prior, maxit = 0,
+    ## check gradient via
+    ## numDeriv::grad(function(par) obj_common(par), log(c(alpha, delta[-1])))
+    mod_PL <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
                            start = exp(prior$mu))
-    #mod_PL2 <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
-    #                       start = exp(prior$mu), method = "L-BFGS")
+    mod_PL2 <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
+                           start = exp(prior$mu), method = "L-BFGS")
     ## lowish tolerance as stochastic gradient descent only approximate
     expect_equal(mod_PL$logposterior, -tail(res$value, 1),
                  tolerance = 1e-5)
-    #expect_equal(mod_PL$logposterior, -tail(res$value, 1),
-    #             tolerance = 1e-5)
+    expect_equal(mod_PL$logposterior, -tail(res$value, 1),
+                 tolerance = 1e-5)
 })

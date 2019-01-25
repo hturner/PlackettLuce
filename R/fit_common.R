@@ -23,7 +23,7 @@ score_common <- function(par, N, mu, Kinv, A, B, fit) {
     delta <- par[-c(1:N)]
     res <- c(A/alpha - fit$expA/alpha, B[-1]/delta - fit$expB)
     if (is.null(mu)) return(res)
-    # deriv first part wrt log alpha (s) : [-1/nobs Sigma^{-1} (s - mu)]
+    # deriv first part wrt alpha (s) : [-Sigma^{-1} (s - mu)]/alpha
     res[1:N] <- res[1:N] - Kinv %*% (log(alpha) - mu)/alpha
     res
 }

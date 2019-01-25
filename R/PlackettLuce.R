@@ -474,12 +474,12 @@ PlackettLuce <- function(rankings,
         assign("fit", expectation("all", alpha, c(1, delta),
                                   a, N, D, P, R, G, W),
                envir = parent.env(environment()))
-        -loglik_common(c(alpha, delta), N, normal$mu, Kinv, A, B, fit)
+        -loglik_common(c(alpha, delta), N, normal$mu, Rinv, A, B, fit)
     }
     gr_common <- function(par) {
         alpha <- exp(par[1:N])
         delta <- exp(par[-c(1:N)])
-        -score_common(c(alpha, delta), N, normal$mu, Rinv, A, B, fit) *
+        -score_common(c(alpha, delta), N, normal$mu, Kinv, A, B, fit) *
             c(alpha, delta)
     }
 
@@ -490,11 +490,12 @@ PlackettLuce <- function(rankings,
         assign("fit", normalization(alpha, c(1, delta),
                                     adherence[ranker], D, P, R, G, W),
                envir = parent.env(environment()))
-        -loglik_adherence(adherence, shape, rate, Z)
+        -loglik_adherence(adherence, gamma$shape, gamma$rate, Z, fit)
     }
     gr_adherence <- function(par) {
         adherence <- exp(par)
-        -score_adherence(adherence, shape, rate, Z) * adherence
+        -score_adherence(adherence, ranker, gamma$shape, gamma$rate, Z, fit) *
+            adherence
     }
 
     if (method != "iterative scaling"){

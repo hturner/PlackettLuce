@@ -19,11 +19,11 @@ loglik_adherence <- function(adherence, shape, rate, Z, fit) {
 }
 
 # derivatives of log-likelihood for adherence
-score_adherence <- function(adherence, shape, rate, Z, fit) {
+score_adherence <- function(adherence, ranker, shape, rate, Z, fit) {
     res <- Z - rowsum(fit$score, ranker)
     # prior on adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1)/adherence[ranker] - rate
+        res <- res + (shape - 1)/adherence - rate
     }
     res
 }
