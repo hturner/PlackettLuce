@@ -2,7 +2,20 @@
 
 # Design loglik as brglm2::brglmFit
 # log-likelihood and score functions
-# Within optim or nlminb use obj and gr wrappers below
+# Within optim or nlminb use obj and gr wrappers  defined in main function
+
+# full logposterior when estimating adherence (may not have prior on mu)
+logposterior <- function(alpha, delta, adherence,
+                         mu, Rinv, shape, rate, A, B, fit){
+    res <- sum(B[-1]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
+    # prior on mu
+    if (!is.null(mu)){
+        # -0.5 * (s - mu)^T Sigma^{-1} (s - mu) + standard logL
+        res <- res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
+    }
+    # prior on adherence - always if estimating adherence
+    res + (shape - 1)*sum(log(adherence)) - rate*sum(adherence)
+}
 
 # omit following constants from log-likelihood/log-posterior:
 # contribution from tie in numerator: sum(B[-1]*log(delta))

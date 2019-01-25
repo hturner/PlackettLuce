@@ -2,7 +2,7 @@
 
 # Design loglik as brglm2::brglmFit
 # log-likelihood and score functions
-# Within optim or nlminb use obj and gr wrappers below
+# Within optim or nlminb use obj and gr defined in main function
 
 # omit following constants from log-likelihood/log-posterior:
 # contribution from tie in numerator: sum(B[-1]*log(delta))

@@ -36,12 +36,47 @@ test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", 
     ## N.B. - can't test L-BFGS with zero iterations
     ##      - iterative scaling not implemented with adherence
     expect_equal(logLik(mod_PL1)[1], -res$value[1])
-    ## cannot iterate sgdPL with fixed adherence
+    # Same, now iterating to convergence
+    res <- sgdPL(R[1:p,], mu, sigma, rate = 0.1, adherence = FALSE,
+                 maxiter = 8000,
+                 tol = 1e-12, start = c(mu, adherence[1:p]), decay = 1.001)
     mod_PL2 <- PlackettLuce(rankings = R[1:p,], npseudo = 0,
                             adherence = adherence[1:p], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
     mod_PL3 <- PlackettLuce(rankings = R[1:p,], npseudo = 0, method = "L-BFGS",
                             adherence = adherence[1:p], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
-    expect_equal(logLik(mod_PL1)[1], -res$value[1])
+    expect_equal(mod_PL2$logposterior, -tail(res$value, 1),
+                 tolerance = 1e-5)
+    expect_equal(mod_PL3$logposterior, -tail(res$value, 1),
+                 tolerance = 1e-5)
+})
+
+
+test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", {
+    m <- ncol(R)
+    n <- nrow(R)
+    adherence <- seq(0.75, 1.25, length.out = n)
+    alpha <- seq(0.25, 0.75, length.out = m)
+    # Non-informative prior on log-worths (large variance)
+    mu <- log(alpha)
+    sigma <- diag(1000000, m)
+    p <- 6 # switch for interactive testing (max = 8)
+    # Fit model using sgdPL from AgRank, estimating adherence with flat prior
+    # Same, now iterating to convergence
+    res <- sgdPL(R[1:p,], mu, sigma, rate = 0.1, adherence = TRUE,
+                 maxiter = 8000,
+                 tol = 1e-12, start = c(mu, adherence[1:p]), decay = 1.001)
+    # Simulate flat prior with NULL parameters for gamma prior
+    mod_PL2 <- PlackettLuce(rankings = R[1:p,], npseudo = 0,
+                            adherence = adherence[1:p], start = alpha,
+                            normal = list(mu = mu, Sigma = sigma),
+                            gamma = list(shape = NULL, rate = NULL))
+    mod_PL3 <- PlackettLuce(rankings = R[1:p,], npseudo = 0, method = "L-BFGS",
+                            adherence = adherence[1:p], start = alpha,
+                            normal = list(mu = mu, Sigma = sigma))
+    expect_equal(mod_PL2$logposterior, -tail(res$value, 1),
+                 tolerance = 1e-5)
+    expect_equal(mod_PL3$logposterior, -tail(res$value, 1),
+                 tolerance = 1e-5)
 })

@@ -45,6 +45,8 @@ print.summary.PlackettLuce <-  function(x,
         " degrees of freedom", fill = TRUE, sep = "")
     cat("AIC: ", format(x$aic, digits = max(4, digits + 1)), "\n")
 
-    cat("Number of iterations: ",  x$iter, "\n", sep = "")
+    if (!is.null(x$call$gamma)){
+        cat("Number of outer iterations: ",  x$iter, "\n", sep = "")
+    } else  cat("Number of iterations: ",  x$iter, "\n", sep = "")
     invisible(x)
 }

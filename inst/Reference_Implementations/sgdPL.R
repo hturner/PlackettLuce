@@ -105,7 +105,7 @@ sgdPL = function(data, mu, sigma, rate, adherence = TRUE, maxiter = 1000,
   niter = 0
   #the first nvar element is the score
   #the last nobs element is the adherence
-  if (adherence){
+  if (adherence | length(start) == (nobs + nvar)){
     param = start
   } else param = c(start, rep.int(1, nobs))
   target = rep(0, niter)
