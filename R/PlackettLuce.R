@@ -289,9 +289,11 @@ PlackettLuce <- function(rankings,
         class(X) <- c("adjacency", "matrix")
 
         # (S extracted from grouped_rankings object)
-        ns <- rowSums(S > 0L)
-        w <- rep.int(weights, ns)
-        if (!is.null(adherence)) ranker_id <- rep.int(ranker, ns)
+        # N.B. here unlist indifferent order than ungrouped
+        w <- (weights * as.logical(S))[as.logical(S)]
+        if (!is.null(adherence)) {
+            ranker_id <- (ranker * as.logical(S))[as.logical(S)]
+        }
         item_id <- R[as.logical(S)]
         S <- S[as.logical(S)]
     }
@@ -495,10 +497,10 @@ PlackettLuce <- function(rankings,
             c(alpha, delta)
     }
 
-    # Optimization of log-adherence via
+    # Optimization of log-adherence (for non-ghost raters) via
     obj_adherence <- function(par){
         adherence <- exp(par)
-        # assign to parent environment so can use results in score
+        # assign to parent environment so can use further quantities in score
         assign("fit", normalization(alpha, c(1.0, delta),
                                     adherence[ranker], D, P, R, G, W),
                envir = parent.env(environment()))
@@ -517,7 +519,7 @@ PlackettLuce <- function(rankings,
         if (!is.null(gamma)){
             mode(maxit) <- "integer"
             if (length(maxit) != 2L) maxit <- c(maxit, 10L)
-            conv1 <- conv2 <- integer(maxit[2L] + 1L)
+            conv1 <- conv2 <- rep.int(NA_integer_, maxit[2L] + 1L)
         }
         repeat{
             # fit model with fixed adherence (a)
@@ -529,7 +531,6 @@ PlackettLuce <- function(rankings,
                 alpha <- exp(res$par[1L:N])
                 delta <- c(1.0, exp(res$par[-(1L:N)]))
                 Z <- unname(rowsum(S*log(alpha[item_id]), ranker_id)[,1L])
-
                 conv1[i + 1L] <- res$convergence
                 if (i > 0L) logp_old <- logp
                 # log-posterior after worth update
@@ -551,6 +552,7 @@ PlackettLuce <- function(rankings,
                 adherence <- exp(res2$par)
                 a[1L:nr] <- adherence[ranker]
                 A[item] <- unname(rowsum(adherence[ranker_id]*S, item_id)[,1L])
+                if (npseudo) A[item] <- A[item] + npseudo
                 # log-posterior after gamma update
                 # -res2$value + sum(B[-1]*log(delta)) -
                 #    0.5*tcrossprod((log(alpha) - normal$mu) %*% Rinv)[1]

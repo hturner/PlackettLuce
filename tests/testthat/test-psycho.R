@@ -130,12 +130,51 @@ if (require(psychotree) & require(sandwich)){
 }
 
 # example with weights
-example(beans, package = "PlackettLuce")
+
+data(beans, package = "PlackettLuce")
+# Add middle ranked variety
+beans <- within(beans, {
+    best <- match(best, c("A", "B", "C"))
+    worst <- match(worst, c("A", "B", "C"))
+    middle <- 6 - best - worst
+})
+
+# Convert the variety IDs to the variety names
+varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+n <- nrow(beans)
+beans <- within(beans, {
+    best <- varieties[cbind(seq_len(n), best)]
+    worst <- varieties[cbind(seq_len(n), worst)]
+    middle <- varieties[cbind(seq_len(n), middle)]
+})
+
+# Create a rankings object from the rankings of order three
+## each ranking is a sub-ranking of three varieties from the full set
+lab <- c("Local", sort(unique(as.vector(varieties))))
+R <- as.rankings(beans[c("best", "middle", "worst")],
+                 input = "ordering", labels = lab)
+
+# Convert worse/better columns to ordered pairs
+head(beans[c("var_a", "var_b", "var_c")], 2)
+paired <- list()
+for (id in c("a", "b", "c")){
+    ordering <- matrix("Local", nrow = n, ncol = 2)
+    worse <- beans[[paste0("var_", id)]] == "Worse"
+    ## put trial variety in column 1 when it is not worse than local
+    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
+    ## put trial variety in column 2 when it is worse than local
+    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
+    paired[[id]] <- ordering
+}
+
+# Convert orderings to sub-rankings of full set and combine all rankings
+paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
+R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 
 weights <- c(rep(0.3, 400), rep(1, 442))
 
-pl_tree <- pltree(G ~ maxTN,
+pl_tree <- pltree(G ~ season,
                   data = beans, alpha = 0.05, weights = weights )
 
 # maybe use vdiffr in future
@@ -182,3 +221,10 @@ test_that('AIC.pltree works w/ single node [beans]',
               aic2 <- AIC(pl_tree1, newdata = beans)
               expect_equal(aic1, aic2)
           })
+
+test_that('pltree works w/ estimated adherence [beans]', {
+    # need to take account of estimation of adherence
+    pl_tree <- pltree(G ~ season,
+                      data = beans, alpha = 0.05,
+                      gamma = list(shape = 10, rate = 10))
+})

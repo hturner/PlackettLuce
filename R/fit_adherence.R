@@ -38,14 +38,23 @@ normalization <- function(alpha, # alpha par (worth)
                           R, # items in each ranking, from last to first place
                           G, # group of rankings to include; list for each P
                           W = NULL){ # weight of rankings; list for each P
-    score <- numeric(length(a))
-    norm <- numeric(sum(lengths(G[P])))
+    nr <- length(a) # number of real rankings
+    score <- numeric(nr)
+    # ignore any pseudo-rankings (always pairs)
+    len <- lengths(G)
+    pseudo <- len[2L] > nr
+    if (pseudo) {
+        real <- G[[2L]] <= nr
+        len[2L] <- sum(real)
+    }
+    norm <- numeric(sum(len))
     z <- 1L
     for (p in P){
         # D == 1
         ## numerator of score
-        r <- G[[p]]
-        if (p == 2L) r <- r[r <= length(a)] # ignore pseudo-rankings
+        if (p == 2L && pseudo) {
+            r <- G[[p]][real]
+        } else r <- G[[p]]
         nr <- length(r)
         x1 <- matrix(alpha[R[r, 1L:p]],
                      nrow = nr, ncol = p)
@@ -96,11 +105,14 @@ normalization <- function(alpha, # alpha par (worth)
         }
         # add contribution for sets of size s to norm constant/scores
         if (!is.null(W)){
-            norm[z:(z + nr - 1L)] <- norm[z:(z + nr - 1L)] + W[[p]] * log(z1)
-            score[r] <- score[r] + W[[p]] * y1/z1
+            if (p == 2L && pseudo) {
+                w <- W[[p]][real]
+            } else w <- W[[p]]
+            norm[z:(z + nr - 1L)] <- norm[z:(z + nr - 1L)] + w * log(z1)
+            score[r] <- score[r] + w * y1/z1
         } else {
             norm[z:(z + nr - 1L)] <- norm[z:(z + nr - 1L)] + log(z1)
-            score[r] <- score[r] + W[[p]] * y1/z1
+            score[r] <- score[r] + y1/z1
         }
         z <- z + nr
     }
