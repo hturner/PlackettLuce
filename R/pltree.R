@@ -177,7 +177,11 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 itempar.pltree <- function (object, ...){
     # so unexported itempar.bttree is used from psychotree
     requireNamespace("psychotree")
-    NextMethod()
+    res <- NextMethod()
+    if (is.vector(res)){
+        return(matrix(res, nrow = 1L, dimnames = list("1", names(res))))
+    }
+    res
 }
 
 #' @rdname pltree

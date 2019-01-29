@@ -172,10 +172,17 @@ paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
 G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 
-weights <- c(rep(0.3, 400), rep(1, 442))
+weights <- c(rep(0.3, 177), rep(2, 481), rep(0.3, 184))
 
 pl_tree <- pltree(G ~ season,
                   data = beans, alpha = 0.05, weights = weights )
+
+test_that('grouped_rankings work w/ weights [beans]', {
+    mod1 <- PlackettLuce(G, weights = weights)
+    mod2 <- PlackettLuce(R, weights =rep(weights, 4))
+    nm <- setdiff(names(mod1), c("call", "ranker"))
+    expect_equal(mod1[nm], mod2[nm])
+})
 
 # maybe use vdiffr in future
 test_that('plot.pltree works w/ weights [beans]',
@@ -192,6 +199,7 @@ test_that('itempar.pltree works w/ weights [beans]',
 
               itempar1 <- unique(pred2)
               itempar2 <- itempar(pl_tree)
+              # make sure nodes ordered the same way around
               expect_equivalent(itempar1[order(itempar1[,1]),],
                                 itempar2[order(itempar2[,1]),])
           })
@@ -213,6 +221,17 @@ test_that('AIC.pltree works w/ weights [beans]',
           })
 
 pl_tree1 <- pltree(G ~ maxTN, data = beans, alpha = 0)
+
+test_that('itempar.pltree works w/ single node [beans]',  {
+    # same results with newdata as original data
+    pred1 <- predict(pl_tree1, newdata = beans)
+    pred2 <- predict(pl_tree1)
+    expect_equal(pred1, pred2)
+
+    itempar1 <- unique(pred2)
+    itempar2 <- itempar(pl_tree1)
+    expect_equivalent(itempar1, itempar2)
+})
 
 test_that('AIC.pltree works w/ single node [beans]',
           {

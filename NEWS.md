@@ -5,6 +5,14 @@
 * `PlackettLuce()` now supports MAP estimation with a multivariate normal prior on log-worths and/or a gamma prior on ranker adherence.
 * `PlackettLuce()` now returns likelihood for null model (where all outcomes, including ties are equally likely).
 
+## Changes in Behaviour
+
+* `itempar.PlackettLuce()` now always returns a matrix, even for a single node tree.
+
+## Bug Fixes
+
+* `pltree()` or `PlackettLuce()` with grouped rankings now work correctly with weights.
+
 # PlackettLuce 0.2-3
 
 ## Improvements
