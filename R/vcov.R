@@ -3,7 +3,7 @@
 #' @importFrom stats aggregate
 #' @importFrom MASS ginv
 #' @importFrom Matrix crossprod Diagonal
-vcov.PlackettLuce <- function(object, ref = 1, ...) {
+vcov.PlackettLuce <- function(object, ref = 1L, ...) {
   ##  A temporary version until we can do it properly
   ##
   theLongData <- poisson_rankings(object$rankings, object$weights,
@@ -22,7 +22,7 @@ vcov.PlackettLuce <- function(object, ref = 1, ...) {
   WX <- fit * X
   XtWX <- as.matrix(crossprod(X, WX))
   ZtWX <- rowsum(as.matrix(WX), z)
-  ZtWZinverse <- 1/totals
+  ZtWZinverse <- 1L/totals
   ## Should we try to avoid ginv() ?
   result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))
   ##
@@ -32,13 +32,13 @@ vcov.PlackettLuce <- function(object, ref = 1, ...) {
   ##  The rest is all about presenting the result as the /actual/ vcov matrix
   ##  for a specified set of contrasts (or equivalently a specified constraint
   ##  on the parameters).
-  nobj <- ncoefs - object$maxTied + 1
+  nobj <- ncoefs - object$maxTied + 1L
   # ref already checked in coef method (with error if invalid)
   ref <- attr(coefs, "ref")
   # Can be done more economically?
   theContrasts <- Diagonal(ncoefs)
   theContrasts[ref, seq_len(nobj)] <-
-      theContrasts[ref,  seq_len(nobj)] - 1/length(ref)
+      theContrasts[ref,  seq_len(nobj)] - 1L/length(ref)
   result <- crossprod(theContrasts, result) %*% theContrasts
   rownames(result) <- colnames(result) <- names(coefs)
   return(as.matrix(result))

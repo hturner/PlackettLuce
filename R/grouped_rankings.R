@@ -87,7 +87,7 @@ ranking_stats <- function(rankings){
     rankings <- unclass(rankings)
     nr <- nrow(rankings)
     nc <- ncol(rankings)
-    R <- S <- matrix(0, nr, nc)
+    R <- S <- matrix(0L, nr, nc)
     id <- list()
     for (i in seq_len(nr)){
         x <- rankings[i, ]
@@ -95,21 +95,21 @@ ranking_stats <- function(rankings){
         ord <- order(x[ind], decreasing = TRUE)
         j <- seq_along(ind)
         # items ranked from last to 1st place
-        R[i, j] <- ind[ord]
+        R[i, j] <- as.integer(ind[ord])
         # 1 in column s if ranking includes choice from set of size |s|
         x <- x[R[i, j]]
         # size of chosen set at each rank (ignore "choice" of one from one)
         size <- tabulate(x)[x]
-        if (size[1] == 1) size[1] <- 0
+        if (size[1L] == 1L) size[1L] <- 0L
         S[i, j] <- size
         # contribution to adjacency matrix
-        if (x[1] < 2) next # x[1] gives max rank
+        if (x[1L] < 2L) next # x[1] gives max rank
         add <- list()
-        for (s in seq_len(x[1] - 1)){
+        for (s in seq_len(x[1L] - 1L)){
             one <- which(rankings[i, ] == s)
             # > gives rest; == s + 1 gives next best
             two <- which(rankings[i, ] > s)
-            add[[s]] <- kronecker(one, (two - 1)*nc, "+")
+            add[[s]] <- kronecker(one, (two - 1L)*nc, "+")
         }
         id[[i]] <- unlist(add)
     }
@@ -126,15 +126,16 @@ ranking_stats <- function(rankings){
         # always a vector if picking out elements of rankings matrix
         if (is.matrix(i)) {
             r <- split(seq_along(attr(x, "index")), attr(x, "index"))
-            i1 <- unlist(r[i[,1]])
-            i2 <- rep(i[,2], lengths(r))
+            i1 <- unlist(r[i[,1L]])
+            i2 <- rep(i[,2L], lengths(r))
             return(.subset(attr(x, "rankings"), cbind(i1, i2)))
         }
         # convert index of groups to index of rankings
         g <- .subset(x, i)
         # create index for rankings matrix
-        groups <- split(seq_along(attr(x, "index")), attr(x, "index"))[g]
-        i <- unname(unlist(groups))
+        i <- which(attr(x, "index") %in% g)
+        groups <- split(i, attr(x, "index")[i])[as.character(g)]
+        i <- unlist(groups)
         # update value and index to remove omitted groups
         value <- seq_along(groups)
         index <- rep(value, lengths(groups))
@@ -176,7 +177,7 @@ as.grouped_rankings <- function(x, ...){
 #' @method as.grouped_rankings paircomp
 #' @export
 as.grouped_rankings.paircomp <- function(x, ...){
-    if (attr(x, "mscale")[1] < -1) {
+    if (attr(x, "mscale")[1L] < -1L) {
         warning("strength of preference ignored")
         x <- sign(x)
     }
@@ -184,14 +185,14 @@ as.grouped_rankings.paircomp <- function(x, ...){
     ncomp <- nrow(id)
     nobj <- length(attr(x, "labels"))
     pairs <- which(upper.tri(diag(nobj)), arr.ind = TRUE)
-    rankings <- matrix(0, nrow = ncomp, ncol = nobj,
+    rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
                        dimnames = list(NULL, attr(x, "labels")))
     x <- as.matrix(x)[id]
-    rankings[cbind(seq_len(ncomp), pairs[,1][id[,2]])] <- ifelse(x == -1, 2, 1)
-    rankings[cbind(seq_len(ncomp), pairs[,2][id[,2]])] <- ifelse(x == 1, 2, 1)
+    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <- ifelse(x == -1L, 2L, 1L)
+    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <- ifelse(x == 1L, 2L, 1L)
     rankings <- structure(rankings, class = "rankings")
     do.call("structure",
-            c(list(seq_len(max(id[,1])), rankings = rankings, index = id[,1]),
+            c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),
               ranking_stats(rankings),
               list(class = "grouped_rankings")))
 }
@@ -226,14 +227,14 @@ as.data.frame.grouped_rankings <-
 
 #' @method print grouped_rankings
 #' @export
-print.grouped_rankings <- function(x, max = 2, width = 20, ...){
+print.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     print.default(format(x, max = max, width = width, ...))
 }
 
 #' @rdname grouped_rankings
 #' @method format grouped_rankings
 #' @export
-format.grouped_rankings <- function(x, max = 2, width = 20, ...){
+format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     tab <- tabulate(attr(x, "index"))
     rep <- numeric(length(attr(x, "index")))
     rep[order(attr(x, "index"))] <- sequence(tab)

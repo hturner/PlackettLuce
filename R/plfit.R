@@ -42,7 +42,7 @@
 #' coef(mod)
 #' logLik(mod)
 #' @export
-plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
+plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
                    offset = NULL, ..., estfun = FALSE, object = FALSE) {
     x <- !(is.null(x) || NCOL(x) == 0L)
     offset <- !is.null(offset)
@@ -74,33 +74,33 @@ plfit <- function (y, x = NULL, ref = 1, start = NULL, weights = NULL,
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
 #' @export
-estfun.PlackettLuce <- function(x, ref = 1, ...) {
+estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     D <- x$maxTied
     # get coefficients (unconstrained)
     coef <- x$coefficients
-    N <- length(coef) - D + 1
-    alpha <- coef[1:N]
-    delta <- c(1, coef[-c(1:N)])
+    N <- length(coef) - D + 1L
+    alpha <- coef[1L:N]
+    delta <- c(1.0, coef[-c(1L:N)])
     # get choices and alternatives for each ranking
     choices <- choices(x$rankings, names = FALSE)
     # derivative wrt to log alpha part 1: 1/(size of selected set)
     nr <- nrow(x$rankings)
-    A <- matrix(0, nrow = nr, ncol = N,
+    A <- matrix(0.0, nrow = nr, ncol = N,
                 dimnames = list(NULL, names(alpha)))
     choices$choices <- split(choices$choices, choices$ranking)
     for (i in seq_len(nr)){
         r <- choices$choices[[i]]
         len <- lengths(r)
         if (!is.null(x$adherence)){
-            A[i, unlist(r)] <- rep(x$adherence[i]/len, len)
-        } else A[i, unlist(r)] <- rep(1/len, len)
+            A[i, unlist(r)] <- rep(x$adherence[x$ranker[i]]/len, len)
+        } else A[i, unlist(r)] <- rep(1L/len, len)
     }
     # derivative wrt delta part 1: row TRUE where selected set has cardinality d
-    if (D > 1){
-        B <- matrix(nrow = nr, ncol = D - 1,
-                    dimnames = list(NULL, names(delta[-1])))
-        for (d in 2:D){
-            B[, d - 1] <- apply(A == 1/d, 1, any)
+    if (D > 1L){
+        B <- matrix(nrow = nr, ncol = D - 1L,
+                    dimnames = list(NULL, names(delta[-1L])))
+        for (d in 2L:D){
+            B[, d - 1L] <- apply(A == 1L/d, 1L, any)
         }
     }
     # derivatives part 2: expectation of alpha | delta per set to choose from
@@ -108,14 +108,14 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
     ord <- order(size)
     if (!is.null(x$adherence)){
         # don't group
-        a <- rep(x$adherence, tabulate(choices$ranking))
+        a <- x$adherence[x$ranker]
         unique_alternatives <- choices$alternatives
     } else {
         a <- NULL
         unique_alternatives <- unique(choices$alternatives[ord])
     }
     na <- lengths(unique_alternatives)
-    R <- matrix(0, nrow = length(na), ncol = max(na))
+    R <- matrix(0L, nrow = length(na), ncol = max(na))
     R[cbind(rep(seq_along(unique_alternatives), na), sequence(na))] <-
         unlist(unique_alternatives)
     G <- seq_along(unique_alternatives)
@@ -133,14 +133,14 @@ estfun.PlackettLuce <- function(x, ref = 1, ...) {
     if (!is.null(ref) && ref %in% names(alpha)) {
         ref <- which(names(alpha) == ref)
     }
-    if (D == 1) {
+    if (D == 1L) {
         if (!is.null(ref)) {
             return(A[, -ref, drop = FALSE])
         } else return(A)
     }
     # N.B. expectation of delta should include delta*, but cancelled out in
     # in iterative scaling so omitted!
-    res$expB <- sweep(res$expB, 2, delta[-1], "*")
+    res$expB <- sweep(res$expB, 2L, delta[-1L], "*")
     B <- B - rowsum(res$expB[h,], choices$ranking)
     if (!is.null(ref)) {
         return(cbind(A[, -ref, drop = FALSE], B))

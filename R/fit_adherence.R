@@ -13,7 +13,7 @@ loglik_adherence <- function(adherence, shape, rate, Z, fit) {
     res <- sum(adherence*Z) - sum(fit$norm)
     # prior on adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1)*sum(log(adherence)) - rate*sum(adherence)
+        res <- res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
     }
     res
 }
@@ -23,7 +23,7 @@ score_adherence <- function(adherence, ranker, shape, rate, Z, fit) {
     res <- Z - rowsum(fit$score, ranker)
     # prior on adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1)/adherence - rate
+        res <- res + (shape - 1L)/adherence - rate
     }
     res
 }
@@ -40,36 +40,36 @@ normalization <- function(alpha, # alpha par (worth)
                           W = NULL){ # weight of rankings; list for each P
     score <- numeric(length(a))
     norm <- numeric(sum(lengths(G[P])))
-    z <- 1
+    z <- 1L
     for (p in P){
         # D == 1
         ## numerator of score
         r <- G[[p]]
-        if (p == 2) r <- r[r <= length(a)] # ignore pseudo-rankings
+        if (p == 2L) r <- r[r <= length(a)] # ignore pseudo-rankings
         nr <- length(r)
-        x1 <- matrix(alpha[R[r, 1:p]],
+        x1 <- matrix(alpha[R[r, 1L:p]],
                      nrow = nr, ncol = p)
         y1 <- rowSums(x1^a[r]*log(x1))
         ## denominator of score = exp(contribution to norm constant)
         z1 <- rowSums(x1^a[r])
         # D > 1
         d <- min(D, p)
-        if (d > 1){
+        if (d > 1L){
             # index up to d items: start with 1:n
             i <- seq_len(d)
             # id = index to change next; id2 = first index changed
             if (d == p) {
-                id <- p - 1
+                id <- p - 1L
             } else id <- d
-            id2 <- 1
+            id2 <- 1L
             repeat{
                 # work along index vector from 1 to end/first index = s
-                v1 <- alpha[R[r, i[1]]] # ability for first ranked item
+                v1 <- alpha[R[r, i[1L]]] # ability for first ranked item
                 last <- i[id] == p
                 if (last) {
                     end <- id
-                } else end <- min(d, id + 1)
-                for (k in 2:end){
+                } else end <- min(d, id + 1L)
+                for (k in 2L:end){
                     # product of first k alphas indexed by i
                     v1 <- v1 * alpha[R[r, i[k]]]
                     # ignore if already recorded
@@ -81,25 +81,25 @@ normalization <- function(alpha, # alpha par (worth)
                     z1 <- z1 + v2
                 }
                 # update index
-                if (i[1] == (p - 1)) break
+                if (i[1L] == (p - 1L)) break
                 if (last){
-                    id2 <- id - 1
+                    id2 <- id - 1L
                     v <- i[id2]
-                    len <- min(p - 2 - v, d - id2)
+                    len <- min(p - 2L - v, d - id2)
                     id <- id2 + len
-                    i[id2:id] <- v + seq_len(len + 1)
+                    i[id2:id] <- v + seq_len(len + 1L)
                 } else {
                     id2 <- id
-                    i[id] <- i[id] + 1
+                    i[id] <- i[id] + 1L
                 }
             }
         }
         # add contribution for sets of size s to norm constant/scores
         if (!is.null(W)){
-            norm[z:(z + nr - 1)] <- norm[z:(z + nr - 1)] + W[[p]] * log(z1)
+            norm[z:(z + nr - 1L)] <- norm[z:(z + nr - 1L)] + W[[p]] * log(z1)
             score[r] <- score[r] + W[[p]] * y1/z1
         } else {
-            norm[z:(z + nr - 1)] <- norm[z:(z + nr - 1)] + log(z1)
+            norm[z:(z + nr - 1L)] <- norm[z:(z + nr - 1L)] + log(z1)
             score[r] <- score[r] + W[[p]] * y1/z1
         }
         z <- z + nr

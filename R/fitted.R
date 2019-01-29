@@ -26,12 +26,12 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
     choices <- choices(object$rankings, names = FALSE)
     # get parameters
-    id <- seq(length(object$coefficients) - object$maxTied + 1)
+    id <- seq(length(object$coefficients) - object$maxTied + 1L)
     alpha <- object$coefficients[id]
-    delta <- c(1, unname(object$coefficients[-id]))
+    delta <- c(1.0, unname(object$coefficients[-id]))
     # if free = TRUE, ignore forced choice (choice of 1)
     if (free) {
-        free <- lengths(choices$alternatives) != 1
+        free <- lengths(choices$alternatives) != 1L
         choices <- lapply(choices, `[`,  free)
     }
     # id unique choices
@@ -42,12 +42,12 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
         n <- lengths(choices$choices)
         a <- rep(object$adherence, tabulate(choices$ranking))
         numerator <- delta[n] *
-            (vapply(unique_choices, function(x) prod(alpha[x]), 1))[g]^a/n
+            (vapply(unique_choices, function(x) prod(alpha[x]), 1.0))[g]^a/n
     } else {
         n <- lengths(unique_choices)
         a <- NULL
         numerator <- (delta[n] *
-            vapply(unique_choices, function(x) prod(alpha[x]), 1)^(1/n))[g]
+            vapply(unique_choices, function(x) prod(alpha[x]), 1.0)^(1L/n))[g]
     }
     # id unique alternatives
     size <- lengths(choices$alternatives)
@@ -58,12 +58,12 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     } else unique_alternatives <- unique(choices$alternatives[ord])
     # for now work theta out - could perhaps save in object
     na <- lengths(unique_alternatives)
-    R <- matrix(0, nrow = length(na), ncol = max(na))
+    R <- matrix(0L, nrow = length(na), ncol = max(na))
     R[cbind(rep(seq_along(unique_alternatives), na),
             sequence(na))] <- unlist(unique_alternatives)
     G <- seq_along(unique_alternatives)
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
-    S <- setdiff(unique(na), 1)
+    S <- setdiff(unique(na), 1L)
     D <- object$maxTied
     N <- ncol(object$rankings)
     theta <- expectation("theta", alpha, delta, a, N, D, S, R, G)$theta

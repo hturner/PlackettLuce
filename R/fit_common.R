@@ -7,37 +7,37 @@
 # full logposterior when estimating adherence (may not have prior on mu)
 logposterior <- function(alpha, delta, adherence,
                          mu, Rinv, shape, rate, A, B, fit){
-    res <- sum(B[-1]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
+    res <- sum(B[-1L]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
     # prior on mu
     if (!is.null(mu)){
         # -0.5 * (s - mu)^T Sigma^{-1} (s - mu) + standard logL
-        res <- res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
+        res <- res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1L]
     }
     # prior on adherence - always if estimating adherence
-    res + (shape - 1)*sum(log(adherence)) - rate*sum(adherence)
+    res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
 }
 
 # omit following constants from log-likelihood/log-posterior:
 # contribution from tie in numerator: sum(B[-1]*log(delta))
-# contribution from normal prior: - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
+# contribution from normal prior: - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1L]
 # normalising constant from gamma prior: shape*log(rate) - log(gamma(shape))
 loglik_common <- function(par, N, mu, Rinv, A, B, fit){
-    alpha <- par[1:N]
-    delta <- par[-c(1:N)]
-    res <- sum(B[-1]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
+    alpha <- par[1L:N]
+    delta <- par[-c(1L:N)]
+    res <- sum(B[-1L]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
     if (is.null(mu)) return(res)
     # -0.5 * (s - mu)^T Sigma^{-1} (s - mu) + standard logL
-    res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
+    res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1L]
 }
 
 # derivatives of log-likelihood for common parameters (worth, tie)
 score_common <- function(par, N, mu, Kinv, A, B, fit) {
-    alpha <- par[1:N]
-    delta <- par[-c(1:N)]
-    res <- c(A/alpha - fit$expA/alpha, B[-1]/delta - fit$expB)
+    alpha <- par[1L:N]
+    delta <- par[-c(1L:N)]
+    res <- c(A/alpha - fit$expA/alpha, B[-1L]/delta - fit$expB)
     if (is.null(mu)) return(res)
     # deriv first part wrt alpha (s) : [-Sigma^{-1} (s - mu)]/alpha
-    res[1:N] <- res[1:N] - Kinv %*% (log(alpha) - mu)/alpha
+    res[1L:N] <- res[1L:N] - Kinv %*% (log(alpha) - mu)/alpha
     res
 }
 
@@ -54,51 +54,52 @@ expectation <- function(par, # par to compute expectations for
                         G, # group of rankings to include; list for each P
                         W = NULL){ # weight of rankings; list for each P
     keepAlpha <- any(par %in% c("alpha", "all"))
-    keepDelta <- D > 1 && any(par %in% c("delta", "all"))
+    keepDelta <- D > 1L && any(par %in% c("delta", "all"))
     keepTheta <- any(par %in% c("theta", "all"))
     expA <- expB <- theta <- NULL
     if (keepAlpha) {
         if (!is.null(W)) {
             expA <- numeric(N)
-        } else expA <- matrix(0, nrow = nrow(R), ncol = N)
+        } else expA <- matrix(0.0, nrow = nrow(R), ncol = N)
     }
     if (keepDelta) {
         if (!is.null(W)) {
-            expB <- numeric(D - 1)
-        } else expB <- matrix(0, nrow = nrow(R), ncol = D - 1)
+            expB <- numeric(D - 1L)
+        } else expB <- matrix(0.0, nrow = nrow(R), ncol = D - 1L)
     }
     if (keepTheta) theta <- numeric(sum(lengths(G[P])))
-    z <- 1
+    z <- 1L
     for (p in P){
         # D == 1
         ## numerators (for expA, else just to compute denominators)
         r <- G[[p]]
         nr <- length(r)
-        x1 <- matrix(alpha[R[r, 1:p]],
+        item_id <- as.integer(R[r, 1L:p])
+        x1 <- matrix(alpha[item_id],
                      nrow = nr, ncol = p)
         if (!is.null(a)) x1 <- x1^a[r]
         ## denominators
         z1 <- rowSums(x1)
         # D > 1
         d <- min(D, p)
-        if (d > 1){
+        if (d > 1L){
             if (keepDelta)
-                y1 <- matrix(0, nrow = nr, ncol = d - 1)
+                y1 <- matrix(0.0, nrow = nr, ncol = d - 1L)
             # index up to d items: start with 1:n
             i <- seq_len(d)
             # id = index to change next; id2 = first index changed
             if (d == p) {
-                id <- p - 1
+                id <- p - 1L
             } else id <- d
-            id2 <- 1
+            id2 <- 1L
             repeat{
                 # work along index vector from 1 to end/first index = s
-                v1 <- alpha[R[r, i[1]]] # ability for first ranked item
+                v1 <- alpha[R[r, i[1L]]] # ability for first ranked item
                 last <- i[id] == p
                 if (last) {
                     end <- id
-                } else end <- min(d, id + 1)
-                for (k in 2:end){
+                } else end <- min(d, id + 1L)
+                for (k in 2L:end){
                     # product of first k alphas indexed by i
                     v1 <- v1 * alpha[R[r, i[k]]]
                     # ignore if already recorded
@@ -106,30 +107,30 @@ expectation <- function(par, # par to compute expectations for
                     # add to numerators/denominators for sets of order s
                     if (!is.null(a)) {
                         v2 <- v1^(a[r]/k)
-                    } else v2 <- v1^(1/k)
+                    } else v2 <- v1^(1L/k)
                     v3 <- delta[k]*v2
                     if (keepAlpha) {
                         # add to numerators for objects in sets
-                        x1[, i[1:k]] <- x1[, i[1:k]] + v3/k
+                        x1[, i[1L:k]] <- x1[, i[1L:k]] + v3/k
                     }
                     if (keepDelta) {
                         # add to numerator for current tie order for sets
-                        y1[, k - 1] <- y1[, k - 1] + v2
+                        y1[, k - 1L] <- y1[, k - 1L] + v2
                     }
                     # add to denominators for sets
                     z1 <- z1 + v3
                 }
                 # update index
-                if (i[1] == (p - 1)) break
+                if (i[1L] == (p - 1L)) break
                 if (last){
-                    id2 <- id - 1
+                    id2 <- id - 1L
                     v <- i[id2]
-                    len <- min(p - 2 - v, d - id2)
+                    len <- min(p - 2L - v, d - id2)
                     id <- id2 + len
-                    i[id2:id] <- v + seq_len(len + 1)
+                    i[id2:id] <- v + seq_len(len + 1L)
                 } else {
                     id2 <- id
-                    i[id] <- i[id] + 1
+                    i[id] <- i[id] + 1L
                 }
             }
         }
@@ -138,31 +139,31 @@ expectation <- function(par, # par to compute expectations for
             # R[r, 1:s] may only index some alphas
             if (!is.null(a)) x1 <- a[r] * x1
             if (!is.null(W)){
-                id <- unique(as.integer(R[r, 1:p]))
+                id <- unique(item_id)
                 add <- drop(rowsum(as.vector(W[[p]] * x1/z1),
-                                   c(R[r, 1:p]), reorder = FALSE))
+                                   item_id, reorder = FALSE))
                 expA[id] <- expA[id] + add
             } else {
-                id <- cbind(r, c(R[r, 1:p]))
+                id <- cbind(r, item_id)
                 expA[id] <- expA[id] + c(x1/z1)
             }
         }
-        if (keepDelta && p > 1){
+        if (keepDelta && p > 1L){
             if (!is.null(W)){
-                expB[seq_len(d - 1)] <- expB[seq_len(d - 1)] +
+                expB[seq_len(d - 1L)] <- expB[seq_len(d - 1L)] +
                     colSums(W[[p]] * y1/z1)
-            } else expB[r, seq_len(d - 1)] <- expB[r, seq_len(d - 1)] + y1/z1
+            } else expB[r, seq_len(d - 1L)] <- expB[r, seq_len(d - 1L)] + y1/z1
         }
         if (keepTheta){
             if (par == "all"){
                 # return logtheta
                 if (!is.null(W)){
-                    theta[z:(z + nr - 1)] <- W[[p]] * log(z1)
-                } else theta[z:(z + nr - 1)] <- log(z1)
+                    theta[z:(z + nr - 1L)] <- W[[p]] * log(z1)
+                } else theta[z:(z + nr - 1L)] <- log(z1)
             } else {
                 if (!is.null(W)){
-                    theta[z:(z + nr - 1)] <- W[[p]] * z1
-                } else theta[z:(z + nr - 1)] <- z1
+                    theta[z:(z + nr - 1L)] <- W[[p]] * z1
+                } else theta[z:(z + nr - 1L)] <- z1
             }
             z <- z + nr
         }

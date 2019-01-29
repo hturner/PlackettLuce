@@ -86,7 +86,7 @@
 #' @export
 rankings <- function(data, id, item, rank, verbose = TRUE, ...){
     data <- data[c(id, item, rank)]
-    if (ncol(data) != 3) stop("id, item and rank must specify columns in data")
+    if (ncol(data) != 3L) stop("id, item and rank must specify columns in data")
     # id completely NA rankings
     complete <- complete.cases(data)
     # remove records with unknown id, item or rank
@@ -99,7 +99,7 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
         }
     }
     # id duplicated items
-    id <- paste(data[[1]], data[[2]], sep = ":")
+    id <- paste(data[[1L]], data[[2L]], sep = ":")
     dup <- duplicated(id)
     if (any(dup)){
         if (verbose) {
@@ -110,10 +110,10 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
         ndups <- length(dups)
         keep <- logical(ndups)
         for (i in seq(ndups)){
-            ranks <- data[[3]][id == dups[i]]
+            ranks <- data[[3L]][id == dups[i]]
             # keep first if equal/consecutive ranks,
             # else drop all (inconsistent)
-            keep[i] <- diff(range(ranks)) < 2
+            keep[i] <- diff(range(ranks)) < 2L
         }
         include <- !id %in% dups
         first <- !include & !dup
@@ -121,11 +121,11 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
         data <- data[include | first,]
     }
     # create rankings matrix (do not assume any form of ranking)
-    lev1 <- sort(unique(data[[1]]))
-    lev2 <- sort(unique(data[[2]]))
-    R <- matrix(0, nrow = length(lev1), ncol = length(lev2),
+    lev1 <- sort(unique(data[[1L]]))
+    lev2 <- sort(unique(data[[2L]]))
+    R <- matrix(0L, nrow = length(lev1), ncol = length(lev2),
                 dimnames = list(lev1, lev2))
-    R[cbind(match(data[[1]], lev1), match(data[[2]], lev2))] <- data[[3]]
+    R[cbind(match(data[[1L]], lev1), match(data[[2L]], lev2))] <- data[[3L]]
     # convert to dense rankings and remove rankings with less than 2 items
     res <- as.rankings.matrix(R, verbose = verbose)
     if (length(attr(res, "omit")) && any(!complete)){
@@ -172,20 +172,20 @@ as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
         m <- max(x, na.rm = TRUE)
         if (!is.null(labels) && length(labels) > m){
             unused <- length(labels) - m
-            x <- cbind(x, matrix(0, nrow = nrow(x), ncol = unused))
+            x <- cbind(x, matrix(0L, nrow = nrow(x), ncol = unused))
             m <- m + unused
         }
         m <- ifelse(!is.null(labels), length(labels),
                     max(x, na.rm = TRUE))
         item <- seq_len(m)
-        x <- t(apply(x, 1, function(x) match(item, x, nomatch = 0)))
+        x <- t(apply(x, 1L, function(x) match(item, x, nomatch = 0L)))
         if (!is.null(labels)) colnames(x) <- labels
-    } else if (NCOL(x) >= 2) {
+    } else if (NCOL(x) >= 2L) {
             # check rankings are dense rankings, recode if necessary
             x <- checkDense(x, verbose = verbose)
     }
     # remove rankings with less than 2 items
-    id <- which(rowSums(x > 0) < 2)
+    id <- which(rowSums(x > 0L) < 2L)
     if (length(id)){
         if (verbose)
             message("Removed rankings with less than 2 items")
@@ -196,19 +196,20 @@ as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
     }
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
+    mode(x) <- "integer"
     structure(x, omit = if (length(id)) omit else NULL, class = "rankings")
 }
 
 checkDense <- function(x, verbose = TRUE){
     # check rankings are dense rankings
-    nRank <- apply(x, 1, function(x) length(unique(x[x > 0])))
-    maxRank <- apply(x, 1, max)
+    nRank <- apply(x, 1L, function(x) length(unique(x[x > 0L])))
+    maxRank <- apply(x, 1L, max)
     bad <- maxRank != nRank
     # recode any ranking not in dense form
     if (any(bad)){
         if (verbose) message("Recoded rankings that are not in dense form")
-        x[bad, ] <- t(apply(x[bad, , drop = FALSE], 1, function(x) {
-            id <- x > 0
+        x[bad, ] <- t(apply(x[bad, , drop = FALSE], 1L, function(x) {
+            id <- x > 0L
             x[id] <- match(x[id], sort(unique(x[id])))
             x
         }))
@@ -295,17 +296,17 @@ print.rankings <- function(x, ...){
 #' @method format rankings
 #' @rdname rankings
 #' @export
-format.rankings <- function(x, width = 40, ...){
+format.rankings <- function(x, width = 40L, ...){
     f <- function(i, items) {
-        obj <- items[i != 0]
-        i <- i[i != 0]
+        obj <- items[i != 0L]
+        i <- i[i != 0L]
         ord <- order(i)
-        if (length(obj) > 1){
-            op <- ifelse(diff(i[ord]) == 0, " = ", " > ")
+        if (length(obj) > 1L){
+            op <- ifelse(diff(i[ord]) == 0L, " = ", " > ")
             paste(obj[ord], c(op, ""), sep = "", collapse = "")
         } else obj
     }
-    value <- apply(x, 1, f, colnames(x))
+    value <- apply(x, 1L, f, colnames(x))
     nc <- nchar(value)
     trunc <- nc > width
     value[trunc] <- paste(strtrim(value[trunc], width - 4), "...")
@@ -319,12 +320,12 @@ rbind.rankings <- function(..., labels = NULL){
     # check contain the same items
     R <- list(...)
     nm <- lapply(R, colnames)
-    ref <- nm[[1]]
+    ref <- nm[[1L]]
     ok <- vapply(nm, identical, TRUE, ref)
     if (any(!ok)){
         if (is.null(labels)) labels <- sort(unique(unlist(nm)))
         R <- lapply(R, function(x){
-            R <- matrix(0, nrow = nrow(x), ncol = length(labels),
+            R <- matrix(0L, nrow = nrow(x), ncol = length(labels),
                         dimnames = list(NULL, labels))
             R[, colnames(x)] <- x
             R

@@ -32,14 +32,14 @@ adjacency <- function(object, weights = NULL, ...){
     if (!inherits(object, "rankings")) object <- as.rankings(object)
     N <- ncol(object)
     if (is.null(weights)) {
-        weights <- rep.int(1, nrow(object))
+        weights <- rep.int(1L, nrow(object))
     } else stopifnot(length(weights) == nrow(object))
-    nset <- apply(object, 1, max)
+    nset <- apply(object, 1L, max)
     m <- max(nset)
     nm <- colnames(object)
-    X <- matrix(0, nrow = N, ncol = N, dimnames = list(nm, nm))
-    for (i in 1:m){
-        r <- which(nset >= (i + 1))
+    X <- matrix(0.0, nrow = N, ncol = N, dimnames = list(nm, nm))
+    for (i in 1L:m){
+        r <- which(nset >= (i + 1L))
         for(j in r) {
             one <- object[j,] == i
             two <- object[j,] > i # > gives rest; == i + 1 gives next best

@@ -61,11 +61,11 @@
 #' @importFrom stats rexp runif simulate
 #' @method simulate PlackettLuce
 #' @export
-simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL,
+simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
                                   multinomial = FALSE,
                                   max_combinations = 2e+04, ...) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
-        runif(1)
+        runif(1L)
     if (is.null(seed))
         RNGstate <- get(".Random.seed", envir = .GlobalEnv)
     else {
@@ -77,24 +77,24 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL,
     rankings <- unclass(object$rankings)
     N <- ncol(rankings)
     n_rankings <- nrow(rankings)
-    id <- seq(length(object$coefficients) - object$maxTied + 1)
+    id <- seq(length(object$coefficients) - object$maxTied + 1L)
     alpha <- object$coefficients[id]
     delta <- numeric(N)
-    delta[seq_len(object$maxTied)] <- c(1, unname(object$coefficients[-id]))
+    delta[seq_len(object$maxTied)] <- c(1.0, unname(object$coefficients[-id]))
     opt <- seq_len(N)
     sets <- as.list(numeric(n_rankings))
     for (i in seq_len(n_rankings)) {
-        sets[[i]] <- opt[rankings[i,] > 0]
+        sets[[i]] <- opt[rankings[i,] > 0L]
     }
     len <- lengths(sets)
 
     ## If there are no ties use Louis Gordon (1983, Annals of Stat);
     ## Diaconis (1988, Chapter 9D)
-    if (object$maxTied == 1 & !multinomial) {
+    if (object$maxTied == 1L & !multinomial) {
         sampler <- function(objects) {
             v <- numeric(N)
             len <- length(objects)
-            ordering <- objects[order(rexp(len, rate = 1)/alpha[objects],
+            ordering <- objects[order(rexp(len, rate = 1L)/alpha[objects],
                                       decreasing = FALSE)]
             v[ordering] <- seq.int(len)
             v
@@ -122,12 +122,12 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL,
 
         ## Unormalized probabilities of all combinations
         probs <- vapply(combinations, function(z) {
-            delta[length(z)] * prod(alpha[z])^(1/length(z))
+            delta[length(z)] * prod(alpha[z])^(1L/length(z))
         }, 1)
         ## NOTE, IK 10/12/2017: Normalization is done internally by sample.int
         sampler <- function(objects) {
             v <- numeric(N)
-            j <- 1
+            j <- 1L
             indices <- rep(TRUE, n_combinations)
             while (length(objects)) {
                 ## find out which combinations have all of their objects
@@ -137,12 +137,12 @@ simulate.PlackettLuce <- function(object, nsim = 1, seed = NULL,
                 }, TRUE)
                 ## sample, after setting the probability of all other
                 ## combinations to zero
-                sampled <- combinations[[sample.int(n_combinations, 1,
+                sampled <- combinations[[sample.int(n_combinations, 1L,
                                                     prob = probs * indices)]]
                 ## remove the sampled objects from `objects`
-                objects <- objects[-match(sampled, objects, nomatch = 0)]
+                objects <- objects[-match(sampled, objects, nomatch = 0L)]
                 v[sampled] <- j
-                j <- j + 1
+                j <- j + 1L
             }
             v
         }
