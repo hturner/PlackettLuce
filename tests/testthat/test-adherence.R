@@ -147,3 +147,35 @@ test_that('fixed adherence works for grouped_rankings [beans]', {
     expect_equal(mod1[nm], mod2[nm])
     expect_equal(mod1$adherence[mod1$ranker], mod2$adherence[mod2$ranker])
 })
+
+## The artificial example in ?PlackettLuce
+R <- matrix(c(1, 2, 0, 0,
+              4, 1, 2, 3,
+              2, 1, 1, 1,
+              1, 2, 3, 0,
+              2, 1, 1, 0,
+              1, 0, 3, 2), nrow = 6, byrow = TRUE)
+colnames(R) <- c("apple", "banana", "orange", "pear")
+
+test_that('standard errors as expected', {
+    # non-informative prior
+    m <- ncol(R)
+    n <- nrow(R)
+    mu <- rep(1, m)
+    sigma <- diag(1000000, m)
+    mod1 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
+                         normal = list(mu = mu, Sigma = sigma))
+    # informative prior
+    prior <- list(mu = c(-0.05, -0.05, -2, -3),
+                  Sigma = matrix(c(1, 0.5, 0.1, -0.5,
+                                   0.5, 1.1, 0.1, 0.1,
+                                   0.1, 0.1, 1.2, 0.2,
+                                   -0.5, 0.1, 0.2, 1.3), 4, 4, byrow = TRUE))
+    mod2 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
+                         normal = prior, weights = rep(50, 6))
+    # tight gamma prior
+    mod3 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
+                         gamma = list(shape = 100, rate = 100))
+    #[1] 1.0700216 1.1745540 1.0940679 1.0741846 1.1373351 0.1006513 0.1012587 0.1005233 0.1005127
+    #[10] 0.1004962 0.1005911
+})

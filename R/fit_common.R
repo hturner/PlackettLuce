@@ -5,16 +5,37 @@
 # Within optim or nlminb use obj and gr wrappers  defined in main function
 
 # full logposterior when estimating adherence (may not have prior on mu)
-logposterior <- function(alpha, delta, adherence,
-                         mu, Rinv, shape, rate, A, B, fit){
-    res <- sum(B[-1L]*log(delta)) + sum(A*log(alpha))- sum(fit$theta)
+logp_full <- function(alpha, delta, adherence,
+                      mu, Rinv, shape, rate, A, B, theta){
+    res <- sum(B[-1L]*log(delta)) + sum(A*log(alpha))- sum(theta)
     # prior on mu
     if (!is.null(mu)){
         # -0.5 * (s - mu)^T Sigma^{-1} (s - mu) + standard logL
         res <- res - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1L]
     }
     # prior on adherence - always if estimating adherence
-    res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
+    if (!is.null(shape)){
+        res <- res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
+    }
+    res
+}
+
+score_full <- function(alpha, delta, adherence, ranker,
+                       mu, Rinv, shape, rate, A, B, Z, expA, expB, score){
+    a <- A/alpha - expA/alpha
+    b <- B[-1L]/delta - expB
+    if (length(adherence)){
+        z <- Z - rowsum(score, ranker)[,1]
+        # prior on adherence
+        if (!is.null(shape)){
+            z <- z + (shape - 1L)/adherence - rate
+        }
+    } else z <- numeric(0)
+    # prior on log-worth
+    if (!is.null(mu)){
+        a <- a - Kinv %*% (log(alpha) - mu)/alpha
+    }
+    c(a, b, z)
 }
 
 # omit following constants from log-likelihood/log-posterior:

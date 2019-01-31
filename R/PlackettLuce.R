@@ -652,6 +652,47 @@ PlackettLuce <- function(rankings,
     if (trace) message("iter ", iter, ", loglik: ", res$logl)
     if (conv[1L] == 1L) warning("Iterations have not converged.")
 
+    # tmp code computing vcov
+    obj_full <- function(par){
+        alpha <- exp(par[1L:N])
+        delta <- exp(par[((N + 1L):(N + D))[-D]])
+        adherence <- exp(par[-(1L:(N + D - 1L))])
+        # update adherence per ranking
+        a[1L:nr] <- adherence[ranker]
+        # assign to parent environment so can use further quantities in score
+        assign("fit", expectation("all", alpha, c(1.0, delta),
+                                  a, N, D, P, R, G, W),
+               envir = parent.env(environment()))
+        # update A
+        if (!length(adherence)){
+            A[item] <- unname(rowsum(S, item_id)[,1L])
+        } else {
+            A[item] <- unname(rowsum(adherence[ranker_id]*S, item_id)[,1L])
+        }
+        - logp_full(alpha, delta, adherence,
+                    normal$mu, Rinv, gamma$shape, gamma$rate, A, B, fit$theta)
+    }
+    gr_full <- function(par) {
+        alpha <- exp(par[1L:N])
+        delta <- exp(par[((N + 1L):(N + D))[-D]])
+        adherence <- exp(par[-(1L:(N + D - 1L))])
+        if (!is.null(gamma)){
+            norm <- normalization(alpha, c(1.0, delta),
+                                  adherence[ranker], D, P, R, G, W)
+            # update Z
+            Z <- unname(rowsum(S*log(alpha[item_id]), ranker_id)[,1L])
+        } else Z <- NULL
+        -score_full(alpha, delta, adherence, ranker,
+                    normal$mu, Rinv, gamma$shape, gamma$rate, A, B, Z,
+                    fit$expA, fit$expB, norm$score) *
+            c(alpha, delta, adherence)
+    }
+    # cannot compute hessian with our gradient function as it relies on
+    # objective function being called immediately prior (as in optimisaton)
+    #tmp <- optim(log(c(res$alpha, res$delta[-1], adherence)), obj_full, method = "BFGS", hessian = TRUE)
+    #H <- optimHess(log(c(res$alpha, res$delta[-1], adherence)), obj_full)
+    #sqrt(diag(solve(H[-1,-1])))
+
     res$delta <- structure(res$delta, names = paste0("tie", 1L:D))[-1L]
 
     if (npseudo > 0L) {
