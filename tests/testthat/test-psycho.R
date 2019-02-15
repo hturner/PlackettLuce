@@ -242,8 +242,14 @@ test_that('AIC.pltree works w/ single node [beans]',
           })
 
 test_that('pltree works w/ estimated adherence [beans]', {
-    # need to take account of estimation of adherence
     pl_tree <- pltree(G ~ season,
                       data = beans, alpha = 0.05,
                       gamma = list(shape = 10, rate = 10))
+    expect_known_value(pl_tree, file = "outputs/pltree_adherence_beans.rds")
+})
+
+test_that('pltree fails w/ fixed adherence [beans]', {
+    expect_error(pltree(G ~ season,
+                        data = beans, alpha = 0.05,
+                        adherence = seq(0.75, 1.25, length.out = length(G))))
 })

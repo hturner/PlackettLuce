@@ -49,20 +49,26 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
     if (x || offset)
         warning("unused argument(s): ",
                 paste(c("x"[x], "offset"[offset]), collapse = ","))
-    res <- PlackettLuce(y, start = start, weights = weights, ...)
-    if (object) {
-        # returning in order to compute final vcov etc, so can aggregate now
-        uniq <- !duplicated(attr(y, "id"))
-        g <- match(attr(y, "id"), attr(y, "id")[uniq])
-        res$rankings <- structure(res$rankings[uniq,],
-                                 class = "rankings")
-        res$weights <- tapply(res$weights, g, sum)
+    dots <- list(...)
+    if ("adherence" %in% names(dots) & !"gamma" %in% names(dots)){
+        stop("adherence can not be fixed in a Plackett-Luce tree")
     }
+    res <- PlackettLuce(y, start = start, weights = weights, ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res, ref = ref)
-        if (object) percomp <- percomp[g, , drop = FALSE]
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
     } else estfun <- NULL
+    if (object) {
+        # returning in order to compute final vcov etc, so can
+        # aggregate equal rankings now, across rankers
+        if (is.null(res$gamma)) {
+            uniq <- !duplicated(attr(y, "id"))
+            g <- match(attr(y, "id"), attr(y, "id")[uniq])
+            res$rankings <- structure(res$rankings[uniq,],
+                                      class = "rankings")
+            res$weights <- c(tapply(res$weights, g, sum))
+        }
+    }
     list(coefficients = coef(res, ref = ref),
          maxTied = res$maxTied,
          objfun = -res$loglik,
@@ -70,7 +76,7 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
          object = if (object) res else NULL)
 }
 
-# log-likelihood derivatives (score function)
+# log-likelihood derivatives (score function) per ranking
 #' @method estfun PlackettLuce
 #' @importFrom sandwich estfun
 #' @export
@@ -81,8 +87,10 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     N <- length(coef) - D + 1L
     alpha <- coef[1L:N]
     delta <- c(1.0, coef[-c(1L:N)])
-    # get choices and alternatives for each ranking
+    # get free choices and alternatives for each ranking
     choices <- choices(x$rankings, names = FALSE)
+    free <- lengths(choices$alternatives) != 1L
+    choices <- lapply(choices, `[`,  free)
     # derivative wrt to log alpha part 1: 1/(size of selected set)
     nr <- nrow(x$rankings)
     A <- matrix(0.0, nrow = nr, ncol = N,
@@ -100,7 +108,9 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
         B <- matrix(nrow = nr, ncol = D - 1L,
                     dimnames = list(NULL, names(delta[-1L])))
         for (d in 2L:D){
-            B[, d - 1L] <- apply(A == 1L/d, 1L, any)
+            if (!is.null(x$adherence)) {
+                B[, d - 1L] <- apply(A == x$adherence[x$ranker]/d, 1L, any)
+            } else B[, d - 1L] <- apply(A == 1L/d, 1L, any)
         }
     }
     # derivatives part 2: expectation of alpha | delta per set to choose from
@@ -108,7 +118,7 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     ord <- order(size)
     if (!is.null(x$adherence)){
         # don't group
-        a <- x$adherence[x$ranker]
+        a <- x$adherence[x$ranker][choices$ranking]
         unique_alternatives <- choices$alternatives
     } else {
         a <- NULL
@@ -122,14 +132,14 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
     P <- unique(na)
     res <- expectation(c("alpha", "delta"), alpha, delta,
-                       a, N, D, P, R, G)
+                       a, N, D, P, R, G, W = NULL)
 
     if (!is.null(x$adherence)){
-        h <- order(unlist(G[P]))
+        h <- seq_len(nrow(R))
     } else {
         h <- match(choices$alternatives, unique_alternatives)
     }
-    A <- A - rowsum(res$expA[h,], choices$ranking)
+    A <- (A - rowsum(res$expA[h,], choices$ranking)) * x$weights
     if (!is.null(ref) && ref %in% names(alpha)) {
         ref <- which(names(alpha) == ref)
     }
@@ -141,7 +151,7 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     # N.B. expectation of delta should include delta*, but cancelled out in
     # in iterative scaling so omitted!
     res$expB <- sweep(res$expB, 2L, delta[-1L], "*")
-    B <- B - rowsum(res$expB[h,], choices$ranking)
+    B <- (B - rowsum(res$expB[h,], choices$ranking)) * x$weights
     if (!is.null(ref)) {
         return(cbind(A[, -ref, drop = FALSE], B))
     } else return(cbind(A[, drop = FALSE], B))
