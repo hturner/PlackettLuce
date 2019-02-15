@@ -5,7 +5,9 @@
 #' @importFrom methods cbind2
 #' @importFrom utils combn
 #' @importFrom Matrix sparseMatrix
-poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
+poisson_rankings <- function(rankings, weights = NULL,
+                             coefs = NULL, adherence = NULL, ranker = NULL,
+                             gamma = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
     choices <- choices(rankings, names = FALSE)
@@ -16,7 +18,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
     if (!is.null(weights)) {
         choices$w <- weights[choices$ranking]
     } else choices$w <- rep.int(1L, length(choices$ranking))
-    if (aggregate) {
+    if (aggregate && is.null(adherence)) {
         # id unique choices
         unique_choices <- unique(choices$choices)
         g <- match(choices$choices, unique_choices)
@@ -78,6 +80,19 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
         B <- sparseMatrix(i = unlist(tied), p = c(0L, cumsum(lengths(tied))))
         X <- cbind2(A, B)
     } else X <- A
+    # update X matrix if extimating adherence (nonlinear model)
+    if (!is.null(adherence)){
+        a <- adherence[ranker][choices$ranking[z]]
+        X[, seq(N)] <- a * X[, seq(N)] # not tie columns
+        if (!is.null(coefs)) { # i.e. adherence is estimated vs fixed
+            lambda <- coefs[seq_len(N)]
+            # columns for adherence parameters
+            X2 <- sparseMatrix(i = seq_along(z),
+                               j = ranker[choices$ranking[z]],
+                               x = X[, seq_len(N)] %*% lambda)
+            X <- cbind(X, X2)
+        }
+    }
     # counts
     if (aggregate){
         alt <- match(choices$alternatives, unique_alternatives)

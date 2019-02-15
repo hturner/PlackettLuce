@@ -1,45 +1,78 @@
 #' @rdname  summaries
 #' @export
 #' @importFrom stats aggregate
-#' @importFrom MASS ginv
-#' @importFrom Matrix crossprod Diagonal
+#' @importFrom Matrix crossprod
 vcov.PlackettLuce <- function(object, ref = 1L, ...) {
-  ##  A temporary version until we can do it properly
-  ##
+  # don't use coef() here, want unconstrained for now
+  coefs  <- log(object$coefficients)
+  object_names <- names(coefs)
+  p <- length(coefs)
+  nobj <- p - object$maxTied + 1L
+  # so need to check reference
+  if (any(ref %in% object_names)) {
+      ref <- match(ref, object_names)
+  } else if (!all(ref %in% seq(p))){
+      stop("cannot match `ref` with items")
+  }
+  # get setup for equivalent poisson glm/gnm
   theLongData <- poisson_rankings(object$rankings, object$weights,
-                                  aggregate = FALSE)
-  coefs <- coef(object, ref = ref)
-  ncoefs <- length(coefs)
+                                  if (!is.null(object$gamma)) coefs,
+                                  object$adherence, object$ranker,
+                                  object$gamma, aggregate = FALSE)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
   w <- theLongData$w
-  ##  Compute the fitted values:
-  fit <- as.vector(exp(X %*% as.vector(coefs)))
+  #  Compute the fitted values:
+  fit <- as.vector(exp(X[, seq_len(p)] %*% as.vector(coefs)))
   totals <- as.vector(tapply(w * y, z, sum))
   fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
-  ##  Compute the vcov matrix
+  #  Compute the vcov matrix
+  ## XtWX for non-eliminated
   WX <- fit * X
   XtWX <- as.matrix(crossprod(X, WX))
+  ## covariance with eliminated (lower left of full XtWX)
   ZtWX <- rowsum(as.matrix(WX), z)
+  ## diag of (XtWX)^-1 for eliminated
   ZtWZinverse <- 1L/totals
-  ## Should we try to avoid ginv() ?
-  result <- ginv(XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX))
-  ##
-  ##  That's the basic computation all done, ie to get Moore-Penrose inverse of
-  ##  the information matrix.
-  ##
-  ##  The rest is all about presenting the result as the /actual/ vcov matrix
-  ##  for a specified set of contrasts (or equivalently a specified constraint
-  ##  on the parameters).
-  nobj <- ncoefs - object$maxTied + 1L
-  # ref already checked in coef method (with error if invalid)
-  ref <- attr(coefs, "ref")
-  # Can be done more economically?
-  theContrasts <- Diagonal(ncoefs)
-  theContrasts[ref, seq_len(nobj)] <-
-      theContrasts[ref,  seq_len(nobj)] - 1L/length(ref)
-  result <- crossprod(theContrasts, result) %*% theContrasts
-  rownames(result) <- colnames(result) <- names(coefs)
-  return(as.matrix(result))
+  ## (generalized) inverse of vcov for non-eliminated parameters
+  ## this is minus the expectation of the second derivs of the multinomial log-lik
+  ## i.e. fisher's info for the multinomial log-likelihood
+  Info <- XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX)
+  ## Add in components from any priors
+  if (!is.null(object$gamma)){
+      ## minus expectation of second derivs of (independent) gamma priors
+      ind <- (p + 1L):ncol(X)
+      Info[cbind(ind, ind)] <- Info[cbind(ind, ind)] +
+          object$gamma$rate * object$adherence *
+          rowsum(object$weights, object$ranker)[,1]
+  }
+  # create vcov of parameters of interest (worth, tie)
+  if (!is.null(object$normal)){
+      ## minus expectation of second derivs of multivariate normal prior
+      Info[seq_len(nobj), seq_len(nobj)] <- Info[seq_len(nobj), seq_len(nobj)] +
+          object$normal$invSigma
+      ## invert full matrix
+      result <- chol2inv(chol(Info))[seq(p), seq(p)]
+      dimnames(result) <- list(names(coef), names(coef))
+  } else {
+      ## drop a column and invert
+      ## if reference is a single item this is equivalent to taking generalised
+      ## inverse and then re-parameterising
+      id <- ifelse(length(ref) == 1L, ref, 1L)
+      result <- array(0.0, dim = c(p, p),
+                      dimnames = list(names(coefs), names(coefs)))
+      result[-id, -id] <-
+          chol2inv(chol(Info[-id, -id]))[seq(p - 1L), seq(p - 1L)]
+      ## so that's all the work done if the reference is a single item
+      if (length(ref) == 1) return(result)
+  }
+  # compute vcov for specified set of contrasts if necessary
+  ## equiv of D <- diag(p); D[ref, seq(nobj)] <- 1 - 1/n; t(D) %*% V %*% D
+  n <- length(ref)
+  r <- rowSums(result[, ref, drop = FALSE])
+  result[, seq(nobj)] <- result[, seq(nobj)] - r/n
+  r <- colSums(result[ref, , drop = FALSE])
+  result[seq(nobj), ] <- result[seq(nobj), ] - rep(r/n, each = nobj)
+  result
 }
