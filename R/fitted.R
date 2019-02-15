@@ -40,7 +40,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # compute numerators
     if (!is.null(object$adherence)){
         n <- lengths(choices$choices)
-        a <- rep(object$adherence, tabulate(choices$ranking))
+        a <- rep(object$adherence[object$ranker], tabulate(choices$ranking))
         numerator <- delta[n] *
             (vapply(unique_choices, function(x) prod(alpha[x]), 1.0))[g]^a/n
     } else {
