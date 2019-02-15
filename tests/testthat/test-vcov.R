@@ -88,9 +88,13 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
     gamma_prior <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
                                 gamma = list(shape = 100, rate = 100))
     # expectation of hessian is not equal to hessian for GNM, so vcov_hessian
-    # only gives and approximation - not that close for small sample
+    # only gives an approximation - not that close for small sample
     expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
                  check.attributes = FALSE, tol = 0.1)
+    # should be equal to low tolerance if base on observed Fisher Info though
+    expect_equal(vcov(gamma_prior, type = "observed"),
+                 vcov_hessian(gamma_prior),
+                 check.attributes = FALSE, tol = 1e-7)
     # more data - N.B. this assumes each ranker gives exactly same ranking,
     # not likely in practice just checking statistical property here
     # (vcov_hessian slow with large number of adherence par, not practical to
@@ -101,4 +105,7 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
     # closer with moderate number of samples
     expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
                  check.attributes = FALSE, tol = 1e-3)
+    expect_equal(vcov(gamma_prior, type = "observed"),
+                 vcov_hessian(gamma_prior),
+                 check.attributes = FALSE, tol = 1e-7)
 })

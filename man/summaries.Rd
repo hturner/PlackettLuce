@@ -12,7 +12,8 @@
 
 \method{summary}{PlackettLuce}(object, ref = 1L, ...)
 
-\method{vcov}{PlackettLuce}(object, ref = 1L, ...)
+\method{vcov}{PlackettLuce}(object, ref = 1L, type = c("expected",
+  "observed"), ...)
 }
 \arguments{
 \item{object}{an object of class "PlackettLuce" as returned by

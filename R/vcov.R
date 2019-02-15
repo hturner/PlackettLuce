@@ -2,7 +2,9 @@
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom Matrix crossprod
-vcov.PlackettLuce <- function(object, ref = 1L, ...) {
+vcov.PlackettLuce <- function(object, ref = 1L,
+                              type = c("expected", "observed"), ...) {
+  type <- match.arg(type)
   # don't use coef() here, want unconstrained for now
   coefs  <- log(object$coefficients)
   object_names <- names(coefs)
@@ -37,8 +39,19 @@ vcov.PlackettLuce <- function(object, ref = 1L, ...) {
   ZtWZinverse <- 1L/totals
   ## (generalized) inverse of vcov for non-eliminated parameters
   ## this is minus the expectation of the second derivs of the multinomial log-lik
-  ## i.e. fisher's info for the multinomial log-likelihood
+  ## i.e. (expected) Fisher info for the multinomial log-likelihood
   Info <- XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX)
+  ## for observed Fisher info, i.e. second derivs of the multinomial log-lik
+  ## add component from (y - mu)deta/(dbeta1 dbeta2) - only affects adherence
+  if (type == "observed" & !is.null(object$gamma)){
+      ## adjust variance of adherence
+      diag(Info[-(1L:p), -(1L:p)]) <- diag(Info[-(1L:p), -(1L:p)]) -
+          (w*y - fit) %*% X[, -(1L:p)]
+      ## adjust covariance with worth parameters
+      adj <- rowsum(as.matrix((w*y - fit) * X[, 1L:nobj]), theLongData$a)
+      Info[1L:nobj, -(1L:p)] <- Info[1L:nobj, -(1L:p)] - t(adj)
+      Info[-(1L:p), 1L:nobj] <- Info[-(1L:p), 1L:nobj] - adj
+  }
   ## Add in components from any priors
   if (!is.null(object$gamma)){
       ## minus expectation of second derivs of (independent) gamma priors

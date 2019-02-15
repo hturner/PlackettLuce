@@ -115,8 +115,13 @@ poisson_rankings <- function(rankings, weights = NULL,
         dat$X <- as.matrix(X)
         dat$z <- as.factor(z)
         dat$w <- w
+        if (!is.null(gamma)) dat$a <- as.factor(ranker[choices$ranking][z])
         dat
-    } else list(y = y, X = X, z = z, w = w)
+    } else {
+        res <- list(y = y, X = X, z = z, w = w)
+        if (!is.null(gamma)) res$a <- ranker[choices$ranking][z]
+        res
+    }
 }
 
 ## A quick way to generate arbitrary ranking data to experinment with
