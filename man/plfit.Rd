@@ -4,7 +4,7 @@
 \alias{plfit}
 \title{PlackettLuce Wrapper for Model-based Recursive Partitioning}
 \usage{
-plfit(y, x = NULL, ref = 1, start = NULL, weights = NULL,
+plfit(y, x = NULL, ref = 1L, start = NULL, weights = NULL,
   offset = NULL, ..., estfun = FALSE, object = FALSE)
 }
 \arguments{

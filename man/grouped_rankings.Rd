@@ -17,7 +17,7 @@ as.grouped_rankings(x, ...)
 
 \method{as.grouped_rankings}{paircomp}(x, ...)
 
-\method{format}{grouped_rankings}(x, max = 2, width = 20, ...)
+\method{format}{grouped_rankings}(x, max = 2L, width = 20L, ...)
 }
 \arguments{
 \item{rankings}{a \code{\link{rankings}} object or an object that can be

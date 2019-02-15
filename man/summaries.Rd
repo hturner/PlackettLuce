@@ -7,12 +7,12 @@
 \alias{vcov.PlackettLuce}
 \title{Plackett-Luce Model Summaries}
 \usage{
-\method{coef}{PlackettLuce}(object, ref = 1, log = TRUE,
+\method{coef}{PlackettLuce}(object, ref = 1L, log = TRUE,
   type = "all", ...)
 
-\method{summary}{PlackettLuce}(object, ref = 1, ...)
+\method{summary}{PlackettLuce}(object, ref = 1L, ...)
 
-\method{vcov}{PlackettLuce}(object, ref = 1, ...)
+\method{vcov}{PlackettLuce}(object, ref = 1L, ...)
 }
 \arguments{
 \item{object}{an object of class "PlackettLuce" as returned by
