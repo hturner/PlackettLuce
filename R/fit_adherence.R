@@ -8,22 +8,22 @@
 # contribution from tie in numerator: sum(B[-1]*log(delta))
 # contribution from normal prior: - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
 # normalising constant from gamma prior: shape*log(rate) - log(gamma(shape))
-loglik_adherence <- function(adherence, shape, rate, Z, fit) {
+loglik_adherence <- function(adherence, shape, rate, wa, Z, fit) {
     ## Z = sum(average log worth for each choice)
     res <- sum(adherence*Z) - sum(fit$norm)
     # prior on adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
+        res <- res + sum(wa*((shape - 1L)*log(adherence) - rate*adherence))
     }
     res
 }
 
 # derivatives of log-likelihood for adherence
-score_adherence <- function(adherence, ranker, shape, rate, Z, fit) {
+score_adherence <- function(adherence, ranker, shape, rate, wa, Z, fit) {
     res <- Z - rowsum(fit$score, ranker)
     # prior on adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1L)/adherence - rate
+        res <- res + wa*((shape - 1L)/adherence - rate)
     }
     res
 }
@@ -87,7 +87,7 @@ normalization <- function(alpha, # alpha par (worth)
                     v2 <- v1^(a[r]/k)
                     y1 <- y1 + delta[k]*v2*log(v1)/k
                     # add to denominators for sets
-                    z1 <- z1 + v2
+                    z1 <- z1 + delta[k]*v2
                 }
                 # update index
                 if (i[1L] == (p - 1L)) break

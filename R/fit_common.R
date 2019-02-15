@@ -6,7 +6,7 @@
 
 # full logposterior when estimating adherence (may not have prior on mu)
 logp_full <- function(alpha, delta, adherence,
-                      mu, Rinv, shape, rate, A, B, theta){
+                      mu, Rinv, shape, rate, wa, A, B, theta){
     res <- sum(B[-1L]*log(delta)) + sum(A*log(alpha))- sum(theta)
     # prior on mu
     if (!is.null(mu)){
@@ -15,20 +15,20 @@ logp_full <- function(alpha, delta, adherence,
     }
     # prior on adherence - always if estimating adherence
     if (!is.null(shape)){
-        res <- res + (shape - 1L)*sum(log(adherence)) - rate*sum(adherence)
+        res <- res + sum(wa*((shape - 1L)*log(adherence) - rate*adherence))
     }
     res
 }
 
 score_full <- function(alpha, delta, adherence, ranker,
-                       mu, Rinv, shape, rate, A, B, Z, expA, expB, score){
+                       mu, Kinv, shape, rate, wa, A, B, Z, expA, expB, score){
     a <- A/alpha - expA/alpha
     b <- B[-1L]/delta - expB
     if (length(adherence)){
-        z <- Z - rowsum(score, ranker)[,1]
+        z <- Z - rowsum(score, ranker)[, 1L]
         # prior on adherence
         if (!is.null(shape)){
-            z <- z + (shape - 1L)/adherence - rate
+            z <- z + wa*((shape - 1L)/adherence - rate)
         }
     } else z <- numeric(0)
     # prior on log-worth

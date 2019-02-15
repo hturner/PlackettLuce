@@ -83,9 +83,10 @@ test_that('estimated adherence works for grouped_rankings [fake triples]', {
 })
 
 test_that('estimated adherence works w/ npseudo != 0 [fake triples]', {
-    # not sure how to test, just checking it runs - compare with wide tolerance?
     mod1 <- PlackettLuce(rankings = R,
                          gamma = list(shape = 100, rate = 100))
+    expect_known_value(mod1,
+                       file = "outputs/pl_adherence_pseudo.rds")
 })
 
 data(beans, package = "PlackettLuce")
@@ -148,7 +149,7 @@ test_that('fixed adherence works for grouped_rankings [beans]', {
     expect_equal(mod1$adherence[mod1$ranker], mod2$adherence[mod2$ranker])
 })
 
-## The artificial example in ?PlackettLuce
+
 R <- matrix(c(1, 2, 0, 0,
               4, 1, 2, 3,
               2, 1, 1, 1,
@@ -157,25 +158,20 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
-test_that('standard errors as expected', {
-    # non-informative prior
-    m <- ncol(R)
-    n <- nrow(R)
-    mu <- rep(1, m)
-    sigma <- diag(1000000, m)
-    mod1 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
-                         normal = list(mu = mu, Sigma = sigma))
-    # informative prior
-    prior <- list(mu = c(-0.05, -0.05, -2, -3),
-                  Sigma = matrix(c(1, 0.5, 0.1, -0.5,
-                                   0.5, 1.1, 0.1, 0.1,
-                                   0.1, 0.1, 1.2, 0.2,
-                                   -0.5, 0.1, 0.2, 1.3), 4, 4, byrow = TRUE))
-    mod2 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
-                         normal = prior, weights = rep(50, 6))
-    # tight gamma prior
-    mod3 <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
-                         gamma = list(shape = 100, rate = 100))
-    #[1] 1.0700216 1.1745540 1.0940679 1.0741846 1.1373351 0.1006513 0.1012587 0.1005233 0.1005127
-    #[10] 0.1004962 0.1005911
+test_that('estimated adherence works for grouped_rankings [partial + ties]', {
+    w <- c(3, 2, 5, 4, 3, 7)
+    # replicates with exactly same adherence (does not converge)
+    mod1 <-  suppressWarnings(PlackettLuce(R, npseudo = 0, method = "BFGS",
+                                           weights = w,
+                                           gamma = list(shape = 10, rate = 10)))
+    # replicates grouped together by ranker
+    G <- grouped_rankings(R[rep(1:6, w),], index = rep(1:6, w))
+    mod2 <- suppressWarnings(PlackettLuce(rankings = G, npseudo = 0,
+                                          method = "BFGS",
+                                          gamma = list(shape = 10, rate = 10)))
+    # remove bits we expect to be different
+    nm <- setdiff(names(mod1), c("call", "rankings", "ranker", "weights"))
+    expect_equal(mod1[nm], mod2[nm])
 })
+
+
