@@ -3,7 +3,7 @@
 ## New Features
 
 * `PlackettLuce()` now supports MAP estimation with a multivariate normal prior on log-worths and/or a gamma prior on ranker adherence.
-* `PlackettLuce()` now returns likelihood for null model (where all outcomes, including ties are equally likely).
+* `PlackettLuce()` now returns log-likelihood and degrees of freedom for null model (where all outcomes, including ties, have equal probability).
 
 ## Changes in Behaviour
 

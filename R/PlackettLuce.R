@@ -683,11 +683,15 @@ PlackettLuce <- function(rankings,
 
     # recompute log-likelihood excluding pseudo-observations/priors
     if (npseudo > 0L | !is.null(normal) | !is.null(gamma)) {
+        if (!is.null(normal) & is.null(gamma)) {
+          # logp not yet assigned
+          logp <- res$logl 
+        }
         normal <- NULL
-        if (is.null(gamma)) logp <- res$logl
         logl <- -obj_common(log(cf))
     } else logl <- res$logl
-    # null log-likelihood
+    # null log-likelihood - set adherence to 1 if estimated
+    if (!is.null(gamma)) a <- rep.int(1L, length(a))
     null.loglik <- -obj_common(rep.int(0L, length(cf)))
 
     # frequencies of sets selected from, for sizes 2 to max observed
