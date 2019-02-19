@@ -18,65 +18,81 @@ vcov.PlackettLuce <- function(object, ref = 1L,
   }
   # get setup for equivalent poisson glm/gnm
   theLongData <- poisson_rankings(object$rankings, object$weights,
-                                  if (!is.null(object$gamma)) coefs,
                                   object$adherence, object$ranker,
                                   object$gamma, aggregate = FALSE)
   X <- theLongData$X
   z <- theLongData$z
   y <- theLongData$y
   w <- theLongData$w
+  if (!is.null(object$gamma)){
+      a <- theLongData$a
+      # non-zero values in X cols for log-adherence
+      A <-  as.vector(X[, seq(nobj)] %*% as.vector(coefs)[seq(nobj)])
+  }
   #  Compute the fitted values:
-  fit <- as.vector(exp(X[, seq_len(p)] %*% as.vector(coefs)))
+  fit <-  as.vector(exp(X %*% as.vector(coefs)))
   totals <- as.vector(tapply(w * y, z, sum))
   fit <- fit  *  as.vector(totals/tapply(fit, z, sum))[z]
   #  Compute the vcov matrix
-  ## XtWX for non-eliminated
+  ## XtWX for worth and tie parameters (and adherence)
   WX <- fit * X
   XtWX <- as.matrix(crossprod(X, WX))
-  ## covariance with eliminated (lower left of full XtWX)
-  ZtWX <- rowsum(as.matrix(WX), z)
+  if (!is.null(object$gamma)) AtWX <- rowsum(A*as.matrix(WX[, 1:p]), theLongData$a)
+  ## covariance of worth and tie with eliminated (and adherence) parameters
+  ZtWX <- rowsum(as.matrix(WX), z) # crossprod(sparse.model.matrix(~as.factor(z) - 1), WX))
+  if (!is.null(object$gamma)) ZtWA <- rowsum(fit*A, z)[, 1]
   ## diag of (XtWX)^-1 for eliminated
   ZtWZinverse <- 1L/totals
-  ## (generalized) inverse of vcov for non-eliminated parameters
+  ## diag of XtWX for adherence
+  if (!is.null(object$gamma)) AtWA <- rowsum(fit*A^2, theLongData$a)[,1]
+  ## components of (generalized) inverse of vcov for worth, tie and adherence
   ## this is minus the expectation of the second derivs of the multinomial log-lik
   ## i.e. (expected) Fisher info for the multinomial log-likelihood
-  Info <- XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX)
+  ### top-left: rows/cols for worth and tie
+  InfoTL <- XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX)
+  if (!is.null(object$gamma)){
+      ### bottom-left: cross derivs adherence and worth/tie
+      InfoBL <- AtWX - rowsum(ZtWX * ZtWA * ZtWZinverse, a[!duplicated(z)])
+      ### diagonal of bottom-right: rows/cols for adherence
+      diagInfoBR <- AtWA - rowsum(ZtWA^2 * ZtWZinverse, a[!duplicated(z)])[,1]
+  }
   ## for observed Fisher info, i.e. second derivs of the multinomial log-lik
-  ## add component from (y - mu)deta/(dbeta1 dbeta2) - only affects adherence
+  ## add component from (y - mu)*deta/(dbeta1 dbeta2) - only affects adherence
   if (type == "observed" & !is.null(object$gamma)){
       ## adjust variance of adherence
-      diag(Info[-(1L:p), -(1L:p)]) <- diag(Info[-(1L:p), -(1L:p)]) -
-          (w*y - fit) %*% X[, -(1L:p)]
+      diagInfoBR <- diagInfoBR - rowsum((w*y - fit)*A, a)[,1]
       ## adjust covariance with worth parameters
-      adj <- rowsum(as.matrix((w*y - fit) * X[, 1L:nobj]), theLongData$a)
-      Info[1L:nobj, -(1L:p)] <- Info[1L:nobj, -(1L:p)] - t(adj)
-      Info[-(1L:p), 1L:nobj] <- Info[-(1L:p), 1L:nobj] - adj
+      adj <- rowsum(as.matrix((w*y - fit) * X[, seq_len(nobj)]), a)
+      InfoBL[, seq_len(nobj)] <- InfoBL[, seq_len(nobj)] - adj
   }
-  ## Add in components from any priors
+  ## Add in component from gamma prior
   if (!is.null(object$gamma)){
       ## minus expectation of second derivs of (independent) gamma priors
-      ind <- (p + 1L):ncol(X)
-      Info[cbind(ind, ind)] <- Info[cbind(ind, ind)] +
-          object$gamma$rate * object$adherence *
+      diagInfoBR <- diagInfoBR + object$gamma$rate * object$adherence *
           rowsum(object$weights, object$ranker)[,1]
   }
   # create vcov of parameters of interest (worth, tie)
   if (!is.null(object$normal)){
       ## minus expectation of second derivs of multivariate normal prior
-      Info[seq_len(nobj), seq_len(nobj)] <- Info[seq_len(nobj), seq_len(nobj)] +
-          object$normal$invSigma
-      ## invert full matrix
-      result <- chol2inv(chol(Info))[seq(p), seq(p)]
+      InfoTL[seq_len(nobj), seq_len(nobj)] <-
+          InfoTL[seq_len(nobj), seq_len(nobj)] + object$normal$invSigma
+      ## get vcov for worth and tie only
+      if (!is.null(object$gamma)){
+          result <- chol2inv(chol(InfoTL - crossprod(InfoBL/sqrt(diagInfoBR))))
+      } else result <- chol2inv(chol(InfoTL))
       dimnames(result) <- list(names(coef), names(coef))
   } else {
-      ## drop a column and invert
+      ## drop a column and get vcov for worth and tie only
       ## if reference is a single item this is equivalent to taking generalised
       ## inverse and then re-parameterising
       id <- ifelse(length(ref) == 1L, ref, 1L)
       result <- array(0.0, dim = c(p, p),
                       dimnames = list(names(coefs), names(coefs)))
-      result[-id, -id] <-
-          chol2inv(chol(Info[-id, -id]))[seq(p - 1L), seq(p - 1L)]
+      if (!is.null(object$gamma)){
+          result[-id, -id] <-
+              chol2inv(chol(InfoTL[-id, -id] -
+                                crossprod((InfoBL/sqrt(diagInfoBR))[, -id])))
+      } else result[-id, -id] <- chol2inv(chol(InfoTL[-id, -id]))
       ## so that's all the work done if the reference is a single item
       if (length(ref) == 1) return(result)
   }

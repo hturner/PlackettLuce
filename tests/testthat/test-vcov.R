@@ -109,3 +109,34 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
                  vcov_hessian(gamma_prior),
                  check.attributes = FALSE, tol = 1e-7)
 })
+
+test_that("vcov.PlackettLuce works w/ grouped rankings [normal + gamma prior]", {
+    # informative prior
+    prior <- list(mu = c(-0.05, -0.05, -2, -3),
+                  Sigma = matrix(c(1, 0.5, 0.1, -0.5,
+                                   0.5, 1.1, 0.1, 0.1,
+                                   0.1, 0.1, 1.2, 0.2,
+                                   -0.5, 0.1, 0.2, 1.3), 4, 4, byrow = TRUE))
+    # use grouped rankings so no. of rankings != no.of adherence par
+    G <- grouped_rankings(R, index = c(1, 2, 3, 3, 4, 4))
+    both_priors <- PlackettLuce(rankings = G, npseudo = 0, method = "BFGS",
+                                normal = prior,
+                                gamma = list(shape = 100, rate = 100))
+    # small sample so vcov based on expected info not that close to observed
+    expect_equal(vcov(both_priors), vcov_hessian(both_priors),
+                 check.attributes = FALSE, tol = 1e-2)
+    # but that based on observed info equals numerical hessian to medium tol
+    expect_equal(vcov(both_priors, type = "observed"),
+                 vcov_hessian(both_priors),
+                 check.attributes = FALSE, tol = 1e-7)
+    # gamma prior only (different method for Info inversion)
+    gamma_prior <- PlackettLuce(rankings = G, npseudo = 0, method = "BFGS",
+                                gamma = list(shape = 100, rate = 100))
+    # small sample so vcov based on expected info not that close to observed
+    expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
+                 check.attributes = FALSE, tol = 1e-1)
+    # but that based on observed info equals numerical hessian to medium tol
+    expect_equal(vcov(gamma_prior, type = "observed"),
+                 vcov_hessian(gamma_prior),
+                 check.attributes = FALSE, tol = 1e-6)
+})

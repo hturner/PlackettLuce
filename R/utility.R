@@ -6,7 +6,7 @@
 #' @importFrom utils combn
 #' @importFrom Matrix sparseMatrix
 poisson_rankings <- function(rankings, weights = NULL,
-                             coefs = NULL, adherence = NULL, ranker = NULL,
+                             adherence = NULL, ranker = NULL,
                              gamma = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
@@ -84,14 +84,6 @@ poisson_rankings <- function(rankings, weights = NULL,
     if (!is.null(adherence)){
         a <- adherence[ranker][choices$ranking[z]]
         X[, seq(N)] <- a * X[, seq(N)] # not tie columns
-        if (!is.null(coefs)) { # i.e. adherence is estimated vs fixed
-            lambda <- coefs[seq_len(N)]
-            # columns for adherence parameters
-            X2 <- sparseMatrix(i = seq_along(z),
-                               j = ranker[choices$ranking[z]],
-                               x = X[, seq_len(N)] %*% lambda)
-            X <- cbind(X, X2)
-        }
     }
     # counts
     if (aggregate){

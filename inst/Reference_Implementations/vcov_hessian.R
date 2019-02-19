@@ -161,9 +161,9 @@ vcov_hessian <- function(object){
         V[-1L, -1L] <- solve(H[-1,-1])[seq_len(p - 1L), seq_len(p - 1L)]
     } else {
         V <- solve(H)
-        M <- diag(p)
+        M <- diag(nrow(V))
         M[1L:N, 1L] <- M[1L:N, 1L] - 1L
-        V <- M %*% V %*% t(M)
+        V <- (M %*% V %*% t(M))[seq_len(p), seq_len(p)]
     }
     V
 }
