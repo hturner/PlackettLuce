@@ -4,7 +4,7 @@
 \alias{qvcalc.PlackettLuce}
 \title{Quasi Variances for Model Coefficients}
 \usage{
-\method{qvcalc}{PlackettLuce}(object, ref = 1, ...)
+\method{qvcalc}{PlackettLuce}(object, ref = 1L, ...)
 }
 \arguments{
 \item{object}{a \code{"PlackettLuce"} object as returned by

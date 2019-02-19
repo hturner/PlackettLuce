@@ -150,7 +150,7 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
                       lapply(ids, FUN = function(n, ...){
                           # compute coef as returned from original fit
                           info <- info_node(object[[n]]$node)
-                          n <- length(info$coefficients) - info$maxTied + 1
+                          n <- length(info$coefficients) - info$maxTied + 1L
                           info$coefficients <- exp(info$coefficients)
                           id <- seq_len(n)
                           info$coefficients[id] <-
@@ -177,7 +177,11 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 itempar.pltree <- function (object, ...){
     # so unexported itempar.bttree is used from psychotree
     requireNamespace("psychotree")
-    NextMethod()
+    res <- NextMethod()
+    if (is.vector(res)){
+        return(matrix(res, nrow = 1L, dimnames = list("1", names(res))))
+    }
+    res
 }
 
 #' @rdname pltree
@@ -222,7 +226,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
         return(NextMethod(object, ...))
     }
     # create model.frame from newdata
-    response <- as.character(formula(object)[[2]])
+    response <- as.character(formula(object)[[2L]])
     if (!response %in% colnames(newdata))
         stop("`newdata` must include response")
     f <- formula(object)
@@ -239,7 +243,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     dots <- object$info$dots
     G <- model.response(newdata)
     w <- model.weights(newdata)
-    if (is.null(w)) w <- rep.int(1, length(G))
+    if (is.null(w)) w <- rep.int(1L, length(G))
     LL <- df <- numeric(length(nodes))
     for (i in seq_along(nodes)){
         # fit model with coef fixed to get logLik
@@ -258,7 +262,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     }
     # compute AIC based on total log likelihood of data
     # and df of original model fit
-    -2*sum(LL) + 2*attr(logLik(object), "df")
+    -2L*sum(LL) + 2L*attr(logLik(object), "df")
 }
 
 #' @rdname fitted.PlackettLuce
@@ -276,7 +280,7 @@ fitted.pltree <- function(object, aggregate = TRUE, free = TRUE, ...)  {
                       fitted.PlackettLuce)
     }
     # combine fitted from each node
-    n <- vapply(fit, function(x) length(x[[1]]), 1)
+    n <- vapply(fit, function(x) length(x[[1L]]), 1.0)
     fit <- do.call(Map, c(c, fit))
     fit$node <- rep.int(ids, n)
     fit

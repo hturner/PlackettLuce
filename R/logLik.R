@@ -7,5 +7,5 @@ logLik.PlackettLuce <- function(object, ...){
 
 #' @export
 deviance.PlackettLuce <- function(object, ...){
-    -2*object$loglik
+    -2L*object$loglik
 }

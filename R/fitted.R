@@ -26,42 +26,61 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
     choices <- choices(object$rankings, names = FALSE)
     # get parameters
-    id <- seq(length(object$coefficients) - object$maxTied + 1)
+    id <- seq(length(object$coefficients) - object$maxTied + 1L)
     alpha <- object$coefficients[id]
-    delta <- c(1, unname(object$coefficients[-id]))
+    delta <- c(1.0, unname(object$coefficients[-id]))
     # if free = TRUE, ignore forced choice (choice of 1)
     if (free) {
-        free <- lengths(choices$alternatives) != 1
+        free <- lengths(choices$alternatives) != 1L
         choices <- lapply(choices, `[`,  free)
     }
     # id unique choices
     unique_choices <- unique(choices$choices)
     g <- match(choices$choices, unique_choices)
     # compute numerators
-    n <- lengths(unique_choices)
-    numerator <- (delta[n] *
-        vapply(unique_choices, function(x) prod(alpha[x]), 1)^(1/n))[g]
+    if (!is.null(object$adherence)){
+        n <- lengths(choices$choices)
+        a <- rep(object$adherence[object$ranker], tabulate(choices$ranking))
+        numerator <- delta[n] *
+            (vapply(unique_choices, function(x) prod(alpha[x]), 1.0))[g]^a/n
+    } else {
+        n <- lengths(unique_choices)
+        a <- NULL
+        numerator <- (delta[n] *
+            vapply(unique_choices, function(x) prod(alpha[x]), 1.0)^(1L/n))[g]
+    }
     # id unique alternatives
     size <- lengths(choices$alternatives)
     ord <- order(size)
-    unique_alternatives <- unique(choices$alternatives[ord])
+    if (!is.null(object$adherence)){
+        # don't group
+        unique_alternatives <- choices$alternatives
+    } else unique_alternatives <- unique(choices$alternatives[ord])
     # for now work theta out - could perhaps save in object
     na <- lengths(unique_alternatives)
-    R <- matrix(0, nrow = length(na), ncol = max(na))
+    R <- matrix(0L, nrow = length(na), ncol = max(na))
     R[cbind(rep(seq_along(unique_alternatives), na),
             sequence(na))] <- unlist(unique_alternatives)
     G <- seq_along(unique_alternatives)
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
-    S <- setdiff(unique(na), 1)
+    S <- setdiff(unique(na), 1L)
     D <- object$maxTied
     N <- ncol(object$rankings)
-    theta <- expectation("theta", alpha, delta, N, D, S, R, G)$theta
-    denominator <- numeric(length(numerator))
-    h <- match(choices$alternatives, unique_alternatives)
-    denominator <- theta[h]
+    theta <- expectation("theta", alpha, delta, a, N, D, S, R, G)$theta
+    if (!is.null(object$adherence)){
+        denominator <- theta[order(unlist(G[S]))]
+    } else {
+        denominator <- numeric(length(numerator))
+        h <- match(choices$alternatives, unique_alternatives)
+        denominator <- theta[h]
+    }
     choices$fitted <- numerator/denominator
     choices$n <- as.integer(object$weights[unlist(choices$ranking)])
     if (aggregate){
+        if (!is.null(object$adherence)) {
+            warning("`aggregate` ignored when `object$adherence` is not `NULL`")
+            return(choices)
+        }
         g <- paste(g, h, sep = ":")
         g <- match(g, unique(g))
         choices$ranking <- split(choices$ranking, g)

@@ -23,7 +23,7 @@ as.rankings(x, input = c("ranking", "ordering"), labels = NULL,
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
-\method{format}{rankings}(x, width = 40, ...)
+\method{format}{rankings}(x, width = 40L, ...)
 
 \method{rbind}{rankings}(..., labels = NULL)
 }

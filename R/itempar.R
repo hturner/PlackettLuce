@@ -44,7 +44,7 @@
 #' @export
 itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
                                  log = FALSE, ...){
-    item <- seq_len(length(object$coefficients) - object$maxTied + 1)
+    item <- seq_len(length(object$coefficients) - object$maxTied + 1L)
     coefs <- log(object$coefficients[item])
     object_names <- names(coefs)
     n <- length(coefs)
@@ -66,7 +66,7 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
     if (log){
         # based on contrasts
         D <- diag(length(id))
-        D[, ref] <- D[, ref] - 1/length(ref)
+        D[, ref] <- D[, ref] - 1L/length(ref)
         coefs[id] <- as.vector(D %*% coefs[id])
     } else {
         # constrained so sum of ref = 1
@@ -87,10 +87,10 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
             nonref <- setdiff(seq_along(id), ref)
             if (length(nonref)){
                 D[, nonref] <- 0
-                D[cbind(nonref, nonref)] <- 1/denom
+                D[cbind(nonref, nonref)] <- 1L/denom
             }
             D[, ref] <- -alpha/denom^2
-            D[cbind(ref, ref)] <- 1/denom + D[cbind(ref, ref)]
+            D[cbind(ref, ref)] <- 1L/denom + D[cbind(ref, ref)]
             # vcov of scaled exp coefs
             V <- D %*% V %*% t(D)
         }
@@ -98,8 +98,8 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
     }
     # remove aliased parameter if required
     if (!alias) {
-        alias <- ref[1]
-        names(alias) <- names(coefs)[id[ref[1]]]
+        alias <- ref[1L]
+        names(alias) <- names(coefs)[id[ref[1L]]]
         coefs <- coefs[-alias]
         if (vcov) V <- V[-alias, -alias]
     }

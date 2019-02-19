@@ -4,10 +4,11 @@
 \alias{PlackettLuce}
 \title{Fit a Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, npseudo = 0.5, weights = NULL, start = NULL,
+PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
+  adherence = NULL, weights = NULL, start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 0.1, maxit = 500, trace = FALSE, verbose = TRUE,
-  ...)
+  steffensen = 0.1, maxit = c(500, 10), trace = FALSE,
+  verbose = TRUE, ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -16,9 +17,27 @@ coerced by \code{as.rankings}.}
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
 
+\item{normal}{a optional list with elements named `mu` and `Sigma`
+specifying the mean and covariance matrix of a multivariate normal prior on
+the _log_ worths.}
+
+\item{gamma}{a optional list with elements named `shape` and `rate`
+specifying parameters of a Gamma prior on adherence parameters for each
+ranker (use `grouped_rankings` to group multiple rankings by ranker). If
+`NULL`, adherence is fixed to `adherence` for all rankers.}
+
+\item{adherence}{an optional vector of adherence values for each ranker. If
+missing, adherence is fixed to 1 for all rankers. If `gamma != NULL` this is
+taken as the starting values for the adherence.}
+
 \item{weights}{an optional vector of weights for each ranking.}
 
-\item{start}{starting values for the worth parameters and the tie parameters: either the result of a call to \code{coef.PlackettLuce}, or a vector of parameters on the raw scale, as in the \code{coefficients} element of a \code{"PlackettLuce"} object.}
+\item{start}{starting values for the worth parameters and the tie parameters
+on the raw scale (worth parameters need not be scaled to sum to 1). If
+`prior` is specified, `exp(prior$mu)` is used starting values for the worth
+parameters. Coefficients from a previous fit can be passed as the result of
+a call to  \code{coef.PlackettLuce}, or the \code{coefficients} element of a
+\code{"PlackettLuce"} object.}
 
 \item{method}{the method to be used for fitting: \code{"iterative scaling"} (default: iterative scaling to sequentially update the parameter values), \code{"BFGS"} (the BFGS optimisation algorithm through the \code{\link{optim}} interface), \code{"L-BFGS"} (the limited-memory BFGS optimisation algorithm as implemented in the \code{\link[lbfgs]{lbfgs}} package).}
 
@@ -50,6 +69,7 @@ alternatives including ties have equal probability). }
 \item{df.residual}{ The residual degrees of freedom. }
 \item{df.null}{ The residual degrees of freedom for the null model. }
 \item{rank}{ The rank of the model. }
+\item{logposterior}{ If a prior was specified, the maximised log posterior.}
 \item{iter}{ The number of iterations run. }
 \item{rankings}{ The rankings passed to \code{rankings}, converted to a
 \code{"rankings"} object if necessary. }
@@ -127,6 +147,22 @@ infinity the log-worth estimates all shrink towards 0. The default,
 \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 shrinkage effect. Thus even for networks that are already connected, adding
 pseudo-rankings reduces both the bias and variance of the estimates.
+}
+
+\section{Incorporating prior information}{
+
+
+Prior information can be incorporated by using `prior` to specify a
+multivariate normal prior on the log-worths. The log-worths are then
+estimated by maximum apriori estimation. Model summaries (deviance, AIC,
+standard errors) are based on the log-likelihood evaluated at the MAP
+estimates, resulting in a finite sample bias that should disappear as
+the number of rankings increases. Inference based on these model summaries
+is valid as long as the prior is considered fixed and not tuned as part of
+the model.
+
+Incorporating a prior is an alternative method of penalization, therefore
+`npseudo` is set to zero when a prior is specified.
 }
 
 \section{Controlling the fit}{

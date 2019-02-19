@@ -35,8 +35,11 @@ mod <- PlackettLuce(R, npseudo = 0.5)
 mod2 <- PlackettLuce(R, start = coef(mod, log = FALSE), npseudo = 0.5)
 mod3 <- PlackettLuce(R, start = coef(mod), npseudo = 0.5)
 mod4 <- PlackettLuce(R, start = unclass(coef(mod, log = FALSE)), npseudo = 0.5)
-mod5 <- PlackettLuce(R, start = unclass(coef(mod, log = FALSE)), npseudo = 0.5,
-                     maxit = 0)
+# suppress warning that iterations have not converged
+mod5 <- suppressWarnings(PlackettLuce(R,
+                                      start = unclass(coef(mod, log = FALSE)),
+                                      npseudo = 0.5,
+                                      maxit = 0))
 
 test_that("starting at solution returns same solution [npseudo = 0.5]",
           {

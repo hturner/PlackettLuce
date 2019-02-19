@@ -1,6 +1,17 @@
 # PlackettLuce 0.2-3.9000
 
-* Return log-likelihood and degrees of freedom of null model (where all alternatives including ties have equal probability).
+## New Features
+
+* `PlackettLuce()` now supports MAP estimation with a multivariate normal prior on log-worths and/or a gamma prior on ranker adherence.
+* `PlackettLuce()` now returns log-likelihood and degrees of freedom for null model (where all outcomes, including ties, have equal probability).
+
+## Changes in Behaviour
+
+* `itempar.PlackettLuce()` now always returns a matrix, even for a single node tree.
+
+## Bug Fixes
+
+* `pltree()` or `PlackettLuce()` with grouped rankings now work correctly with weights.
 
 # PlackettLuce 0.2-3
 

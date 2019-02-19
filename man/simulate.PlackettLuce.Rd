@@ -4,7 +4,7 @@
 \alias{simulate.PlackettLuce}
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
-\method{simulate}{PlackettLuce}(object, nsim = 1, seed = NULL,
+\method{simulate}{PlackettLuce}(object, nsim = 1L, seed = NULL,
   multinomial = FALSE, max_combinations = 20000, ...)
 }
 \arguments{

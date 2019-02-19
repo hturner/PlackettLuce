@@ -40,7 +40,7 @@ choices <- function(rankings, names = FALSE) {
     # treat as matrix for faster indexing
     rankings <- unclass(rankings)
     N <- ncol(rankings)
-    J <- apply(rankings, 1, max)
+    J <- apply(rankings, 1L, max)
     onames <- colnames(rankings)
     opt <- seq_len(N)
     if (names & !is.null(onames)) {
@@ -50,14 +50,14 @@ choices <- function(rankings, names = FALSE) {
     ranking <- c()
     for (j in seq_len(max(J))) {
         ## j-th choices
-        cho <- apply((rankings == j)[J >= j, , drop = FALSE], 1,
+        cho <- apply((rankings == j)[J >= j, , drop = FALSE], 1L,
                      function(z) opt[z])
         if (is.matrix(cho)) {
             cho <- unname(split(cho, col(cho)))
         }
         choices <- c(choices, cho)
         ## j-th alternatives
-        alt <- apply((rankings > j - 1)[J >= j, , drop = FALSE], 1,
+        alt <- apply((rankings > j - 1L)[J >= j, , drop = FALSE], 1L,
                      function(z) opt[z])
         if (is.matrix(alt)) {
             alt <- unname(split(alt, col(alt)))

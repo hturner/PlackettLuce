@@ -75,11 +75,11 @@
 #' plot(qv)
 #' @importFrom stats vcov
 #' @export
-qvcalc.PlackettLuce <- function(object, ref = 1, ...) {
+qvcalc.PlackettLuce <- function(object, ref = 1L, ...) {
   coefs <- coef(object, ref = ref)
   vc <- vcov(object, ref = ref)
-  nobj <- length(coefs) - object$maxTied + 1
-  qvcalc(vc[1:nobj, 1:nobj], estimates = coefs[1:nobj],
+  nobj <- length(coefs) - object$maxTied + 1L
+  qvcalc(vc[1L:nobj, 1L:nobj], estimates = coefs[1L:nobj],
          modelcall = object$call)
 }
 

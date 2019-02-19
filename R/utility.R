@@ -5,18 +5,20 @@
 #' @importFrom methods cbind2
 #' @importFrom utils combn
 #' @importFrom Matrix sparseMatrix
-poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
+poisson_rankings <- function(rankings, weights = NULL,
+                             adherence = NULL, ranker = NULL,
+                             gamma = NULL, aggregate = TRUE,
                              as.data.frame = FALSE){
     # get choices and alternatives for each ranking
     choices <- choices(rankings, names = FALSE)
     # include free choices only
     size <- lengths(choices$alternatives)
-    free <- size != 1
+    free <- size != 1L
     choices <- lapply(choices, `[`,  free)
     if (!is.null(weights)) {
         choices$w <- weights[choices$ranking]
-    } else choices$w <- rep.int(1, length(choices$ranking))
-    if (aggregate) {
+    } else choices$w <- rep.int(1L, length(choices$ranking))
+    if (aggregate && is.null(adherence)) {
         # id unique choices
         unique_choices <- unique(choices$choices)
         g <- match(choices$choices, unique_choices)
@@ -34,7 +36,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
         choices$w <- as.numeric(rowsum(choices$w[keep], g[keep]))
         size <- lengths(unique_alternatives)
     } else {
-        choices$n <- 1
+        choices$n <- 1L
         size <- lengths(choices$alternatives)
     }
 
@@ -51,7 +53,7 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
             comb[[d]] <- combn(seq_len(s), d)
         }
         id <- which(size == s)
-        n[id] <- list(rep(seq_len(x), vapply(comb, ncol, 1)))
+        n[id] <- list(rep(seq_len(x), vapply(comb, ncol, 1.0)))
         if (aggregate){
             items[id] <- lapply(unique_alternatives[id], `[`, unlist(comb))
         } else items[id] <- lapply(choices$alternatives[id], `[`, unlist(comb))
@@ -64,20 +66,25 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
     } else z <- rep(seq_along(choices$alternatives), lengths(n))
     # columns for item parameters
     size <- unlist(n)
-    A <- sparseMatrix(j = unlist(items), p = c(0, cumsum(size)),
-                      x = rep(1/size, size))
+    A <- sparseMatrix(j = unlist(items), p = c(0L, cumsum(size)),
+                      x = rep(1L/size, size))
     ord <- order(A@i)
     all_choices <- split(unlist(items), A@i[ord])
     # columns for tie parameters
-    if (D > 1){
+    if (D > 1L){
         nr <- nrow(rankings)
         tied <- list()
-        for (d in seq_len(D - 1)){
-            tied[[d]] <- which(size == (d + 1))
+        for (d in seq_len(D - 1L)){
+            tied[[d]] <- which(size == (d + 1L))
         }
-        B <- sparseMatrix(i = unlist(tied), p = c(0, cumsum(lengths(tied))))
+        B <- sparseMatrix(i = unlist(tied), p = c(0L, cumsum(lengths(tied))))
         X <- cbind2(A, B)
     } else X <- A
+    # update X matrix if extimating adherence (nonlinear model)
+    if (!is.null(adherence)){
+        a <- adherence[ranker][choices$ranking[z]]
+        X[, seq(N)] <- a * X[, seq(N)] # not tie columns
+    }
     # counts
     if (aggregate){
         alt <- match(choices$alternatives, unique_alternatives)
@@ -100,16 +107,21 @@ poisson_rankings <- function(rankings, weights = NULL, aggregate = TRUE,
         dat$X <- as.matrix(X)
         dat$z <- as.factor(z)
         dat$w <- w
+        if (!is.null(gamma)) dat$a <- as.factor(ranker[choices$ranking][z])
         dat
-    } else list(y = y, X = X, z = z, w = w)
+    } else {
+        res <- list(y = y, X = X, z = z, w = w)
+        if (!is.null(gamma)) res$a <- ranker[choices$ranking][z]
+        res
+    }
 }
 
 ## A quick way to generate arbitrary ranking data to experinment with
 ## The larger tie is the lower the chance of a tie is
 #' @importFrom stats runif
-generate_rankings <- function(maxi, n_rankings = 10, tie = 5, seed = NULL) {
+generate_rankings <- function(maxi, n_rankings = 10L, tie = 5L, seed = NULL) {
     if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
-        runif(1)
+        runif(1L)
     if (is.null(seed))
         RNGstate <- get(".Random.seed", envir = .GlobalEnv)
     else {
@@ -120,14 +132,14 @@ generate_rankings <- function(maxi, n_rankings = 10, tie = 5, seed = NULL) {
     }
     mat <- replicate(n_rankings, {
         s <- sample(maxi, maxi)
-        m <- sample(maxi, 1)
+        m <- sample(maxi, 1L)
         s <- s[s <= m]
         v <- numeric(maxi)
         v[sample(maxi, min(m, maxi))] <- s
-        v0 <- v==0
+        v0 <- v == 0L
         if (length(v0))
-            v[v0] <- sample(0:max(s), sum(v0), replace = TRUE,
-                            prob = c(tie, rep(1/max(s), max(s))))
+            v[v0] <- sample(0L:max(s), sum(v0), replace = TRUE,
+                            prob = c(tie, rep(1L/max(s), max(s))))
         v
     })
     as.rankings(t(mat))
