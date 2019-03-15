@@ -1,7 +1,7 @@
 
 # PlackettLuce
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
 [![Travis-CI Build
 Status](https://travis-ci.org/hturner/PlackettLuce.svg?branch=master)](https://travis-ci.org/hturner/PlackettLuce)
 [![AppVeyor Build
@@ -62,7 +62,7 @@ devtools::install_github("hturner/PlackettLuce")
 
 ## Usage
 
-The [Netflix Prize](http://www.netflixprize.com/) was a competition
+The [Netflix Prize](https://www.netflixprize.com/) was a competition
 devised by Netflix to improve the accuracy of its recommendation system.
 To facilitate this they released ratings about movies from the users of
 the system that have been transformed to preference data and are
@@ -175,15 +175,15 @@ summary(mod)
     ## Coefficients:
     ##                        Estimate Std. Error z value Pr(>|z|)    
     ## Mean Girls              0.00000         NA      NA       NA    
-    ## Beverly Hills Cop       0.67080    0.06099  10.999  < 2e-16 ***
-    ## The Mummy Returns      -0.31404    0.06465  -4.857 1.19e-06 ***
-    ## Mission: Impossible II -0.43128    0.06508  -6.627 3.42e-11 ***
+    ## Beverly Hills Cop       0.67080    0.07472   8.978  < 2e-16 ***
+    ## The Mummy Returns      -0.31404    0.07593  -4.136 3.53e-05 ***
+    ## Mission: Impossible II -0.43128    0.07489  -5.759 8.47e-09 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual deviance:  3493.5  on  3525  degrees of freedom
+    ## Residual deviance:  3493.5 on 3525 degrees of freedom
     ## AIC:  3499.5 
-    ## Number of iterations: 5
+    ## Number of iterations: 7
 
 In this way, Mean Girls is treated as the reference movie, the positive
 parameter for Beverly Hills Cop shows this was more popular among the
@@ -237,7 +237,7 @@ Analysis*. New York: Wiley.
 <div id="ref-Plackett1975">
 
 Plackett, Robert L. 1975. “The Analysis of Permutations.” *Appl.
-Statist* 24 (2):193–202. <https://doi.org/10.2307/2346567>.
+Statist* 24 (2): 193–202. <https://doi.org/10.2307/2346567>.
 
 </div>
 
