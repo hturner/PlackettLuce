@@ -17,6 +17,7 @@ install:
 
 environment:
   BIOC_USE_DEVEL: "FALSE"
+  USE_RTOOLS: "TRUE"
 
 build_script:
   - travis-tool.sh install_bioc_deps
