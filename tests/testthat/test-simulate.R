@@ -1,5 +1,11 @@
 context("implementation [simulate.PlackettLuce]")
 
+## Get the legacy implementation
+source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
+                    full.names = TRUE)
+
+## N.B. fitted0 requires tibble but unused in tests
+for (file0 in source_files) source(file0)
 
 R <- matrix(c(1, 2, 0, 0,
               4, 1, 2, 3,
@@ -9,7 +15,7 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 mod <- PlackettLuce(R)
-simulate(mod, 5)
+
 s1 <- simulate(mod, 5, seed = 112)
 s2 <- simulate(mod, 4, seed = 112)
 
@@ -19,28 +25,31 @@ test_that("the seed argument is respected in [simulate.PlackettLuce]", {
 
 
 ## A small simulation study
-R <- PlackettLuce:::generate_rankings(maxi = 5, n_rankings = 100, tie = 0,
-                                      seed = 123)
-mod1 <- PlackettLuce(R)
-samples <- simulate(mod1, 100, seed = 123)
-fits <- lapply(samples, PlackettLuce, npseudo = 0.5)
-coefs <- vapply(fits, function(fit) {
-    cc <- coef(fit)
-    if (length(cc) < 9)
-        c(cc, rep(0, 9 - length(cc)))
-    else
-        cc
-}, numeric(length(coef(mod1))))
+## repeat simulation for legacy implementation too, to make sure comparable on
+## test machine (robust to changes in RNG)
+if (require("Matrix")){
+    R <- PlackettLuce:::generate_rankings(maxi = 5, n_rankings = 100, tie = 0,
+                                          seed = 123)
+    sim <- function(mod){
+        samples <- simulate.PlackettLuce(mod, 100, seed = 123)
+        fits <- lapply(samples, PlackettLuce, npseudo = 0.5)
+        coefs <- vapply(fits, function(fit) {
+            cc <- coef(fit)
+            if (length(cc) < 9)
+                c(cc, rep(0, 9 - length(cc)))
+            else
+                cc
+        }, numeric(length(coef(mod))))
+        unname(unclass(rowMeans(coefs) - coef(mod)))
+    }
 
-## As computed from the first implementation
-test_biases <- c(0.000000000, -0.014515877, -0.022463593, 0.010276173,
-                 -0.063401876, -0.030184771, -0.065134349, -0.003526264,
-                 -0.022166709)
+    result_biases <- sim(PlackettLuce(R, npseudo = 0))
+    result_biases0 <- sim(PlackettLuce0(R))
 
-test_that("simulation results are consistent to first version", {
-    result_biases <- unname(unclass(rowMeans(coefs) - coef(mod1)))
-    expect_equivalent(result_biases, test_biases, tolerance = 1e-06)
-})
+    test_that("simulation results are consistent to first version", {
+        expect_equivalent(result_biases, result_biases0, tolerance = 1e-06)
+    })
+}
 
 ## par(mfrow = c(3, 3))
 ## for (j in 1:9) { hist(coefs[j,], main = paste(j)); abline(v = coef(mod1)[j]) }
