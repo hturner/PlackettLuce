@@ -10,7 +10,13 @@ init:
 install:
   ps: Bootstrap
 
+cache:
+  - C:\RLibrary
+
 # Adapt as necessary starting from here
+
+environment:
+  BIOC_USE_DEVEL=false
 
 build_script:
   - travis-tool.sh install_bioc_deps
