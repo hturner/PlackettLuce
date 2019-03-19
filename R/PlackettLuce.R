@@ -107,6 +107,11 @@
 #' to near-zero adherence; as \eqn{\theta}{theta} increases the density becomes
 #' more concentrated (and more symmetrical) about 1.
 #'
+#' Since the number of adherence parameters will typically be large and it is
+#' assumed the worth and tie parameters are of primary interest, the adherence
+#' parameters are not included in model summaries, by are included in the
+#' returned object.
+#'
 #' @section Controlling the fit:
 #'
 #' For models without priors, using \code{nspseudo = 0} will use standard
@@ -165,7 +170,7 @@
 #' specifying the mean and covariance matrix of a multivariate normal prior on
 #' the \emph{log} worths.
 #' @param gamma a optional list with elements named \code{shape} and \code{rate}
-#' specifying parameters of a Gamma prior on adherence parameters for each
+#' specifying parameters of a gamma prior on adherence parameters for each
 #' ranker (use \code{grouped_rankings} to group multiple rankings by ranker).
 #' The short-cut \code{TRUE} may be used to specify a Gamma(10, 10) prior. If
 #' \code{NULL} (or \code{FALSE}), adherence is fixed to \code{adherence} for
@@ -216,10 +221,16 @@
 #' \item{df.null}{ The residual degrees of freedom for the null model. }
 #' \item{rank}{ The rank of the model. }
 #' \item{logposterior}{ If a prior was specified, the maximised log posterior.}
+#' \item{gamma}{ If a gamma prior was specified, the list of parameters. }
+#' \item{normal}{ If a normal prior was specified, the list of parameters. }
 #' \item{iter}{ The number of iterations run. }
 #' \item{rankings}{ The rankings passed to \code{rankings}, converted to a
 #' \code{"rankings"} object if necessary. }
 #' \item{weights}{ The weights applied to each ranking in the fitting. }
+#' \item{adherence}{ The fixed or estimated adherence per ranker. }
+#' \item{ranker}{ The ranker index mapping rankings to rankers (the
+#' \code{"index"} attribute of \code{rankings} if specified as a
+#' \code{"grouped_rankings"} object.)}
 #' \item{maxTied}{ The maximum number of objects observed in a tie. }
 #' \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
 #' \code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
@@ -761,7 +772,6 @@ PlackettLuce <- function(rankings,
                 logposterior = logp,
                 gamma = gamma,
                 normal = normal_prior,
-                obj = res$obj,
                 iter = iter,
                 rankings = rankings,
                 weights = weights,
