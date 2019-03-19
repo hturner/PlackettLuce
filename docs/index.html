@@ -17,10 +17,14 @@
     to accommodate ties of any order in the ranking. Partial rankings, in which 
     only a subset of items are ranked in each ranking, are also accommodated in
     the implementation. Disconnected/weakly connected networks implied by the 
-    rankings are handled by adding pseudo-rankings with a hypothetical item. 
-    Methods are provided to estimate standard errors or quasi-standard errors 
-    for inference as well as to fit Plackett-Luce trees. See the package website
-    or vignette for full details.">
+    rankings may be handled by adding pseudo-rankings with a hypothetical item. 
+    Optionally, a multivariate normal prior may be set on the log-worth 
+    parameters and ranker reliabilities may be incorporated as proposed by 
+    Raman and Joachims (2014) &lt;doi:10.1145/2623330.2623654&gt;. Maximum a 
+    posteriori estimation is used when priors are set. Methods are provided to 
+    estimate standard errors or quasi-standard errors for inference as well as 
+    to fit Plackett-Luce trees. See the package website or vignette for further 
+    details.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -82,21 +86,14 @@
       
       </header><div class="row">
   <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1></h1>
-            
-      
-      
-      <div class="hidden name"><code></code></div>
-
-    </div>
+    
 
     
     
 <div id="plackettluce" class="section level1">
-<h1 class="hasAnchor">
-<a href="#plackettluce" class="anchor"></a>PlackettLuce</h1>
-<p><a href="https://cran.r-project.org/package=PlackettLuce"><img src="https://www.r-pkg.org/badges/version/PlackettLuce" alt="CRAN_Status_Badge"></a> <a href="https://travis-ci.org/hturner/PlackettLuce"><img src="https://travis-ci.org/hturner/PlackettLuce.svg?branch=master" alt="Travis-CI Build Status"></a> <a href="https://ci.appveyor.com/project/hturner/PlackettLuce"><img src="https://ci.appveyor.com/api/projects/status/github/hturner/PlackettLuce?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a> <a href="https://codecov.io/github/hturner/PlackettLuce?branch=master"><img src="https://img.shields.io/codecov/c/github/hturner/PlackettLuce/master.svg" alt="Coverage Status"></a></p>
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#plackettluce" class="anchor"></a>PlackettLuce</h1></div>
+
 <p>Package website: <a href="https://hturner.github.io/PlackettLuce/" class="uri">https://hturner.github.io/PlackettLuce/</a>.</p>
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
@@ -109,7 +106,7 @@
 <li>Accommodates sub-rankings, e.g. pears <span class="math inline">\(\succ\)</span> apples, when the full set of items is {apples, bananas, oranges, pears}.</li>
 <li>Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.</li>
 </ul>
-<p><img src="man/figures/always-loses-1.png" width="336"></p>
+<p><img src="reference/figures/always-loses-1.png" width="336"></p>
 <p>In addition the package provides methods for</p>
 <ul>
 <li>Obtaining quasi-standard errors, that don’t depend on the constraints applied to the worth parameters for identifiability.</li>
@@ -190,7 +187,7 @@
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)</a>
 <a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(qv, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</a></code></pre></div>
-<p><img src="man/figures/qv-1.png" width="864"></p>
+<p><img src="reference/figures/qv-1.png" width="864"></p>
 <p>If the intervals overlap there is no significant difference. So we can see that Beverly Hills Cop is significantly more popular than the other three movies, Mean Girls is significant more popular than The Mummy Returns or Mission: Impossible II, but there was no significant difference in users’ preference for these last two movies.</p>
 </div>
 <div id="going-further" class="section level2">
@@ -245,7 +242,16 @@
 </ul>
 </div>
 
-      </div>
+      <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=PlackettLuce"><img src="https://www.r-pkg.org/badges/version/PlackettLuce" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://travis-ci.org/hturner/PlackettLuce"><img src="https://travis-ci.org/hturner/PlackettLuce.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://ci.appveyor.com/project/hturner/PlackettLuce"><img src="https://ci.appveyor.com/api/projects/status/github/hturner/PlackettLuce?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
+<li><a href="https://codecov.io/github/hturner/PlackettLuce?branch=master"><img src="https://img.shields.io/codecov/c/github/hturner/PlackettLuce/master.svg" alt="Coverage Status"></a></li>
+</ul>
+</div>
+</div>
 
 </div>
 

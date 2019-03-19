@@ -203,6 +203,10 @@ the judge making the ranking, or conditions under which the ranking is made.
 The response should be a <code><a href='grouped_rankings.html'>grouped_rankings</a></code> object that groups
 rankings with common covariate values. This may be included in a data frame
 alongside the covariates.</p>
+<p>Most arguments of <code>PlackettLuce</code> can be passed on by <code>pltree</code>.
+However, Plackett-Luce tree with fixed adherence are not implemented.
+Arguably it makes more sense to estimate adherence or reliability within
+the nodes of the Plackett-Luce tree.</p>
 <p>Various methods are provided for <code>"pltree"</code> objects, most of them
 inherited from <code>"modelparty"</code> objects (e.g. <code>print</code>,
 <code>summary</code>), or <code>"bttree"</code> objects (<code>plot</code>). <code>itempar</code>
@@ -210,8 +214,8 @@ extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using <code><a href='itempar.PlackettLuce.html'>itempar.PlackettLuce</a></code>. The plot
 method employs the <code><a href='https://www.rdocumentation.org/packages/psychotree/topics/node_btplot'>node_btplot</a></code>
 panel-generating function. <code>AIC</code> computes
-\(-2L + 2df\) where \(L\) is the joint likelihood of
-the observed rankings under the tree model and \(df\) is the degrees of
+\(-2L + 2\text{df}\) where \(L\) is the joint likelihood of
+the observed rankings under the tree model and \(\text{df}\) is the degrees of
 freedom used to fit the tree model.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

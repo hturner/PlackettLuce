@@ -24,7 +24,7 @@ specifying the mean and covariance matrix of a multivariate normal prior on
 the \emph{log} worths.}
 
 \item{gamma}{a optional list with elements named \code{shape} and \code{rate}
-specifying parameters of a Gamma prior on adherence parameters for each
+specifying parameters of a gamma prior on adherence parameters for each
 ranker (use \code{grouped_rankings} to group multiple rankings by ranker).
 The short-cut \code{TRUE} may be used to specify a Gamma(10, 10) prior. If
 \code{NULL} (or \code{FALSE}), adherence is fixed to \code{adherence} for
@@ -86,13 +86,19 @@ alternatives including ties have equal probability). }
 \item{df.null}{ The residual degrees of freedom for the null model. }
 \item{rank}{ The rank of the model. }
 \item{logposterior}{ If a prior was specified, the maximised log posterior.}
+\item{gamma}{ If a gamma prior was specified, the list of parameters. }
+\item{normal}{ If a normal prior was specified, the list of parameters. }
 \item{iter}{ The number of iterations run. }
 \item{rankings}{ The rankings passed to \code{rankings}, converted to a
 \code{"rankings"} object if necessary. }
 \item{weights}{ The weights applied to each ranking in the fitting. }
+\item{adherence}{ The fixed or estimated adherence per ranker. }
+\item{ranker}{ The ranker index mapping rankings to rankers (the
+\code{"index"} attribute of \code{rankings} if specified as a
+\code{"grouped_rankings"} object.)}
 \item{maxTied}{ The maximum number of objects observed in a tie. }
 \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
-\code{maxit} iterations without convergence; 2 if Steffensen acceleration
+\code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
 cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 for other reason.}
 }
@@ -185,12 +191,12 @@ Incorporating a prior is an alternative method of penalization, therefore
 
 
 When rankings come from different rankers, the model can be extended to
-allow for varying reliability of the rankers. In particular, replacing
-\eqn{f(S)} by
+allow for varying reliability of the rankers, as proposed by Raman and
+Joachims (2014). In particular, replacing \eqn{f(S)} by
 \deqn{h(S) = \delta_{|S|}
       \left(\prod_{i \in S} \alpha_i \right)^\frac{\eta_g}{|S|}}{
       h(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(eta_g/|S|)}
-where \eqn{\eta_g \gt 0}{eta_g > 0} is the adherence parameter for ranker \eqn{g}. In
+where \eqn{\eta_g > 0}{eta_g > 0} is the adherence parameter for ranker \eqn{g}. In
 the standard model, all rankers are assumed to have equal reliability, so
 \eqn{\eta_g = 1}{eta_g = 1} for all rankers. Higher \eqn{\eta_g = 1}{eta_g = 1}
 increases the distance between item worths, giving greater weight
@@ -210,6 +216,11 @@ and \code{rate}. Setting scale and rate to a common value \eqn{\theta}{theta}
 specifies a mean of 1; \eqn{\theta \ge}{theta >=} 2 will give low prior probability
 to near-zero adherence; as \eqn{\theta}{theta} increases the density becomes
 more concentrated (and more symmetrical) about 1.
+
+Since the number of adherence parameters will typically be large and it is
+assumed the worth and tie parameters are of primary interest, the adherence
+parameters are not included in model summaries, by are included in the
+returned object.
 }
 
 \section{Controlling the fit}{
@@ -261,6 +272,10 @@ colnames(R) <- c("apple", "banana", "orange", "pear")
 
 mod <- PlackettLuce(R)
 coef(mod)
+}
+\references{
+Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.
+\href{https://arxiv.org/abs/1404.3656}{arXiv:1404.3656}.
 }
 \seealso{
 Handling rankings: \code{\link{rankings}}, \code{choices}, \code{adjacency},

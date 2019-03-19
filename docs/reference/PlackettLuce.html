@@ -154,7 +154,7 @@ the <em>log</em> worths.</p></td>
     <tr>
       <th>gamma</th>
       <td><p>a optional list with elements named <code>shape</code> and <code>rate</code>
-specifying parameters of a Gamma prior on adherence parameters for each
+specifying parameters of a gamma prior on adherence parameters for each
 ranker (use <code>grouped_rankings</code> to group multiple rankings by ranker).
 The short-cut <code>TRUE</code> may be used to specify a Gamma(10, 10) prior. If
 <code>NULL</code> (or <code>FALSE</code>), adherence is fixed to <code>adherence</code> for
@@ -239,13 +239,19 @@ alternatives including ties have equal probability).</p></dd>
 <dt>df.null</dt><dd><p>The residual degrees of freedom for the null model.</p></dd>
 <dt>rank</dt><dd><p>The rank of the model.</p></dd>
 <dt>logposterior</dt><dd><p>If a prior was specified, the maximised log posterior.</p></dd>
+<dt>gamma</dt><dd><p>If a gamma prior was specified, the list of parameters.</p></dd>
+<dt>normal</dt><dd><p>If a normal prior was specified, the list of parameters.</p></dd>
 <dt>iter</dt><dd><p>The number of iterations run.</p></dd>
 <dt>rankings</dt><dd><p>The rankings passed to <code>rankings</code>, converted to a
 <code>"rankings"</code> object if necessary.</p></dd>
 <dt>weights</dt><dd><p>The weights applied to each ranking in the fitting.</p></dd>
+<dt>adherence</dt><dd><p>The fixed or estimated adherence per ranker.</p></dd>
+<dt>ranker</dt><dd><p>The ranker index mapping rankings to rankers (the
+<code>"index"</code> attribute of <code>rankings</code> if specified as a
+<code>"grouped_rankings"</code> object.)</p></dd>
 <dt>maxTied</dt><dd><p>The maximum number of objects observed in a tie.</p></dd>
 <dt>conv</dt><dd><p>The convergence code: 0 for successful convergence; 1 if reached
-<code>maxit</code> iterations without convergence; 2 if Steffensen acceleration
+<code>maxit</code> (outer) iterations without convergence; 2 if Steffensen acceleration
 cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 for other reason.</p></dd>
 
@@ -322,11 +328,11 @@ the model.</p>
 
     
     <p>When rankings come from different rankers, the model can be extended to
-allow for varying reliability of the rankers. In particular, replacing
-\(f(S)\) by
+allow for varying reliability of the rankers, as proposed by Raman and
+Joachims (2014). In particular, replacing \(f(S)\) by
 $$h(S) = \delta_{|S|}
       \left(\prod_{i \in S} \alpha_i \right)^\frac{\eta_g}{|S|}$$
-where \(\eta_g \gt 0\) is the adherence parameter for ranker \(g\). In
+where \(\eta_g &gt; 0\) is the adherence parameter for ranker \(g\). In
 the standard model, all rankers are assumed to have equal reliability, so
 \(\eta_g = 1\) for all rankers. Higher \(\eta_g = 1\)
 increases the distance between item worths, giving greater weight
@@ -345,6 +351,10 @@ and <code>rate</code>. Setting scale and rate to a common value \(\theta\)
 specifies a mean of 1; \(\theta \ge\) 2 will give low prior probability
 to near-zero adherence; as \(\theta\) increases the density becomes
 more concentrated (and more symmetrical) about 1.</p>
+<p>Since the number of adherence parameters will typically be large and it is
+assumed the worth and tie parameters are of primary interest, the adherence
+parameters are not included in model summaries, by are included in the
+returned object.</p>
     
     <h2 class="hasAnchor" id="controlling-the-fit"><a class="anchor" href="#controlling-the-fit"></a>Controlling the fit</h2>
 
@@ -374,6 +384,11 @@ therefore can be quicker than the default method. Control parameters can be
 passed on to <code><a href='https://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> or <code><a href='https://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>.</p>
 <p>For models with priors, the iterative scaling method cannot be used, so BFGS
 is used by default.</p>
+    
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.
+<a href='https://arxiv.org/abs/1404.3656'>arXiv:1404.3656</a>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -421,6 +436,8 @@ is used by default.</p>
       <li><a href="#incorporating-ranker-adherence-parameters">Incorporating ranker adherence parameters</a></li>
 
       <li><a href="#controlling-the-fit">Controlling the fit</a></li>
+
+      <li><a href="#references">References</a></li>
 
       <li><a href="#see-also">See also</a></li>
       

@@ -140,24 +140,26 @@ matrix for a model fitted by <code>PlackettLuce</code>.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>an object of class "PlackettLuce" as returned by
+      <td><p>An object of class "PlackettLuce" as returned by
 <code>PlackettLuce</code>.</p></td>
     </tr>
     <tr>
       <th>ref</th>
-      <td><p>an integer or character string specifying the reference item (for
+      <td><p>An integer or character string specifying the reference item (for
 which log worth will be set to zero). If <code>NULL</code> the sum of the log worth
 parameters is set to zero.</p></td>
     </tr>
     <tr>
       <th>log</th>
-      <td><p>a logical indicating whether to return parameters on the log scale
+      <td><p>A logical indicating whether to return parameters on the log scale
 with the item specified by <code>ref</code> set to zero.</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the type of coefficients to return: one of <code>"ties"</code>,
-<code>"worth"</code> or <code>"all"</code>.</p></td>
+      <td><p>For <code>coef</code>, the type of coefficients to return: one of
+<code>"ties"</code>, <code>"worth"</code> or <code>"all"</code>. For <code>vcov</code>, the type of
+Fisher information to base the estimation on: either <code>"expected"</code> or
+<code>"observed"</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -172,6 +174,21 @@ inference. If <code>log = FALSE</code>, the worth parameters are returned,
 constrained to sum to one so that they represent the probability that
 the corresponding item comes first in a ranking of all items, given that
 first place is not tied.</p>
+<p>The variance-covariance matrix is returned for the worth and tie parameters
+on the log scale, with the reference as specified by <code>ref</code>. For models
+estimated by maximum likelihood, the variance-covariance is the inverse of
+the Fisher information of the log-likelihood.</p>
+<p>For models with a normal or gamma prior, the variance-covariance is based on
+the Fisher information of the log-posterior. When adherence parameters have
+been estimated, the log-posterior is not linear in the parameters. In this
+case there is a difference between the expected and observed Fisher
+information. By default, <code>vcov</code> will return the variance-covariance
+based on the expected information, but <code>type</code> gives to option to use
+the observed information instead. For large samples, the difference between
+these options should be small. Note that the estimation of the adherence
+parameters is accounted for in the computation of the variance-covariance
+matrix, but only the sub-matrix corresponding to the worth and tie
+parameters is estimated.</p>
     
 
   </div>

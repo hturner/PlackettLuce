@@ -13,7 +13,7 @@ model.}
 
 \item{x}{unused.}
 
-\item{ref}{an integer or character string specifying the reference item (for
+\item{ref}{An integer or character string specifying the reference item (for
 which log worth will be set to zero). If \code{NULL} the sum of the log worth
 parameters is set to zero.}
 
