@@ -10,6 +10,11 @@
 #' rankings with common covariate values. This may be included in a data frame
 #' alongside the covariates.
 #'
+#' Most arguments of \code{PlackettLuce} can be passed on by \code{pltree}.
+#' However, Plackett-Luce tree with fixed adherence are not implemented.
+#' Arguably it makes more sense to estimate adherence or reliability within
+#' the nodes of the Plackett-Luce tree.
+#'
 #' Various methods are provided for \code{"pltree"} objects, most of them
 #' inherited from \code{"modelparty"} objects (e.g. \code{print},
 #' \code{summary}), or \code{"bttree"} objects (\code{plot}). \code{itempar}
@@ -17,8 +22,8 @@
 #' each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 #' method employs the \code{\link[psychotree]{node_btplot}}
 #' panel-generating function. \code{AIC} computes
-#' \eqn{-2L + 2df}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
-#' the observed rankings under the tree model and \eqn{df} is the degrees of
+#' \eqn{-2L + 2\text{df}}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
+#' the observed rankings under the tree model and \eqn{\text{df}}{df} is the degrees of
 #' freedom used to fit the tree model.
 #'
 #' @param formula a symbolic description of the model to be fitted, of the form
