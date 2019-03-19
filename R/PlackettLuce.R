@@ -81,12 +81,12 @@
 #' @section Incorporating ranker adherence parameters:
 #'
 #' When rankings come from different rankers, the model can be extended to
-#' allow for varying reliability of the rankers. In particular, replacing
-#' \eqn{f(S)} by
+#' allow for varying reliability of the rankers, as proposed by Raman and
+#' Joachims (2014). In particular, replacing \eqn{f(S)} by
 #' \deqn{h(S) = \delta_{|S|}
 #'       \left(\prod_{i \in S} \alpha_i \right)^\frac{\eta_g}{|S|}}{
 #'       h(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(eta_g/|S|)}
-#' where \eqn{\eta_g \gt 0}{eta_g > 0} is the adherence parameter for ranker \eqn{g}. In
+#' where \eqn{\eta_g > 0}{eta_g > 0} is the adherence parameter for ranker \eqn{g}. In
 #' the standard model, all rankers are assumed to have equal reliability, so
 #' \eqn{\eta_g = 1}{eta_g = 1} for all rankers. Higher \eqn{\eta_g = 1}{eta_g = 1}
 #' increases the distance between item worths, giving greater weight
@@ -225,7 +225,9 @@
 #' \code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
 #' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 #' for other reason.}
-#'
+#' @references
+#' Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.
+#' \href{https://arxiv.org/abs/1404.3656}{arXiv:1404.3656}.
 #' @examples
 #' # Six partial rankings of four objects, 1 is top rank, e.g
 #' # first ranking: item 1, item 2

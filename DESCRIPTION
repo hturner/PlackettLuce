@@ -19,10 +19,14 @@ Description: Functions to prepare rankings data and fit the Plackett-Luce model
     to accommodate ties of any order in the ranking. Partial rankings, in which 
     only a subset of items are ranked in each ranking, are also accommodated in
     the implementation. Disconnected/weakly connected networks implied by the 
-    rankings are handled by adding pseudo-rankings with a hypothetical item. 
-    Methods are provided to estimate standard errors or quasi-standard errors 
-    for inference as well as to fit Plackett-Luce trees. See the package website
-    or vignette for full details.
+    rankings may be handled by adding pseudo-rankings with a hypothetical item. 
+    Optionally, a multivariate normal prior may be set on the log-worth 
+    parameters and ranker reliabilities may be incorporated as proposed by 
+    Raman and Joachims (2014) <doi:10.1145/2623330.2623654>. Maximum a 
+    posteriori estimation is used when priors are set. Methods are provided to 
+    estimate standard errors or quasi-standard errors for inference as well as 
+    to fit Plackett-Luce trees. See the package website or vignette for further 
+    details.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
