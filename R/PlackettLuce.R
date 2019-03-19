@@ -222,7 +222,7 @@
 #' \item{weights}{ The weights applied to each ranking in the fitting. }
 #' \item{maxTied}{ The maximum number of objects observed in a tie. }
 #' \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
-#' \code{maxit} iterations without convergence; 2 if Steffensen acceleration
+#' \code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
 #' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 #' for other reason.}
 #'
@@ -576,7 +576,6 @@ PlackettLuce <- function(rankings,
         if (!is.null(gamma)){
             mode(maxit) <- "integer"
             if (length(maxit) != 2L) maxit <- c(maxit, 10L)
-            conv1 <- conv2 <- rep.int(NA_integer_, maxit[2L] + 1L)
         }
         repeat{
             # fit model with fixed adherence (a)
@@ -588,7 +587,6 @@ PlackettLuce <- function(rankings,
                 alpha <- exp(res$par[1L:N])
                 delta <- c(1.0, exp(res$par[-(1L:N)]))
                 Z <- unname(rowsum(S*log(alpha[item_id]), ranker_id)[,1L])
-                conv1[i + 1L] <- res$convergence
                 if (i > 0L) logp_old <- logp
                 # log-posterior after worth update
                 logp <- -res$value + sum(wa*((gamma$shape - 1L)*log(adherence) -
@@ -603,7 +601,6 @@ PlackettLuce <- function(rankings,
                 # fit model with fixed worth/tie parameters
                 # ignore rankings involving ghost item (adherence fixed to 1)
                 res2 <- opt(log(adherence), obj_adherence, gr_adherence, ...)
-                conv2[i + 1L] <- res2$convergence
 
                 # update adherence & sufficient statistics for alpha (real items)
                 adherence <- exp(res2$par)
@@ -616,7 +613,6 @@ PlackettLuce <- function(rankings,
             }
         }
         if (!is.null(gamma)){
-            conv <- c(conv, conv1, conv2)
             iter <- i
         } else {
             conv <- res$convergence
