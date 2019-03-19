@@ -18,28 +18,28 @@ model_fruits2 <- PlackettLuce(rankings = R[-5,],
 
 test_that("output of print.PlackettLuce is correct", {
     expect_known_output(print(model_fruits1),
-                        file = "outputs/print.rds")
+                        file = test_path("outputs/print.rds"))
 })
 
 test_that("output of print.coef.PlackettLuce is correct", {
     expect_known_output(print(coef(model_fruits1)),
-                        file = "outputs/print.coef.rds")
+                        file = test_path("outputs/print.coef.rds"))
 })
 
 test_that("output of print.summary.PlackettLuce is correct", {
     expect_known_output(print(summary(model_fruits1)),
-                        file = "outputs/print.summary.rds")
+                        file = test_path("outputs/print.summary.rds"))
 })
 
 test_that("output of fitted.PlackettLuce is correct", {
     expect_known_value(fitted(model_fruits1),
-                       file = "outputs/fitted.rds",
+                       file = test_path("outputs/fitted.rds"),
                        tol = tol)
     expect_known_value(fitted(model_fruits1, aggregate = FALSE),
-                       file = "outputs/fitted_individual.rds",
+                       file = test_path("outputs/fitted_individual.rds"),
                        tol = tol)
     expect_known_value(fitted(model_fruits1, free = FALSE),
-                       file = "outputs/fitted_all.rds",
+                       file = test_path("outputs/fitted_all.rds"),
                        tol = tol)
 })
 
