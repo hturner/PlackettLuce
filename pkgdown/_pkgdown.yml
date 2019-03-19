@@ -22,3 +22,6 @@ reference:
   - fitted.PlackettLuce
   - itempar.PlackettLuce
   - qvcalc.PlackettLuce
+- title: Other
+  contents:
+  - simulate.PlackettLuce

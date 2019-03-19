@@ -38,8 +38,8 @@
 #'
 #' @references
 #'
-#' Diaconis (1988). _Group Representations in Probability and
-#' Statistics_. Institute of Mathematical Statistics Lecture Notes
+#' Diaconis (1988). \emph{Group Representations in Probability and
+#' Statistics}. Institute of Mathematical Statistics Lecture Notes
 #' 11. Hayward, CA.
 #'
 #' @examples

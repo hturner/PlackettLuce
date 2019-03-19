@@ -89,6 +89,20 @@ test_that('estimated adherence works w/ npseudo != 0 [fake triples]', {
                        file = "outputs/pl_adherence_pseudo.rds")
 })
 
+test_that('default prior for adherence works [fake triples]', {
+    mod1 <- PlackettLuce(rankings = R,
+                         gamma = list(shape = 10, rate = 10))
+    mod2 <- PlackettLuce(rankings = R, gamma = TRUE)
+    # remove bits we expect to be different
+    nm <- setdiff(names(mod1), c("call"))
+    expect_equal(mod1[nm], mod2[nm])
+})
+
+test_that('check on prior for adherence works [fake triples]', {
+    expect_warning(mod1 <- PlackettLuce(rankings = R,
+                                        gamma = list(shape = 100, rate = 10)))
+})
+
 data(beans, package = "PlackettLuce")
 # Add middle ranked variety
 beans <- within(beans, {

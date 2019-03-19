@@ -136,7 +136,9 @@
     <tr>
       <th>rankings</th>
       <td><p>a <code>"<a href='rankings.html'>rankings</a>"</code> object, or an object that can be
-coerced by <code>as.rankings</code>.</p></td>
+coerced by <code>as.rankings</code>. A <code>"<a href='grouped_rankings.html'>grouped_rankings</a>"</code> object
+should be used when estimating adherence for rankers
+with multiple rankings per ranker.</p></td>
     </tr>
     <tr>
       <th>npseudo</th>
@@ -145,22 +147,24 @@ between each object and a hypothetical reference object.</p></td>
     </tr>
     <tr>
       <th>normal</th>
-      <td><p>a optional list with elements named `mu` and `Sigma`
+      <td><p>a optional list with elements named <code>mu</code> and <code>Sigma</code>
 specifying the mean and covariance matrix of a multivariate normal prior on
-the _log_ worths.</p></td>
+the <em>log</em> worths.</p></td>
     </tr>
     <tr>
       <th>gamma</th>
-      <td><p>a optional list with elements named `shape` and `rate`
+      <td><p>a optional list with elements named <code>shape</code> and <code>rate</code>
 specifying parameters of a Gamma prior on adherence parameters for each
-ranker (use `grouped_rankings` to group multiple rankings by ranker). If
-`NULL`, adherence is fixed to `adherence` for all rankers.</p></td>
+ranker (use <code>grouped_rankings</code> to group multiple rankings by ranker).
+The short-cut <code>TRUE</code> may be used to specify a Gamma(10, 10) prior. If
+<code>NULL</code> (or <code>FALSE</code>), adherence is fixed to <code>adherence</code> for
+all rankers.</p></td>
     </tr>
     <tr>
       <th>adherence</th>
       <td><p>an optional vector of adherence values for each ranker. If
-missing, adherence is fixed to 1 for all rankers. If `gamma != NULL` this is
-taken as the starting values for the adherence.</p></td>
+missing, adherence is fixed to 1 for all rankers. If <code>gamma</code> is not
+<code>NULL</code>, this specifies the starting values for the adherence.</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -170,14 +174,20 @@ taken as the starting values for the adherence.</p></td>
       <th>start</th>
       <td><p>starting values for the worth parameters and the tie parameters
 on the raw scale (worth parameters need not be scaled to sum to 1). If
-`prior` is specified, `exp(prior$mu)` is used starting values for the worth
-parameters. Coefficients from a previous fit can be passed as the result of
-a call to  <code>coef.PlackettLuce</code>, or the <code>coefficients</code> element of a
-<code>"PlackettLuce"</code> object.</p></td>
+<code>normal</code> is specified, <code><a href='https://www.rdocumentation.org/packages/base/topics/Log'>exp(normal$mu)</a></code> is used as starting values
+for the worth parameters. Coefficients from a previous fit can be passed as
+the result of a call to  <code>coef.PlackettLuce</code>, or the <code>coefficients</code>
+element of a <code>"PlackettLuce"</code> object.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>the method to be used for fitting: <code>"iterative scaling"</code> (default: iterative scaling to sequentially update the parameter values), <code>"BFGS"</code> (the BFGS optimisation algorithm through the <code><a href='https://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> interface), <code>"L-BFGS"</code> (the limited-memory BFGS optimisation algorithm as implemented in the <code><a href='https://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code> package).</p></td>
+      <td><p>the method to be used for fitting: <code>"iterative scaling"</code>
+(iterative scaling to sequentially update the parameter values),
+<code>"BFGS"</code> (the BFGS optimisation algorithm through the
+<code><a href='https://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> interface), <code>"L-BFGS"</code> (the limited-memory BFGS
+optimisation algorithm as implemented in the <code><a href='https://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>
+package). Iterative scaling is used by default, unless a prior is specified
+by <code>normal</code> or <code>gamma</code>, in which case the default is <code>"BFGS"</code>.</p></td>
     </tr>
     <tr>
       <th>epsilon</th>
@@ -191,7 +201,13 @@ apply Steffensen acceleration to the iterative scaling updates.</p></td>
     </tr>
     <tr>
       <th>maxit</th>
-      <td><p>the maximum number of iterations.</p></td>
+      <td><p>a vector specifying the maximum number of iterations. If
+<code>gamma</code> is <code>NULL</code>, only the first element is used and specifies the
+maximum number of iterations of the algorithm specified by <code>method</code>. If
+<code>gamma</code> is not <code>NULL</code>, a second element may be supplied to specify
+the maximum number of iterations of an alternating algorithm, where
+the adherence parameters are updated alternately with the other parameters.
+The default is to use 10 outer iterations.</p></td>
     </tr>
     <tr>
       <th>trace</th>
@@ -246,7 +262,7 @@ these items are tied in the ranking.</p>
 $$f(S) = \delta_{|S|}
       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
 where \(|S|\) is the cardinality (size) of the set, \(\delta_n\) is a
-parameter representing the prevalence of ties of order \(n\), and
+parameter related to the prevalence of ties of order \(n\), and
 \(\alpha_i\) is a parameter representing the worth of item \(i\).
 Then under an extension of the Plackett-Luce model allowing ties up to order
 \(D\), the probability of the ranking \(R\) is given by
@@ -261,12 +277,12 @@ of tied items observed in the data, so that \(\delta_n = 0\) for
 <p>When the worth parameters are constrained to sum to one, they represent the
 probability that the corresponding item comes first in a ranking of all
 items, given that first place is not tied.</p>
-<p>The 2-way tie prevalence parameter \(\delta_2\)$ is interpretable
-via the probability that two given items <em>of equal worth</em> tie for
+<p>The 2-way tie prevalence parameter \(\delta_2\) is related to
+the probability that two items <em>of equal worth</em> tie for
 first place, given that the first place is not a 3-way or higher tie.
 Specifically, that probability is
 \(\delta_2/(2 + \delta_2)\).</p>
-<p>The 3-way and higher tie-prevalence parameters are interpretable similarly,
+<p>The 3-way and higher tie-prevalence parameters are similarly interpretable,
 in terms of tie probabilities among equal-worth items.</p>
     
     <h2 class="hasAnchor" id="pseudo-rankings"><a class="anchor" href="#pseudo-rankings"></a>Pseudo-rankings</h2>
@@ -285,28 +301,57 @@ losses to the set of rankings.</p>
 the MLE is the posterior mode.  As <code>npseudo</code> approaches
 infinity the log-worth estimates all shrink towards 0. The default,
 <code>npseudo = 0.5</code>, is sufficient to connect the network and has a weak
-shrinkage effect. Thus even for networks that are already connected, adding
+shrinkage effect. Even for networks that are already connected, adding
 pseudo-rankings reduces both the bias and variance of the estimates.</p>
     
-    <h2 class="hasAnchor" id="incorporating-prior-information"><a class="anchor" href="#incorporating-prior-information"></a>Incorporating prior information</h2>
+    <h2 class="hasAnchor" id="incorporating-prior-information-on-log-worths"><a class="anchor" href="#incorporating-prior-information-on-log-worths"></a>Incorporating prior information on log-worths</h2>
 
     
-    <p>Prior information can be incorporated by using `prior` to specify a
-multivariate normal prior on the log-worths. The log-worths are then
-estimated by maximum apriori estimation. Model summaries (deviance, AIC,
+    <p>Prior information can be incorporated by using <code>normal</code> to specify a
+multivariate normal prior on the <em>log</em>-worths. The log-worths are then
+estimated by maximum a posteriori (MAP) estimation. Model summaries (deviance, AIC,
 standard errors) are based on the log-likelihood evaluated at the MAP
 estimates, resulting in a finite sample bias that should disappear as
 the number of rankings increases. Inference based on these model summaries
 is valid as long as the prior is considered fixed and not tuned as part of
 the model.</p>
 <p>Incorporating a prior is an alternative method of penalization, therefore
-`npseudo` is set to zero when a prior is specified.</p>
+<code>npseudo</code> is set to zero when a prior is specified.</p>
+    
+    <h2 class="hasAnchor" id="incorporating-ranker-adherence-parameters"><a class="anchor" href="#incorporating-ranker-adherence-parameters"></a>Incorporating ranker adherence parameters</h2>
+
+    
+    <p>When rankings come from different rankers, the model can be extended to
+allow for varying reliability of the rankers. In particular, replacing
+\(f(S)\) by
+$$h(S) = \delta_{|S|}
+      \left(\prod_{i \in S} \alpha_i \right)^\frac{\eta_g}{|S|}$$
+where \(\eta_g \gt 0\) is the adherence parameter for ranker \(g\). In
+the standard model, all rankers are assumed to have equal reliability, so
+\(\eta_g = 1\) for all rankers. Higher \(\eta_g = 1\)
+increases the distance between item worths, giving greater weight
+to the ranker's choice. Conversely, lower \(\eta_g = 1\) shrinks
+the item worths towards equality so the ranker's choice is less relevant.</p>
+<p>The adherence parameters are not estimable by maximum likelihood, since
+for given item worths the maximum likelihood estimate of adherence would be
+infinity for rankers that give rankings consistent with the items ordered by
+worth and zero for all other rankers. Therefore it is essential to include a
+prior on the adherence parameters when these are estimated rather than fixed.
+Setting <code>gamma = TRUE</code> specifies the default
+\(\Gamma(10,10)\) prior, which has a mean of
+1 and a probability of 0.99 that the adherence is between 0.37 and 2.
+Alternative parameters can be specified by a list with elements <code>shape</code>
+and <code>rate</code>. Setting scale and rate to a common value \(\theta\)
+specifies a mean of 1; \(\theta \ge\) 2 will give low prior probability
+to near-zero adherence; as \(\theta\) increases the density becomes
+more concentrated (and more symmetrical) about 1.</p>
     
     <h2 class="hasAnchor" id="controlling-the-fit"><a class="anchor" href="#controlling-the-fit"></a>Controlling the fit</h2>
 
     
-    <p>Using <code>nspseudo = 0</code> will use standard maximum likelihood, if the
-network is connected (and throw an error otherwise).</p>
+    <p>For models without priors, using <code>nspseudo = 0</code> will use standard
+maximum likelihood, if the network is connected (and throw an error
+otherwise).</p>
 <p>The fitting algorithm is set by the <code>method</code> argument. The default
 method <code>"iterative scaling"</code> is a slow but reliable approach. In
 addition, this has the most control on the accuracy of the final fit, since
@@ -327,6 +372,8 @@ only apply the update when it makes an improvement.</p>
 <p>The <code>"BFGS"</code> and <code>"L-BFGS"</code> algorithms are second order methods,
 therefore can be quicker than the default method. Control parameters can be
 passed on to <code><a href='https://www.rdocumentation.org/packages/stats/topics/optim'>optim</a></code> or <code><a href='https://www.rdocumentation.org/packages/lbfgs/topics/lbfgs'>lbfgs</a></code>.</p>
+<p>For models with priors, the iterative scaling method cannot be used, so BFGS
+is used by default.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -369,7 +416,9 @@ passed on to <code><a href='https://www.rdocumentation.org/packages/stats/topics
 
       <li><a href="#pseudo-rankings">Pseudo-rankings</a></li>
 
-      <li><a href="#incorporating-prior-information">Incorporating prior information</a></li>
+      <li><a href="#incorporating-prior-information-on-log-worths">Incorporating prior information on log-worths</a></li>
+
+      <li><a href="#incorporating-ranker-adherence-parameters">Incorporating ranker adherence parameters</a></li>
 
       <li><a href="#controlling-the-fit">Controlling the fit</a></li>
 

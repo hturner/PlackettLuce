@@ -19,10 +19,10 @@ parameters is set to zero.}
 
 \item{start}{starting values for the worth parameters and the tie parameters
 on the raw scale (worth parameters need not be scaled to sum to 1). If
-`prior` is specified, `exp(prior$mu)` is used starting values for the worth
-parameters. Coefficients from a previous fit can be passed as the result of
-a call to  \code{coef.PlackettLuce}, or the \code{coefficients} element of a
-\code{"PlackettLuce"} object.}
+\code{normal} is specified, \code{exp(normal$mu)} is used as starting values
+for the worth parameters. Coefficients from a previous fit can be passed as
+the result of a call to  \code{coef.PlackettLuce}, or the \code{coefficients}
+element of a \code{"PlackettLuce"} object.}
 
 \item{weights}{an optional vector of weights for each ranking.}
 
