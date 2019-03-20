@@ -2,11 +2,15 @@
 % Please edit documentation in R/pltree.R
 \name{pltree}
 \alias{pltree}
+\alias{vcov.pltree}
 \alias{predict.pltree}
 \alias{AIC.pltree}
 \title{Plackett-Luce Trees}
 \usage{
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
+
+\method{vcov}{pltree}(object, node = nodeids(object, terminal = TRUE),
+  ...)
 
 \method{predict}{pltree}(object, newdata = NULL, type = c("itempar",
   "rank", "best", "node"), ...)
@@ -37,6 +41,9 @@ which log ability will be set to zero). If NULL the first item is used.}
 \code{\link{model.frame}} by \code{AIC}.}
 
 \item{object}{a fitted model object of class \code{"pltree"}.}
+
+\item{node}{a vector of node ids specifying the nodes to summarise, by
+default the ids of the terminal nodes.}
 
 \item{newdata}{an optional data frame to use instead of the
 original data. For \code{AIC} this must include the response variable.}
@@ -75,8 +82,8 @@ extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 method employs the \code{\link[psychotree]{node_btplot}}
 panel-generating function. \code{AIC} computes
-\eqn{-2L + 2\text{df}}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
-the observed rankings under the tree model and \eqn{\text{df}}{df} is the degrees of
+\eqn{-2L + 2p}{-2 * L + 2 * p} where \eqn{L} is the joint likelihood of
+the observed rankings under the tree model and \eqn{p} is the degrees of
 freedom used to fit the tree model.
 }
 \examples{

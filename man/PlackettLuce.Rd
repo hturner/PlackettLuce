@@ -270,8 +270,38 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
+# Standard maximum likelihood estimates
+mod_mle <- PlackettLuce(R, npseudo = 0)
+coef(mod_mle)
+
+# Fit with default settings
 mod <- PlackettLuce(R)
+# log-worths are shrunk towards zero
 coef(mod)
+
+# independent N(0, 9) priors on log-worths, as in Raman and Joachims
+prior <- list(mu = rep(0, ncol(R)),
+              Sigma = diag(rep(9, ncol(R))))
+mod_normal <- PlackettLuce(rankings = R, normal = prior)
+# slightly weaker shrinkage effect vs pseudo-rankings,
+# with less effect on tie parameters (but note small number of rankings here)
+coef(mod_normal)
+
+# estimate adherence assuming every ranking is from a separate ranker
+mod_separate <- PlackettLuce(rankings = R, normal = prior, gamma = TRUE)
+coef(mod_separate)
+# gives more weight to rankers 4 & 6 which rank apple first,
+# so worth of apple increased relative to banana
+mod_separate$adherence
+
+# estimate adherence based on grouped rankings
+#  - assume two rankings from each ranker
+G <- grouped_rankings(R, rep(1:3, each = 2))
+mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
+coef(mod_grouped)
+# first ranker is least consistent so down-weighted
+mod_grouped$adherence
+
 }
 \references{
 Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.

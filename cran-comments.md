@@ -1,22 +1,14 @@
 ## Comments
 
-This update addresses the following issues:
-
-- use of deprecated cBind function (warning in CRAN checks)
-- use of (improperly exported?) estfun.btmodel (error in CRAN checks)
-
-plus some minor improvements.
+This update addresses the errors resulting from the change of method for 
+generating from a discrete uniform distribution.
 
 ## Test environments
 
 * Local
- - Ubuntu 14.04, R 3.4.4
- - Ubuntu 14.04, R Under development (unstable) (2018-04-07 r74552)
-     - PLMIX suggested but not available for checking (could not install)
- - Windows 8, R 3.4.4
+ - Ubuntu 18.04.2 LTS, R 3.5.3
+ - Ubuntu 18.04, R Under development (unstable) (...)
+ - Windows 8, R ...
  
 * Via R-hub 
  - Mac OS 10.11 El Capitan, R-release (experimental)
- 
-* Via Win builder
- - Windows Server 2008 R version 3.5.0 beta (2018-04-08 r74552)

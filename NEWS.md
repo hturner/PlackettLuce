@@ -1,9 +1,10 @@
-# PlackettLuce 0.2-3.9000
+# PlackettLuce 0.2-4
 
 ## New Features
 
 * `PlackettLuce()` now supports MAP estimation with a multivariate normal prior on log-worths and/or a gamma prior on ranker adherence.
 * `PlackettLuce()` now returns log-likelihood and degrees of freedom for the null model (where all outcomes, including ties, have equal probability).
+* There is now a `vcov` method for Plackett-Luce trees.
 
 ## Changes in Behaviour
 

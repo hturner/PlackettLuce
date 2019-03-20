@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -125,6 +125,10 @@
     <pre class="usage"><span class='fu'>pltree</span>(<span class='no'>formula</span>, <span class='no'>data</span>, <span class='no'>subset</span>, <span class='no'>na.action</span>, <span class='no'>cluster</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for pltree</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>object</span>, <span class='kw'>node</span> <span class='kw'>=</span> <span class='fu'>nodeids</span>(<span class='no'>object</span>, <span class='kw'>terminal</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
+  <span class='no'>...</span>)
+
+<span class='co'># S3 method for pltree</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"itempar"</span>,
   <span class='st'>"rank"</span>, <span class='st'>"best"</span>, <span class='st'>"node"</span>), <span class='no'>...</span>)
 
@@ -175,6 +179,11 @@ which log ability will be set to zero). If NULL the first item is used.</p></td>
       <td><p>a fitted model object of class <code>"pltree"</code>.</p></td>
     </tr>
     <tr>
+      <th>node</th>
+      <td><p>a vector of node ids specifying the nodes to summarise, by
+default the ids of the terminal nodes.</p></td>
+    </tr>
+    <tr>
       <th>newdata</th>
       <td><p>an optional data frame to use instead of the
 original data. For <code>AIC</code> this must include the response variable.</p></td>
@@ -214,8 +223,8 @@ extracts the abilities or item parameters from the Plackett-Luce models in
 each node of the tree using <code><a href='itempar.PlackettLuce.html'>itempar.PlackettLuce</a></code>. The plot
 method employs the <code><a href='https://www.rdocumentation.org/packages/psychotree/topics/node_btplot'>node_btplot</a></code>
 panel-generating function. <code>AIC</code> computes
-\(-2L + 2\text{df}\) where \(L\) is the joint likelihood of
-the observed rankings under the tree model and \(\text{df}\) is the degrees of
+\(-2L + 2p\) where \(L\) is the joint likelihood of
+the observed rankings under the tree model and \(p\) is the degrees of
 freedom used to fit the tree model.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

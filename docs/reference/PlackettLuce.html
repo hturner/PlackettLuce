@@ -66,7 +66,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -416,9 +416,37 @@ is used by default.</p>
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
 
+<span class='co'># Standard maximum likelihood estimates</span>
+<span class='no'>mod_mle</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod_mle</span>)</div><div class='output co'>#&gt;      apple     banana     orange       pear       tie2       tie3 
+#&gt;  0.0000000  0.2942875 -0.7335113 -0.1190960 -1.8619467 -0.7369735 </div><div class='input'>
+<span class='co'># Fit with default settings</span>
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>)
+<span class='co'># log-worths are shrunk towards zero</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
-#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div></pre>
+#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div><div class='input'>
+<span class='co'># independent N(0, 9) priors on log-worths, as in Raman and Joachims</span>
+<span class='no'>prior</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>mu</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>0</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>R</span>)),
+              <span class='kw'>Sigma</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/diag'>diag</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>9</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>R</span>))))
+<span class='no'>mod_normal</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='kw'>rankings</span> <span class='kw'>=</span> <span class='no'>R</span>, <span class='kw'>normal</span> <span class='kw'>=</span> <span class='no'>prior</span>)
+<span class='co'># slightly weaker shrinkage effect vs pseudo-rankings,</span>
+<span class='co'># with less effect on tie parameters (but note small number of rankings here)</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod_normal</span>)</div><div class='output co'>#&gt;      apple     banana     orange       pear       tie2       tie3 
+#&gt;  0.0000000  0.2753696 -0.6772960 -0.1030173 -1.8679502 -0.7453151 </div><div class='input'>
+<span class='co'># estimate adherence assuming every ranking is from a separate ranker</span>
+<span class='no'>mod_separate</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='kw'>rankings</span> <span class='kw'>=</span> <span class='no'>R</span>, <span class='kw'>normal</span> <span class='kw'>=</span> <span class='no'>prior</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod_separate</span>)</div><div class='output co'>#&gt;      apple     banana     orange       pear       tie2       tie3 
+#&gt;  0.0000000  0.2310944 -0.8436801 -0.1654011 -1.8637839 -0.7405627 </div><div class='input'><span class='co'># gives more weight to rankers 4 &amp; 6 which rank apple first,</span>
+<span class='co'># so worth of apple increased relative to banana</span>
+<span class='no'>mod_separate</span>$<span class='no'>adherence</span></div><div class='output co'>#&gt; [1] 0.8889778 0.8732159 0.8876840 0.9431440 0.8818594 0.9506536</div><div class='input'>
+<span class='co'># estimate adherence based on grouped rankings</span>
+<span class='co'>#  - assume two rankings from each ranker</span>
+<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grouped_rankings.html'>grouped_rankings</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>2</span>))
+<span class='no'>mod_grouped</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='kw'>rankings</span> <span class='kw'>=</span> <span class='no'>G</span>, <span class='kw'>normal</span> <span class='kw'>=</span> <span class='no'>prior</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod_grouped</span>)</div><div class='output co'>#&gt;      apple     banana     orange       pear       tie2       tie3 
+#&gt;  0.0000000  0.2855958 -0.7611189 -0.1201862 -1.8678374 -0.7453447 </div><div class='input'><span class='co'># first ranker is least consistent so down-weighted</span>
+<span class='no'>mod_grouped</span>$<span class='no'>adherence</span></div><div class='output co'>#&gt; [1] 0.8834957 0.9137346 0.9144347</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

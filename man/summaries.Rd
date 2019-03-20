@@ -31,7 +31,7 @@ with the item specified by \code{ref} set to zero.}
 Fisher information to base the estimation on: either \code{"expected"} or
 \code{"observed"}.}
 
-\item{...}{additional arguments, currently ignored.}
+\item{...}{additional arguments, passed to \code{vcov} by \code{summary}.}
 }
 \description{
 Obtain the coefficients, model summary or coefficient variance-covariance
