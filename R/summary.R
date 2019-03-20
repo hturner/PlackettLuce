@@ -11,7 +11,7 @@ summary.PlackettLuce <- function(object,
                                            c("Estimate", "Std. Error",
                                              "z value", "Pr(>|z|)")))
     coefficients[,1L] <- coefs
-    se <- sqrt(diag(vcov(object, ref = ref)))
+    se <- sqrt(diag(vcov(object, ref = ref, ...)))
     coefficients[names(se), 2L] <- se
     ref <- attr(coefs, "ref")
     if (length(ref) == 1L) coefficients[attr(coefs, "ref"), 2L] <- NA

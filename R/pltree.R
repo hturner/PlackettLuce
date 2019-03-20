@@ -22,8 +22,8 @@
 #' each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
 #' method employs the \code{\link[psychotree]{node_btplot}}
 #' panel-generating function. \code{AIC} computes
-#' \eqn{-2L + 2\text{df}}{-2 * L + 2 * df} where \eqn{L} is the joint likelihood of
-#' the observed rankings under the tree model and \eqn{\text{df}}{df} is the degrees of
+#' \eqn{-2L + 2p}{-2 * L + 2 * p} where \eqn{L} is the joint likelihood of
+#' the observed rankings under the tree model and \eqn{p} is the degrees of
 #' freedom used to fit the tree model.
 #'
 #' @param formula a symbolic description of the model to be fitted, of the form
@@ -42,6 +42,8 @@
 #' \code{pltree}; to \code{\link{itempar}} by \code{predict}, and to
 #' \code{\link{model.frame}} by \code{AIC}.
 #' @param object a fitted model object of class \code{"pltree"}.
+#' @param node a vector of node ids specifying the nodes to summarise, by
+#' default the ids of the terminal nodes.
 #' @param newdata an optional data frame to use instead of the
 #' original data. For \code{AIC} this must include the response variable.
 #' @param type the type of prediction to return for each group, one of:
@@ -178,6 +180,7 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 }
 
 #' @method itempar pltree
+#' @importFrom partykit nodeapply
 #' @export
 itempar.pltree <- function (object, ...){
     # so unexported itempar.bttree is used from psychotree
@@ -187,6 +190,13 @@ itempar.pltree <- function (object, ...){
         return(matrix(res, nrow = 1L, dimnames = list("1", names(res))))
     }
     res
+}
+
+#' @rdname pltree
+#' @method vcov pltree
+vcov.pltree <- function (object, node = nodeids(object, terminal = TRUE), ...){
+   nodeapply(object, ids = node,
+             FUN = function(n) vcov(info_node(n)$object, ...))
 }
 
 #' @rdname pltree
@@ -237,7 +247,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     f <- formula(object)
     environment(f) <- parent.frame()
     newdata <- model.frame(f, data = newdata, ...)
-    # predict node for each grouped ranking
+    # predict node for each grouped rankingnodeids(tm_tree, terminal = TRUE)
     node <- partykit::predict.modelparty(object,
                                          newdata = newdata,
                                          type = "node")

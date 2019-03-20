@@ -36,7 +36,7 @@
 #' \code{"ties"}, \code{"worth"} or \code{"all"}. For \code{vcov}, the type of
 #' Fisher information to base the estimation on: either \code{"expected"} or
 #' \code{"observed"}.
-#' @param ... additional arguments, currently ignored.
+#' @param ... additional arguments, passed to \code{vcov} by \code{summary}.
 #' @name summaries
 #' @export
 coef.PlackettLuce <- function(object, ref = 1L, log = TRUE,
