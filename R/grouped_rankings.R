@@ -188,8 +188,10 @@ as.grouped_rankings.paircomp <- function(x, ...){
     rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
                        dimnames = list(NULL, attr(x, "labels")))
     x <- as.matrix(x)[id]
-    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <- ifelse(x == -1L, 2L, 1L)
-    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <- ifelse(x == 1L, 2L, 1L)
+    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <-
+        ifelse(x == -1L, 2L, 1L)
+    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <-
+        ifelse(x == 1L, 2L, 1L)
     rankings <- structure(rankings, class = "rankings")
     do.call("structure",
             c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),

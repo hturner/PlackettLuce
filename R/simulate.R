@@ -149,7 +149,7 @@ simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
     }
 
     out <- replicate(nsim, {
-        R <- t(sapply(sets, sampler))
+        R <- t(vapply(sets, sampler, numeric(N)))
         colnames(R) <- colnames(rankings)
         as.rankings(R)
     }, simplify = FALSE)

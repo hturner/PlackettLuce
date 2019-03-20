@@ -15,7 +15,7 @@ R <- matrix(c(1, 2, 3, 0,
               0, 1, 2, 0), nrow = 8, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
-test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", {
+test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     m <- ncol(R)
     n <- nrow(R)
     adherence <- seq(0.75, 1.25, length.out = n)
@@ -26,25 +26,25 @@ test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", 
     p <- 8 # switch for interactive testing (max = 8)
     # Fit model using sgdPL from AgRank with fixed adherence
     ## - no iterations, just checking log-likelihood calculations
-    res <- sgdPL(R[1:p,], mu, sigma, rate = 0.1, adherence = FALSE, maxiter = 0,
-                 tol = 1e-12, start = c(mu, adherence[1:p]), decay = 1.001)
+    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE, maxiter = 0,
+                 tol = 1e-12, start = c(mu, adherence[seq(p)]), decay = 1.001)
     # Fit model using PlackettLuce
     ## with normal prior to allow low p (BFGS by default)
-    mod_PL1 <- PlackettLuce(rankings = R[1:p,], npseudo = 0, maxit = 0,
-                            adherence = adherence[1:p], start = alpha,
+    mod_PL1 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0, maxit = 0,
+                            adherence = adherence[seq(p)], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
     ## N.B. - can't test L-BFGS with zero iterations
     ##      - iterative scaling not implemented with adherence
     expect_equal(logLik(mod_PL1)[1], -res$value[1])
     # Same, now iterating to convergence
-    res <- sgdPL(R[1:p,], mu, sigma, rate = 0.1, adherence = FALSE,
+    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE,
                  maxiter = 8000,
-                 tol = 1e-12, start = c(mu, adherence[1:p]), decay = 1.001)
-    mod_PL2 <- PlackettLuce(rankings = R[1:p,], npseudo = 0,
-                            adherence = adherence[1:p], start = alpha,
+                 tol = 1e-12, start = c(mu, adherence[seq(p)]), decay = 1.001)
+    mod_PL2 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0,
+                            adherence = adherence[seq(p)], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
-    mod_PL3 <- PlackettLuce(rankings = R[1:p,], npseudo = 0, method = "L-BFGS",
-                            adherence = adherence[1:p], start = alpha,
+    mod_PL3 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0, method = "L-BFGS",
+                            adherence = adherence[seq(p)], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
     expect_equal(mod_PL2$logposterior, -tail(res$value, 1),
                  tolerance = 1e-5)
@@ -56,7 +56,7 @@ test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", 
 
 test_that('estimated adherence works for grouped_rankings [fake triples]', {
     # each ranking is a separate group
-    G <- grouped_rankings(R, 1:nrow(R))
+    G <- grouped_rankings(R, seq(nrow(R)))
     mod1 <- PlackettLuce(rankings = R, npseudo = 0,
                          gamma = list(shape = 10, rate = 10))
     mod2 <- PlackettLuce(G, npseudo = 0, gamma = list(shape = 10, rate = 10))
@@ -179,7 +179,7 @@ test_that('estimated adherence works for grouped_rankings [partial + ties]', {
                                            weights = w,
                                            gamma = list(shape = 10, rate = 10)))
     # replicates grouped together by ranker
-    G <- grouped_rankings(R[rep(1:6, w),], index = rep(1:6, w))
+    G <- grouped_rankings(R[rep(seq(6), w),], index = rep(seq(6), w))
     mod2 <- suppressWarnings(PlackettLuce(rankings = G, npseudo = 0,
                                           method = "BFGS",
                                           gamma = list(shape = 10, rate = 10)))

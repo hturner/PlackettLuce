@@ -9,7 +9,7 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
-test_that("logLik matches agRank w/ fixed adherence [fake triple comparisons]", {
+test_that("estfun matches agRank, fixed adherence [fake triple comparisons]", {
     m <- ncol(R)
     n <- nrow(R)
     adherence <- seq(0.75, 1.25, length.out = n)

@@ -471,12 +471,14 @@ PlackettLuce <- function(rankings,
         r <- which(rowSums(set) == p)
         P[p] <- p != 1L && length(r)
         if (!P[p]) next
-        if (!is.null(gamma) & !grouped_rankings){ # separate adherence per ranking
+        # separate adherence per ranking
+        if (!is.null(gamma) & !grouped_rankings){
             W[[p]] <- weights[r]
             G[[p]] <- r
         } else {
             g <- uniquerow(set[r, , drop = FALSE])
-            if (!is.null(adherence)){ # combine within ranker (adherence may change)
+            # combine within ranker (adherence may change)
+            if (!is.null(adherence)){
                 x <- ranker[r]/10^ceiling(log10(max(ranker[r]))) + g
                 g <- match(x, x)
             }
@@ -516,9 +518,10 @@ PlackettLuce <- function(rankings,
         if (!is.null(normal)) {
             alpha <- exp(normal$mu)
         } else {
-            # (scaled, un-damped) PageRank based on underlying paired comparisons
+            # (scaled, un-damped) PageRank on underlying paired comparisons
+            ncv <- min(nrow(X), 10L)
             alpha <- drop(abs(eigs(X/colSums(X), 1L,
-                                   opts = list(ncv = min(nrow(X), 10L)))$vectors))
+                                   opts = list(ncv = ncv))$vectors))
         }
         delta <- c(1.0, rep.int(0.1, D - 1L))
     } else {
@@ -645,7 +648,7 @@ PlackettLuce <- function(rankings,
                 # ignore rankings involving ghost item (adherence fixed to 1)
                 res2 <- opt(log(adherence), obj_adherence, gr_adherence, ...)
 
-                # update adherence & sufficient statistics for alpha (real items)
+                # update adherence & sufficient stats for alpha (real items)
                 adherence <- exp(res2$par)
                 a[1L:nr] <- adherence[ranker]
                 A[item] <- unname(rowsum(adherence[ranker_id]*S, item_id)[,1L])
@@ -683,8 +686,8 @@ PlackettLuce <- function(rankings,
             res[c("expA", "expB", "theta")] <-
                 expectation("all", res$alpha, res$delta,
                             a, N, D, P, R, G, W)
-            res$logl <- sum(B[-1L]*log(res$delta)[-1L]) + sum(A*log(res$alpha)) -
-                sum(res$theta)
+            res$logl <- sum(B[-1L]*log(res$delta)[-1L]) +
+                sum(A*log(res$alpha)) - sum(res$theta)
             res
         }
         accelerate <- function(p, p1, p2){
@@ -736,8 +739,8 @@ PlackettLuce <- function(rankings,
                         expectation("all", res$alpha, res$delta,
                                     a, N, D, P, R, G, W)
                     res$logl <-
-                        sum(B[-1L]*log(res$delta)[-1L]) + sum(A*log(res$alpha)) -
-                        sum(res$theta)
+                        sum(B[-1L]*log(res$delta)[-1L]) +
+                        sum(A*log(res$alpha)) - sum(res$theta)
                     if (res$logl < res2$logl) {
                         res <- res2
                     } else if ((conv <-  checkConv(res)) == 0L) break

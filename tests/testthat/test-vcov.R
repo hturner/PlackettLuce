@@ -110,7 +110,7 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
                  check.attributes = FALSE, tol = 1e-7)
 })
 
-test_that("vcov.PlackettLuce works w/ grouped rankings [normal + gamma prior]", {
+test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
     # informative prior
     prior <- list(mu = c(-0.05, -0.05, -2, -3),
                   Sigma = matrix(c(1, 0.5, 0.1, -0.5,

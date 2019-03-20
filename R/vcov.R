@@ -37,17 +37,19 @@ vcov.PlackettLuce <- function(object, ref = 1L,
   ## XtWX for worth and tie parameters (and adherence)
   WX <- fit * X
   XtWX <- as.matrix(crossprod(X, WX))
-  if (!is.null(object$gamma)) AtWX <- rowsum(A*as.matrix(WX[, 1:p]), theLongData$a)
+  if (!is.null(object$gamma))
+      AtWX <- rowsum(A*as.matrix(WX[, 1:p]), theLongData$a)
   ## covariance of worth and tie with eliminated (and adherence) parameters
-  ZtWX <- rowsum(as.matrix(WX), z) # crossprod(sparse.model.matrix(~as.factor(z) - 1), WX))
+  ## crossprod(sparse.model.matrix(~as.factor(z) - 1), WX))
+  ZtWX <- rowsum(as.matrix(WX), z)
   if (!is.null(object$gamma)) ZtWA <- rowsum(fit*A, z)[, 1]
   ## diag of (XtWX)^-1 for eliminated
   ZtWZinverse <- 1L/totals
   ## diag of XtWX for adherence
   if (!is.null(object$gamma)) AtWA <- rowsum(fit*A^2, theLongData$a)[,1]
   ## components of (generalized) inverse of vcov for worth, tie and adherence
-  ## this is minus the expectation of the second derivs of the multinomial log-lik
-  ## i.e. (expected) Fisher info for the multinomial log-likelihood
+  ## this is minus the expectation of the second derivs of the multinomial
+  ## log-lik i.e. (expected) Fisher info for the multinomial log-likelihood
   ### top-left: rows/cols for worth and tie
   InfoTL <- XtWX - crossprod(sqrt(ZtWZinverse) * ZtWX)
   if (!is.null(object$gamma)){
