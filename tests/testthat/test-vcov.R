@@ -94,7 +94,7 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
     # should be equal to low tolerance if base on observed Fisher Info though
     expect_equal(vcov(gamma_prior, type = "observed"),
                  vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-7)
+                 check.attributes = FALSE, tol = 1e-6)
     # more data - N.B. this assumes each ranker gives exactly same ranking,
     # not likely in practice just checking statistical property here
     # (vcov_hessian slow with large number of adherence par, not practical to
@@ -107,7 +107,7 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
                  check.attributes = FALSE, tol = 1e-3)
     expect_equal(vcov(gamma_prior, type = "observed"),
                  vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-7)
+                 check.attributes = FALSE, tol = 1e-6)
 })
 
 test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
@@ -128,7 +128,7 @@ test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
     # but that based on observed info equals numerical hessian to medium tol
     expect_equal(vcov(both_priors, type = "observed"),
                  vcov_hessian(both_priors),
-                 check.attributes = FALSE, tol = 1e-7)
+                 check.attributes = FALSE, tol = 1e-6)
     # gamma prior only (different method for Info inversion)
     gamma_prior <- PlackettLuce(rankings = G, npseudo = 0, method = "BFGS",
                                 gamma = list(shape = 100, rate = 100))

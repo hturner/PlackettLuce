@@ -1,40 +1,40 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.2-4
-Authors@R: c(person("Heather", "Turner", 
+Version: 0.2-5
+Authors@R: c(person("Heather", "Turner",
         email = "ht@heatherturner.net", role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-1256-3375")),
         person("Ioannis", "Kosmidis", role = "aut",
-        comment = c(ORCID = "0000-0003-1556-0302")), 
-        person("David", "Firth", role = "aut", 
-        comment = c(ORCID = "0000-0003-0302-2312")), 
+        comment = c(ORCID = "0000-0003-1556-0302")),
+        person("David", "Firth", role = "aut",
+        comment = c(ORCID = "0000-0003-0302-2312")),
         person("Jacob", "van Etten", role = "ctb",
         comment = c(ORCID = "0000-0001-7554-2558")))
 URL: https://hturner.github.io/PlackettLuce/
 BugReports: https://github.com/hturner/PlackettLuce/issues
 Description: Functions to prepare rankings data and fit the Plackett-Luce model
-    jointly attributed to Plackett (1975) <doi:10.2307/2346567> and Luce 
-    (1959, ISBN:0486441369). The standard Plackett-Luce model is generalized 
-    to accommodate ties of any order in the ranking. Partial rankings, in which 
+    jointly attributed to Plackett (1975) <doi:10.2307/2346567> and Luce
+    (1959, ISBN:0486441369). The standard Plackett-Luce model is generalized
+    to accommodate ties of any order in the ranking. Partial rankings, in which
     only a subset of items are ranked in each ranking, are also accommodated in
-    the implementation. Disconnected/weakly connected networks implied by the 
-    rankings may be handled by adding pseudo-rankings with a hypothetical item. 
-    Optionally, a multivariate normal prior may be set on the log-worth 
-    parameters and ranker reliabilities may be incorporated as proposed by 
-    Raman and Joachims (2014) <doi:10.1145/2623330.2623654>. Maximum a 
-    posteriori estimation is used when priors are set. Methods are provided to 
-    estimate standard errors or quasi-standard errors for inference as well as 
-    to fit Plackett-Luce trees. See the package website or vignette for further 
+    the implementation. Disconnected/weakly connected networks implied by the
+    rankings may be handled by adding pseudo-rankings with a hypothetical item.
+    Optionally, a multivariate normal prior may be set on the log-worth
+    parameters and ranker reliabilities may be incorporated as proposed by
+    Raman and Joachims (2014) <doi:10.1145/2623330.2623654>. Maximum a
+    posteriori estimation is used when priors are set. Methods are provided to
+    estimate standard errors or quasi-standard errors for inference as well as
+    to fit Plackett-Luce trees. See the package website or vignette for further
     details.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: Matrix, igraph, methods, partykit, psychotools, 
+Imports: Matrix, igraph, methods, partykit, psychotools,
     psychotree, rARPACK, qvcalc, sandwich, stats
-Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable, 
-    Matrix.utils, PLMIX, StatRank, covr, hyper2, kableExtra, knitr, 
+Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable,
+    Matrix.utils, PLMIX, StatRank, covr, hyper2, kableExtra, knitr,
     lbfgs, gnm, pmr, rmarkdown, testthat, tibble
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr

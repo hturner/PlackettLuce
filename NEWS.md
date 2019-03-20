@@ -1,3 +1,7 @@
+# PlackettLuce 0.2-5
+
+* Higher tolerance in tests of `vcov()` for CRAN Windows test machine.
+
 # PlackettLuce 0.2-4
 
 ## New Features
