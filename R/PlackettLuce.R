@@ -333,7 +333,8 @@ PlackettLuce <- function(rankings,
     stopifnot(all(weights > 0L))
 
     # check gamma prior specification
-    if (isFALSE(gamma)) gamma <- NULL # in case specified as FALSE
+    if (is.logical(gamma) && length(gamma) == 1L && !is.na(gamma) && !gamma)
+        gamma <- NULL # in case specified as FALSE
     if (!is.null(gamma)) { # specified or TRUE
         if (isTRUE(gamma)) gamma <- list(shape = 10, rate = 10)
         stopifnot(names(gamma) == c("shape", "rate"))
