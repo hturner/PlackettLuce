@@ -478,7 +478,7 @@ PlackettLuce <- function(rankings,
             G[[p]] <- r
         } else {
             g <- uniquerow(set[r, , drop = FALSE])
-            # combine within ranker (adherence may change)
+            # combine within ranker (adherence likely different for each ranker)
             if (!is.null(adherence)){
                 x <- ranker[r]/10^ceiling(log10(max(ranker[r]))) + g
                 g <- match(x, x)

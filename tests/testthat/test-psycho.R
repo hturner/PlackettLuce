@@ -180,7 +180,8 @@ pl_tree <- pltree(G ~ season,
 test_that('grouped_rankings work w/ weights [beans]', {
     mod1 <- PlackettLuce(G, weights = weights)
     mod2 <- PlackettLuce(R, weights =rep(weights, 4))
-    nm <- setdiff(names(mod1), c("call", "ranker"))
+    # iter can be different on some platform due to small difference in rowsums
+    nm <- setdiff(names(mod1), c("call", "ranker", "iter"))
     expect_equal(mod1[nm], mod2[nm])
 })
 

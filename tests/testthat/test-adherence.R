@@ -26,8 +26,9 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     p <- 8 # switch for interactive testing (max = 8)
     # Fit model using sgdPL from AgRank with fixed adherence
     ## - no iterations, just checking log-likelihood calculations
-    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE, maxiter = 0,
-                 tol = 1e-12, start = c(mu, adherence[seq(p)]), decay = 1.001)
+    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE,
+                 maxiter = 0, tol = 1e-12, start = c(mu, adherence[seq(p)]),
+                 decay = 1.001)
     # Fit model using PlackettLuce
     ## with normal prior to allow low p (BFGS by default)
     mod_PL1 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0, maxit = 0,
@@ -43,8 +44,9 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     mod_PL2 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0,
                             adherence = adherence[seq(p)], start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
-    mod_PL3 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0, method = "L-BFGS",
-                            adherence = adherence[seq(p)], start = alpha,
+    mod_PL3 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0,
+                            method = "L-BFGS", adherence = adherence[seq(p)],
+                            start = alpha,
                             normal = list(mu = mu, Sigma = sigma))
     expect_equal(mod_PL2$logposterior, -tail(res$value, 1),
                  tolerance = 1e-5)
@@ -61,7 +63,8 @@ test_that('estimated adherence works for grouped_rankings [fake triples]', {
                          gamma = list(shape = 10, rate = 10))
     mod2 <- PlackettLuce(G, npseudo = 0, gamma = list(shape = 10, rate = 10))
     # remove bits we expect to be different
-    nm <- setdiff(names(mod1), c("call"))
+    # iter can be different on some platform due to small difference in rowsums
+    nm <- setdiff(names(mod1), c("call", "iter"))
     expect_equal(mod1[nm], mod2[nm])
     expect_equal(mod1$adherence[mod1$ranker], mod2$adherence[mod2$ranker])
 
@@ -146,11 +149,12 @@ G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
 
 test_that('fixed adherence works for grouped_rankings [beans]', {
     # adherence = 1 is same as no adherence
-    adherence <- rep(1, nrow(beans))
+    adherence <- rep(1L, nrow(beans))
     mod1 <- PlackettLuce(G)
     mod2 <- PlackettLuce(G, adherence = adherence)
     # remove bits we expect to be different
-    nm <- setdiff(names(mod1), c("call", "adherence"))
+    # iter can change on same platforms as rankings not aggregated in mod2
+    nm <- setdiff(names(mod1), c("call", "adherence", "iter"))
     expect_equal(mod1[nm], mod2[nm])
     # adherence != 1 for grouped same as ungrouped with replicated adherence
     ranker_adherence <- seq(0.75, 1.25, length.out = nrow(beans))
@@ -158,7 +162,8 @@ test_that('fixed adherence works for grouped_rankings [beans]', {
     mod1 <- PlackettLuce(R, adherence = ranking_adherence)
     mod2 <- PlackettLuce(G, adherence = ranker_adherence)
     # remove bits we expect to be different
-    nm <- setdiff(names(mod1), c("call", "adherence", "ranker"))
+    # iter can be different on some platform due to small difference in rowsums
+    nm <- setdiff(names(mod1), c("call", "adherence", "ranker", "iter"))
     expect_equal(mod1[nm], mod2[nm])
     expect_equal(mod1$adherence[mod1$ranker], mod2$adherence[mod2$ranker])
 })
@@ -184,7 +189,9 @@ test_that('estimated adherence works for grouped_rankings [partial + ties]', {
                                           method = "BFGS",
                                           gamma = list(shape = 10, rate = 10)))
     # remove bits we expect to be different
-    nm <- setdiff(names(mod1), c("call", "rankings", "ranker", "weights"))
+    # iter can be different on some platform due to small difference in rowsums
+    nm <- setdiff(names(mod1),
+                  c("call", "rankings", "ranker", "weights", "iter"))
     expect_equal(mod1[nm], mod2[nm])
 })
 

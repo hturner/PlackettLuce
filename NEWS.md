@@ -1,3 +1,8 @@
+# PlackettLuce 0.2-6
+
+* Avoid using `isFALSE()` for compatibility with R < 3.5.
+* Don't test number of iterations when comparing models on grouped and ungrouped rankings.
+
 # PlackettLuce 0.2-5
 
 * Higher tolerance in tests of `vcov()` for CRAN Windows test machine.
