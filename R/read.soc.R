@@ -63,7 +63,55 @@ read.soc <- function(file){
 #' f1 <- read.soi(file.path(preflib, "f1/ED-00010-00000001.soi"))
 #' @export
 read.soi <- function(file){
-    obs <- read.soc(file)
-    obs[is.na(obs)] <- 0
-    obs
+    # keep unused ranks as NA
+    read.soc(file)
+}
+
+
+#' Title
+#'
+#' @param file
+#'
+#' @return
+#'
+#' @examples
+#' @export
+#' # url for preflib data in the "Election Data" category
+#' preflib <- "http://www.preflib.org/data/election/"
+#'
+#' # orderings of 30 skaters, with ties
+#' skaters <- read.toc(file.path(preflib, "skate/ED-00006-00000001.toc"))
+read.toc <- function(file){
+    # read one line to find number of items
+    p <- as.integer(read.csv(file, nrows = 1L, header = FALSE))
+    # get items
+    item <- read.csv(file, skip = 1L, nrows = p, header = FALSE,
+                     stringsAsFactors = FALSE, strip.white = TRUE)[,2L]
+    names(item) <- seq_len(p)
+    # read counts and ordered items
+    obs <- read.csv(text = chartr("{}", "''", readLines(file)),
+                     skip = p + 2L, header = FALSE, quote = "'",
+                     check.names = FALSE, stringsAsFactors = FALSE)
+    colnames(obs) <- c("n", paste("Rank", seq_len(ncol(obs) - 1)))
+    obs <- as.data.frame(sapply(obs, function(x) {
+        x <- strsplit(as.character(x), ",")
+        lapply(x, as.numeric)}))
+    structure(obs, item = item)
+}
+
+#' Title
+#'
+#' @param file
+#'
+#' @return
+#'
+#' @examples
+#' @export
+#' # url for preflib data in the "Election Data" category
+#' preflib <- "http://www.preflib.org/data/election/"
+#'
+#' # orderings of 30 skaters, with ties
+#' sushi <- read.toi(file.path(preflib, "sushi/ED-00014-00000003.toi"))
+read.toi <- function(file){
+    read.toc(file)
 }
