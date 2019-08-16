@@ -201,6 +201,8 @@ as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
 }
 
 checkDense <- function(x, verbose = TRUE){
+    # replace NA with 0 (unranked)
+    x[is.na(x)] <- 0
     # check rankings are dense rankings
     nRank <- apply(x, 1L, function(x) length(unique(x[x > 0L])))
     maxRank <- apply(x, 1L, max)

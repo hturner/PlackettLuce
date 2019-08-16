@@ -45,16 +45,25 @@ read.soc <- function(file){
               item = item)
 }
 
+#' Title
+#'
+#' @param file
+#'
+#' @return
+#'
+#' @examples
+#' # url for preflib data in the "Election Data" category
+#' preflib <- "http://www.preflib.org/data/election/"
+#'
+#' # strict orderings of 6 random cities from 36 in total
+#' cities <- read.soi(file.path(preflib, "cities/ED-00034-00000001.soi"))
+#'
+#' # strict orderings of drivers in the 1961 F1 races
+#' # 8 races with 17 to 34 drivers in each
+#' f1 <- read.soi(file.path(preflib, "f1/ED-00010-00000001.soi"))
+#' @export
 read.soi <- function(file){
-    # read one line to find number of items
-    p <- as.integer(read.csv(file, nrows = 1L, header = FALSE))
-    # get items
-    item <- read.csv(file, skip = 1L, nrows = p, header = FALSE,
-                     stringsAsFactors = FALSE, strip.white = TRUE)[,2L]
-    names(item) <- seq_len(p)
-    # read counts and ordered items
-    structure(read.csv(file, col.names = c("n", paste("Rank", seq_len(p))),
-                       skip = p + 2L, header = FALSE,
-                       check.names = FALSE),
-              item = item)
+    obs <- read.soc(file)
+    obs[is.na(obs)] <- 0
+    obs
 }
