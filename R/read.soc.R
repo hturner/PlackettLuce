@@ -39,10 +39,10 @@ read.soc <- function(file){
                      stringsAsFactors = FALSE, strip.white = TRUE)[,2L]
     names(item) <- seq_len(p)
     # read counts and ordered items
-    structure(read.csv(file, col.names = c("n", paste("Rank", seq_len(p))),
-                       skip = p + 2L, header = FALSE,
-                       check.names = FALSE),
-              item = item)
+    obs <- read.csv(file, skip = p + 2L, header = FALSE,
+                    check.names = FALSE)
+    colnames(obs) <- c("n", paste("Rank", seq_len(ncol(obs) - 1)))
+    structure(obs, item = item, class = c("preflib", class(obs)))
 }
 
 #' Title
@@ -95,8 +95,8 @@ read.toc <- function(file){
     colnames(obs) <- c("n", paste("Rank", seq_len(ncol(obs) - 1)))
     obs <- as.data.frame(sapply(obs, function(x) {
         x <- strsplit(as.character(x), ",")
-        lapply(x, as.numeric)}))
-    structure(obs, item = item)
+        sapply(x, as.numeric)}))
+    structure(obs, item = item, class = c("preflib", class(obs)))
 }
 
 #' Title
