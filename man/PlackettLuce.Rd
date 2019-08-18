@@ -5,7 +5,7 @@
 \title{Fit a Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
-  adherence = NULL, weights = NULL, start = NULL,
+  adherence = NULL, weights = attr(rankings, "freq"), start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
   steffensen = 0.1, maxit = c(500, 10), trace = FALSE,
   verbose = TRUE, ...)

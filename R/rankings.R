@@ -26,6 +26,9 @@
 #' @param x for \code{as.rankings}, a matrix with one column per item and one
 #' row per ranking, or an object that can be coerced to such as matrix; for
 #' \code{[} and \code{format}, a \code{"rankings"} object.
+#' @param freq an optional column index (number, character or logical)
+#' specifying a column of \code{x} that holds ranking frequencies, or a vector
+#' of ranking frequencies.
 #' @param input for \code{as.rankings}, whether each row in the input matrix
 #' contains a numeric \code{"ranking"} (dense, standard/modified competition or
 #' fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.
@@ -44,8 +47,10 @@
 #' @param ... further arguments passed to/from methods.
 #'
 #' @return a \code{"rankings"} object, which is a matrix of dense rankings
-#' with one attribute \code{omit} the indices of any rankings that were
-#' omitted due to insufficient data (less than two non-missing ranks).
+#' with the following attributes:
+#' \item{freq}{The frequencies of aggregated rankings.}
+#' \item{omit}{The indices of any rankings that were omitted due to
+#' insufficient data (less than two non-missing ranks).}
 #'
 #' @examples
 #' # create rankings from data in long form
@@ -136,68 +141,127 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
 
 #' @rdname rankings
 #' @export
-as.rankings <- function(x, input = c("ranking", "ordering"),
-                        labels = NULL,
+as.rankings <- function(x,
                         verbose = TRUE, ...){
     UseMethod("as.rankings")
 }
 
 #' @rdname rankings
 #' @export
-as.rankings.default <- function(x, input = c("ranking", "ordering"),
+as.rankings.default <- function(x,
+                                freq = NULL,
+                                input = c("ranking", "ordering"),
+                                aggregate = TRUE,
                                 labels = NULL,
                                 verbose = TRUE, ...){
     x <- as.matrix(x)
-    as.rankings.matrix(x, input = input, verbose = verbose, ...)
+    as.rankings.matrix(x, freq = freq, input = input, aggregate = aggregate,
+                       labels = labels, verbose = verbose, ...)
 }
 
 #' @rdname rankings
 #' @export
-as.rankings.matrix <- function(x, input = c("ranking", "ordering"),
+as.rankings.preflib <- function(x, verbose = TRUE, ...){
+    as.rankings.matrix(as.matrix(x[, -1]), freq = x[, 1], input = "ordering",
+                       labels = attr(x, "item"), verbose = verbose, ...)
+}
+
+#' @rdname rankings
+#' @export
+as.rankings.matrix <- function(x,
+                               freq = NULL,
+                               input = c("ranking", "ordering"),
+                               aggregate = TRUE,
                                labels = NULL,
                                verbose = TRUE, ...){
     input <- match.arg(input, c("ranking", "ordering"))
+    if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
+        freq_id <- seq(ncol(x))[freq]
+        if (length(freq_id) != 1)
+            stop("`freq` should identify exactly one column of `x`, found\n",
+                 freq_id)
+        freq <- unname(unlist(x[, freq_id]))
+        x <- x[, -freq_id]
+    }
     if (mode(x) != "numeric" && input == "ranking"){
         stop("values should be numeric ranks for `input = ranking`")
     }
     if (input == "ordering"){
+        # define items, N.B. matrix cells may be vectors; may have NAs
+        if (mode(x[[1]]) == "character"){
+            if (is.null(labels)) {
+                item <- labels <- sort(unique(c(x)))
+            } else item <- labels
+            m <- length(item)
+        } else {
+            m <- max(unlist(x), na.rm = TRUE)
+            item <- seq_len(m)
+        }
         # convert ordered items to dense ranking
-        if (mode(x) == "character"){
-            if (is.null(labels)) labels <- sort(unique(as.vector(x)))
-            value <- match(x, labels)
-            att <- attributes(x)
-            rm(x)
-            x <- array(value, dim = att$dim, dimnames = att$dimnames)
+        if (mode(x) == "list"){
+            # i.e. there are ties
+            x <- t(apply(x, 1L, function(ordering){
+                g <- rep(seq_along(ordering), lengths(ordering))
+                r <- match(item, unlist(ordering), nomatch = 0L)
+                r[r != 0L] <- g[r[r != 0L]]
+                r
+            }))
+        } else {
+            x <- t(apply(x, 1L, function(ordering) {
+                match(item, ordering, nomatch = 0L)
+            }))
         }
-        m <- max(x, na.rm = TRUE)
-        if (!is.null(labels) && length(labels) > m){
-            unused <- length(labels) - m
-            x <- cbind(x, matrix(0L, nrow = nrow(x), ncol = unused))
-            m <- m + unused
+        if (!is.null(labels)){
+            if (length(labels) > m){
+                unused <- length(labels) - m
+                x <- cbind(x, matrix(0L, nrow = nrow(x), ncol = unused))
+            }
+            colnames(x) <- labels
         }
-        m <- ifelse(!is.null(labels), length(labels),
-                    max(x, na.rm = TRUE))
-        item <- seq_len(m)
-        x <- t(apply(x, 1L, function(x) match(item, x, nomatch = 0L)))
-        if (!is.null(labels)) colnames(x) <- labels
     } else if (NCOL(x) >= 2L) {
             # check rankings are dense rankings, recode if necessary
             x <- checkDense(x, verbose = verbose)
     }
     # remove rankings with less than 2 items
-    id <- which(rowSums(x > 0L) < 2L)
-    if (length(id)){
+    omit_id <- which(rowSums(x > 0L) < 2L)
+    if (length(omit_id)){
         if (verbose)
             message("Removed rankings with less than 2 items")
         if (!is.null(rownames(x))){
-            omit <- rownames(x)[id]
-        } else omit <- id
-        x <- x[-id, , drop = FALSE]
+            omit <- rownames(x)[omit_id]
+        } else omit <- omit_id
+        x <- x[-omit_id, , drop = FALSE]
+        if (!is.null(freq)) freq <- freq[-omit_id]
     }
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
     mode(x) <- "integer"
-    structure(x, omit = if (length(id)) omit else NULL, class = "rankings")
+    # aggregating
+    out <- structure(x, freq = freq, omit = if (length(omit_id)) omit else NULL,
+                    class = "rankings")
+    if (aggregate){
+        aggregate(out)
+    } else out
+}
+
+#' @rdname rankings
+#' @method aggregate rankings
+#' @export
+aggregate.rankings <- function(x, ...){
+    r <- asplit(unclass(x), 1L)
+    dup <- duplicated(r)
+    if (any(dup)){
+        r_new <-r[!dup]
+        r_id <- match(r, r_new)
+        if (!is.null(attr(x, "freq"))) {
+            freq <- as.vector(rowsum(attr(x, "freq"), r_id))
+        } else freq <- tabulate(r_id)
+        x <- do.call("rbind", r_new)
+        return(structure(x, freq = freq, class = "rankings"))
+    } else {
+        attr(x, "freq") <- seq_len(length(r))
+        return(x)
+    }
 }
 
 checkDense <- function(x, verbose = TRUE){
@@ -273,13 +337,16 @@ str.rankings <- function(object, ...) {
         if (is.matrix(i)) return(.subset(x, i))
         # else subset of rankings
         value <- .subset(x, i, TRUE, drop = FALSE)
+        attr(value, "freq") <- attr(x, "freq")[i]
     } else {
         # subset items (never drop)
         if (missing(i)) i <- TRUE
         value <- .subset(x, i, j, drop = FALSE)
-        # recode if necessary
+        # recode and drop items with <=2 items if necessary
         if (as.rankings && ncol(value) != ncol(x)) {
-            value <- suppressWarnings(as.rankings.matrix(value, ...))
+            value <- suppressWarnings(as.rankings.matrix(value,
+                                                         freq = attr(x, "freq"),
+                                                         ...))
         }
     }
     if (!as.rankings) {
@@ -333,7 +400,20 @@ rbind.rankings <- function(..., labels = NULL){
             R
         })
     }
-    # rbind matrices
+    # ranking attributes
+    n <- vapply(R, length, numeric(1))
+    freq <- lapply(R, attr, "freq")
+    # rbind ranking values
     R <- do.call("rbind", lapply(R, unclass))
-    structure(R, class = "rankings")
+    # if any aggregated, reaggregate if necessary
+    agg <- !vapply(freq, is.null, logical(1))
+    if (any(agg)){
+        for (i in seq_along(freq)){
+            if (!agg[i]) freq[[i]] <- rep.int(1L, length(n[i]))
+        }
+        R <- structure(R, freq = unlist(freq), class = "rankings")
+        aggregate(R)
+    } else {
+        structure(R, class = "rankings")
+    }
 }

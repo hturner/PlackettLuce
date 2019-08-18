@@ -4,7 +4,9 @@
 \alias{rankings}
 \alias{as.rankings}
 \alias{as.rankings.default}
+\alias{as.rankings.preflib}
 \alias{as.rankings.matrix}
+\alias{aggregate.rankings}
 \alias{[.rankings}
 \alias{format.rankings}
 \alias{rbind.rankings}
@@ -12,14 +14,17 @@
 \usage{
 rankings(data, id, item, rank, verbose = TRUE, ...)
 
-as.rankings(x, input = c("ranking", "ordering"), labels = NULL,
-  verbose = TRUE, ...)
+as.rankings(x, verbose = TRUE, ...)
 
-\method{as.rankings}{default}(x, input = c("ranking", "ordering"),
-  labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{default}(x, freq = NULL, input = c("ranking",
+  "ordering"), aggregate = TRUE, labels = NULL, verbose = TRUE, ...)
 
-\method{as.rankings}{matrix}(x, input = c("ranking", "ordering"),
-  labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{preflib}(x, verbose = TRUE, ...)
+
+\method{as.rankings}{matrix}(x, freq = NULL, input = c("ranking",
+  "ordering"), aggregate = TRUE, labels = NULL, verbose = TRUE, ...)
+
+\method{aggregate}{rankings}(x, ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
@@ -49,6 +54,10 @@ to rankings data.}
 row per ranking, or an object that can be coerced to such as matrix; for
 \code{[} and \code{format}, a \code{"rankings"} object.}
 
+\item{freq}{an optional column index (number, character or logical)
+specifying a column of \code{x} that holds ranking frequencies, or a vector
+of ranking frequencies.}
+
 \item{input}{for \code{as.rankings}, whether each row in the input matrix
 contains a numeric \code{"ranking"} (dense, standard/modified competition or
 fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
@@ -71,8 +80,10 @@ rankings that are too wide will be truncated.}
 }
 \value{
 a \code{"rankings"} object, which is a matrix of dense rankings
-with one attribute \code{omit} the indices of any rankings that were
-omitted due to insufficient data (less than two non-missing ranks).
+with the following attributes:
+\item{freq}{The frequencies of aggregated rankings.}
+\item{omit}{The indices of any rankings that were omitted due to
+insufficient data (less than two non-missing ranks).}
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
