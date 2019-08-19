@@ -37,8 +37,7 @@
 #' contains a numeric \code{"ranking"} (dense, standard/modified competition or
 #' fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.
 #' @param labels for \code{input = "ordering"} an optional vector of labels for
-#' the items. If \code{NULL}, the items will be labelled by the sorted unique
-#' values of \code{x}.
+#' the items, corresponding to the sorted unique values of \code{x}.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
 #' @param drop if \code{TRUE} return single row/column matrices as a vector.
@@ -190,15 +189,9 @@ as.rankings.matrix <- function(x,
     }
     if (input == "ordering"){
         # define items, N.B. matrix cells may be vectors; may have NAs
-        if (mode(x[[1]]) == "character"){
-            if (is.null(labels)) {
-                item <- labels <- sort(unique(c(x)))
-            } else item <- labels
-            m <- length(item)
-        } else {
-            m <- max(unlist(x), na.rm = TRUE)
-            item <- seq_len(m)
-        }
+        item <- sort(unique(c(x)))
+        if (!is.null(labels) & length(labels) != length(item))
+            stop("`length(labels)` is not equal to the number of unique items")
         # convert ordered items to dense ranking
         if (mode(x) == "list"){
             # i.e. there are ties
@@ -213,13 +206,7 @@ as.rankings.matrix <- function(x,
                 match(item, ordering, nomatch = 0L)
             }))
         }
-        if (!is.null(labels)){
-            if (length(labels) > m){
-                unused <- length(labels) - m
-                x <- cbind(x, matrix(0L, nrow = nrow(x), ncol = unused))
-            }
-            colnames(x) <- labels
-        }
+        if (!is.null(labels)) colnames(x) <- labels
     } else if (NCOL(x) >= 2L) {
             # check rankings are dense rankings, recode if necessary
             x <- checkDense(x, verbose = verbose)
