@@ -1,3 +1,15 @@
+# PlackettLuce 0.2-7
+
+## New Features
+
+* The `"rankings"` object can now store frequencies as an attribute. `as.rankings()` can aggregate rankings if required.
+* New `complete_orderings()` and `recode_orderings()` functions to help pre-process orderings before converting to rankings, `complete_orderings()` infers the item in r'th rank given the items in the other (r - 1) ranks. `recode_orderings()` converts coded (partial) orderings to orderings of the items in each ordering.
+* New `read.soi()`, `read.toc()` and `read.toi` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List").
+
+## Changes in behaviour
+
+* `as.data.frame.rankings()` now converts a rankings object to a data frame with a separate column for each item, plus a column of frequencies if the rankings are aggregated. Previous behaviour (rankings object in  a single column) can be achieved via `dat$R <- rankings` or `data.frame(R = I(rankings))` (the latter does not use the `print.rankings` method).
+
 # PlackettLuce 0.2-6
 
 * Avoid using `isFALSE()` for compatibility with R < 3.5.

@@ -285,14 +285,21 @@ checkDense <- function(x, verbose = TRUE){
 
 #' @method as.data.frame rankings
 #' @export
-as.data.frame.rankings <-
-    function(x, row.names = NULL, optional = FALSE, ...,
-             nm = paste(deparse(substitute(x), width.cutoff = 20L),
-                        collapse = " ")){
-    value <- list(x)
+as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
+                                   freq = c("last", "first"),
+                                   col.names = colnames(x)){
+    value <- asplit(x, 2)
+    freq <- match.arg(freq)
+    if (freq == "first") {
+        value <- c(list(attr(x, "freq")), value)
+        if (length(value) > length(col.names)) col.names <- c("freq", col.names)
+    } else {
+        value <- c(value, list(attr(x, "freq")))
+        if (length(value) > length(col.names)) col.names <- c(col.names, "freq")
+    }
     if (!optional) {
-        names(value) <- nm
-    } else names(value) <- make.names(nm)
+        names(value) <- col.names
+    } else names(value) <- make.names(col.names)
     if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
     if (is.null(row.names)) {
         row.names <- .set_row_names(nrow(x))
