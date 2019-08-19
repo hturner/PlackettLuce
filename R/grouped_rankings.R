@@ -1,10 +1,11 @@
-#' Grouped Rankings Object
+#' Group Rankings
 #'
 #' Create an object of class \code{"grouped_rankings"} which associates a
 #' group index with an object of class \code{"rankings"}. This allows the
 #' rankings to be linked to covariates with group-specific values as the basis
 #' for model-based recursive partitioning, see \code{\link{pltree}}.
 #'
+#' @aliases grouped_rankings
 #' @param rankings a \code{\link{rankings}} object or an object that can be
 #' coerced by \code{as.rankings}.
 #' @param index a numeric vector of length equal to the number of rankings
@@ -47,7 +48,7 @@
 #' R
 #'
 #' # grouped rankings (first three in group 1, next two in group 2)
-#' G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
+#' G <- group_rankings(R, c(1, 1, 1, 2, 2))
 #' length(G)
 #' ## by default up to 2 rankings are shown per group, "..." indicates if
 #' ## there are further rankings
@@ -63,7 +64,7 @@
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
 #' @export
-grouped_rankings <- function(rankings, index, ...){
+group_rankings <- function(rankings, index, ...){
     if (!(is.vector(index) & length(index) == nrow(rankings)))
         stop("index must be a vector with length equal to rankings")
     nm <- rownames(rankings)
@@ -116,7 +117,14 @@ ranking_stats <- function(rankings){
     list(R = R, S = S, id = id)
 }
 
-#' @rdname grouped_rankings
+#' @rdname PlackettLuce-deprecated
+#' @export
+grouped_rankings <- function(rankings, index, ...){
+    .Deprecated("group_rankings", package = "PlackettLuce")
+    group_rankings(rankings, index, ...)
+}
+
+#' @rdname group_rankings
 #' @method [ grouped_rankings
 #' @export
 "[.grouped_rankings" <- function(x, i, j, ..., drop = TRUE,
@@ -167,13 +175,13 @@ ranking_stats <- function(rankings){
     }
 }
 
-#' @rdname grouped_rankings
+#' @rdname group_rankings
 #' @export
 as.grouped_rankings <- function(x, ...){
     UseMethod("as.grouped_rankings")
 }
 
-#' @rdname grouped_rankings
+#' @rdname group_rankings
 #' @method as.grouped_rankings paircomp
 #' @export
 as.grouped_rankings.paircomp <- function(x, ...){
@@ -233,7 +241,7 @@ print.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     print.default(format(x, max = max, width = width, ...))
 }
 
-#' @rdname grouped_rankings
+#' @rdname group_rankings
 #' @method format grouped_rankings
 #' @export
 format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){

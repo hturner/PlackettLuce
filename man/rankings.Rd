@@ -12,17 +12,20 @@
 \alias{rbind.rankings}
 \title{Rankings Object}
 \usage{
-rankings(data, id, item, rank, verbose = TRUE, ...)
+rankings(data, id, item, rank, aggregate = FALSE,
+  na.action = getOption("na.action"), verbose = TRUE, ...)
 
 as.rankings(x, verbose = TRUE, ...)
 
 \method{as.rankings}{default}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = TRUE, labels = NULL, verbose = TRUE, ...)
+  "ordering"), aggregate = FALSE, labels = NULL,
+  na.action = getOption("na.action"), verbose = TRUE, ...)
 
 \method{as.rankings}{preflib}(x, verbose = TRUE, ...)
 
 \method{as.rankings}{matrix}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = TRUE, labels = NULL, verbose = TRUE, ...)
+  "ordering"), aggregate = FALSE, labels = NULL,
+  na.action = getOption("na.action"), verbose = TRUE, ...)
 
 \method{aggregate}{rankings}(x, ...)
 
@@ -63,8 +66,7 @@ contains a numeric \code{"ranking"} (dense, standard/modified competition or
 fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
 
 \item{labels}{for \code{input = "ordering"} an optional vector of labels for
-the items. If \code{NULL}, the items will be labelled by the sorted unique
-values of \code{x}.}
+the items, corresponding to the sorted unique values of \code{x}.}
 
 \item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
 
@@ -79,11 +81,10 @@ a matrix/vector.}
 rankings that are too wide will be truncated.}
 }
 \value{
-a \code{"rankings"} object, which is a matrix of dense rankings
-with the following attributes:
-\item{freq}{The frequencies of aggregated rankings.}
-\item{omit}{The indices of any rankings that were omitted due to
-insufficient data (less than two non-missing ranks).}
+a \code{"rankings"} object, which is a matrix of dense rankings with
+methods for several generics including `aggregate`, `[`, `format` and
+`rbind`. If the object is created with `aggregate = TRUE`, the matrix has
+an attribute named `"freq"`, which is the frequencies of aggregated rankings.
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
@@ -92,14 +93,18 @@ or ordered items to a \code{"rankings"} object.
 \details{
 Each ranking in the input data will be converted to a dense ranking, which
 rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
-should have a rank of 0. Tied items are given the same rank with no rank
-skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+should have a rank of 0 or NA. Tied items are given the same rank with no
+rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
 first place and the third item in second place; the second item is unranked.
 
-Rankings with less than 2 items are dropped.
+Records in `data` with missing `id` or `item` are dropped. Duplicated items
+in the rankings are resolved if possible: redundant or inconsistent ranks
+are set to `NA`. Rankings with less than 2 items are set to `NA`. Any issues
+causing records to be removed or recoded produce a messafe if
+`verbose = TRUE`.
 
 The method for \code{[} will return a reduced rankings object by default,
-recoding and dropping invalid rankings as necessary. To extract rows
+recoding and setting invalid rankings to `NA` as necessary. To extract rows
 and/or columns of the rankings as a matrix or vector,
 set \code{as.rankings = FALSE}, see examples.
 }
