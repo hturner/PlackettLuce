@@ -319,6 +319,8 @@ PlackettLuce <- function(rankings,
     if (!inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
+    na.action <- attr(rankings, "na.action")
+    if (identical(na.action, "na.pass")) rankings <- na.omit(rankings)
 
     # attributes
     items <- colnames(rankings)

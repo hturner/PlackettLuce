@@ -8,6 +8,7 @@
 
 ## Changes in behaviour
 
+* `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`. The handling of completely missing rankings is determined by the `na.action` argument of `rankings()` and `as.rankings()`.
 * `as.data.frame.rankings()` now converts a rankings object to a data frame with a separate column for each item, plus a column of frequencies if the rankings are aggregated. Previous behaviour (rankings object in  a single column) can be achieved via `dat$R <- rankings` or `data.frame(R = I(rankings))` (the latter does not use the `print.rankings` method).
 
 # PlackettLuce 0.2-6

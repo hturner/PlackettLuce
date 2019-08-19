@@ -5,14 +5,18 @@
 #'
 #' Each ranking in the input data will be converted to a dense ranking, which
 #' rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
-#' should have a rank of 0. Tied items are given the same rank with no rank
-#' skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+#' should have a rank of 0 or NA. Tied items are given the same rank with no
+#' rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
 #' first place and the third item in second place; the second item is unranked.
 #'
-#' Rankings with less than 2 items are dropped.
+#' Records in `data` with missing `id` or `item` are dropped. Duplicated items
+#' in the rankings are resolved if possible: redundant or inconsistent ranks
+#' are set to `NA`. Rankings with less than 2 items are set to `NA`. Any issues
+#' causing records to be removed or recoded produce a messafe if
+#' `verbose = TRUE`.
 #'
 #' The method for \code{[} will return a reduced rankings object by default,
-#' recoding and dropping invalid rankings as necessary. To extract rows
+#' recoding and setting invalid rankings to `NA` as necessary. To extract rows
 #' and/or columns of the rankings as a matrix or vector,
 #' set \code{as.rankings = FALSE}, see examples.
 #' @param data a data frame with columns specified by \code{id}, \code{item} and
@@ -46,11 +50,10 @@
 #' rankings that are too wide will be truncated.
 #' @param ... further arguments passed to/from methods.
 #'
-#' @return a \code{"rankings"} object, which is a matrix of dense rankings
-#' with the following attributes:
-#' \item{freq}{The frequencies of aggregated rankings.}
-#' \item{omit}{The indices of any rankings that were omitted due to
-#' insufficient data (less than two non-missing ranks).}
+#' @return a \code{"rankings"} object, which is a matrix of dense rankings with
+#' methods for several generics including `aggregate`, `[`, `format` and
+#' `rbind`. If the object is created with `aggregate = TRUE`, the matrix has
+#' an attribute named `"freq"`, which is the frequencies of aggregated rankings.
 #'
 #' @examples
 #' # create rankings from data in long form
@@ -87,21 +90,17 @@
 #' # extract rankings for item 1 as a vector
 #' R[,1, as.rankings = FALSE]
 #'
-#' @importFrom stats complete.cases na.omit
 #' @export
-rankings <- function(data, id, item, rank, aggregate = TRUE,
-                     verbose = TRUE, ...){
+rankings <- function(data, id, item, rank, aggregate = FALSE,
+                     na.action = getOption("na.action"), verbose = TRUE, ...){
     data <- data[c(id, item, rank)]
     if (ncol(data) != 3L) stop("id, item and rank must specify columns in data")
-    # id completely NA rankings
-    complete <- complete.cases(data)
-    # remove records with unknown id, item or rank
-    if (any(!complete)){
-        nm <- unique(data[[id]])
-        omit <- setdiff(nm, unique(data[[id]][complete]))
-        data <- data[complete, ]
+    # remove records with unknown id or item
+    unknown <- is.na(data[[id]]) | is.na(data[[item]])
+    if (any(unknown)){
+        data <- data[!unknown, ]
         if (verbose){
-            message("Removed records with unknown id, item or rank")
+            message("Removed records with unknown id or item")
         }
     }
     # id duplicated items
@@ -110,7 +109,7 @@ rankings <- function(data, id, item, rank, aggregate = TRUE,
     if (any(dup)){
         if (verbose) {
             message("Duplicated items within rankings: ",
-                    "removed redundant/inconsistent ranks.")
+                    "set redundant/inconsistent to `NA`.")
         }
         dups <- id[dup]
         ndups <- length(dups)
@@ -124,7 +123,7 @@ rankings <- function(data, id, item, rank, aggregate = TRUE,
         include <- !id %in% dups
         first <- !include & !dup
         first[first] <- keep
-        data <- data[include | first,]
+        data[!include & !first, rank] <- NA
     }
     # create rankings matrix (do not assume any form of ranking)
     lev1 <- sort(unique(data[[1L]]))
@@ -133,11 +132,9 @@ rankings <- function(data, id, item, rank, aggregate = TRUE,
                 dimnames = list(lev1, lev2))
     R[cbind(match(data[[1L]], lev1), match(data[[2L]], lev2))] <- data[[3L]]
     # convert to dense rankings and remove rankings with less than 2 items
-    res <- as.rankings.matrix(R, aggregate = aggregate, verbose = verbose)
+    res <- as.rankings.matrix(R, aggregate = aggregate, na.action = na.action,
+                              verbose = verbose)
     if (!is.null(attr(res, "freq"))) rownames(res) <- NULL
-    if (length(attr(res, "omit")) && any(!complete)){
-        attr(res, "omit") <- intersect(nm, c(attr(res, "omit"), omit))
-    }
     res
 }
 
@@ -153,12 +150,14 @@ as.rankings <- function(x,
 as.rankings.default <- function(x,
                                 freq = NULL,
                                 input = c("ranking", "ordering"),
-                                aggregate = TRUE,
+                                aggregate = FALSE,
                                 labels = NULL,
+                                na.action = getOption("na.action"),
                                 verbose = TRUE, ...){
     x <- as.matrix(x)
     as.rankings.matrix(x, freq = freq, input = input, aggregate = aggregate,
-                       labels = labels, verbose = verbose, ...)
+                       labels = labels, na.action = na.action,
+                       verbose = verbose, ...)
 }
 
 #' @rdname rankings
@@ -173,8 +172,9 @@ as.rankings.preflib <- function(x, verbose = TRUE, ...){
 as.rankings.matrix <- function(x,
                                freq = NULL,
                                input = c("ranking", "ordering"),
-                               aggregate = TRUE,
+                               aggregate = FALSE,
                                labels = NULL,
+                               na.action = getOption("na.action"),
                                verbose = TRUE, ...){
     input <- match.arg(input, c("ranking", "ordering"))
     if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
@@ -228,21 +228,18 @@ as.rankings.matrix <- function(x,
     omit_id <- which(rowSums(x > 0L) < 2L)
     if (length(omit_id)){
         if (verbose)
-            message("Removed rankings with less than 2 items")
-        if (!is.null(rownames(x))){
-            omit <- rownames(x)[omit_id]
-        } else omit <- omit_id
-        x <- x[-omit_id, , drop = FALSE]
-        if (!is.null(freq)) freq <- freq[-omit_id]
+            message("Rankings with less than 2 items set to `NA`")
+        x[omit_id, ] <- NA
     }
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
     mode(x) <- "integer"
     # aggregating
-    out <- structure(x, freq = freq, omit = if (length(omit_id)) omit else NULL,
-                    class = "rankings")
-    if (aggregate){
-        aggregate(out)
+    out <- structure(x, freq = freq, class = "rankings")
+    if (aggregate) out <- aggregate(out)
+    # handle NAs
+    if (any(is.na(out))) {
+        match.fun(na.action)(out)
     } else out
 }
 
@@ -326,6 +323,12 @@ length.rankings <- function(x) {
    nrow(x)
 }
 
+#' @method is.na rankings
+#' @export
+is.na.rankings <- function(x) {
+    na <- is.na(format(R))
+}
+
 #' @importFrom utils str
 #' @export
 utils::str
@@ -368,7 +371,10 @@ str.rankings <- function(object, ...) {
 #' @method print rankings
 #' @export
 print.rankings <- function(x, ...){
-    print.default(format(x, ...))
+    value <- format(x, ...)
+    if (!is.null(attr(x, "freq"))){
+        print.data.frame(data.frame(ranking = value, freq = attr(x, "freq")))
+    } else print.default(value)
 }
 
 #' @method format rankings
@@ -376,17 +382,18 @@ print.rankings <- function(x, ...){
 #' @export
 format.rankings <- function(x, width = 40L, ...){
     f <- function(i, items) {
-        obj <- items[i != 0L]
-        i <- i[i != 0L]
+        keep <- !is.na(i) & i != 0L
+        obj <- items[keep]
+        i <- i[keep]
         ord <- order(i)
         if (length(obj) > 1L){
             op <- ifelse(diff(i[ord]) == 0L, " = ", " > ")
             paste(obj[ord], c(op, ""), sep = "", collapse = "")
-        } else obj
+        } else NA
     }
     value <- apply(x, 1L, f, colnames(x))
     nc <- nchar(value)
-    trunc <- nc > width
+    trunc <- !is.na(nc) & nc > width
     value[trunc] <- paste(strtrim(value[trunc], width - 4), "...")
     value
 }
