@@ -89,7 +89,8 @@
 #'
 #' @importFrom stats complete.cases na.omit
 #' @export
-rankings <- function(data, id, item, rank, verbose = TRUE, ...){
+rankings <- function(data, id, item, rank, aggregate = TRUE,
+                     verbose = TRUE, ...){
     data <- data[c(id, item, rank)]
     if (ncol(data) != 3L) stop("id, item and rank must specify columns in data")
     # id completely NA rankings
@@ -132,7 +133,8 @@ rankings <- function(data, id, item, rank, verbose = TRUE, ...){
                 dimnames = list(lev1, lev2))
     R[cbind(match(data[[1L]], lev1), match(data[[2L]], lev2))] <- data[[3L]]
     # convert to dense rankings and remove rankings with less than 2 items
-    res <- as.rankings.matrix(R, verbose = verbose)
+    res <- as.rankings.matrix(R, aggregate = aggregate, verbose = verbose)
+    if (!is.null(attr(res, "freq"))) rownames(res) <- NULL
     if (length(attr(res, "omit")) && any(!complete)){
         attr(res, "omit") <- intersect(nm, c(attr(res, "omit"), omit))
     }
