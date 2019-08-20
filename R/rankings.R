@@ -5,19 +5,24 @@
 #'
 #' Each ranking in the input data will be converted to a dense ranking, which
 #' rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
-#' should have a rank of 0 or NA. Tied items are given the same rank with no
+#' should have a rank of 0 or `NA`. Tied items are given the same rank with no
 #' rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
 #' first place and the third item in second place; the second item is unranked.
 #'
 #' Records in `data` with missing `id` or `item` are dropped. Duplicated items
 #' in the rankings are resolved if possible: redundant or inconsistent ranks
-#' are set to `NA`. Rankings with less than 2 items are set to `NA`. Any issues
-#' causing records to be removed or recoded produce a messafe if
+#' are set to `NA`. Rankings with only 1 items are set to `NA` (rankings with
+#' zero items are automatically treated as `NA`). Any issues
+#' causing records to be removed or recoded produce a message if
 #' `verbose = TRUE`.
 #'
+#' For `as.rankings` with `input = "ordering"`, unused ranks may be filled with
+#' zeroes for numeric `x` or `NA`. It is only necessary to have as many columns
+#' as ranks that are used.
+#'
 #' The method for \code{[} will return a reduced rankings object by default,
-#' recoding and setting invalid rankings to `NA` as necessary. To extract rows
-#' and/or columns of the rankings as a matrix or vector,
+#' recoding as dense rankings and setting invalid rankings to `NA` as necessary.
+#' To extract rows and/or columns of the rankings as a matrix or vector,
 #' set \code{as.rankings = FALSE}, see examples.
 #' @param data a data frame with columns specified by \code{id}, \code{item} and
 #' \code{rank}.
@@ -91,7 +96,7 @@
 #'
 #' @export
 rankings <- function(data, id, item, rank, aggregate = FALSE,
-                     na.action = getOption("na.action"), verbose = TRUE, ...){
+                     verbose = TRUE, ...){
     data <- data[c(id, item, rank)]
     if (ncol(data) != 3L) stop("id, item and rank must specify columns in data")
     # remove records with unknown id or item
@@ -131,8 +136,7 @@ rankings <- function(data, id, item, rank, aggregate = FALSE,
                 dimnames = list(lev1, lev2))
     R[cbind(match(data[[1L]], lev1), match(data[[2L]], lev2))] <- data[[3L]]
     # convert to dense rankings and remove rankings with less than 2 items
-    res <- as.rankings.matrix(R, aggregate = aggregate, na.action = na.action,
-                              verbose = verbose)
+    res <- as.rankings.matrix(R, aggregate = aggregate, verbose = verbose)
     if (!is.null(attr(res, "freq"))) rownames(res) <- NULL
     res
 }
@@ -151,12 +155,10 @@ as.rankings.default <- function(x,
                                 input = c("ranking", "ordering"),
                                 aggregate = FALSE,
                                 labels = NULL,
-                                na.action = getOption("na.action"),
                                 verbose = TRUE, ...){
     x <- as.matrix(x)
     as.rankings.matrix(x, freq = freq, input = input, aggregate = aggregate,
-                       labels = labels, na.action = na.action,
-                       verbose = verbose, ...)
+                       labels = labels, verbose = verbose, ...)
 }
 
 #' @rdname rankings
@@ -173,7 +175,6 @@ as.rankings.matrix <- function(x,
                                input = c("ranking", "ordering"),
                                aggregate = FALSE,
                                labels = NULL,
-                               na.action = getOption("na.action"),
                                verbose = TRUE, ...){
     input <- match.arg(input, c("ranking", "ordering"))
     if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
@@ -189,7 +190,7 @@ as.rankings.matrix <- function(x,
     }
     if (input == "ordering"){
         # define items, N.B. matrix cells may be vectors; may have NAs
-        item <- sort(unique(c(x)))
+        item <- sort(setdiff(c(x), 0L))
         if (!is.null(labels) & length(labels) != length(item))
             stop("`length(labels)` is not equal to the number of unique items")
         # convert ordered items to dense ranking
@@ -209,24 +210,16 @@ as.rankings.matrix <- function(x,
         if (!is.null(labels)) colnames(x) <- labels
     } else if (NCOL(x) >= 2L) {
             # check rankings are dense rankings, recode if necessary
+            x[is.na(x)] <- 0
             x <- checkDense(x, verbose = verbose)
-    }
-    # remove rankings with less than 2 items
-    omit_id <- which(rowSums(x > 0L) < 2L)
-    if (length(omit_id)){
-        if (verbose)
-            message("Rankings with less than 2 items set to `NA`")
-        x[omit_id, ] <- NA
     }
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
     mode(x) <- "integer"
     # aggregating
     out <- structure(x, freq = freq, class = "rankings")
-    if (aggregate) out <- aggregate(out)
-    # handle NAs
-    if (any(is.na(out))) {
-        match.fun(na.action)(out)
+    if (aggregate) {
+        aggregate(out)
     } else out
 }
 
@@ -251,12 +244,10 @@ aggregate.rankings <- function(x, ...){
 }
 
 checkDense <- function(x, verbose = TRUE){
-    # replace NA with 0 (unranked)
-    x[is.na(x)] <- 0
     # check rankings are dense rankings
     nRank <- apply(x, 1L, function(x) length(unique(x[x > 0L])))
     maxRank <- apply(x, 1L, max)
-    bad <- maxRank != nRank
+    bad <- maxRank != nRank & nRank > 1
     # recode any ranking not in dense form
     if (any(bad)){
         if (verbose) message("Recoded rankings that are not in dense form")
@@ -265,6 +256,13 @@ checkDense <- function(x, verbose = TRUE){
             x[id] <- match(x[id], sort(unique(x[id])))
             x
         }))
+    }
+    # set rankings with only 1 item to NA (all ranks 0)
+    omit_id <- which(rowSums(x > 0L) == 1L)
+    if (length(omit_id)){
+        if (verbose)
+            message("Rankings with only 1 item set to `NA`")
+        x[omit_id, ] <- 0L
     }
     x
 }
@@ -313,7 +311,7 @@ length.rankings <- function(x) {
 #' @method is.na rankings
 #' @export
 is.na.rankings <- function(x) {
-    na <- is.na(format(R))
+    rowSums(R) == 0
 }
 
 #' @importFrom utils str
@@ -343,9 +341,7 @@ str.rankings <- function(object, ...) {
         value <- .subset(x, i, j, drop = FALSE)
         # recode and drop items with <=2 items if necessary
         if (as.rankings && ncol(value) != ncol(x)) {
-            value <- suppressWarnings(as.rankings.matrix(value,
-                                                         freq = attr(x, "freq"),
-                                                         ...))
+            value <- checkDense(value, ...)
         }
     }
     if (!as.rankings) {
