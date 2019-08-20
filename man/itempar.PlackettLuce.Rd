@@ -19,8 +19,8 @@ unit sum (\code{log = FALSE}) constraint.}
 \item{alias}{logical. If \code{TRUE} (the default), the aliased parameter is
 included in the return vector (and in the variance-covariance matrix if
 \code{vcov = TRUE}). If \code{FALSE}, it is removed. If the restriction given
- in ref depends on several parameters, the first parameter of the restriction
- specified is (arbitrarily) chosen to be removed if alias is \code{FALSE}.}
+in ref depends on several parameters, the first parameter of the restriction
+specified is (arbitrarily) chosen to be removed if alias is \code{FALSE}.}
 
 \item{vcov}{logical. If \code{TRUE} (the default), the (transformed)
 variance-covariance matrix of the item parameters is attached as attribute

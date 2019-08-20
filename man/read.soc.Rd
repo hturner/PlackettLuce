@@ -19,7 +19,7 @@ corresponding to each item number.
 }
 \description{
 Read data from a "Strict Orders - Complete List" file, as provided by
-\href{http://www.preflib.org}{\{PrefLib\}: A Library for Preferences}.
+\href{http://www.preflib.org}{{PrefLib}: A Library for Preferences}.
 }
 \examples{
 

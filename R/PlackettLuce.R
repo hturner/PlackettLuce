@@ -294,6 +294,7 @@ PlackettLuce <- function(rankings,
                          gamma = NULL,
                          adherence = NULL,
                          weights = attr(rankings, "freq"),
+                         na.action = getOption("na.action"),
                          start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 0.1, maxit = c(500, 10),
@@ -301,6 +302,12 @@ PlackettLuce <- function(rankings,
     call <- match.call()
 
     # check rankings
+    if (!inherits(rankings, "rankings")){
+        rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
+    }
+    na.action <- attr(rankings, "na.action")
+    if (identical(na.action, "na.pass")) rankings <- na.omit(rankings)
+
     grouped_rankings <- inherits(rankings, "grouped_rankings")
     if (grouped_rankings){
         ranker <- attr(rankings, "index")
@@ -315,12 +322,6 @@ PlackettLuce <- function(rankings,
     } else if (!is.null(adherence)| !is.null(gamma)){
         ranker <- seq_len(nrow(rankings))
     } else ranker <- NULL
-
-    if (!inherits(rankings, "rankings")){
-        rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
-    }
-    na.action <- attr(rankings, "na.action")
-    if (identical(na.action, "na.pass")) rankings <- na.omit(rankings)
 
     # attributes
     items <- colnames(rankings)

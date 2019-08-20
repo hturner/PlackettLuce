@@ -9,9 +9,6 @@ read.toi(file)
 \arguments{
 \item{file}{}
 }
-\value{
-
-}
 \description{
 Title
 }

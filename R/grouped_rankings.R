@@ -71,12 +71,6 @@ group_rankings <- function(rankings, index, ...){
     if (!inherits(rankings, "rankings"))
         rankings <- as.rankings(rankings, ...)
     index <- as.numeric(index)
-    if (!is.null(attr(rankings, "omit"))){
-        if (!is.null(nm)) {
-            omit <- match(attr(rankings, "omit"), nm)
-        } else omit <- attr(rankings, "omit")
-        index <- index[-omit]
-    }
     do.call("structure",
             c(list(seq_len(max(index)), rankings = rankings, index = index),
               ranking_stats(rankings),
@@ -93,6 +87,7 @@ ranking_stats <- function(rankings){
     for (i in seq_len(nr)){
         x <- rankings[i, ]
         ind <- which(as.logical(x))
+        if (length(ind) < 2L) next # no contribution to modelling
         ord <- order(x[ind], decreasing = TRUE)
         j <- seq_along(ind)
         # items ranked from last to 1st place
@@ -104,7 +99,6 @@ ranking_stats <- function(rankings){
         if (size[1L] == 1L) size[1L] <- 0L
         S[i, j] <- size
         # contribution to adjacency matrix
-        if (x[1L] < 2L) next # x[1] gives max rank
         add <- list()
         for (s in seq_len(x[1L] - 1L)){
             one <- which(rankings[i, ] == s)
@@ -118,6 +112,8 @@ ranking_stats <- function(rankings){
 }
 
 #' @rdname PlackettLuce-deprecated
+#' @section grouped_rankings:
+#' `grouped_rankings()` has been renamed [group_rankings()].
 #' @export
 grouped_rankings <- function(rankings, index, ...){
     .Deprecated("group_rankings", package = "PlackettLuce")
@@ -171,7 +167,7 @@ grouped_rankings <- function(rankings, index, ...){
     } else {
         # convert rankings matrix to grouped_rankings
         # (will recode as necessary, omit redundant rankings, create R, S, id)
-        grouped_rankings(rankings, index)
+        group_rankings(rankings, index)
     }
 }
 
@@ -256,4 +252,34 @@ format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     trunc <- tab > max
     value[trunc] <- paste0(value[trunc], ", ...")
     value
+}
+
+#' @rdname group_rankings
+#' @method na.omit grouped_rankings
+#' @export
+na.omit.grouped_rankings <- function(object, ...) {
+    omit <- seq_along(attr(object, "rankings"))[is.na(attr(object, "rankings"))]
+    if (length(omit) == 0L)
+        return(object)
+    nm <- names(object)
+    index <- attr(object, "index")[-omit]
+    names(omit) <- nm[omit]
+    attr(omit, "class") <- "omit"
+    structure(unique(index),
+              rankings = attr(object, "rankings")[-omit, , drop = FALSE],
+              index = index,
+              R = attr(x, "R")[-omit, , drop = FALSE],
+              S = attr(x, "S")[-omit, , drop = FALSE],
+              id = attr(x, "id")[-omit],
+              na.action = omit,
+              class = "grouped_rankings")
+}
+
+#' @rdname group_rankings
+#' @method na.exclude grouped_rankings
+#' @export
+na.exclude.grouped_rankings <- function(object, ...) {
+    out  <- na.omit(object)
+    class(attr(out, "na.action")) <- "na.exclude"
+    out
 }

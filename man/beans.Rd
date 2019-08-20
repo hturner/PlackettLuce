@@ -6,24 +6,24 @@
 \title{Preferred Bean Varieties in Nicaragua}
 \format{A data frame with 842 records and 11 variables:
 \describe{
-    \item{\code{variety_a}}{The name of variety A in the comparison.}
-    \item{\code{variety_b}}{The name of variety B in the comparison.}
-    \item{\code{variety_c}}{The name of variety C in the comparison.}
-    \item{\code{best}}{The variety the farmer ranked in first place ("A",
-    "B" or "C").}
-    \item{\code{worst}}{The variety the farmer ranked in last place ("A",
-    "B" or "C").}
-    \item{\code{var_a}}{How the farmer ranked variety A compared to the local
-    variety ("Worse" or "Better").}
-    \item{\code{var_b}}{How the farmer ranked variety B compared to the local
-    variety ("Worse" or "Better").}
-    \item{\code{var_c}}{How the farmer ranked variety C compared to the local
-    variety ("Worse" or "Better").}
-    \item{\code{season}}{A factor specifying the growing season ("Po - 15",
-    "Ap - 15", "Pr - 16", "Po - 16", "Ap - 16".}
-    \item{\code{year}}{The year of planting.}
-    \item{\code{maxTN}}{The maximum temperature at night during the
-    vegetative cycle (degrees Celsius).}
+\item{\code{variety_a}}{The name of variety A in the comparison.}
+\item{\code{variety_b}}{The name of variety B in the comparison.}
+\item{\code{variety_c}}{The name of variety C in the comparison.}
+\item{\code{best}}{The variety the farmer ranked in first place ("A",
+"B" or "C").}
+\item{\code{worst}}{The variety the farmer ranked in last place ("A",
+"B" or "C").}
+\item{\code{var_a}}{How the farmer ranked variety A compared to the local
+variety ("Worse" or "Better").}
+\item{\code{var_b}}{How the farmer ranked variety B compared to the local
+variety ("Worse" or "Better").}
+\item{\code{var_c}}{How the farmer ranked variety C compared to the local
+variety ("Worse" or "Better").}
+\item{\code{season}}{A factor specifying the growing season ("Po - 15",
+"Ap - 15", "Pr - 16", "Po - 16", "Ap - 16".}
+\item{\code{year}}{The year of planting.}
+\item{\code{maxTN}}{The maximum temperature at night during the
+vegetative cycle (degrees Celsius).}
 }}
 \source{
 The data were provided by Bioversity International, a CGIAR research
@@ -42,9 +42,9 @@ local variety and state whether they considered it to be better or worse.
 \details{
 There are three crop seasons in Central America:
 \describe{
-    \item{Primera}{May - August.}
-    \item{Postrera}{September - October.}
-    \item{Apante}{November - January.}
+\item{Primera}{May - August.}
+\item{Postrera}{September - October.}
+\item{Apante}{November - January.}
 }
 Beans can be planted near the beginning of each season, though are most
 commonly planted in the Postrera or Apante seasons.

@@ -7,6 +7,7 @@
 \alias{as.grouped_rankings}
 \alias{as.grouped_rankings.paircomp}
 \alias{format.grouped_rankings}
+\alias{na.omit.grouped_rankings}
 \title{Group Rankings}
 \usage{
 group_rankings(rankings, index, ...)
@@ -19,6 +20,8 @@ as.grouped_rankings(x, ...)
 \method{as.grouped_rankings}{paircomp}(x, ...)
 
 \method{format}{grouped_rankings}(x, max = 2L, width = 20L, ...)
+
+\method{na.omit}{grouped_rankings}(object, ...)
 }
 \arguments{
 \item{rankings}{a \code{\link{rankings}} object or an object that can be

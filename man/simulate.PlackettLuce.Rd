@@ -30,7 +30,7 @@ return \code{.Random.seed} as the \code{seed} attribute.}
 }
 \value{
 A \code{data.frame} of \code{\link{rankings}} objects of the same
-    dimension as \code{object$rankings}.
+dimension as \code{object$rankings}.
 }
 \description{
 Simulate from \code{PlackettLuce} fitted objects

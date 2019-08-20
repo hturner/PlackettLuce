@@ -12,20 +12,17 @@
 \alias{rbind.rankings}
 \title{Rankings Object}
 \usage{
-rankings(data, id, item, rank, aggregate = FALSE,
-  na.action = getOption("na.action"), verbose = TRUE, ...)
+rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
 as.rankings(x, verbose = TRUE, ...)
 
 \method{as.rankings}{default}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = FALSE, labels = NULL,
-  na.action = getOption("na.action"), verbose = TRUE, ...)
+  "ordering"), aggregate = FALSE, labels = NULL, verbose = TRUE, ...)
 
 \method{as.rankings}{preflib}(x, verbose = TRUE, ...)
 
 \method{as.rankings}{matrix}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = FALSE, labels = NULL,
-  na.action = getOption("na.action"), verbose = TRUE, ...)
+  "ordering"), aggregate = FALSE, labels = NULL, verbose = TRUE, ...)
 
 \method{aggregate}{rankings}(x, ...)
 
@@ -82,9 +79,9 @@ rankings that are too wide will be truncated.}
 }
 \value{
 a \code{"rankings"} object, which is a matrix of dense rankings with
-methods for several generics including `aggregate`, `[`, `format` and
-`rbind`. If the object is created with `aggregate = TRUE`, the matrix has
-an attribute named `"freq"`, which is the frequencies of aggregated rankings.
+methods for several generics including \code{aggregate}, \code{[}, \code{format} and
+\code{rbind}. If the object is created with \code{aggregate = TRUE}, the matrix has
+an attribute named \code{"freq"}, which is the frequencies of aggregated rankings.
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
@@ -93,19 +90,24 @@ or ordered items to a \code{"rankings"} object.
 \details{
 Each ranking in the input data will be converted to a dense ranking, which
 rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
-should have a rank of 0 or NA. Tied items are given the same rank with no
+should have a rank of 0 or \code{NA}. Tied items are given the same rank with no
 rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
 first place and the third item in second place; the second item is unranked.
 
-Records in `data` with missing `id` or `item` are dropped. Duplicated items
+Records in \code{data} with missing \code{id} or \code{item} are dropped. Duplicated items
 in the rankings are resolved if possible: redundant or inconsistent ranks
-are set to `NA`. Rankings with less than 2 items are set to `NA`. Any issues
-causing records to be removed or recoded produce a messafe if
-`verbose = TRUE`.
+are set to \code{NA}. Rankings with only 1 items are set to \code{NA} (rankings with
+zero items are automatically treated as \code{NA}). Any issues
+causing records to be removed or recoded produce a message if
+\code{verbose = TRUE}.
+
+For \code{as.rankings} with \code{input = "ordering"}, unused ranks may be filled with
+zeroes for numeric \code{x} or \code{NA}. It is only necessary to have as many columns
+as ranks that are used.
 
 The method for \code{[} will return a reduced rankings object by default,
-recoding and setting invalid rankings to `NA` as necessary. To extract rows
-and/or columns of the rankings as a matrix or vector,
+recoding as dense rankings and setting invalid rankings to \code{NA} as necessary.
+To extract rows and/or columns of the rankings as a matrix or vector,
 set \code{as.rankings = FALSE}, see examples.
 }
 \examples{

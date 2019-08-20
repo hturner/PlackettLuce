@@ -6,13 +6,13 @@
 \title{Paired Comparisons of Chocolate Pudding}
 \format{A data frame with 15 records and 6 variables:
 \describe{
-    \item{\code{i}}{The first brand in the comparison.}
-    \item{\code{j}}{The second brand in the comparison.}
-    \item{\code{r_ij}}{The frequency of paired comparisons of brand i and
-    brand j.}
-    \item{\code{w_ij}}{The frequency of preferences for i over j.}
-    \item{\code{w_ji}}{The frequency of preferences for j over i.}
-    \item{\code{t_ij}}{The frequency of no preference between i and j.}
+\item{\code{i}}{The first brand in the comparison.}
+\item{\code{j}}{The second brand in the comparison.}
+\item{\code{r_ij}}{The frequency of paired comparisons of brand i and
+brand j.}
+\item{\code{w_ij}}{The frequency of preferences for i over j.}
+\item{\code{w_ji}}{The frequency of preferences for j over i.}
+\item{\code{t_ij}}{The frequency of no preference between i and j.}
 }}
 \usage{
 pudding

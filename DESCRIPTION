@@ -37,5 +37,6 @@ Suggests: BiocStyle, BradleyTerry2, BradleyTerryScalable,
     Matrix.utils, PLMIX, StatRank, covr, hyper2, kableExtra, knitr,
     lbfgs, gnm, pmr, rmarkdown, testthat, tibble
 RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Language: en-GB

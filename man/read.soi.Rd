@@ -9,9 +9,6 @@ read.soi(file)
 \arguments{
 \item{file}{}
 }
-\value{
-
-}
 \description{
 Title
 }

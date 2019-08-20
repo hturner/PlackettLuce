@@ -21,7 +21,7 @@ pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
 \item{formula}{a symbolic description of the model to be fitted, of the form
 \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
 \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as
- partitioning variables.}
+partitioning variables.}
 
 \item{data}{an optional data frame containing the variables in the model.}
 
