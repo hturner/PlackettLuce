@@ -278,7 +278,7 @@
 #'
 #' # estimate adherence based on grouped rankings
 #' #  - assume two rankings from each ranker
-#' G <- group_rankings(R, rep(1:3, each = 2))
+#' G <- group(R, rep(1:3, each = 2))
 #' mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
 #' coef(mod_grouped)
 #' # first ranker is least consistent so down-weighted

@@ -768,7 +768,7 @@ we wish to group by each record in the original data set, so we create a
 `"grouped_rankings"` object that
 identifies the record number for each of the four rankings from each farmer (one ranking of order three plus three pairwise rankings with the local variety):
 ```{r}
-G <- group_rankings(R, rep(seq_len(nrow(beans)), 4))
+G <- group(R, rep(seq_len(nrow(beans)), 4))
 format(head(G, 2), width = 50)
 ```
 

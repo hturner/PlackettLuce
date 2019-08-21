@@ -16,7 +16,7 @@
 
 * `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`.
 * `as.rankings()` with `input = "ordering"` now only accept labels corresponding to the sorted unique values in the orderings.
-* `grouped_ranking()` has been deprecated: the function has been renamed as `group_rankings()`.
+* `grouped_ranking()` has been deprecated and replaced by `group()`.
 * `as.data.frame.rankings()` now converts a rankings object to a data frame with a separate column for each item, plus a column of frequencies if the rankings are aggregated. Previous behaviour (rankings object in  a single column) can be achieved via `dat$R <- rankings` or `data.frame(R = I(rankings))` (the latter does not use the `print.rankings` method).
 
 # PlackettLuce 0.2-6

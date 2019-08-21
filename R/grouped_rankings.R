@@ -11,7 +11,7 @@
 #' @param index a numeric vector of length equal to the number of rankings
 #' specifying the subject for each ranking.
 #' @param x an object that can be coerced to a \code{"grouped_rankings"} object
-#' for \code{as.group_rankings}, or a \code{"grouped_rankings"} object for
+#' for \code{as.grouped_rankings}, or a \code{"grouped_rankings"} object for
 #' \code{[} and \code{format}.
 #' @param i indices specifying groups to extract, may be any data type accepted
 #' by \code{\link{[}}.
@@ -47,8 +47,8 @@
 #' length(R)
 #' R
 #'
-#' # grouped rankings (first three in group 1, next two in group 2)
-#' G <- group_rankings(R, c(1, 1, 1, 2, 2))
+#' # group rankings (first three in group 1, next two in group 2)
+#' G <- group(R, c(1, 1, 1, 2, 2))
 #' length(G)
 #' ## by default up to 2 rankings are shown per group, "..." indicates if
 #' ## there are further rankings
@@ -64,18 +64,25 @@
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
 #' @export
-group_rankings <- function(rankings, index, ...){
-    if (!(is.vector(index) & length(index) == nrow(rankings)))
+group <- function(x, index, ...){
+    UseMethod("group")
+}
+
+#'
+#' @export
+group.rankings <- function(x, index, ...){
+    if (!(is.vector(index) & length(index) == nrow(x)))
         stop("index must be a vector with length equal to rankings")
-    nm <- rownames(rankings)
-    if (!inherits(rankings, "rankings"))
-        rankings <- as.rankings(rankings, ...)
+    nm <- rownames(x)
+    if (!inherits(x, "rankings"))
+        x <- as.rankings(x, ...)
     index <- as.numeric(index)
     do.call("structure",
-            c(list(seq_len(max(index)), rankings = rankings, index = index),
-              ranking_stats(rankings),
+            c(list(seq_len(max(index)), rankings = x, index = index),
+              ranking_stats(x),
               list(class = "grouped_rankings")))
 }
+
 
 # ranking stats - summaries used in model fitting, compute once for all
 ranking_stats <- function(rankings){
@@ -113,14 +120,14 @@ ranking_stats <- function(rankings){
 
 #' @rdname PlackettLuce-deprecated
 #' @section grouped_rankings:
-#' `grouped_rankings()` has been renamed [group_rankings()].
+#' `grouped_rankings()` has been replaced by [group()].
 #' @export
 grouped_rankings <- function(rankings, index, ...){
-    .Deprecated("group_rankings", package = "PlackettLuce")
-    group_rankings(rankings, index, ...)
+    .Deprecated("group", package = "PlackettLuce")
+    group(rankings, index, ...)
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @method [ grouped_rankings
 #' @export
 "[.grouped_rankings" <- function(x, i, j, ..., drop = TRUE,
@@ -167,17 +174,17 @@ grouped_rankings <- function(rankings, index, ...){
     } else {
         # convert rankings matrix to grouped_rankings
         # (will recode as necessary, omit redundant rankings, create R, S, id)
-        group_rankings(rankings, index)
+        group(rankings, index)
     }
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @export
 as.grouped_rankings <- function(x, ...){
     UseMethod("as.grouped_rankings")
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @method as.grouped_rankings paircomp
 #' @export
 as.grouped_rankings.paircomp <- function(x, ...){
@@ -237,7 +244,7 @@ print.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     print.default(format(x, max = max, width = width, ...))
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @method format grouped_rankings
 #' @export
 format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
@@ -257,7 +264,7 @@ format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     value
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @method na.omit grouped_rankings
 #' @export
 na.omit.grouped_rankings <- function(object, ...) {
@@ -279,7 +286,7 @@ na.omit.grouped_rankings <- function(object, ...) {
               class = "grouped_rankings")
 }
 
-#' @rdname group_rankings
+#' @rdname group
 #' @method na.exclude grouped_rankings
 #' @export
 na.exclude.grouped_rankings <- function(object, ...) {

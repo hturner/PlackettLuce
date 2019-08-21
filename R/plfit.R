@@ -31,7 +31,7 @@
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
 #'
 #' # group rankings into two groups
-#' G <- group_rankings(R, rep(1:2, 3))
+#' G <- group(R, rep(1:2, 3))
 #'
 #' # plfit() gives the same results as PlackettLuce()
 #' pl <- plfit(G)

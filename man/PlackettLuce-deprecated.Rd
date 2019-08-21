@@ -14,7 +14,7 @@ functionality are also mentioned.
 }
 \section{grouped_rankings}{
 
-\code{grouped_rankings()} has been renamed \code{\link[=group_rankings]{group_rankings()}}.
+\code{grouped_rankings()} has been replaced by \code{\link[=group]{group()}}.
 }
 
 \keyword{internal}
