@@ -33,7 +33,8 @@
 #' @param data an optional data frame containing the variables in the model.
 #' @param subset A specification of the rows to be used, passed to
 #' \code{\link{model.frame}}.
-#' @param na.action how NAs are treated, passed to \code{\link{model.frame}}.
+#' @param na.action how NAs are treated, applid to the underlying rankings and
+#' then passed to \code{\link{model.frame}}.
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
 #' covariances in the parameter stability tests, see \code{\link{mob}}.
 #' @param ref an integer or character string specifying the reference item (for
@@ -102,16 +103,59 @@
 #' @export
 pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
     m <- match.call(expand.dots = TRUE)
+    # handle model frame here to preserve attributes after na.action
+    mf_args <- names(m) %in% c("formula", "data", "subset", "cluster")
+    mf <- m[c(1L, which(mf_args))]
+    mf$na.action <- "na.pass"
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval(mf, parent.frame())
+    if (missing(na.action)) na.action <- getOption("na.action")
+    mf <- match.fun(na.action)(mf)
+    # also need to handle NAs in partially NA grouped rankings
+    if (attr(attr(mf, "terms"), "response")){
+        mf[[1L]] <- na.omit(mf[[1L]])
+    } else stop("`formula` must specify a response (grouped rankings)")
     control_args <- names(m) %in% names(formals(mob_control))
     control <- do.call("mob_control", as.list(m)[control_args])
-    m <- m[!control_args]
+    keep <-!names(m) %in% c("subset", "na.action", "cluster",
+                            names(formals(mob_control)))
+    m <- m[keep]
+    m$data <- quote(mf)
     m$control <- control
     m$fit <- as.name("plfit")
     m[[1L]] <- quote(partykit::mob)
-    rval <- eval(m, parent.frame())
+    rval <- eval(m, list(mf = mf), parent.frame())
     rval$info$call <- m
+    rval$info$call$data <- substitute(data)
+    # replace data with mf (loses na.action attribute)
+    rval$data <- mf
+    # add in na.action
+    rval$na.action <- attr(mf, "na.action")
     class(rval) <- c("pltree", "bttree", class(rval))
     return(rval)
+}
+
+model.frame.pltree <- function(formula, ...){
+    mf <- formula$data
+    if (NROW(mf) > 0L)
+        return(mf)
+    mf <- formula$info$call
+    # get args from call to start
+    mf_args <- names(mf) %in% c("formula", "data", "subset", "na.action")
+    mf <- mf[c(1L, which(mf_args))]
+    # replace with those from current call if specified
+    m <- match.call(expand.dots = TRUE)
+    mf_args <- !(names(m) %in% "formula")
+    mf[names(mf_args)] <- m[mf_args]
+    # save and temporarily replace na.action
+    na.action <- mf$na.action
+    mf$na.action <- "na.pass"
+    mf[[1L]] <- quote(stats::model.frame)
+    if (is.null(env <- environment(formula$info$terms)))
+        env <- parent.frame()
+    mf <- eval(mf, env)
+    if (is.null(na.action)) na.action <- getOption("na.action")
+    mf <- match.fun(na.action)(mf)
 }
 
 #' @method print pltree
@@ -215,7 +259,8 @@ predict.pltree <- function(object, newdata = NULL,
         }
         if (is.null(newdata)) {
             newdata <- model.frame(object)
-        }
+            na.action <- attr(newdata, "na.action")
+        } else na.action <- NULL
         pred <- switch(type,
                        itempar = function(obj, ...) {
                            t(as.matrix(itempar(obj, ...)))
@@ -227,8 +272,15 @@ predict.pltree <- function(object, newdata = NULL,
                            nm <- names(obj$coefficients)
                            nm[which.max(obj$coefficients)]
                        })
-        partykit::predict.modelparty(object, newdata = newdata, type = pred,
-                                     ...)
+        out <- partykit::predict.modelparty(object, newdata = newdata, type = pred,
+                                            ...)
+        if (is.null(na.action) | !inherits(na.action, "exclude")) return(out)
+        n_miss <- length(na.action)
+        current <- seq_len(NROW(out) + n_miss)[-na.action]
+        id <- order(c(match(current, seq_len(NROW(out))), na.action))
+        if (is.matrix(pred)){
+            pred <- rbind(pred, matrix(0L, nrow = n_miss, ncol = ncol(pred)))[id,]
+        } else pred <- c(pred, rep.int(0L, n_miss))[id]
 }
 
 

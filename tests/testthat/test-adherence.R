@@ -58,7 +58,7 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
 
 test_that('estimated adherence works for grouped_rankings [fake triples]', {
     # each ranking is a separate group
-    G <- grouped_rankings(R, seq(nrow(R)))
+    G <- group_rankingsR, seq(nrow(R)))
     mod1 <- PlackettLuce(rankings = R, npseudo = 0,
                          gamma = list(shape = 10, rate = 10))
     mod2 <- PlackettLuce(G, npseudo = 0, gamma = list(shape = 10, rate = 10))
@@ -145,7 +145,7 @@ for (id in c("a", "b", "c")){
 # Convert orderings to sub-rankings of full set and combine all rankings
 paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
-G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
+G <- group_rankingsR, rep(seq_len(nrow(beans)), 4))
 
 test_that('fixed adherence works for grouped_rankings [beans]', {
     # adherence = 1 is same as no adherence
@@ -184,7 +184,7 @@ test_that('estimated adherence works for grouped_rankings [partial + ties]', {
                                            weights = w,
                                            gamma = list(shape = 10, rate = 10)))
     # replicates grouped together by ranker
-    G <- grouped_rankings(R[rep(seq(6), w),], index = rep(seq(6), w))
+    G <- group_rankingsR[rep(seq(6), w),], index = rep(seq(6), w))
     mod2 <- suppressWarnings(PlackettLuce(rankings = G, npseudo = 0,
                                           method = "BFGS",
                                           gamma = list(shape = 10, rate = 10)))

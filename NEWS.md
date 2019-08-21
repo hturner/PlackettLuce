@@ -4,11 +4,16 @@
 
 * The `"rankings"` object can now store frequencies as an attribute. `rankings()` and `as.rankings()` can aggregate rankings if desired, by setting `aggregate = TRUE`.
 * New `complete_orderings()` and `recode_orderings()` functions to help pre-process orderings before converting to rankings, `complete_orderings()` infers the item in r'th rank given the items in the other (r - 1) ranks. `recode_orderings()` converts coded (partial) orderings to orderings of the items in each ordering.
-* New `read.soi()`, `read.toc()` and `read.toi` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List").
+* New `read.soi()`, `read.toc()` and `read.toi()` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List").
+
+## Improvements
+
+* `pltree()` now respects `na.action` and will pad predictions and fitted values for `na.action = "na.exclude"` if the rankings are missing for a whole group or one of the model covariates has a missing value.
+* `PlackettLuce()` now has an `na.action` argument for handling of missing rankings.
 
 ## Changes in behaviour
 
-* `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`. The handling of completely missing rankings is determined by the `na.action` argument of `rankings()` and `as.rankings()`.
+* `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`.
 * `as.rankings()` with `input = "ordering"` now only accept labels corresponding to the sorted unique values in the orderings.
 * `grouped_ranking()` has been deprecated: the function has been renamed as `group_rankings()`.
 * `as.data.frame.rankings()` now converts a rankings object to a data frame with a separate column for each item, plus a column of frequencies if the rankings are aggregated. Previous behaviour (rankings object in  a single column) can be achieved via `dat$R <- rankings` or `data.frame(R = I(rankings))` (the latter does not use the `print.rankings` method).

@@ -31,7 +31,7 @@
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
 #'
 #' # group rankings into two groups
-#' G <- grouped_rankings(R, rep(1:2, 3))
+#' G <- group_rankings(R, rep(1:2, 3))
 #'
 #' # plfit() gives the same results as PlackettLuce()
 #' pl <- plfit(G)
@@ -53,7 +53,8 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
     if ("adherence" %in% names(dots) & !"gamma" %in% names(dots)){
         stop("adherence can not be fixed in a Plackett-Luce tree")
     }
-    res <- PlackettLuce(y, start = start, weights = weights, ...)
+    res <- PlackettLuce(y, start = start, weights = weights,
+                        na.action = NULL, ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res, ref = ref)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))

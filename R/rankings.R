@@ -311,7 +311,7 @@ length.rankings <- function(x) {
 #' @method is.na rankings
 #' @export
 is.na.rankings <- function(x) {
-    rowSums(R) == 0
+    rowSums(x) == 0
 }
 
 #' @importFrom utils str

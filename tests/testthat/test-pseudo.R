@@ -40,7 +40,7 @@ if (require(Matrix)){
     })
 }
 
-G <- grouped_rankings(X, c(1, 1, 2, 2))
+G <- group_rankings(X, c(1, 1, 2, 2))
 model2 <- PlackettLuce(rankings = G, npseudo = 1)
 test_that("pseudodata works with grouped_rankings [weakly connected network]", {
     expect_equal(coef(model1), coef(model2), tolerance = coef_tol)

@@ -278,7 +278,7 @@
 #'
 #' # estimate adherence based on grouped rankings
 #' #  - assume two rankings from each ranker
-#' G <- grouped_rankings(R, rep(1:3, each = 2))
+#' G <- group_rankings(R, rep(1:3, each = 2))
 #' mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
 #' coef(mod_grouped)
 #' # first ranker is least consistent so down-weighted
@@ -301,27 +301,38 @@ PlackettLuce <- function(rankings,
                          trace = FALSE, verbose = TRUE, ...){
     call <- match.call()
 
-    # check rankings
-    if (!inherits(rankings, "rankings")){
+    # check rankings object
+    grouped_rankings <- inherits(rankings, "grouped_rankings")
+    if (!grouped_rankings & !inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
-    na.action <- attr(rankings, "na.action")
-    if (identical(na.action, "na.pass")) rankings <- na.omit(rankings)
 
-    grouped_rankings <- inherits(rankings, "grouped_rankings")
+    # define ranker
     if (grouped_rankings){
         ranker <- attr(rankings, "index")
         # if weights are per group id expand to be per ranking
         if (!is.null(weights) & length(weights) == max(ranker)) {
             weights <- weights[ranker]
         }
+    }else if (!is.null(adherence)| !is.null(gamma)){
+        ranker <- seq_len(nrow(rankings))
+    } else ranker <- NULL
+
+    if (!is.null(na.action)) {
+        rankings <- match.fun(na.action)(rankings)
+        na.action <- attr(rankings, "na.action")
+        if (!is.null(weights)) weights <- weights[-na.action]
+        if (!is.null(adherence)) adherence <- adherence[-na.action]
+        if (!is.null(ranker)) ranker <- ranker[-na.action]
+    }
+
+    # unpack grouped rankings
+    if (grouped_rankings){
         R <- attr(rankings, "R")
         S <- attr(rankings, "S")
         id <- attr(rankings, "id")
         rankings <- attr(rankings, "rankings")
-    } else if (!is.null(adherence)| !is.null(gamma)){
-        ranker <- seq_len(nrow(rankings))
-    } else ranker <- NULL
+    }
 
     # attributes
     items <- colnames(rankings)
@@ -815,7 +826,8 @@ PlackettLuce <- function(rankings,
                 adherence = adherence,
                 ranker = ranker,
                 maxTied = D,
-                conv = conv)
+                conv = conv,
+                na.action = na.action)
     class(fit) <- "PlackettLuce"
     fit
 }

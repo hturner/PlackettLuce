@@ -76,6 +76,20 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     }
     choices$fitted <- numerator/denominator
     choices$n <- as.integer(object$weights[unlist(choices$ranking)])
+    if (inherits(object$na.action, "exclude")){
+        n_miss <- length(object$na.action)
+        ranking <- seq_len(max(choices$ranking) + n_miss)[-object$na.action]
+        choices$ranking <- c(ranking[choices$ranking], object$na.action)
+        id <- order(choices$ranking)
+        pad <- rep(NA_integer_, n_miss)
+        choices$ranking <- choices$ranking[id]
+        choices$choices <- c(choices$choices, pad)[id]
+        choices$alternatives <- c(choices$alternatives, pad)[id]
+        choices$fitted <- c(choices$fitted, pad)[id]
+        choices$n <- c(choices$n, pad)[id]
+        g <- c(g, pad)[id]
+        h <- c(h, pad)[id]
+    }
     if (aggregate){
         if (!is.null(object$adherence)) {
             warning("`aggregate` ignored when `object$adherence` is not `NULL`")
@@ -87,7 +101,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
         keep <- !duplicated(g)
         agg <- c("choices", "alternatives", "fitted")
         choices[agg] <- lapply(choices[agg], function(x) x[keep])
-        choices$n <- as.integer(xtabs(choices$n ~ g))
+        choices$n <- as.integer(table(g)*choices$n)
         class(choices) <- c("aggregated_choices", "list")
     }
     choices

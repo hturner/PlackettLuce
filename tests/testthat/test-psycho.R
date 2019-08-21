@@ -170,7 +170,7 @@ for (id in c("a", "b", "c")){
 # Convert orderings to sub-rankings of full set and combine all rankings
 paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
 R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
-G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
+G <- group_rankings(R, rep(seq_len(nrow(beans)), 4))
 
 weights <- c(rep(0.3, 177), rep(2, 481), rep(0.3, 184))
 

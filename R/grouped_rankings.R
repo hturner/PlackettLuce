@@ -246,10 +246,13 @@ format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     rep[order(attr(x, "index"))] <- sequence(tab)
     R <- attr(x, "rankings")[rep <= max, ]
     char <- format.rankings(R, width = width)
-    value <- vapply(split(char, attr(x, "index")[rep <= max]), paste,
-                    collapse = ", ", "a")
+    value <- vapply(split(char, attr(x, "index")[rep <= max]),
+                    function(x) {
+                        if (all(is.na(x))) return(NA_character_)
+                        paste(x, collapse = ", ")
+                        }, "a")
     # add ... if more than max rankings
-    trunc <- tab > max
+    trunc <- tab > max & !is.na(value)
     value[trunc] <- paste0(value[trunc], ", ...")
     value
 }
@@ -263,14 +266,15 @@ na.omit.grouped_rankings <- function(object, ...) {
         return(object)
     nm <- names(object)
     index <- attr(object, "index")[-omit]
+    index <- match(index, unique(index))
     names(omit) <- nm[omit]
     attr(omit, "class") <- "omit"
     structure(unique(index),
               rankings = attr(object, "rankings")[-omit, , drop = FALSE],
               index = index,
-              R = attr(x, "R")[-omit, , drop = FALSE],
-              S = attr(x, "S")[-omit, , drop = FALSE],
-              id = attr(x, "id")[-omit],
+              R = attr(object, "R")[-omit, , drop = FALSE],
+              S = attr(object, "S")[-omit, , drop = FALSE],
+              id = attr(object, "id")[-omit],
               na.action = omit,
               class = "grouped_rankings")
 }
@@ -281,5 +285,13 @@ na.omit.grouped_rankings <- function(object, ...) {
 na.exclude.grouped_rankings <- function(object, ...) {
     out  <- na.omit(object)
     class(attr(out, "na.action")) <- "na.exclude"
+    out
+}
+
+#' @method is.na grouped_rankings
+#' @export
+is.na.grouped_rankings <- function(x) {
+    out <- tapply(attr(x, "rankings"), attr(x, "index"), sum) == 0
+    names(out) <- names(G)
     out
 }

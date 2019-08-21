@@ -26,7 +26,7 @@
 #' PlackettLuce also provides the function \code{pltree} to fit a Plackett-Luce
 #' tree i.e. a tree that partitions the rankings by covariate values,
 #' identifying subgroups with different sets of worth parameters for the items.
-#' In this case the data must be prepared as \code{\link{grouped_rankings}}.
+#' In this case \code{\link{group_rankings}} must be used to prepare the data.
 #'
 #' Several data sets are provided in the package: \code{\link{beans}},
 #' \code{\link{nascar}}, \code{\link{pudding}}. The help files for these give
