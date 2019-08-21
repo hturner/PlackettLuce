@@ -6,7 +6,6 @@
 \alias{as.rankings.default}
 \alias{as.rankings.preflib}
 \alias{as.rankings.matrix}
-\alias{aggregate.rankings}
 \alias{[.rankings}
 \alias{format.rankings}
 \alias{rbind.rankings}
@@ -23,8 +22,6 @@ as.rankings(x, verbose = TRUE, ...)
 
 \method{as.rankings}{matrix}(x, freq = NULL, input = c("ranking",
   "ordering"), aggregate = FALSE, labels = NULL, verbose = TRUE, ...)
-
-\method{aggregate}{rankings}(x, ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
@@ -44,6 +41,9 @@ IDs,}
 
 \item{rank}{an index of \code{data} specifying the column containing item
 ranks.}
+
+\item{aggregate}{if \code{TRUE}, aggregate the rankings via
+\code{\link[=aggregate.rankings]{aggregate}} before returning.}
 
 \item{verbose}{logical; if \code{TRUE} print messages when changes are made
 to rankings data.}

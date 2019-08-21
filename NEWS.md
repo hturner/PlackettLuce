@@ -2,7 +2,8 @@
 
 ## New Features
 
-* The `"rankings"` object can now store frequencies as an attribute. `rankings()` and `as.rankings()` can aggregate rankings if desired, by setting `aggregate = TRUE`.
+* New `"aggregated_rankings"` object to store aggregated rankings with the corresponding frequencies. Objects of class `"rankings"` can be aggregated via the `aggregate` method; alternatively `rankings()` and `as.rankings()` will create an `"aggregated_rankings"` object when `aggregate = TRUE`.
+* New `freq()` function to extract frequencies from aggregated rankings.
 * New `complete_orderings()` and `recode_orderings()` functions to help pre-process orderings before converting to rankings, `complete_orderings()` infers the item in r'th rank given the items in the other (r - 1) ranks. `recode_orderings()` converts coded (partial) orderings to orderings of the items in each ordering.
 * New `read.soi()`, `read.toc()` and `read.toi()` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List").
 

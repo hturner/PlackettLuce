@@ -5,7 +5,7 @@
 \title{Fit a Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
-  adherence = NULL, weights = attr(rankings, "freq"),
+  adherence = NULL, weights = freq(rankings),
   na.action = getOption("na.action"), start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
   steffensen = 0.1, maxit = c(500, 10), trace = FALSE,
@@ -297,7 +297,7 @@ mod_separate$adherence
 
 # estimate adherence based on grouped rankings
 #  - assume two rankings from each ranker
-G <- grouped_rankings(R, rep(1:3, each = 2))
+G <- group_rankings(R, rep(1:3, each = 2))
 mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
 coef(mod_grouped)
 # first ranker is least consistent so down-weighted

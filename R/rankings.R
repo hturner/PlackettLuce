@@ -32,6 +32,8 @@
 #' IDs,
 #' @param rank an index of \code{data} specifying the column containing item
 #' ranks.
+#' @param aggregate if `TRUE`, aggregate the rankings via
+#' [`aggregate`][aggregate.rankings] before returning.
 #' @param x for \code{as.rankings}, a matrix with one column per item and one
 #' row per ranking, or an object that can be coerced to such as matrix; for
 #' \code{[} and \code{format}, a \code{"rankings"} object.
@@ -223,26 +225,6 @@ as.rankings.matrix <- function(x,
     } else out
 }
 
-#' @rdname rankings
-#' @method aggregate rankings
-#' @export
-aggregate.rankings <- function(x, ...){
-    r <- asplit(unclass(x), 1L)
-    dup <- duplicated(r)
-    if (any(dup)){
-        r_new <-r[!dup]
-        r_id <- match(r, r_new)
-        if (!is.null(attr(x, "freq"))) {
-            freq <- as.vector(rowsum(attr(x, "freq"), r_id))
-        } else freq <- tabulate(r_id)
-        x <- do.call("rbind", r_new)
-        return(structure(x, freq = freq, class = "rankings"))
-    } else {
-        attr(x, "freq") <- seq_len(length(r))
-        return(x)
-    }
-}
-
 checkDense <- function(x, verbose = TRUE){
     # check rankings are dense rankings
     nRank <- apply(x, 1L, function(x) length(unique(x[x > 0L])))
@@ -275,10 +257,10 @@ as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
     value <- asplit(x, 2)
     freq <- match.arg(freq)
     if (freq == "first") {
-        value <- c(list(attr(x, "freq")), value)
+        value <- c(list(freq(x)), value)
         if (length(value) > length(col.names)) col.names <- c("freq", col.names)
     } else {
-        value <- c(value, list(attr(x, "freq")))
+        value <- c(value, list(freq(x)))
         if (length(value) > length(col.names)) col.names <- c(col.names, "freq")
     }
     if (!optional) {
@@ -334,7 +316,7 @@ str.rankings <- function(object, ...) {
         if (is.matrix(i)) return(.subset(x, i))
         # else subset of rankings
         value <- .subset(x, i, TRUE, drop = FALSE)
-        attr(value, "freq") <- attr(x, "freq")[i]
+        attr(value, "freq") <- freq(x)[i]
     } else {
         # subset items (never drop)
         if (missing(i)) i <- TRUE
@@ -355,8 +337,8 @@ str.rankings <- function(object, ...) {
 #' @export
 print.rankings <- function(x, ...){
     value <- format(x, ...)
-    if (!is.null(attr(x, "freq"))){
-        print.data.frame(data.frame(ranking = value, freq = attr(x, "freq")))
+    if (!is.null(freq(x))){
+        print.data.frame(data.frame(ranking = value, freq = freq(x)))
     } else print.default(value)
 }
 

@@ -28,7 +28,8 @@ partitioning variables.}
 \item{subset}{A specification of the rows to be used, passed to
 \code{\link{model.frame}}.}
 
-\item{na.action}{how NAs are treated, passed to \code{\link{model.frame}}.}
+\item{na.action}{how NAs are treated, applid to the underlying rankings and
+then passed to \code{\link{model.frame}}.}
 
 \item{cluster}{an optional vector of cluster IDs to be employed for clustered
 covariances in the parameter stability tests, see \code{\link{mob}}.}
