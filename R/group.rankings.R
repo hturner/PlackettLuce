@@ -5,7 +5,6 @@
 #' rankings to be linked to covariates with group-specific values as the basis
 #' for model-based recursive partitioning, see \code{\link{pltree}}.
 #'
-#' @aliases grouped_rankings
 #' @param rankings a \code{\link{rankings}} object or an object that can be
 #' coerced by \code{as.rankings}.
 #' @param index a numeric vector of length equal to the number of rankings
@@ -63,12 +62,13 @@
 #' G[2, -3]
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
+#' @aliases grouped_rankings
 #' @export
 group <- function(x, index, ...){
     UseMethod("group")
 }
 
-#'
+#' @rdname group
 #' @export
 group.rankings <- function(x, index, ...){
     if (!(is.vector(index) & length(index) == nrow(x)))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/decode.R
 \name{complete}
 \alias{complete}
-\title{Complete orderings with redundant rank}
+\title{Complete Orderings with the Missing Redundant Rank}
 \usage{
 complete(orderings, items)
 }

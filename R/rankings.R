@@ -16,7 +16,7 @@
 #' causing records to be removed or recoded produce a message if
 #' `verbose = TRUE`.
 #'
-#' For `as.rankings` with `input = "ordering"`, unused ranks may be filled with
+#' For `as.rankings` with `input = "orderings"`, unused ranks may be filled with
 #' zeroes for numeric `x` or `NA`. It is only necessary to have as many columns
 #' as ranks that are used.
 #'
@@ -40,10 +40,10 @@
 #' @param freq an optional column index (number, character or logical)
 #' specifying a column of \code{x} that holds ranking frequencies, or a vector
 #' of ranking frequencies.
-#' @param input for \code{as.rankings}, whether each row in the input matrix
-#' contains a numeric \code{"ranking"} (dense, standard/modified competition or
-#' fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.
-#' @param labels for \code{input = "ordering"} an optional vector of labels for
+#' @param input for \code{as.rankings}, whether rows in the input matrix
+#' contain numeric \code{"rankings"} (dense, standard/modified competition or
+#' fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.
+#' @param labels for \code{input = "orderings"} an optional vector of labels for
 #' the items, corresponding to the sorted unique values of \code{x}.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
@@ -154,7 +154,7 @@ as.rankings <- function(x,
 #' @export
 as.rankings.default <- function(x,
                                 freq = NULL,
-                                input = c("ranking", "ordering"),
+                                input = c("rankings", "orderings"),
                                 aggregate = FALSE,
                                 labels = NULL,
                                 verbose = TRUE, ...){
@@ -165,20 +165,13 @@ as.rankings.default <- function(x,
 
 #' @rdname rankings
 #' @export
-as.rankings.preflib <- function(x, verbose = TRUE, ...){
-    as.rankings.matrix(as.matrix(x[, -1]), freq = x[, 1], input = "ordering",
-                       labels = attr(x, "item"), verbose = verbose, ...)
-}
-
-#' @rdname rankings
-#' @export
 as.rankings.matrix <- function(x,
                                freq = NULL,
-                               input = c("ranking", "ordering"),
+                               input = c("rankings", "orderings"),
                                aggregate = FALSE,
                                labels = NULL,
                                verbose = TRUE, ...){
-    input <- match.arg(input, c("ranking", "ordering"))
+    input <- match.arg(input, c("rankings", "orderings"))
     if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
         freq_id <- seq(ncol(x))[freq]
         if (length(freq_id) != 1)
@@ -187,10 +180,10 @@ as.rankings.matrix <- function(x,
         freq <- unname(unlist(x[, freq_id]))
         x <- x[, -freq_id]
     }
-    if (mode(x) != "numeric" && input == "ranking"){
-        stop("values should be numeric ranks for `input = ranking`")
+    if (mode(x) != "numeric" && input == "rankings"){
+        stop("values should be numeric ranks for `input = rankings`")
     }
-    if (input == "ordering"){
+    if (input == "orderings"){
         # define items, N.B. matrix cells may be vectors; may have NAs
         item <- sort(setdiff(c(x), 0L))
         if (!is.null(labels) & length(labels) != length(item))
@@ -216,7 +209,7 @@ as.rankings.matrix <- function(x,
             x <- checkDense(x, verbose = verbose)
     }
     # add item names if necessary
-    if (is.null(colnames(x))) colnames(x) <- seq_len(ncol(x))
+    if (is.null(colnames(x))) colnames(x) <- item
     mode(x) <- "integer"
     # aggregating
     out <- structure(x, freq = freq, class = "rankings")

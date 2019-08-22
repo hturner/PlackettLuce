@@ -1,14 +1,14 @@
-#' Decode orderings
+#' Decode Orderings using Key to Item Names
 #'
-#' @param orderings A data frame of coded orderings or an object that can be
-#' coerced to such a data frame.
+#' @param orderings A data frame of coded orderings.
 #' @param items A data frame of the items in each ranking, or a vector of
-#' common items. The elements names are used as the key to the code if the
-#' coded values in `orderings` are character, otherwise the indices of
-#' the elements are used.
-#' @return A data frame with the coded values replaced by the item labels.#'
+#' common items.
+#' @param code (Optional) a vector giving the key to the code. If missing,
+#' `names(items)` is used for a character code, while a `seq(items)` is used
+#' for a numeric code.
+#' @return A data frame with the coded values replaced by the item labels.
 #' @examples
-#' # orderings of up to 3 items coded a A, B, C
+#' # orderings of up to 3 items coded as A, B, C
 #' orderings <- data.frame(Rank1 = c("A", "B"),
 #'                         Rank2 = c("C", "A"),
 #'                         Rank3 = c("B", NA),
@@ -35,21 +35,21 @@
 #' decode(orderings, items)
 #' @export
 decode <- function(orderings,
-                   items){
+                   items,
+                   code = NULL){
+    if (!is.null(dim(items)))
+        items <- as.data.frame(items, stringsAsFactors = FALSE)
     orderings <- as.data.frame(orderings, stringsAsFactors = FALSE)
-    items <- as.data.frame(items, stringsAsFactors = FALSE)
     nr <- nrow(orderings)
     nc <- ncol(orderings)
     seqr <- seq_len(nr)
     if (!is.null(dim(items)) && nrow(items) != nr)
         stop("items must be provided for every ordering, ",
              "nrow(items) should be: ", nr)
-    if (mode(orderings[[1]]) == "character") {
-        code <- names(items)
-    } else {
-        if (is.null(dim(items))) {
-            code <- seq_along(items)
-        } else code <- seq_len(ncol(items))
+    if (is.null(code)){
+        if (mode(orderings[[1]]) == "character") {
+            code <- names(items)
+        } else code <-seq(items)
     }
     # case 1 no list columns (ties)
     for (k in seq_len(nc)){
@@ -79,7 +79,7 @@ decode_vector <- function(x, items, code, i){
 }
 
 
-#' Complete orderings with redundant rank
+#' Complete Orderings with the Missing Redundant Rank
 #'
 #' Given orderings with one rank missing, complete the ordering by assigning
 #' the remaining item(s) to the final rank.

@@ -2,27 +2,28 @@
 % Please edit documentation in R/decode.R
 \name{decode}
 \alias{decode}
-\title{Decode orderings}
+\title{Decode Orderings using Key to Item Names}
 \usage{
-decode(orderings, items)
+decode(orderings, items, code = NULL)
 }
 \arguments{
-\item{orderings}{A data frame of coded orderings or an object that can be
-coerced to such a data frame.}
+\item{orderings}{A data frame of coded orderings.}
 
 \item{items}{A data frame of the items in each ranking, or a vector of
-common items. The elements names are used as the key to the code if the
-coded values in \code{orderings} are character, otherwise the indices of
-the elements are used.}
+common items.}
+
+\item{code}{(Optional) a vector giving the key to the code. If missing,
+\code{names(items)} is used for a character code, while a \code{seq(items)} is used
+for a numeric code.}
 }
 \value{
-A data frame with the coded values replaced by the item labels.#'
+A data frame with the coded values replaced by the item labels.
 }
 \description{
-Decode orderings
+Decode Orderings using Key to Item Names
 }
 \examples{
-# orderings of up to 3 items coded a A, B, C
+# orderings of up to 3 items coded as A, B, C
 orderings <- data.frame(Rank1 = c("A", "B"),
                         Rank2 = c("C", "A"),
                         Rank3 = c("B", NA),

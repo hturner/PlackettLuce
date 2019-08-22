@@ -3,7 +3,7 @@
 \name{aggregate.rankings}
 \alias{aggregate.rankings}
 \alias{freq}
-\title{Aggregate rankings}
+\title{Aggregate Rankings}
 \usage{
 \method{aggregate}{rankings}(x, ...)
 

@@ -1,4 +1,4 @@
-#' Aggregate rankings
+#' Aggregate Rankings
 #'
 #' Aggregate rankings, returning an `"aggregated_rankings"` object of the
 #' unique rankings and their frequencies. The frequencies can be extracted via

@@ -321,9 +321,11 @@ PlackettLuce <- function(rankings,
     if (!is.null(na.action)) {
         rankings <- match.fun(na.action)(rankings)
         na.action <- attr(rankings, "na.action")
-        if (!is.null(weights)) weights <- weights[-na.action]
-        if (!is.null(adherence)) adherence <- adherence[-na.action]
-        if (!is.null(ranker)) ranker <- ranker[-na.action]
+        if (!is.null(na.action)) {
+            if (!is.null(weights)) weights <- weights[-na.action]
+            if (!is.null(adherence)) adherence <- adherence[-na.action]
+            if (!is.null(ranker)) ranker <- ranker[-na.action]
+        }
     }
 
     # unpack grouped rankings

@@ -4,7 +4,6 @@
 \alias{rankings}
 \alias{as.rankings}
 \alias{as.rankings.default}
-\alias{as.rankings.preflib}
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
@@ -15,13 +14,13 @@ rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
 as.rankings(x, verbose = TRUE, ...)
 
-\method{as.rankings}{default}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = FALSE, labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{default}(x, freq = NULL, input = c("rankings",
+  "orderings"), aggregate = FALSE, labels = NULL, verbose = TRUE,
+  ...)
 
-\method{as.rankings}{preflib}(x, verbose = TRUE, ...)
-
-\method{as.rankings}{matrix}(x, freq = NULL, input = c("ranking",
-  "ordering"), aggregate = FALSE, labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{matrix}(x, freq = NULL, input = c("rankings",
+  "orderings"), aggregate = FALSE, labels = NULL, verbose = TRUE,
+  ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
@@ -58,11 +57,11 @@ row per ranking, or an object that can be coerced to such as matrix; for
 specifying a column of \code{x} that holds ranking frequencies, or a vector
 of ranking frequencies.}
 
-\item{input}{for \code{as.rankings}, whether each row in the input matrix
-contains a numeric \code{"ranking"} (dense, standard/modified competition or
-fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
+\item{input}{for \code{as.rankings}, whether rows in the input matrix
+contain numeric \code{"rankings"} (dense, standard/modified competition or
+fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.}
 
-\item{labels}{for \code{input = "ordering"} an optional vector of labels for
+\item{labels}{for \code{input = "orderings"} an optional vector of labels for
 the items, corresponding to the sorted unique values of \code{x}.}
 
 \item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
@@ -101,7 +100,7 @@ zero items are automatically treated as \code{NA}). Any issues
 causing records to be removed or recoded produce a message if
 \code{verbose = TRUE}.
 
-For \code{as.rankings} with \code{input = "ordering"}, unused ranks may be filled with
+For \code{as.rankings} with \code{input = "orderings"}, unused ranks may be filled with
 zeroes for numeric \code{x} or \code{NA}. It is only necessary to have as many columns
 as ranks that are used.
 

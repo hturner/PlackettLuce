@@ -6,7 +6,7 @@
 \title{Results from 2002 NASCAR Season}
 \format{A matrix with 36 rows corresponding to the races and 87 columns
 corresponding to the positions. Columns 1 to 43 contain the ID for the driver
-that came first to last place respectively. Columns 44 to 87 are zero, since
+that came first to last place respectively. Columns 44 to 87 are \code{NA}, since
 only 43 out of 87 drivers participated in each race. The \code{"drivers"}
 attribute contains the names of the 87 drivers.}
 \usage{
