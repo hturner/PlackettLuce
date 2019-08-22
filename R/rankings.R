@@ -153,8 +153,8 @@ as.rankings <- function(x,
 #' @rdname rankings
 #' @export
 as.rankings.default <- function(x,
-                                freq = NULL,
                                 input = c("rankings", "orderings"),
+                                freq = NULL,
                                 aggregate = FALSE,
                                 labels = NULL,
                                 verbose = TRUE, ...){
@@ -166,8 +166,8 @@ as.rankings.default <- function(x,
 #' @rdname rankings
 #' @export
 as.rankings.matrix <- function(x,
-                               freq = NULL,
                                input = c("rankings", "orderings"),
+                               freq = NULL,
                                aggregate = FALSE,
                                labels = NULL,
                                verbose = TRUE, ...){
@@ -203,10 +203,11 @@ as.rankings.matrix <- function(x,
             }))
         }
         if (!is.null(labels)) colnames(x) <- labels
-    } else if (NCOL(x) >= 2L) {
-            # check rankings are dense rankings, recode if necessary
-            x[is.na(x)] <- 0
-            x <- checkDense(x, verbose = verbose)
+    } else {
+        item <- seq_len(ncol(x))
+        # check rankings are dense rankings, recode if necessary
+        x[is.na(x)] <- 0
+        x <- checkDense(x, verbose = verbose)
     }
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- item
@@ -245,20 +246,12 @@ checkDense <- function(x, verbose = TRUE){
 #' @method as.data.frame rankings
 #' @export
 as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
-                                   freq = c("last", "first"),
-                                   col.names = colnames(x)){
-    value <- asplit(x, 2)
-    freq <- match.arg(freq)
-    if (freq == "first") {
-        value <- c(list(freq(x)), value)
-        if (length(value) > length(col.names)) col.names <- c("freq", col.names)
-    } else {
-        value <- c(value, list(freq(x)))
-        if (length(value) > length(col.names)) col.names <- c(col.names, "freq")
-    }
+                                   nm = paste(deparse(substitute(x), width.cutoff = 20L),
+                                              collapse = " ")){
+    value <- list(x)
     if (!optional) {
-        names(value) <- col.names
-    } else names(value) <- make.names(col.names)
+        names(value) <- nm
+    } else names(value) <- make.names(nm)
     if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
     if (is.null(row.names)) {
         row.names <- .set_row_names(nrow(x))
@@ -275,7 +268,33 @@ as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
     attr(value, "row.names") <- row.names
     class(value) <- "data.frame"
     value
+}
+
+#' @method as.data.frame rankings
+#' @export
+as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
+                                   nm = paste(deparse(substitute(x),
+                                                      width.cutoff = 20L),
+                                              collapse = " ")){
+    value <- list(x)
+    if (!optional) names(value) <- nm
+    if (is.null(row.names) & !is.null(rownames(x))) row.names <- rownames(x)
+    if (is.null(row.names)) {
+        row.names <- .set_row_names(nrow(x))
+    } else {
+        if (is.object(row.names) || !is.integer(row.names))
+            row.names <- as.character(row.names)
+        if (anyNA(row.names))
+            stop("row names contain missing values")
+        if (anyDuplicated(row.names))
+            stop(paste("duplicate row.names: ",
+                       paste(unique(row.names[duplicated(row.names)]),
+                             collapse = ", ")))
     }
+    attr(value, "row.names") <- row.names
+    class(value) <- "data.frame"
+    value
+}
 
 #' @method length rankings
 #' @export
