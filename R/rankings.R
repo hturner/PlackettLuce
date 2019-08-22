@@ -45,6 +45,10 @@
 #' fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.
 #' @param labels for \code{input = "orderings"} an optional vector of labels for
 #' the items, corresponding to the sorted unique values of \code{x}.
+#' @param items for \code{input = "orderings"}, a character vector specifying
+#' the full set of items. Values in `x` are matched to this by value (if
+#' character) or position (if numeric). Use [decode()] for orderings requiring
+#' more complex decoding.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
 #' @param drop if \code{TRUE} return single row/column matrices as a vector.
@@ -156,6 +160,7 @@ as.rankings.default <- function(x,
                                 input = c("rankings", "orderings"),
                                 freq = NULL,
                                 aggregate = FALSE,
+                                items = NULL,
                                 labels = NULL,
                                 verbose = TRUE, ...){
     x <- as.matrix(x)
@@ -169,8 +174,14 @@ as.rankings.matrix <- function(x,
                                input = c("rankings", "orderings"),
                                freq = NULL,
                                aggregate = FALSE,
+                               items = NULL,
                                labels = NULL,
                                verbose = TRUE, ...){
+    if (!is.null(labels)) {
+        warning("argument labels is deprecated; please use items instead.",
+                call. = FALSE)
+        items <- labels
+    }
     input <- match.arg(input, c("rankings", "orderings"))
     if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
         freq_id <- seq(ncol(x))[freq]
@@ -185,32 +196,34 @@ as.rankings.matrix <- function(x,
     }
     if (input == "orderings"){
         # define items, N.B. matrix cells may be vectors; may have NAs
-        item <- sort(setdiff(c(x), 0L))
-        if (!is.null(labels) & length(labels) != length(item))
-            stop("`length(labels)` is not equal to the number of unique items")
+        if (is.null(items)){
+            items <- sort(setdiff(c(x), 0L))
+        } else if (mode(x[[1]]) == "numeric"){
+            items <- seq_along(items)
+        }
         # convert ordered items to dense ranking
         if (mode(x) == "list"){
             # i.e. there are ties
             x <- t(apply(x, 1L, function(ordering){
                 g <- rep(seq_along(ordering), lengths(ordering))
-                r <- match(item, unlist(ordering), nomatch = 0L)
+                r <- match(items, unlist(ordering), nomatch = 0L)
                 r[r != 0L] <- g[r[r != 0L]]
                 r
             }))
         } else {
             x <- t(apply(x, 1L, function(ordering) {
-                match(item, ordering, nomatch = 0L)
+                match(items, ordering, nomatch = 0L)
             }))
         }
         if (!is.null(labels)) colnames(x) <- labels
     } else {
-        item <- seq_len(ncol(x))
+        items <- seq_len(ncol(x))
         # check rankings are dense rankings, recode if necessary
         x[is.na(x)] <- 0
         x <- checkDense(x, verbose = verbose)
     }
     # add item names if necessary
-    if (is.null(colnames(x))) colnames(x) <- item
+    if (is.null(colnames(x))) colnames(x) <- items
     mode(x) <- "integer"
     # aggregating
     out <- structure(x, freq = freq, class = "rankings")

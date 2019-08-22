@@ -15,7 +15,7 @@
 ## Changes in behaviour
 
 * `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`.
-* `as.rankings()` with `input = "ordering"` now only accept labels corresponding to the sorted unique values in the orderings.
+* The `labels` argument in `as.rankings()` has been deprecated and replaced by `items`.
 * `grouped_ranking()` has been deprecated and replaced by `group()`.
 
 # PlackettLuce 0.2-6

@@ -101,7 +101,7 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
         keep <- !duplicated(g)
         agg <- c("choices", "alternatives", "fitted")
         choices[agg] <- lapply(choices[agg], function(x) x[keep])
-        choices$n <- as.integer(table(g)*choices$n)
+        choices$n <- unname(rowsum(choices$n, g)[,1])
         class(choices) <- c("aggregated_choices", "list")
     }
     choices
