@@ -25,6 +25,7 @@ X <- matrix(c(1, 2, 0, 0,
               2, 1, 3, 0,
               0, 0, 1, 2,
               0, 0, 2, 1), ncol = 4, byrow = TRUE)
+X <- as.rankings(X)
 
 if (require(Matrix)){
     model0 <- PlackettLuce0(rankings = X, network = "pseudodata")

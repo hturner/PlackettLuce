@@ -12,6 +12,7 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
 
 if (require("gnm")) {
     test_that("vcov.PlackettLuce matches vcov.gnm [partial + ties]", {
