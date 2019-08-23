@@ -33,13 +33,18 @@
 #' @param rank an index of \code{data} specifying the column containing item
 #' ranks.
 #' @param aggregate if `TRUE`, aggregate the rankings via
-#' [`aggregate`][aggregate.rankings] before returning.
+#' [`aggregate()`][aggregate.rankings] before returning.
 #' @param x for \code{as.rankings}, a matrix with one column per item and one
 #' row per ranking, or an object that can be coerced to such as matrix; for
 #' \code{[} and \code{format}, a \code{"rankings"} object.
 #' @param freq an optional column index (number, character or logical)
 #' specifying a column of \code{x} that holds ranking frequencies, or a vector
-#' of ranking frequencies.
+#' of ranking frequencies. If provided, an `"aggregated_rankings"` object
+#' will be returned.
+#' @param index an optional column index (number, character or logical)
+#' specifying a column of \code{x} that holds a grouping index, or a
+#' numeric vector to for grouping. If provided, the rankings will be grouped by
+#' [group()] before returning.
 #' @param input for \code{as.rankings}, whether rows in the input matrix
 #' contain numeric \code{"rankings"} (dense, standard/modified competition or
 #' fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.
@@ -96,7 +101,7 @@
 #' # extract rankings 2 and 3 as numeric matrix
 #' R[2:3, , as.rankings = FALSE]
 #' # same as
-#' unclass(R)[2:3,]
+#' as.matrix(R)[2:3,]
 #' # extract rankings for item 1 as a vector
 #' R[,1, as.rankings = FALSE]
 #'
@@ -159,6 +164,7 @@ as.rankings <- function(x,
 as.rankings.default <- function(x,
                                 input = c("rankings", "orderings"),
                                 freq = NULL,
+                                index = NULL,
                                 aggregate = FALSE,
                                 items = NULL,
                                 labels = NULL,
@@ -173,23 +179,26 @@ as.rankings.default <- function(x,
 as.rankings.matrix <- function(x,
                                input = c("rankings", "orderings"),
                                freq = NULL,
+                               index = NULL,
                                aggregate = FALSE,
                                items = NULL,
                                labels = NULL,
                                verbose = TRUE, ...){
     if (!is.null(labels)) {
-        warning("argument labels is deprecated; please use items instead.",
+        warning("argument `labels`` is deprecated; please use `items` instead.",
                 call. = FALSE)
         items <- labels
     }
     input <- match.arg(input, c("rankings", "orderings"))
-    if (!is.null(freq) && (length(freq) == 1 | is.logical(freq))) {
-        freq_id <- seq(ncol(x))[freq]
-        if (length(freq_id) != 1)
-            stop("`freq` should identify exactly one column of `x`, found\n",
-                 freq_id)
+    freq_id <- getID(x, freq)
+    if (!is.null(freq_id)) {
         freq <- unname(unlist(x[, freq_id]))
         x <- x[, -freq_id]
+    }
+    index_id <- getID(x, index)
+    if (!is.null(index_id)) {
+        index <- unname(unlist(x[, index_id]))
+        x <- x[, -index_id]
     }
     if (mode(x) != "numeric" && input == "rankings"){
         stop("values should be numeric ranks for `input = rankings`")
@@ -225,11 +234,33 @@ as.rankings.matrix <- function(x,
     # add item names if necessary
     if (is.null(colnames(x))) colnames(x) <- items
     mode(x) <- "integer"
-    # aggregating
-    out <- structure(x, freq = freq, class = "rankings")
+    out <- structure(x, class = "rankings")
+    # pre-aggregated
+    if (!is.null(freq)){
+        out <- structure(data.frame(ranking = out, freq = freq),
+                         class = c("aggregated_rankings", "rankings",
+                                   class(res)))
+    }
+    # aggregating (further)
     if (aggregate) {
-        aggregate(out)
-    } else out
+        out <- aggregate(out, freq = freq)
+    }
+    # grouping
+    if (!is.null(index)){
+        out <- group(out, index = index)
+    }
+    out
+}
+
+getID <- function(x, var){
+    if (!is.null(var) && (length(var) == 1 | is.logical(var))) {
+        id <- seq(ncol(x))[var]
+        if (length(id) != 1)
+            stop("`", substitute(var),
+                 "` should identify exactly one column of `x`, found\n",
+                 id)
+        id
+    }
 }
 
 checkDense <- function(x, verbose = TRUE){
@@ -422,4 +453,11 @@ rbind.rankings <- function(..., labels = NULL){
     } else {
         structure(R, class = "rankings")
     }
+}
+
+#' @rdname rankings
+#' @method as.matrix rankings
+#' @export
+as.matrix.rankings <- function(x, ...){
+    unclass(x)
 }

@@ -2,15 +2,24 @@
 % Please edit documentation in R/aggregate.rankings.R
 \name{aggregate.rankings}
 \alias{aggregate.rankings}
+\alias{aggregate.aggregated_rankings}
 \alias{freq}
+\alias{as.matrix.aggregated_rankings}
 \title{Aggregate Rankings}
 \usage{
-\method{aggregate}{rankings}(x, ...)
+\method{aggregate}{rankings}(x, freq = NULL, ...)
+
+\method{aggregate}{aggregated_rankings}(x, ...)
 
 freq(x)
+
+\method{as.matrix}{aggregated_rankings}(x, ...)
 }
 \arguments{
 \item{x}{A \code{\link[=rankings]{"rankings"}} or \code{"aggregated_rankings"} object.}
+
+\item{freq}{A vector of frequencies for rankings that have been previously
+aggregated.}
 
 \item{...}{Additional arguments, currently unused.}
 }

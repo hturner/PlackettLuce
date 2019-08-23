@@ -45,7 +45,7 @@ A data frame of class \code{"preflib"} with first column \code{n},
 giving the frequency of the ranking in that row, and remaining columns
 \code{Rank 1} \ldots \code{Rank p} giving the items ranked from first to
 last place in that ranking. Ties are represented by vector elements in list
-columns. The data frame has an attribute \code{"item"} giving the labels
+columns. The data frame has an attribute \code{"items"} giving the labels
 corresponding to each item number.
 }
 \description{
@@ -64,7 +64,7 @@ preflib <- "http://www.preflib.org/data/election/"
 # strict complete orderings of four films on Netflix
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
 head(netflix)
-attr(netflix, "item")
+attr(netflix, "items")
 
 head(as.rankings(netflix))
 

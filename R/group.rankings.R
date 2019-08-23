@@ -73,7 +73,6 @@ group <- function(x, index, ...){
 group.rankings <- function(x, index, ...){
     if (!(is.vector(index) & length(index) == nrow(x)))
         stop("index must be a vector with length equal to rankings")
-    nm <- rownames(x)
     if (!inherits(x, "rankings"))
         x <- as.rankings(x, ...)
     index <- as.numeric(index)
@@ -299,6 +298,6 @@ na.exclude.grouped_rankings <- function(object, ...) {
 #' @export
 is.na.grouped_rankings <- function(x) {
     out <- tapply(attr(x, "rankings"), attr(x, "index"), sum) == 0
-    names(out) <- names(G)
+    names(out) <- names(x)
     out
 }

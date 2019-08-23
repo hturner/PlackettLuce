@@ -14,13 +14,13 @@ rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
 as.rankings(x, verbose = TRUE, ...)
 
-\method{as.rankings}{default}(x, freq = NULL, input = c("rankings",
-  "orderings"), aggregate = FALSE, labels = NULL, verbose = TRUE,
-  ...)
+\method{as.rankings}{default}(x, input = c("rankings", "orderings"),
+  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
+  labels = NULL, verbose = TRUE, ...)
 
-\method{as.rankings}{matrix}(x, freq = NULL, input = c("rankings",
-  "orderings"), aggregate = FALSE, labels = NULL, verbose = TRUE,
-  ...)
+\method{as.rankings}{matrix}(x, input = c("rankings", "orderings"),
+  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
+  labels = NULL, verbose = TRUE, ...)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
@@ -42,7 +42,7 @@ IDs,}
 ranks.}
 
 \item{aggregate}{if \code{TRUE}, aggregate the rankings via
-\code{\link[=aggregate.rankings]{aggregate}} before returning.}
+\code{\link[=aggregate.rankings]{aggregate()}} before returning.}
 
 \item{verbose}{logical; if \code{TRUE} print messages when changes are made
 to rankings data.}
@@ -53,13 +53,24 @@ to rankings data.}
 row per ranking, or an object that can be coerced to such as matrix; for
 \code{[} and \code{format}, a \code{"rankings"} object.}
 
-\item{freq}{an optional column index (number, character or logical)
-specifying a column of \code{x} that holds ranking frequencies, or a vector
-of ranking frequencies.}
-
 \item{input}{for \code{as.rankings}, whether rows in the input matrix
 contain numeric \code{"rankings"} (dense, standard/modified competition or
 fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.}
+
+\item{freq}{an optional column index (number, character or logical)
+specifying a column of \code{x} that holds ranking frequencies, or a vector
+of ranking frequencies. If provided, an \code{"aggregated_rankings"} object
+will be returned.}
+
+\item{index}{an optional column index (number, character or logical)
+specifying a column of \code{x} that holds a grouping index, or a
+numeric vector to for grouping. If provided, the rankings will be grouped by
+\code{\link[=group]{group()}} before returning.}
+
+\item{items}{for \code{input = "orderings"}, a character vector specifying
+the full set of items. Values in \code{x} are matched to this by value (if
+character) or position (if numeric). Use \code{\link[=decode]{decode()}} for orderings requiring
+more complex decoding.}
 
 \item{labels}{for \code{input = "orderings"} an optional vector of labels for
 the items, corresponding to the sorted unique values of \code{x}.}
