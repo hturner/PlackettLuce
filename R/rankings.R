@@ -65,10 +65,16 @@
 #' rankings that are too wide will be truncated.
 #' @param ... further arguments passed to/from methods.
 #'
-#' @return a \code{"rankings"} object, which is a matrix of dense rankings with
-#' methods for several generics including `aggregate`, `[`, `format` and
-#' `rbind`. If the object is created with `aggregate = TRUE`, the matrix has
-#' an attribute named `"freq"`, which is the frequencies of aggregated rankings.
+#' @return By default, a \code{"rankings"} object, which is a
+#' matrix of dense rankings with methods for several generics including
+#' `aggregate`, `[`, `format` and `rbind`.
+#'
+#' If the object is created with `aggregate = TRUE`, or ranking frequencies are
+#' specified via `freq`, the rankings are post-processed to create an
+#' `"aggregated_rankings"` object.
+#'
+#' If a group index is specified via `index`, the (possibly aggregated) rankings
+#' are post-processed to create a `"grouped_rankings"` object.
 #'
 #' @examples
 #' # create rankings from data in long form
@@ -147,9 +153,7 @@ rankings <- function(data, id, item, rank, aggregate = FALSE,
                 dimnames = list(lev1, lev2))
     R[cbind(match(data[[1L]], lev1), match(data[[2L]], lev2))] <- data[[3L]]
     # convert to dense rankings and remove rankings with less than 2 items
-    res <- as.rankings.matrix(R, aggregate = aggregate, verbose = verbose)
-    if (!is.null(attr(res, "freq"))) rownames(res) <- NULL
-    res
+    as.rankings.matrix(R, aggregate = aggregate, verbose = verbose)
 }
 
 #' @rdname rankings
@@ -372,7 +376,6 @@ str.rankings <- function(object, ...) {
         if (is.matrix(i)) return(.subset(x, i))
         # else subset of rankings
         value <- .subset(x, i, TRUE, drop = FALSE)
-        attr(value, "freq") <- freq(x)[i]
     } else {
         # subset items (never drop)
         if (missing(i)) i <- TRUE
@@ -429,6 +432,11 @@ rbind.rankings <- function(..., labels = NULL){
     ref <- nm[[1L]]
     ok <- vapply(nm, identical, TRUE, ref)
     if (any(!ok)){
+        if (!is.null(labels)) {
+            warning("argument `labels`` is deprecated; ",
+                    "labels are automatically combined.",
+                    call. = FALSE)
+        }
         if (is.null(labels)) labels <- sort(unique(unlist(nm)))
         R <- lapply(R, function(x){
             R <- matrix(0L, nrow = nrow(x), ncol = length(labels),
@@ -439,20 +447,9 @@ rbind.rankings <- function(..., labels = NULL){
     }
     # ranking attributes
     n <- vapply(R, length, numeric(1))
-    freq <- lapply(R, attr, "freq")
     # rbind ranking values
     R <- do.call("rbind", lapply(R, unclass))
-    # if any aggregated, reaggregate if necessary
-    agg <- !vapply(freq, is.null, logical(1))
-    if (any(agg)){
-        for (i in seq_along(freq)){
-            if (!agg[i]) freq[[i]] <- rep.int(1L, length(n[i]))
-        }
-        R <- structure(R, freq = unlist(freq), class = "rankings")
-        aggregate(R)
-    } else {
-        structure(R, class = "rankings")
-    }
+    structure(R, class = "rankings")
 }
 
 #' @rdname rankings

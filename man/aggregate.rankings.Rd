@@ -5,6 +5,8 @@
 \alias{aggregate.aggregated_rankings}
 \alias{freq}
 \alias{as.matrix.aggregated_rankings}
+\alias{rbind.aggregated_rankings}
+\alias{[.aggregated_rankings}
 \title{Aggregate Rankings}
 \usage{
 \method{aggregate}{rankings}(x, freq = NULL, ...)
@@ -14,6 +16,11 @@
 freq(x)
 
 \method{as.matrix}{aggregated_rankings}(x, ...)
+
+\method{rbind}{aggregated_rankings}(...)
+
+\method{[}{aggregated_rankings}(x, i, j, ..., drop = TRUE,
+  as.rankings = TRUE)
 }
 \arguments{
 \item{x}{A \code{\link[=rankings]{"rankings"}} or \code{"aggregated_rankings"} object.}

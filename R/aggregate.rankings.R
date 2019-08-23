@@ -21,11 +21,13 @@ aggregate.rankings <- function(x, freq = NULL, ...){
             freq <- as.vector(rowsum(freq, r_id))
         } else freq <- tabulate(r_id)
         x <- do.call("rbind", r_new)
+        rownames(x) <- NULL
         res <- data.frame(ranking = as.rankings(x), freq = freq)
     } else {
-        res <- data.frame(ranking = as.rankings(x), freq = seq_len(length(r)))
+        res <- data.frame(ranking = x,
+                          freq = rep.int(1, length(r)))
     }
-    structure(res, class = c("aggregated_rankings", "rankings", class(res)))
+    structure(res, class = c("aggregated_rankings", class(res)))
 }
 
 #' @rdname aggregate.rankings
@@ -50,3 +52,20 @@ as.matrix.aggregated_rankings <- function(x, ...){
     res
 }
 
+#' @rdname aggregate.rankings
+#' @method rbind aggregated_rankings
+#' @export
+rbind.aggregated_rankings <- function(...){
+    x <- list(...)
+    aggregate(do.call("rbind", lapply(x, `[[`, "ranking")),
+              unlist(lapply(x, `[[`, "freq")))
+}
+
+#' @rdname aggregate.rankings
+#' @method [ aggregated_rankings
+#' @export
+"[.aggregated_rankings" <- function(x, i, j, ..., drop = TRUE,
+                                    as.rankings = TRUE) {
+    aggregate(x$ranking[i, j, ..., drop = TRUE, as.rankings = TRUE],
+              freq = x$freq[i])
+}

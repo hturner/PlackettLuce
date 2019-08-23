@@ -8,6 +8,7 @@
 \alias{[.rankings}
 \alias{format.rankings}
 \alias{rbind.rankings}
+\alias{as.matrix.rankings}
 \title{Rankings Object}
 \usage{
 rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
@@ -27,6 +28,8 @@ as.rankings(x, verbose = TRUE, ...)
 \method{format}{rankings}(x, width = 40L, ...)
 
 \method{rbind}{rankings}(..., labels = NULL)
+
+\method{as.matrix}{rankings}(x, ...)
 }
 \arguments{
 \item{data}{a data frame with columns specified by \code{id}, \code{item} and
@@ -88,10 +91,16 @@ a matrix/vector.}
 rankings that are too wide will be truncated.}
 }
 \value{
-a \code{"rankings"} object, which is a matrix of dense rankings with
-methods for several generics including \code{aggregate}, \code{[}, \code{format} and
-\code{rbind}. If the object is created with \code{aggregate = TRUE}, the matrix has
-an attribute named \code{"freq"}, which is the frequencies of aggregated rankings.
+By default, a \code{"rankings"} object, which is a
+matrix of dense rankings with methods for several generics including
+\code{aggregate}, \code{[}, \code{format} and \code{rbind}.
+
+If the object is created with \code{aggregate = TRUE}, or ranking frequencies are
+specified via \code{freq}, the rankings are post-processed to create an
+\code{"aggregated_rankings"} object.
+
+If a group index is specified via \code{index}, the (possibly aggregated) rankings
+are post-processed to create a \code{"grouped_rankings"} object.
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
@@ -151,7 +160,7 @@ R[, -4]
 # extract rankings 2 and 3 as numeric matrix
 R[2:3, , as.rankings = FALSE]
 # same as
-unclass(R)[2:3,]
+as.matrix(R)[2:3,]
 # extract rankings for item 1 as a vector
 R[,1, as.rankings = FALSE]
 
