@@ -422,20 +422,32 @@ library(PlackettLuce)
 head(pudding)
 ```
 
-First we create a matrix representing each unique ranking, as required by
-`PlackettLuce`, the model-fitting function in **PlackettLuce**
+The model-fitteding function in **PlackettLuce** requires data in the form of 
+rankings, with the rank (1st, 2nd, 3rd, ..) for each item. In this case it is 
+more straight-forward to define the orderings (winner, loser) initially, 
+corresponding to the wins for item $i$, the wins for item $j$ and the ties:
 
 ```{r}
-nr <- 3*nrow(pudding)
-R <- matrix(0, nrow = nr, ncol = 6,
-            dimnames = list(NULL, seq_len(6)))
-i <- rep(pudding$i, 3)
-j <- rep(pudding$j, 3)
-R[cbind(seq_len(nr), i)] <- rep(c(1, 2, 1), each = nrow(pudding))
-R[cbind(seq_len(nr), j)] <- rep(c(2, 1, 1), each = nrow(pudding))
-head(R, 3)
-tail(R, 3)
+i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
+j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
+ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
+                   Loser = rep(NA, 15))
+head(ties, 3)
 ```
+In the last case, the base R function `asplit` is used to split the `i` and `j` 
+columns of `pudding` by row, giving a vector of items that we can specify as 
+the winner, while the loser is missing.
+
+Now the `as.rankings()` function from **PlackettLuce** can be used to convert 
+the combined orderings to rankings, passing the ranking frequencies to store 
+as part of the object
+```{r}
+R <- as.rankings(rbind(i_wins, j_wins, ties),
+                 freq = unlist(pudding[c("w_ij", "w_ji", "t_ij")]),
+                 input = "ordering")
+```
+
+
 The matrix `R` represents first the wins of $i$ over $j$, then the wins of
 $j$ over $i$ and finally the ties, so is three times as long as the original
 data. Each column represents a brand. In each row, `0` represents an
@@ -863,65 +875,49 @@ variety assigned to the farmer respectively.
 data(beans)
 head(beans[c("best", "worst")], 2)
 ```
-We convert these to numeric values, allowing us to impute the middle-ranked
-variety (a strict ranking is assumed, so the sum of each row must be 6)
+We fill in the missing item using the `complete` function from **PlackettLuce**:
 ```{r beans-2}
-beans <- within(beans, {
-    best <- match(best, c("A", "B", "C"))
-    worst <- match(worst, c("A", "B", "C"))
-    middle <- 6 - best - worst
-})
+beans$middle <- complete(beans[c("best", "worst")],
+                         items = c("A", "B", "C"))
 head(beans[c("best", "middle", "worst")], 2)
 ```
 This gives an ordering of the three varieties the farmer was given. The names of
-these varieties are stored in separate columns
+these varieties are stored in separate columns:
 ```{r beans-3}
-varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
-head(varieties, 2)
+head(beans[c("variety_a", "variety_b", "variety_c")], 2)
 ```
-So we can convert the variety IDs to the variety names
+We can use the `decode` function from **PlackettLuce** to decode the orderings, 
+replacing the coded values with the actual varieties:
 ```{r beans-4}
-n <- nrow(beans)
-beans <- within(beans, {
-    best <- varieties[cbind(seq_len(n), best)]
-    worst <- varieties[cbind(seq_len(n), worst)]
-    middle <- varieties[cbind(seq_len(n), middle)]
-})
-head(beans[c("best", "middle", "worst")], 2)
+order3 <- decode(beans[c("best", "middle", "worst")],
+                 items = beans[c("variety_a", "variety_b", "variety_c")],
+                 code = c("A", "B", "C"))
 ```
-Next we convert these orderings to sub-rankings of the full set of
-varieties, including the local variety as an additional item, so that we can
-add the paired comparisons shortly:
-```{r beans-5}
-lab <- c("Local", sort(unique(as.vector(varieties))))
-R <- as.rankings(beans[c("best", "middle", "worst")],
-                 input = "ordering", labels = lab)
-head(R)
-```
-The comparisons with the local variety are stored in another set of columns
+The pairwise comparisons with the local variety are stored in another set of 
+columns
 ```{r beans-6}
 head(beans[c("var_a", "var_b", "var_c")], 2)
 ```
-The following converts each of these columns to a matrix of ordered pairs:
+To convert these data to orderings we first create vectors of the trial variety 
+and the outcome in each paired comparison:
 ```{r beans-7}
-paired <- list()
-for (id in c("a", "b", "c")){
-    ordering <- matrix("Local", nrow = n, ncol = 2)
-    worse <- beans[[paste0("var_", id)]] == "Worse"
-    ## put trial variety in column 1 when it is not worse than local
-    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-    ## put trial variety in column 2 when it is worse than local
-    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
-    paired[[id]] <- ordering
-}
-head(paired[["a"]])
+trial_variety <- unlist(beans[c("variety_a", "variety_b", "variety_c")])
+outcome <- unlist(beans[c("var_a", "var_b", "var_c")])
 ```
+We can then derive the winner and loser in each comparison:
+```{r}
+order2 <- data.frame(Winner = ifelse(outcome == "Worse",
+                                     "Local", trial_variety),
+                     Loser = ifelse(outcome == "Worse",
+                                    trial_variety, "Local"),
+                     stringsAsFactors = FALSE, row.names = NULL)
+head(order2, 2)
+```
+Finally we covert each set of orderings to rankings and combine them
 
-Again we convert these orderings to sub-rankings of the full set of varieties
-and combine them with the rankings of order three:
 ```{r beans-8}
-paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
-R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
+R <- rbind(as.rankings(order3, input = "ordering"),
+           as.rankings(order2, input = "ordering"))
 head(R)
 tail(R)
 ```
