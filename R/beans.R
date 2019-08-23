@@ -47,7 +47,7 @@
 #' data(beans)
 #' head(beans[c("best", "worst")], 2)
 #'
-#' # Fill in the missing ranking
+#' # Fill in the missing item
 #' beans$middle <- complete(beans[c("best", "worst")],
 #'                          items = c("A", "B", "C"))
 #' head(beans[c("best", "middle", "worst")], 2)
@@ -55,7 +55,7 @@
 #' # This gives an ordering of the three varieties the farmer was
 #' # given. The names of these varieties are stored in separate
 #' # columns
-#' varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
+#' varieties <- beans[c("variety_a", "variety_b", "variety_c")]
 #' head(varieties, 2)
 #'
 #' # Use these names to decode the orderings of order 3
@@ -76,6 +76,7 @@
 #'                      Loser = ifelse(outcome == "Worse",
 #'                                     trial_variety, "Local"),
 #'                      stringsAsFactors = FALSE, row.names = NULL)
+#' head(order2, 2)
 #'
 #' # Finally combine the rankings of order 2 and order 3
 #' R <- rbind(as.rankings(order3, input = "ordering"),
