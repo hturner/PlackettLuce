@@ -17,6 +17,8 @@
 ## Changes in behaviour
 
 * `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`.
+* The frequencies column in the data frame returned by `read.soc()` is now named `Freq` rather than `n`.
+* The `"item"` attribute of the data frame returned by `read.soc()` is now named `"items"`.
 * The `labels` argument in `as.rankings()` has been deprecated and replaced by `items`.
 * `grouped_ranking()` has been deprecated and replaced by `group()`.
 

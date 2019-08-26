@@ -41,7 +41,7 @@ data frame, storing the item name as an attribute. The
 with the items labelled by the item names.}
 }
 \value{
-A data frame of class \code{"preflib"} with first column \code{n},
+A data frame of class \code{"preflib"} with first column \code{Freq},
 giving the frequency of the ranking in that row, and remaining columns
 \code{Rank 1} \ldots \code{Rank p} giving the items ranked from first to
 last place in that ranking. Ties are represented by vector elements in list
