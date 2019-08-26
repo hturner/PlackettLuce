@@ -423,7 +423,7 @@ head(pudding)
 ```
 
 The model-fitteding function in **PlackettLuce** requires data in the form of 
-rankings, with the rank (1st, 2nd, 3rd, ..) for each item. In this case it is 
+rankings, with the rank (1st, 2nd, 3rd, $\ldots$) for each item. In this case it is 
 more straight-forward to define the orderings (winner, loser) initially, 
 corresponding to the wins for item $i$, the wins for item $j$ and the ties:
 
@@ -432,7 +432,7 @@ i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
 j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
 ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
                    Loser = rep(NA, 15))
-head(ties, 3)
+head(ties, 2)
 ```
 In the last case, the base R function `asplit` is used to split the `i` and `j` 
 columns of `pudding` by row, giving a vector of items that we can specify as 
@@ -443,50 +443,42 @@ the combined orderings to rankings, passing the ranking frequencies to store
 as part of the object
 ```{r}
 R <- as.rankings(rbind(i_wins, j_wins, ties),
-                 freq = unlist(pudding[c("w_ij", "w_ji", "t_ij")]),
-                 input = "ordering")
+                 input = "orderings")
+head(R, 2)
+tail(R, 2)
 ```
 
+The print method for aggregated rankings displays the unique 
+rankings in a readable form. The underlying data structure stores the 
+rankings in the form required for modelling, which can be seen by converting 
+the rankings object to a matrix:
 
-The matrix `R` represents first the wins of $i$ over $j$, then the wins of
-$j$ over $i$ and finally the ties, so is three times as long as the original
-data. Each column represents a brand. In each row, `0` represents an
+```{r}
+head(as.matrix(R), 2)
+```
+
+Columns 1-6 represent the pudding brands. In each row, `0` represents an
 unranked brand (not in the comparison), `1` represents the brand(s) ranked
 in first place and `2` represents the brand in second place, if applicable.
 
-This matrix can used to specify the rankings in the call to `PlackettLuce`,
-however there are some advantages to creating a formal `"rankings"` object,
-which `PlackettLuce` does internally if necessary:
-
-```{r}
-R <- as.rankings(R)
-head(R)
-tail(R)
-```
-
-The `as.rankings` method checks that the rankings are specified as dense
+[//]: # (The `as.rankings` method checks that the rankings are specified as dense
 rankings, i.e. consecutive integers with no rank skipped for tied items,
 recoding as necessary; drops rankings with less than two items since these are
-uninformative, and adds column names if necessary. As can be seen above, the
-print method displays the rankings in a more readable form.
+uninformative, and adds column names if necessary.)
 
-To specify the full set of rankings, we need the frequency of each ranking,
-which will be specified to the model-fitting function as a weight vector:
-```{r}
-w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
-```
-
-Now we can fit the model with `PlackettLuce`, passing the rankings matrix
-and the weight vector as arguments. Setting `npseudo = 0` means that standard
+We can fit a Plackett-Luce model to these rankings using the `PlackettLuce` 
+function from **PlackettLuce**. By default, the frequencies stored in the 
+aggregated rankings object are used as the model weights, as shown explicitly 
+in the call below. Setting `npseudo = 0` means that standard
 maximum likelihood estimation is performed and `maxit = 7` limits the number of
 iterations to obtain the same worth parameters as @Davidson1970:
 ```{r}
-mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
+mod <- PlackettLuce(R, weights = freq(R), npseudo = 0, maxit = 7)
 coef(mod, log = FALSE)
 ```
-Note here that we have specified `log = FALSE` in order to report the estimates in the parameterization of Equation
-\@ref(eq:PL). In the next section we discuss why it is more appropriate to use
-the log scale for inference.
+Note here that we have specified `log = FALSE` in order to report the estimates
+in the parameterization of Equation \@ref(eq:PL). In the next section we 
+discuss why it is more appropriate to use the log scale for inference.
 
 ## Inference
 

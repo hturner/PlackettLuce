@@ -210,7 +210,7 @@ as.rankings.matrix <- function(x,
     if (input == "orderings"){
         # define items, N.B. matrix cells may be vectors; may have NAs
         if (is.null(items)){
-            items <- sort(setdiff(c(x), 0L))
+            items <- sort(setdiff(unlist(c(x)), 0L))
         } else if (mode(x[[1]]) == "numeric"){
             items <- seq_along(items)
         }
@@ -242,8 +242,7 @@ as.rankings.matrix <- function(x,
     # pre-aggregated
     if (!is.null(freq)){
         out <- structure(data.frame(ranking = out, freq = freq),
-                         class = c("aggregated_rankings", "rankings",
-                                   class(res)))
+                         class = c("aggregated_rankings", "data.frame"))
     }
     # aggregating (further)
     if (aggregate) {

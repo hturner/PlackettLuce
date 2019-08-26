@@ -24,8 +24,8 @@ aggregate.rankings <- function(x, freq = NULL, ...){
         rownames(x) <- NULL
         res <- data.frame(ranking = as.rankings(x), freq = freq)
     } else {
-        res <- data.frame(ranking = x,
-                          freq = rep.int(1, length(r)))
+        if (is.null(freq)) freq <- rep.int(1, length(r))
+        res <- data.frame(ranking = x, freq = freq)
     }
     structure(res, class = c("aggregated_rankings", class(res)))
 }
@@ -48,7 +48,7 @@ freq <- function(x){
 #' @export
 as.matrix.aggregated_rankings <- function(x, ...){
     res <- cbind(x$ranking, freq = x$freq)
-    rownames(res) <- rownames(x)
+    rownames(res) <- NULL
     res
 }
 

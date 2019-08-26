@@ -303,6 +303,9 @@ PlackettLuce <- function(rankings,
 
     # check rankings object
     grouped_rankings <- inherits(rankings, "grouped_rankings")
+    if (inherits(rankings, "aggregated_rankings")){
+        rankings <- rankings$ranking
+    }
     if (!grouped_rankings & !inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }

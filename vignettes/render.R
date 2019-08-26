@@ -1,4 +1,4 @@
-# render vignette - result is in inst/doc
+# render vignette - result is in vignettes_tmp_output
 rmarkdown::render("vignettes/Overview.Rmd", output_dir = "vignettes_tmp_output",
                   clean = FALSE)
 
