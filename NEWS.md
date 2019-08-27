@@ -21,6 +21,7 @@
 * The `"item"` attribute of the data frame returned by `read.soc()` is now named `"items"`.
 * The `labels` argument in `as.rankings()` has been deprecated and replaced by `items`.
 * `grouped_ranking()` has been deprecated and replaced by `group()`.
+* The redundant columns in the `nascar` data have been dropped.
 
 # PlackettLuce 0.2-6
 

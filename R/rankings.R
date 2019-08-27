@@ -210,22 +210,22 @@ as.rankings.matrix <- function(x,
     if (input == "orderings"){
         # define items, N.B. matrix cells may be vectors; may have NAs
         if (is.null(items)){
-            items <- sort(setdiff(unlist(c(x)), 0L))
+            code <- items <- sort(setdiff(unlist(c(x)), 0L))
         } else if (mode(x[[1]]) == "numeric"){
-            items <- seq_along(items)
+            code <- seq_along(items)
         }
         # convert ordered items to dense ranking
         if (mode(x) == "list"){
             # i.e. there are ties
             x <- t(apply(x, 1L, function(ordering){
                 g <- rep(seq_along(ordering), lengths(ordering))
-                r <- match(items, unlist(ordering), nomatch = 0L)
+                r <- match(code, unlist(ordering), nomatch = 0L)
                 r[r != 0L] <- g[r[r != 0L]]
                 r
             }))
         } else {
             x <- t(apply(x, 1L, function(ordering) {
-                match(items, ordering, nomatch = 0L)
+                match(code, ordering, nomatch = 0L)
             }))
         }
         if (!is.null(labels)) colnames(x) <- labels

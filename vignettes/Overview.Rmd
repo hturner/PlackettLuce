@@ -163,7 +163,7 @@ pl <- function(dat, ...){
     # convert ordered items to ranking
     R <- as.rankings(dat[,-1], "ordering")
     # fit without adding pseudo-rankings, weight rankings by count
-    PlackettLuce(R, npseudo = 0, weights = dat$n)
+    PlackettLuce(R, npseudo = 0, weights = dat$Freq)
 }
 hyper2 <- function(dat, ...){
     requireNamespace("hyper2")
@@ -175,16 +175,16 @@ hyper2 <- function(dat, ...){
     }
     # find parameters to maximise likelihood
     p <- hyper2::maxp(H)
-    structure(p, loglik = hyper2::lhyper2(H, p[-length(p)]))
+    structure(p, loglik = hyper2::loglik(H, p[-length(p)]))
 }
 plmix <- function(dat, ...){
     requireNamespace("PLMIX")
     # disaggregate data (no functionality for weights or counts)
-    r <- rep(seq_len(nrow(dat)), dat$n)
+    r <- rep(seq_len(nrow(dat)), dat$Freq)
     # maximum a posteriori estimate, with non-informative prior
     # K items in each ranking, single component distribution
     # default starting values do not always work so specify as uniform
-    K <- ncol(dat)
+    K <- ncol(dat) - 1
     PLMIX::mapPLMIX(as.matrix(dat[r, -1]), K = K, G = 1,
                     init = list(p = rep.int(1/K, K)), plot_objective = FALSE)
 }
@@ -194,14 +194,14 @@ pmr <- function(dat, ...){
     R <- as.rankings(dat[,-1], "ordering")
     # create data frame with counts as required by pl
     X <- as.data.frame(unclass(R))
-    X$n <- dat$n
+    X$Freq <- dat$Freq
     capture.output(res <- pmr::pl(X))
     res
 }
 statrank <- function(dat, iter){
     requireNamespace("StatRank")
     # disaggregate data (no functionality for weights or counts)
-    r <- rep(seq_len(nrow(dat)), dat$n)
+    r <- rep(seq_len(nrow(dat)), dat$Freq)
     capture.output(res <- StatRank::Estimation.PL.MLE(as.matrix(dat[r, -1]),
                                                       iter = iter))
     res
@@ -422,7 +422,7 @@ library(PlackettLuce)
 head(pudding)
 ```
 
-The model-fitteding function in **PlackettLuce** requires data in the form of 
+`PlackettLuce`, the model-fitting function in **PlackettLuce**, requires data in the form of 
 rankings, with the rank (1st, 2nd, 3rd, $\ldots$) for each item. In this case it is 
 more straight-forward to define the orderings (winner, loser) initially, 
 corresponding to the wins for item $i$, the wins for item $j$ and the ties:
@@ -439,8 +439,7 @@ columns of `pudding` by row, giving a vector of items that we can specify as
 the winner, while the loser is missing.
 
 Now the `as.rankings()` function from **PlackettLuce** can be used to convert 
-the combined orderings to rankings, passing the ranking frequencies to store 
-as part of the object
+the combined orderings to an object of class `"rankings"`.
 ```{r}
 R <- as.rankings(rbind(i_wins, j_wins, ties),
                  input = "orderings")
@@ -448,16 +447,15 @@ head(R, 2)
 tail(R, 2)
 ```
 
-The print method for aggregated rankings displays the unique 
-rankings in a readable form. The underlying data structure stores the 
-rankings in the form required for modelling, which can be seen by converting 
-the rankings object to a matrix:
+The print method displays the rankings in a readable 
+form, however the underlying data structure stores the rankings in the form 
+of a matrix:
 
 ```{r}
-head(as.matrix(R), 2)
+head(unclass(R), 2)
 ```
 
-Columns 1-6 represent the pudding brands. In each row, `0` represents an
+The six columns represent the pudding brands. In each row, `0` represents an
 unranked brand (not in the comparison), `1` represents the brand(s) ranked
 in first place and `2` represents the brand in second place, if applicable.
 
@@ -466,14 +464,18 @@ rankings, i.e. consecutive integers with no rank skipped for tied items,
 recoding as necessary; drops rankings with less than two items since these are
 uninformative, and adds column names if necessary.)
 
-We can fit a Plackett-Luce model to these rankings using the `PlackettLuce` 
-function from **PlackettLuce**. By default, the frequencies stored in the 
-aggregated rankings object are used as the model weights, as shown explicitly 
-in the call below. Setting `npseudo = 0` means that standard
+To specify the full set of rankings, we need the frequency of each ranking,
+which will be specified to the model-fitting function as a weight vector:
+```{r}
+w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
+```
+
+Now we can fit the model with `PlackettLuce`, passing the rankings object
+and the weight vector as arguments. Setting `npseudo = 0` means that standard
 maximum likelihood estimation is performed and `maxit = 7` limits the number of
 iterations to obtain the same worth parameters as @Davidson1970:
 ```{r}
-mod <- PlackettLuce(R, weights = freq(R), npseudo = 0, maxit = 7)
+mod <- PlackettLuce(R, weights = w, npseudo = 0, maxit = 7)
 coef(mod, log = FALSE)
 ```
 Note here that we have specified `log = FALSE` in order to report the estimates
@@ -550,7 +552,7 @@ contrast among the parameters is less than 0.8%.
 ## Disconnected networks
 
 The wins and losses between items can be represented as a directed network. For
-example, consider the following set of paired comparisons:
+example, consider the following set of paired comparisons
 
 ```{r}
 R <- matrix(c(1, 2, 0, 0,
@@ -562,9 +564,17 @@ R <- matrix(c(1, 2, 0, 0,
 R <- as.rankings(R)
 ```
 
-The `adjacency` function from **PlackettLuce** can be used to convert these to an
-adjacency matrix where element $(i, j)$ is the number of times item $i$ is
-ranked higher than item $j$:
+Note that even though the data were specified as a rankings matrix, we have 
+used `as.rankings()` to create a formal rankings object (`input` is set to 
+`"rankings"` by default). The 
+`as.rankings()` function checks that the rankings are specified as dense
+rankings, i.e. consecutive integers with no rank skipped for tied items,
+recoding as necessary; sets rankings with only one item to `NA` since these are
+uninformative, and adds column names if necessary.
+
+The `adjacency` function from **PlackettLuce** can be used to convert these 
+rankings to an adjacency matrix where element $(i, j)$ is the number of times 
+item $i$ is ranked higher than item $j$:
 ```{r}
 A <- adjacency(R)
 A
@@ -610,7 +620,7 @@ summary(mod)
 ```
 Note that since `R` is a rankings object, the rankings are automatically
 updated when items are dropped, so in this case the paired comparison with item
-D is dropped.
+D is set to `NA`.
 
 By default however **PlackettLuce** provides a way to handle disconnected/weakly
 connected networks, through the addition of pseudo-rankings. This works by
@@ -640,27 +650,21 @@ where $N$ is the number of items.
 For a practical example, we consider the NASCAR data from @Hunter2004. This
 collects the results of the 36 races in the 2002 NASCAR season in the United
 States. Each race involves 43 drivers out of a total of 87 drivers. The
-`d_nascar` data provided by **PlackettLuce** records the results as an ordering
+`nascar` data provided by **PlackettLuce** records the results as an ordering
 of the drivers in each race:
 ```{r}
 data(nascar)
-nascar[1:2, 1:45]
+nascar[1:2, ]
 ```
 For example, in the first race, driver 83 came first, followed by driver 18 and
-so on. Ranks 43 to 87 are zero for all races. We can convert these orderings
-to rankings using `as.rankings` with `input = "ordering"`:
+so on. The names corresponding to the driver IDs are available as an attribute of
+`nascar`; we can provide these names when converting the orderings to rankings 
+via the `items` argument:
 ```{r}
-R <- as.rankings(nascar, input = "ordering")
-R[1:2,]
+R <- as.rankings(nascar, input = "orderings", items = attr(nascar, "drivers"))
+R[1:2]
 ```
-The names corresponding to the driver IDs are available as an attribute of
-`nascar`; since the columns of `R` now correspond to the drivers, we can use
-these as the column names:
-```{r}
-colnames(R) <- attr(nascar, "drivers")
-R[1:3, 1:3, as.rankings = FALSE]
-R[1:3]
-```
+
 Maximum likelihood estimation cannot be used in this example, because four
 drivers placed last in each race they entered. So @Hunter2004 dropped these
 four drivers to fit the Plackett-Luce model, which we can reproduce as follows:
@@ -766,13 +770,15 @@ The result is a `rankings` object `R` with all rankings of the three
 experimental varieties and the output of their comparison with the local
 variety.
 
-In order to fit a Plackett-Luce tree, we need to create a `grouped_rankings`
+In order to fit a Plackett-Luce tree, we need to create a `"grouped_rankings"`
 object, that defines how the rankings map to the covariate values. In this case
-we wish to group by each record in the original data set, so we create a
-`"grouped_rankings"` object that
-identifies the record number for each of the four rankings from each farmer (one ranking of order three plus three pairwise rankings with the local variety):
+we wish to group by each record in the original data set, so we group by an 
+index that identifies the record number for each of the four rankings from 
+each farmer (one ranking of order three plus three pairwise rankings with the 
+local variety):
 ```{r}
-G <- group(R, rep(seq_len(nrow(beans)), 4))
+n <- nrow(beans)
+G <- group(R, index = rep(seq_len(n), 4))
 format(head(G, 2), width = 50)
 ```
 
