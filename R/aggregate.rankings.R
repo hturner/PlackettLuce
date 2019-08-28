@@ -7,9 +7,45 @@
 #' @param x A [`"rankings"`][rankings] or `"aggregated_rankings"` object.
 #' @param freq A vector of frequencies for rankings that have been previously
 #' aggregated.
+#' @param i indices specifying rankings to extract, as for \code{\link{[}}.
+#' @param j indices specifying items to extract, as for \code{\link{[}}.
+#' @param drop if \code{TRUE} return single row/column matrices as a vector.
+#' @param as.aggregated_rankings if \code{TRUE} create an
+#' `"aggregated_rankings"` object from the indexed rankings. Otherwise index
+#' the underlying matrix of ranks and return in a data frame with the
+#' corresponding frequencies.
 #' @param ... Additional arguments, currently unused.
+#' @return A data frame of class `"aggregated_rankings"`, with columns
+#' \item{ranking}{ A `"rankings"` object of the unique rankings.}
+#' \item{freq}{The corresponding frequencies.}
+#' Methods are available for [rbind()] and [as.matrix()].
+#' @examples
+#' # create a rankings object with duplicated rankings
+#' R <- matrix(c(1, 2, 0, 0,
+#'               0, 1, 2, 3,
+#'               2, 1, 1, 0,
+#'               1, 2, 0, 0,
+#'               2, 1, 1, 0,
+#'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
+#' colnames(R) <- c("apple", "banana", "orange", "pear")
+#' R <- as.rankings(R)
 #'
+#' # aggregate the rankings
+#' A <- aggregate(R)
+#'
+#' # subsetting applies to the rankings, e.g. first two unique rankings
+#' A[1:2]
+#' # (partial) rankings of items 2 to 4 only
+#' A[, 2:4]
+#'
+#' # frequencies are automatically used as weights by PlackettLuce()
+#' mod <- PlackettLuce(A)
+#' mod$weights
+#' @name aggregate
+NULL
+
 #' @method aggregate rankings
+#' @rdname aggregate
 #' @export
 aggregate.rankings <- function(x, freq = NULL, ...){
     r <- asplit(unclass(x), 1L)
@@ -30,20 +66,39 @@ aggregate.rankings <- function(x, freq = NULL, ...){
     structure(res, class = c("aggregated_rankings", class(res)))
 }
 
-#' @rdname aggregate.rankings
 #' @export
 aggregate.aggregated_rankings <- function(x, ...){
     aggregate(x$rankings, x$freq)
 }
 
-#' @rdname aggregate.rankings
+#' @rdname aggregate
+#' @export
+as.aggregated_rankings <- function(x, ...){
+    UseMethod("as.aggregated_rankings")
+}
+
+#' @rdname aggregate
+#' @method [ aggregated_rankings
+#' @export
+"[.aggregated_rankings" <- function(x, i, j, ..., drop = FALSE,
+                                    as.aggregated_rankings = TRUE) {
+    ranking <-  x$ranking[i, j, ..., drop = drop,
+                          as.rankings = as.aggregated_rankings]
+    if (as.aggregated_rankings){
+        aggregate(ranking, freq = x$freq[i])
+    } else {
+        if (!is.null(dim(i))) i <- i[,1]
+        data.frame(ranking = ranking, freq = x$freq[i])
+    }
+}
+
+#' @rdname aggregate
 #' @export
 freq <- function(x){
     if (is.list(x)) x[["freq"]]
     else NULL
 }
 
-#' @rdname aggregate.rankings
 #' @method as.matrix aggregated_rankings
 #' @export
 as.matrix.aggregated_rankings <- function(x, ...){
@@ -52,7 +107,6 @@ as.matrix.aggregated_rankings <- function(x, ...){
     res
 }
 
-#' @rdname aggregate.rankings
 #' @method rbind aggregated_rankings
 #' @export
 rbind.aggregated_rankings <- function(...){
@@ -61,11 +115,4 @@ rbind.aggregated_rankings <- function(...){
               unlist(lapply(x, `[[`, "freq")))
 }
 
-#' @rdname aggregate.rankings
-#' @method [ aggregated_rankings
-#' @export
-"[.aggregated_rankings" <- function(x, i, j, ..., drop = TRUE,
-                                    as.rankings = TRUE) {
-    aggregate(x$ranking[i, j, ..., drop = TRUE, as.rankings = TRUE],
-              freq = x$freq[i])
-}
+

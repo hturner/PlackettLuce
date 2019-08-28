@@ -7,7 +7,7 @@
 * `as.rankings()` can now create a `"grouped_rankings"` object, if a grouping index is passed via the `index` argument.
 * New `as.matrix()` methods for rankings and aggregated rankings to extract the underlying matrix of rankings, with frequencies in the final column if relevant. This means rankings can be saved easily with `write.table()`.
 * New `complete()` and `decode()` functions to help pre-process orderings before converting to rankings, `complete()` infers the item(s) in r'th rank given the items in the other (r - 1) ranks. `decode()` converts coded (partial) orderings to orderings of the items in each ordering.
-* New `read.soi()`, `read.toc()` and `read.toi()` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List").
+* New `read.soi()`, `read.toc()` and `read.toi()` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List"). An `as.aggregated_rankings()` method is provided to convert the data frame of aggregated orderings to an `"aggregated_rankings"` object.
 
 ## Improvements
 

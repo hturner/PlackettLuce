@@ -6,7 +6,7 @@
 \alias{read.soi}
 \alias{read.toc}
 \alias{read.toi}
-\alias{as.rankings.preflib}
+\alias{as.aggregated_rankings.preflib}
 \title{Read Preflib Election Data Files}
 \usage{
 read.soc(file)
@@ -17,11 +17,17 @@ read.toc(file)
 
 read.toi(file)
 
-\method{as.rankings}{preflib}(x, verbose = TRUE, ...)
+\method{as.aggregated_rankings}{preflib}(x, ...)
 }
 \arguments{
 \item{file}{An election data file, conventionally with extension \code{.soc},
-\code{.soi}, \code{.toc} or \code{.toi} according to data type.
+\code{.soi}, \code{.toc} or \code{.toi} according to data type.}
+
+\item{x}{An object of class \code{"preflib"}.}
+
+\item{...}{Additional arguments passed to \code{\link[=as.rankings]{as.rankings()}}: \code{freq},
+\code{input} or \code{items} will be ignored with a warning as they are set
+automatically.
 
 The file types supported are
 \describe{
@@ -37,8 +43,8 @@ the full set of items (not currently supported by \code{\link[=PlackettLuce]{Pla
 
 The numerically coded orderings and their frequencies are read into a
 data frame, storing the item name as an attribute. The
-\code{as.rankings} method converts these to an \code{"aggregated_rankings"} object
-with the items labelled by the item names.}
+\code{as.aggregated_rankings} method converts these to an
+\code{"aggregated_rankings"} object with the items labelled by the item names.}
 }
 \value{
 A data frame of class \code{"preflib"} with first column \code{Freq},

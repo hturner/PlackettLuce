@@ -6,6 +6,10 @@
 #'
 #' @param file An election data file, conventionally with extension `.soc`,
 #' `.soi`, `.toc` or `.toi` according to data type.
+#' @param x An object of class `"preflib"`.
+#' @param ... Additional arguments passed to [as.rankings()]: `freq`,
+#' `input` or `items` will be ignored with a warning as they are set
+#' automatically.
 #'
 #' The file types supported are
 #' \describe{
@@ -21,8 +25,8 @@
 #'
 #' The numerically coded orderings and their frequencies are read into a
 #' data frame, storing the item name as an attribute. The
-#' `as.rankings` method converts these to an `"aggregated_rankings"` object
-#' with the items labelled by the item names.
+#' `as.aggregated_rankings` method converts these to an
+#' `"aggregated_rankings"` object with the items labelled by the item names.
 #' @return A data frame of class `"preflib"` with first column \code{Freq},
 #' giving the frequency of the ranking in that row, and remaining columns
 #' \code{Rank 1} \ldots \code{Rank p} giving the items ranked from first to
@@ -117,11 +121,13 @@ read.toi <- function(file){
 }
 
 #' @rdname preflib
+#' @method as.aggregated_rankings preflib
 #' @export
-as.rankings.preflib <- function(x, verbose = TRUE, ...){
+as.aggregated_rankings.preflib <- function(x, ...){
     nc <- ncol(x)
     if (identical(colnames(x), c("Freq", paste("Rank", seq(nc - 1))))){
-        dots <- match.call(as.rankings.preflib, expand.dots = FALSE)[["..."]]
+        dots <- match.call(as.aggregated_rankings.preflib,
+                           expand.dots = FALSE)[["..."]]
         ignore <- names(dots) %in% c("freq", "input", "items")
         if (any(ignore))
             warning("`freq`, `input` and `items` are set automatically for ",
@@ -129,9 +135,6 @@ as.rankings.preflib <- function(x, verbose = TRUE, ...){
         dots <- dots[setdiff(names(dots), c("freq", "input", "items"))]
         do.call(as.rankings.matrix,
                 c(list(as.matrix(x[, -1]), freq = x[, 1],
-                       input = "orderings", items = attr(x, "items"),
-                       verbose = verbose), dots))
-    } else {
-        as.rankings.matrix(as.matrix(x), verbose = verbose, ...)
-    }
+                       input = "orderings", items = attr(x, "items")), dots))
+    } else stop("`x` is not a valid \"preflib\" object")
 }
