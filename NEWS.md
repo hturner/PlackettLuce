@@ -13,6 +13,7 @@
 
 * `pltree()` now respects `na.action` and will pad predictions and fitted values for `na.action = "na.exclude"` if the rankings are missing for a whole group or one of the model covariates has a missing value.
 * `PlackettLuce()` now has an `na.action` argument for handling of missing rankings.
+* `fitted()` and `choices()` now return data frames, with list columns as necessary.
 
 ## Changes in behaviour
 

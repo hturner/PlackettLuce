@@ -34,13 +34,13 @@ test_that("output of print.summary.PlackettLuce is correct", {
 test_that("output of fitted.PlackettLuce is correct", {
     expect_known_value(fitted(model_fruits1),
                        file = test_path("outputs/fitted.rds"),
-                       tol = tol)
+                       version = 2, tol = tol)
     expect_known_value(fitted(model_fruits1, aggregate = FALSE),
                        file = test_path("outputs/fitted_individual.rds"),
-                       tol = tol)
+                       version = 2, tol = tol)
     expect_known_value(fitted(model_fruits1, free = FALSE),
                        file = test_path("outputs/fitted_all.rds"),
-                       tol = tol)
+                       version = 2, tol = tol)
 })
 
 test_that("output of fitted.PlackettLuce is correct [weights]", {
@@ -48,7 +48,7 @@ test_that("output of fitted.PlackettLuce is correct [weights]", {
     expect_equal(fitted(model_fruits1, aggregate = TRUE)[-3],
                  fitted(model_fruits2, aggregate = TRUE)[-3])
     # non-aggregated for weighted same as aggregate for unweighted
-    expect_equal(fitted(model_fruits1, aggregate = TRUE)[-3],
-                 fitted(model_fruits2, aggregate = FALSE)[-3])
+    expect_equivalent(fitted(model_fruits1, aggregate = TRUE)[-3],
+                      fitted(model_fruits2, aggregate = FALSE)[-3])
 })
 

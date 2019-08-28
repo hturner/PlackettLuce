@@ -41,8 +41,4 @@ actual_choices <- choices(R, names = TRUE)
 coded_choices <- choices(R, names = FALSE)
 attr(coded_choices, "objects")
 
-## Coercion to tibble is straightforwards
-if (require(tibble)){
-    as.tibble(coded_choices)
-}
 }

@@ -29,10 +29,6 @@
 #' coded_choices <- choices(R, names = FALSE)
 #' attr(coded_choices, "objects")
 #'
-#' ## Coercion to tibble is straightforwards
-#' if (require(tibble)){
-#'     as.tibble(coded_choices)
-#' }
 #' @export
 choices <- function(rankings, names = FALSE) {
     # check rankings are valid
@@ -66,9 +62,12 @@ choices <- function(rankings, names = FALSE) {
         ranking <- c(ranking, which(J >= j))
     }
     ii <- order(ranking)
-    out <- list(choices = choices[ii], alternatives = alternatives[ii],
-                ranking = ranking[ii])
-    attr(out, "nchoices") <- length(choices)
+    nchoices <- length(choices)
+    out <- data.frame(matrix(NA, nrow = nchoices, ncol = 0))
+    out$choices <- choices[ii]
+    out$alternatives <- alternatives[ii]
+    out$ranking <- ranking[ii]
+    attr(out, "nchoices") <- nchoices
     attr(out, "objects") <- onames
     class(out) <- c("choices", class(out))
     out
