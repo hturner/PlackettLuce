@@ -90,7 +90,8 @@ test_that('estimated adherence works w/ npseudo != 0 [fake triples]', {
     mod1 <- PlackettLuce(rankings = R,
                          gamma = list(shape = 100, rate = 100))
     expect_known_value(mod1,
-                       file = test_path("outputs/pl_adherence_pseudo.rds"))
+                       file = test_path("outputs/pl_adherence_pseudo.rds"),
+                       version = 2)
 })
 
 test_that('default prior for adherence works [fake triples]', {

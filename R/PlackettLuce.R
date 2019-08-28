@@ -146,24 +146,26 @@
 #'
 #' @seealso
 #'
-#' Handling rankings: \code{\link{rankings}}, \code{choices}, \code{adjacency},
-#' \code{connectivity}.
+#' Handling rankings: \code{\link{rankings}}, \code{\link{aggregate}},
+#' \code{\link{group}}, \code{\link{choices}},
+#' \code{\link{adjacency}}, \code{\link{connectivity}}.
 #'
 #' Inspect fitted Plackett-Luce models: \code{\link{coef}}, \code{deviance},
 #' \code{\link{fitted}}, \code{\link{itempar}}, \code{logLik}, \code{print},
 #' \code{\link{qvcalc}}, \code{\link{summary}}, \code{\link{vcov}}.
 #'
-#' Fit Plackett-Luce tree: \code{\link{grouped_rankings}}, \code{pltree}.
+#' Fit Plackett-Luce tree: \code{pltree}.
 #'
 #' Example data sets: \code{\link{beans}}, \code{\link{nascar}},
-#' \code{\link{pudding}}, \code{\link{read.soc}}.
+#' \code{\link{pudding}}, \code{\link{preflib}}.
 #'
 #' Vignette: \code{vignette("Overview", package = "PlackettLuce")}.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
-#' coerced by \code{as.rankings}. A \code{"\link{grouped_rankings}"} object
-#' should be used when estimating adherence for rankers
-#' with multiple rankings per ranker.
+#' coerced by \code{as.rankings}.  An [`"aggregated_rankings"`][aggregate()]
+#' object can be used to specify rankings and weights simultaneously.
+#' A \code{"\link{grouped_rankings}"} object should be used when estimating
+#' adherence for rankers with multiple rankings per ranker.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param normal a optional list with elements named \code{mu} and \code{Sigma}
@@ -179,6 +181,8 @@
 #' missing, adherence is fixed to 1 for all rankers. If \code{gamma} is not
 #' \code{NULL}, this specifies the starting values for the adherence.
 #' @param weights an optional vector of weights for each ranking.
+#' @param na.action a function to handle any missing rankings, see
+#' [na.omit()].
 #' @param start starting values for the worth parameters and the tie parameters
 #' on the raw scale (worth parameters need not be scaled to sum to 1). If
 #' \code{normal} is specified, \code{exp(normal$mu)} is used as starting values
@@ -252,6 +256,9 @@
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
 #'
+#' # create rankings object
+#' R <- as.rankings(R)
+#'
 #' # Standard maximum likelihood estimates
 #' mod_mle <- PlackettLuce(R, npseudo = 0)
 #' coef(mod_mle)
@@ -304,7 +311,9 @@ PlackettLuce <- function(rankings,
     # check rankings object
     grouped_rankings <- inherits(rankings, "grouped_rankings")
     if (inherits(rankings, "aggregated_rankings")){
-        rankings <- rankings$ranking
+        force(weights)
+        rankings$freq <- NULL
+        rankings <- as.rankings(rankings)
     }
     if (!grouped_rankings & !inherits(rankings, "rankings")){
         rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))

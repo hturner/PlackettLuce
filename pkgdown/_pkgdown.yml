@@ -12,10 +12,10 @@ reference:
 - title: Handling rankings
   contents:
   - adjacency
-  - aggregate.rankings
+  - aggregate
   - choices
   - connectivity
-  - group.rankings
+  - group
   - rankings
 - title: Model Fitting
   contents:
@@ -24,6 +24,7 @@ reference:
 - title: Model Summary
   contents:
   - summaries
+  - pltree-summaries
   - fitted.PlackettLuce
   - itempar.PlackettLuce
   - qvcalc.PlackettLuce

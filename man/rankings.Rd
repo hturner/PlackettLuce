@@ -7,29 +7,23 @@
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
-\alias{rbind.rankings}
-\alias{as.matrix.rankings}
 \title{Rankings Object}
 \usage{
 rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
-as.rankings(x, verbose = TRUE, ...)
+as.rankings(x, ..., verbose = TRUE)
 
 \method{as.rankings}{default}(x, input = c("rankings", "orderings"),
   freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, verbose = TRUE, ...)
+  labels = NULL, ..., verbose = TRUE)
 
 \method{as.rankings}{matrix}(x, input = c("rankings", "orderings"),
   freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, verbose = TRUE, ...)
+  labels = NULL, ..., verbose = TRUE)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
 \method{format}{rankings}(x, width = 40L, ...)
-
-\method{rbind}{rankings}(..., labels = NULL)
-
-\method{as.matrix}{rankings}(x, ...)
 }
 \arguments{
 \item{data}{a data frame with columns specified by \code{id}, \code{item} and
@@ -93,7 +87,8 @@ rankings that are too wide will be truncated.}
 \value{
 By default, a \code{"rankings"} object, which is a
 matrix of dense rankings with methods for several generics including
-\code{aggregate}, \code{[}, \code{format} and \code{rbind}.
+\code{\link[=aggregate.rankings]{aggregate}}, \code{[}, \code{format}, \code{\link[=rbind]{rbind()}} and
+\code{\link[=as.matrix]{as.matrix()}}.
 
 If the object is created with \code{aggregate = TRUE}, or ranking frequencies are
 specified via \code{freq}, the rankings are post-processed to create an

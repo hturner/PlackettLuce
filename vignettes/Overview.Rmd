@@ -229,9 +229,9 @@ sushi_timings <- timings(sushi, 5,
 
 ```{r save-timings, echo = FALSE}
 if (eval_all){
-    saveRDS(netflix_timings, "netflix_timings.rds")
-    saveRDS(tshirt_timings, "tshirt_timings.rds")
-    saveRDS(sushi_timings, "sushi_timings.rds")
+    saveRDS(netflix_timings, "netflix_timings.rds", version = 2)
+    saveRDS(tshirt_timings, "tshirt_timings.rds", version = 2)
+    saveRDS(sushi_timings, "sushi_timings.rds", version = 2)
 } else {
     netflix_timings <- readRDS("netflix_timings.rds")
     tshirt_timings <- readRDS("tshirt_timings.rds")
@@ -303,7 +303,7 @@ nascar_timings <- timings(nascar, fun = c("pl", "hyper2"))
 
 ```{r save-timings-sub, echo = FALSE}
 if (eval_all){
-    saveRDS(nascar_timings, "nascar_timings.rds")
+    saveRDS(nascar_timings, "nascar_timings.rds", version = 2)
 } else {
     nascar_timings <- readRDS("nascar_timings.rds")
 }
@@ -796,7 +796,7 @@ tree
 
 ```{r save-tree, echo = FALSE}
 if (eval_all){
-    saveRDS(tree, "pltree.rds")
+    saveRDS(tree, "pltree.rds", version = 2)
 } else {
     tree <- readRDS("pltree.rds")
 }

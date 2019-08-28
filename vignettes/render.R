@@ -35,7 +35,7 @@ build_site()
 file.remove("vignettes/Overview.knit.md")
 file.remove("vignettes/Overview.utf8.md")
 
-# or b) just rebuild part
+# or b) just rebuild part (may need to do to still get tab refs)
 build_articles(lazy = FALSE) #vignette
 
 build_home()

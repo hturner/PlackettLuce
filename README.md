@@ -98,8 +98,8 @@ item, rather than ordering the items. We can create a `"rankings"`
 object from a set of orderings as follows
 
 ``` r
-R <- as.rankings(netflix[,-1], input = "orderings")
-colnames(R) <- attr(netflix, "items")
+R <- as.rankings(netflix[,-1], input = "orderings",
+                 items = attr(netflix, "items"))
 R[1:3, as.rankings = FALSE]
 ```
 

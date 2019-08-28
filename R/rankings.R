@@ -67,7 +67,8 @@
 #'
 #' @return By default, a \code{"rankings"} object, which is a
 #' matrix of dense rankings with methods for several generics including
-#' `aggregate`, `[`, `format` and `rbind`.
+#' [`aggregate`][aggregate.rankings], `[`, `format`, [rbind()] and
+#' [as.matrix()].
 #'
 #' If the object is created with `aggregate = TRUE`, or ranking frequencies are
 #' specified via `freq`, the rankings are post-processed to create an
@@ -158,8 +159,8 @@ rankings <- function(data, id, item, rank, aggregate = FALSE,
 
 #' @rdname rankings
 #' @export
-as.rankings <- function(x,
-                        verbose = TRUE, ...){
+as.rankings <- function(x, ...,
+                        verbose = TRUE){
     UseMethod("as.rankings")
 }
 
@@ -172,10 +173,12 @@ as.rankings.default <- function(x,
                                 aggregate = FALSE,
                                 items = NULL,
                                 labels = NULL,
-                                verbose = TRUE, ...){
+                                ...,
+                                verbose = TRUE){
     x <- as.matrix(x)
-    as.rankings.matrix(x, freq = freq, input = input, aggregate = aggregate,
-                       labels = labels, verbose = verbose, ...)
+    as.rankings.matrix(x, input = input, freq = freq,  index = index,
+                       aggregate = aggregate, items = items,
+                       labels = labels, ..., verbose = verbose)
 }
 
 #' @rdname rankings
@@ -187,7 +190,8 @@ as.rankings.matrix <- function(x,
                                aggregate = FALSE,
                                items = NULL,
                                labels = NULL,
-                               verbose = TRUE, ...){
+                               ...,
+                               verbose = TRUE){
     if (!is.null(labels)) {
         warning("argument `labels`` is deprecated; please use `items` instead.",
                 call. = FALSE)
@@ -293,7 +297,8 @@ checkDense <- function(x, verbose = TRUE){
 #' @method as.data.frame rankings
 #' @export
 as.data.frame.rankings <- function(x, row.names = NULL, optional = FALSE, ...,
-                                   nm = paste(deparse(substitute(x), width.cutoff = 20L),
+                                   nm = paste(deparse(substitute(x),
+                                                      width.cutoff = 20L),
                                               collapse = " ")){
     value <- list(x)
     if (!optional) {
@@ -370,11 +375,14 @@ str.rankings <- function(object, ...) {
 #' @export
 "[.rankings" <- function(x, i, j, ..., drop = TRUE, as.rankings = TRUE) {
     if (missing(j)) {
-        if (missing(i)) return(x)
-        # always a vector if picking out elements of rankings matrix
-        if (is.matrix(i)) return(.subset(x, i))
-        # else subset of rankings
-        value <- .subset(x, i, TRUE, drop = FALSE)
+        if (missing(i)) {
+            value <- unclass(x)
+        } else {
+            # always a vector if picking out elements of rankings matrix
+            if (is.matrix(i)) return(.subset(x, i))
+            # else subset of rankings
+            value <- .subset(x, i, TRUE, drop = FALSE)
+        }
     } else {
         # subset items (never drop)
         if (missing(i)) i <- TRUE
@@ -420,9 +428,7 @@ format.rankings <- function(x, width = 40L, ...){
     value[trunc] <- paste(strtrim(value[trunc], width - 4), "...")
     value
 }
-
 #' @method rbind rankings
-#' @rdname rankings
 #' @export
 rbind.rankings <- function(..., labels = NULL){
     # check contain the same items
@@ -451,7 +457,6 @@ rbind.rankings <- function(..., labels = NULL){
     structure(R, class = "rankings")
 }
 
-#' @rdname rankings
 #' @method as.matrix rankings
 #' @export
 as.matrix.rankings <- function(x, ...){

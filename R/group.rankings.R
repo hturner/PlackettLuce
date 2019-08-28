@@ -62,19 +62,16 @@
 #' G[2, -3]
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
-#' @aliases grouped_rankings
 #' @export
 group <- function(x, index, ...){
     UseMethod("group")
 }
 
-#' @rdname group
+#' @method group rankings
 #' @export
 group.rankings <- function(x, index, ...){
     if (!(is.vector(index) & length(index) == nrow(x)))
         stop("index must be a vector with length equal to rankings")
-    if (!inherits(x, "rankings"))
-        x <- as.rankings(x, ...)
     index <- as.numeric(index)
     do.call("structure",
             c(list(seq_len(max(index)), rankings = x, index = index),
@@ -115,6 +112,38 @@ ranking_stats <- function(rankings){
         id[[i]] <- unlist(add)
     }
     list(R = R, S = S, id = id)
+}
+
+#' @rdname group
+#' @export
+as.grouped_rankings <- function(x, ...){
+    UseMethod("as.grouped_rankings")
+}
+
+#' @rdname group
+#' @method as.grouped_rankings paircomp
+#' @export
+as.grouped_rankings.paircomp <- function(x, ...){
+    if (attr(x, "mscale")[1L] < -1L) {
+        warning("strength of preference ignored")
+        x <- sign(x)
+    }
+    id <- which(!is.na(as.matrix(x)), arr.ind = TRUE)
+    ncomp <- nrow(id)
+    nobj <- length(attr(x, "labels"))
+    pairs <- which(upper.tri(diag(nobj)), arr.ind = TRUE)
+    rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
+                       dimnames = list(NULL, attr(x, "labels")))
+    x <- as.matrix(x)[id]
+    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <-
+        ifelse(x == -1L, 2L, 1L)
+    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <-
+        ifelse(x == 1L, 2L, 1L)
+    rankings <- structure(rankings, class = "rankings")
+    do.call("structure",
+            c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),
+              ranking_stats(rankings),
+              list(class = "grouped_rankings")))
 }
 
 #' @rdname PlackettLuce-deprecated
@@ -173,41 +202,11 @@ grouped_rankings <- function(rankings, index, ...){
     } else {
         # convert rankings matrix to grouped_rankings
         # (will recode as necessary, omit redundant rankings, create R, S, id)
-        group(rankings, index)
+        group(as.rankings(rankings), index)
     }
 }
 
-#' @rdname group
-#' @export
-as.grouped_rankings <- function(x, ...){
-    UseMethod("as.grouped_rankings")
-}
 
-#' @rdname group
-#' @method as.grouped_rankings paircomp
-#' @export
-as.grouped_rankings.paircomp <- function(x, ...){
-    if (attr(x, "mscale")[1L] < -1L) {
-        warning("strength of preference ignored")
-        x <- sign(x)
-    }
-    id <- which(!is.na(as.matrix(x)), arr.ind = TRUE)
-    ncomp <- nrow(id)
-    nobj <- length(attr(x, "labels"))
-    pairs <- which(upper.tri(diag(nobj)), arr.ind = TRUE)
-    rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
-                       dimnames = list(NULL, attr(x, "labels")))
-    x <- as.matrix(x)[id]
-    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <-
-        ifelse(x == -1L, 2L, 1L)
-    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <-
-        ifelse(x == 1L, 2L, 1L)
-    rankings <- structure(rankings, class = "rankings")
-    do.call("structure",
-            c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),
-              ranking_stats(rankings),
-              list(class = "grouped_rankings")))
-}
 
 #' @method as.data.frame grouped_rankings
 #' @export
@@ -263,9 +262,8 @@ format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     value
 }
 
-#' @rdname group
 #' @method na.omit grouped_rankings
-#' @export
+#' @importFrom stats na.omit
 na.omit.grouped_rankings <- function(object, ...) {
     omit <- seq_along(attr(object, "rankings"))[is.na(attr(object, "rankings"))]
     if (length(omit) == 0L)
@@ -285,9 +283,8 @@ na.omit.grouped_rankings <- function(object, ...) {
               class = "grouped_rankings")
 }
 
-#' @rdname group
 #' @method na.exclude grouped_rankings
-#' @export
+#' @importFrom stats na.exclude
 na.exclude.grouped_rankings <- function(object, ...) {
     out  <- na.omit(object)
     class(attr(out, "na.action")) <- "na.exclude"

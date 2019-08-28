@@ -2,32 +2,22 @@
 % Please edit documentation in R/group.rankings.R
 \name{group}
 \alias{group}
-\alias{grouped_rankings}
-\alias{group.rankings}
-\alias{[.grouped_rankings}
 \alias{as.grouped_rankings}
 \alias{as.grouped_rankings.paircomp}
+\alias{[.grouped_rankings}
 \alias{format.grouped_rankings}
-\alias{na.omit.grouped_rankings}
-\alias{na.exclude.grouped_rankings}
 \title{Group Rankings}
 \usage{
 group(x, index, ...)
-
-\method{group}{rankings}(x, index, ...)
-
-\method{[}{grouped_rankings}(x, i, j, ..., drop = TRUE,
-  as.grouped_rankings = TRUE)
 
 as.grouped_rankings(x, ...)
 
 \method{as.grouped_rankings}{paircomp}(x, ...)
 
+\method{[}{grouped_rankings}(x, i, j, ..., drop = TRUE,
+  as.grouped_rankings = TRUE)
+
 \method{format}{grouped_rankings}(x, max = 2L, width = 20L, ...)
-
-\method{na.omit}{grouped_rankings}(object, ...)
-
-\method{na.exclude}{grouped_rankings}(object, ...)
 }
 \arguments{
 \item{x}{an object that can be coerced to a \code{"grouped_rankings"} object

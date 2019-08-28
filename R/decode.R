@@ -1,4 +1,4 @@
-#' Decode Orderings using Key to Item Names
+#' Decode Orderings using a Key to Item Names
 #'
 #' @param orderings A data frame of coded orderings.
 #' @param items A data frame of the items in each ranking, or a vector of

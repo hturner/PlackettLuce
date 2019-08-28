@@ -2,7 +2,7 @@
 % Please edit documentation in R/decode.R
 \name{decode}
 \alias{decode}
-\title{Decode Orderings using Key to Item Names}
+\title{Decode Orderings using a Key to Item Names}
 \usage{
 decode(orderings, items, code = NULL)
 }
@@ -20,7 +20,7 @@ for a numeric code.}
 A data frame with the coded values replaced by the item labels.
 }
 \description{
-Decode Orderings using Key to Item Names
+Decode Orderings using a Key to Item Names
 }
 \examples{
 # orderings of up to 3 items coded as A, B, C
