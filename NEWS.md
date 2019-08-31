@@ -1,3 +1,29 @@
+# PlackettLuce 0.2-7
+
+## New Features
+
+* New `"aggregated_rankings"` object to store aggregated rankings with the corresponding frequencies. Objects of class `"rankings"` can be aggregated via the `aggregate` method; alternatively `rankings()` and `as.rankings()` will create an `"aggregated_rankings"` object when `aggregate = TRUE`. `as.rankings()` also handles pre-aggregated data, accepting frequencies via the `freq` argument.
+* New `freq()` function to extract frequencies from aggregated rankings.
+* `as.rankings()` can now create a `"grouped_rankings"` object, if a grouping index is passed via the `index` argument.
+* New `as.matrix()` methods for rankings and aggregated rankings to extract the underlying matrix of rankings, with frequencies in the final column if relevant. This means rankings can be saved easily with `write.table()`.
+* New `complete()` and `decode()` functions to help pre-process orderings before converting to rankings, `complete()` infers the item(s) in r'th rank given the items in the other (r - 1) ranks. `decode()` converts coded (partial) orderings to orderings of the items in each ordering.
+* New `read.soi()`, `read.toc()` and `read.toi()` to read the corresponding PrefLib file formats (for data types "Strict Orders - Incomplete List", "Orders with Ties - Complete List" and "Orders with Ties - Incomplete List"). An `as.aggregated_rankings()` method is provided to convert the data frame of aggregated orderings to an `"aggregated_rankings"` object.
+
+## Improvements
+
+* `pltree()` now respects `na.action` and will pad predictions and fitted values for `na.action = "na.exclude"` if the rankings are missing for a whole group or one of the model covariates has a missing value.
+* `PlackettLuce()` now has an `na.action` argument for handling of missing rankings.
+* `fitted()` and `choices()` now return data frames, with list columns as necessary.
+
+## Changes in behaviour
+
+* `rankings()` now sets redundant/inconsistent ranks to `NA` rather than dropping them. This does not affect the final ranking, unless it is completely `NA`.
+* The frequencies column in the data frame returned by `read.soc()` is now named `Freq` rather than `n`.
+* The `"item"` attribute of the data frame returned by `read.soc()` is now named `"items"`.
+* The `labels` argument in `as.rankings()` has been deprecated and replaced by `items`.
+* `grouped_ranking()` has been deprecated and replaced by `group()`.
+* The redundant columns in the `nascar` data have been dropped.
+
 # PlackettLuce 0.2-6
 
 * Avoid using `isFALSE()` for compatibility with R < 3.5.

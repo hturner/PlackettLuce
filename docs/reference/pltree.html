@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -122,18 +122,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>pltree</span>(<span class='no'>formula</span>, <span class='no'>data</span>, <span class='no'>subset</span>, <span class='no'>na.action</span>, <span class='no'>cluster</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for pltree</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>object</span>, <span class='kw'>node</span> <span class='kw'>=</span> <span class='fu'>nodeids</span>(<span class='no'>object</span>, <span class='kw'>terminal</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
-  <span class='no'>...</span>)
-
-<span class='co'># S3 method for pltree</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"itempar"</span>,
-  <span class='st'>"rank"</span>, <span class='st'>"best"</span>, <span class='st'>"node"</span>), <span class='no'>...</span>)
-
-<span class='co'># S3 method for pltree</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/AIC'>AIC</a></span>(<span class='no'>object</span>, <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>pltree</span>(<span class='no'>formula</span>, <span class='no'>data</span>, <span class='no'>subset</span>, <span class='no'>na.action</span>, <span class='no'>cluster</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,8 +131,8 @@
       <th>formula</th>
       <td><p>a symbolic description of the model to be fitted, of the form
 <code>y ~ x1 + ... + xn</code> where <code>y</code> should be an object of class
-<code><a href='grouped_rankings.html'>grouped_rankings</a></code> and <code>x1</code>, &#8230;, <code>xn</code> are used as
- partitioning variables.</p></td>
+<code><a href='PlackettLuce-deprecated.html'>grouped_rankings</a></code> and <code>x1</code>, &#8230;, <code>xn</code> are used as
+partitioning variables.</p></td>
     </tr>
     <tr>
       <th>data</th>
@@ -156,7 +145,8 @@
     </tr>
     <tr>
       <th>na.action</th>
-      <td><p>how NAs are treated, passed to <code><a href='https://www.rdocumentation.org/packages/stats/topics/model.frame'>model.frame</a></code>.</p></td>
+      <td><p>how NAs are treated, applied to the underlying rankings and
+then passed to <code><a href='https://www.rdocumentation.org/packages/stats/topics/model.frame'>model.frame</a></code>.</p></td>
     </tr>
     <tr>
       <th>cluster</th>
@@ -170,31 +160,7 @@ which log ability will be set to zero). If NULL the first item is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments, passed to <code><a href='PlackettLuce.html'>PlackettLuce</a></code> by
-<code>pltree</code>; to <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code> by <code>predict</code>, and to
-<code><a href='https://www.rdocumentation.org/packages/stats/topics/model.frame'>model.frame</a></code> by <code>AIC</code>.</p></td>
-    </tr>
-    <tr>
-      <th>object</th>
-      <td><p>a fitted model object of class <code>"pltree"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>node</th>
-      <td><p>a vector of node ids specifying the nodes to summarise, by
-default the ids of the terminal nodes.</p></td>
-    </tr>
-    <tr>
-      <th>newdata</th>
-      <td><p>an optional data frame to use instead of the
-original data. For <code>AIC</code> this must include the response variable.</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>the type of prediction to return for each group, one of:
-<code>"itempar"</code> to give the result of <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code> (by default the
-fitted probability of each item being ranked first out of all objects),
-<code>"rank"</code> the corresponding rank, <code>"best"</code> the topped ranked item,
-or <code>"node"</code> the node of the tree the group belongs to.</p></td>
+      <td><p>additional arguments, passed to <code><a href='PlackettLuce.html'>PlackettLuce</a></code>.</p></td>
     </tr>
     </table>
     
@@ -209,7 +175,7 @@ and <code>"modelparty"</code>.</p>
 (implemented in <code><a href='https://www.rdocumentation.org/packages/partykit/topics/mob'>mob</a></code>) to Plackett-Luce models for
 rankings. The partitioning is based on ranking covariates, e.g. attributes of
 the judge making the ranking, or conditions under which the ranking is made.
-The response should be a <code><a href='grouped_rankings.html'>grouped_rankings</a></code> object that groups
+The response should be a <code><a href='PlackettLuce-deprecated.html'>grouped_rankings</a></code> object that groups
 rankings with common covariate values. This may be included in a data frame
 alongside the covariates.</p>
 <p>Most arguments of <code>PlackettLuce</code> can be passed on by <code>pltree</code>.
@@ -218,18 +184,21 @@ Arguably it makes more sense to estimate adherence or reliability within
 the nodes of the Plackett-Luce tree.</p>
 <p>Various methods are provided for <code>"pltree"</code> objects, most of them
 inherited from <code>"modelparty"</code> objects (e.g. <code>print</code>,
-<code>summary</code>), or <code>"bttree"</code> objects (<code>plot</code>). <code>itempar</code>
-extracts the abilities or item parameters from the Plackett-Luce models in
-each node of the tree using <code><a href='itempar.PlackettLuce.html'>itempar.PlackettLuce</a></code>. The plot
+<code>summary</code>), or <code>"bttree"</code> objects (<code>plot</code>). The plot
 method employs the <code><a href='https://www.rdocumentation.org/packages/psychotree/topics/node_btplot'>node_btplot</a></code>
-panel-generating function. <code>AIC</code> computes
-\(-2L + 2p\) where \(L\) is the joint likelihood of
-the observed rankings under the tree model and \(p\) is the degrees of
-freedom used to fit the tree model.</p>
+panel-generating function. The See Also
+section gives details of separately documented methods.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/psychotree/topics/bttree'>bttree</a></code></p></div>
+    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/psychotree/topics/bttree'>bttree</a></code> For fitting Bradley-Terry trees
+(equivalent to the Plackett-Luce model for paired comparisons without ties).</p>
+<p><code>coef</code>, <code>vcov</code>, <code>AIC</code> and <code>predict</code> methods are documented on
+<code><a href='pltree-summaries.html'>pltree-summaries</a></code>.</p>
+<p><code><a href='itempar.PlackettLuce.html'>itempar</a></code>, extracts the abilities or item parameters
+in each node of the tree using <code><a href='itempar.PlackettLuce.html'>itempar.PlackettLuce</a></code>.</p>
+<p><code><a href='fitted.PlackettLuce.html'>fitted</a></code>, computes probabilities for the observed
+choices based on the full tree.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -239,11 +208,11 @@ freedom used to fit the tree model.</p>
     <span class='co'>## Germany's Next Topmodel 2007 data</span>
     <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"Topmodel2007"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"psychotree"</span>)
     <span class='co'>## convert paircomp object to grouped rankings</span>
-    <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grouped_rankings.html'>as.grouped_rankings</a></span>(<span class='no'>Topmodel2007</span>$<span class='no'>preference</span>)
+    <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='group.html'>as.grouped_rankings</a></span>(<span class='no'>Topmodel2007</span>$<span class='no'>preference</span>)
     <span class='co'>## rankings are grouped by judge</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>,], <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>6</span>)
+    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>,], <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>4</span>)
     <span class='co'>## Topmodel2007[, -1] gives covariate values for each judge</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>Topmodel2007</span>[, -<span class='fl'>1</span>], <span class='fl'>2</span>)
+    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>Topmodel2007</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, -<span class='fl'>1</span>])
 
     <span class='co'>## fit partition model based on all variables except preference</span>
     <span class='co'>## set npseudo = 0 as all judges rank all models</span>
@@ -258,27 +227,17 @@ freedom used to fit the tree model.</p>
 
     <span class='co'>## log-abilities, zero sum contrast</span>
     <span class='fu'><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></span>(<span class='no'>tm_tree</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-    <span class='co'>## abilities with Anja as reference</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></span>(<span class='no'>tm_tree</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='st'>"Anja"</span>)
-
-    <span class='co'>## results for the first three judges</span>
-    <span class='no'>newdata</span> <span class='kw'>&lt;-</span> <span class='no'>Topmodel2007</span>[<span class='fl'>1</span>:<span class='fl'>3</span>,]
-    <span class='co'>### fitted probabilities</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>)
-    <span class='co'>### fitted log-abilities, with Anni as reference</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='st'>"Anni"</span>)
-    <span class='co'>###  item ranks</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"rank"</span>)
-    <span class='co'>### top ranked item</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"best"</span>)
-    <span class='co'>### node the judge belongs to</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>tm_tree</span>, <span class='no'>newdata</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"node"</span>)
-
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotree</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: partykit</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: grid</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: libcoin</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: mvtnorm</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotools</span></div><div class='output co'>#&gt;                                                                                               1 
-#&gt; "Barbara &gt; Anni, Barbara &gt; Hana, Anni &gt; Hana, Barbara &gt; Fiona, Fiona &gt; Anni, Fiona &gt; Hana, ..." 
-#&gt;                                                                                               2 
-#&gt; "Anni &gt; Barbara, Hana &gt; Barbara, Hana &gt; Anni, Fiona &gt; Barbara, Anni &gt; Fiona, Hana &gt; Fiona, ..." </div><div class='img'><img src='pltree-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;   1   2   3 
-#&gt; "7" "3" "3" </div></pre>
+}</div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotree</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: partykit</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: grid</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: libcoin</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: mvtnorm</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: psychotools</span></div><div class='output co'>#&gt;                                                                   1 
+#&gt; "Barbara &gt; Anni, Barbara &gt; Hana, Anni &gt; Hana, Barbara &gt; Fiona, ..." 
+#&gt;                                                                   2 
+#&gt; "Anni &gt; Barbara, Hana &gt; Barbara, Hana &gt; Anni, Fiona &gt; Barbara, ..." 
+#&gt;   gender age  q1  q2  q3
+#&gt; 1   male  66  no  no  no
+#&gt; 2   male  21 yes yes yes</div><div class='img'><img src='pltree-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;     Barbara       Anni       Hana      Fiona       Mandy       Anja
+#&gt; 3 0.3252815  0.2193055 1.03734300 -0.1785927 -0.39080852 -1.0125288
+#&gt; 5 0.1106734 -0.2392155 0.51830152  0.3662483 -0.42801793 -0.3279899
+#&gt; 6 0.5715647  0.3486194 0.06927133  0.2590188 -0.87250734 -0.3759669
+#&gt; 7 0.5343475 -1.0000476 0.01067104  0.0575107  0.08093274  0.3165856</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

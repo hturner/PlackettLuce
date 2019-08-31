@@ -2,14 +2,17 @@
 % Please edit documentation in R/itempar.R
 \name{itempar.PlackettLuce}
 \alias{itempar.PlackettLuce}
+\alias{itempar.pltree}
 \title{Extract Item Parameters of Plackett-Luce Models}
 \usage{
 \method{itempar}{PlackettLuce}(object, ref = NULL, alias = TRUE,
   vcov = TRUE, log = FALSE, ...)
+
+\method{itempar}{pltree}(object, ...)
 }
 \arguments{
 \item{object}{a fitted model object as returned by
-\code{\link{PlackettLuce}}.}
+\code{\link{PlackettLuce}} or \code{\link{pltree}}.}
 
 \item{ref}{a vector of labels or position indices of item parameters which
 should be used as restriction/for normalization. If \code{NULL}
@@ -19,8 +22,8 @@ unit sum (\code{log = FALSE}) constraint.}
 \item{alias}{logical. If \code{TRUE} (the default), the aliased parameter is
 included in the return vector (and in the variance-covariance matrix if
 \code{vcov = TRUE}). If \code{FALSE}, it is removed. If the restriction given
- in ref depends on several parameters, the first parameter of the restriction
- specified is (arbitrarily) chosen to be removed if alias is \code{FALSE}.}
+in ref depends on several parameters, the first parameter of the restriction
+specified is (arbitrarily) chosen to be removed if alias is \code{FALSE}.}
 
 \item{vcov}{logical. If \code{TRUE} (the default), the (transformed)
 variance-covariance matrix of the item parameters is attached as attribute
@@ -32,12 +35,13 @@ abilities (\code{FALSE}).}
 \item{...}{further arguments which are currently not used.}
 }
 \value{
-an object of class \code{"itempar"}, see
+An object of class \code{"itempar"}, see
 \code{\link[psychotools]{itempar}}.
 }
 \description{
-A method for \code{\link[psychotools]{itempar}} to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model.
+Methods for \code{\link[psychotools]{itempar}} to extract the item
+parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+In the case of a tree, item parameters are extracted for each terminal node.
 }
 \examples{
 R <- matrix(c(1, 2, 0, 0,

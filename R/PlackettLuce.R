@@ -1,7 +1,8 @@
 #' Fit a Plackett-Luce Model
 #'
 #' Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-#' (not all objects ranked) and include ties of any order.
+#' (each ranking completely ranks a subset of the items) and include ties of
+#' any order.
 #'
 #' @section Model definition:
 #'
@@ -16,7 +17,8 @@
 #'       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}}{
 #'       f(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(1/|S|)}
 #' where \eqn{|S|} is the cardinality (size) of the set, \eqn{\delta_n}{delta_n} is a
-#' parameter related to the prevalence of ties of order \eqn{n}, and
+#' parameter related to the prevalence of ties of order \eqn{n}
+#' (with \eqn{\delta_1 \equiv 1}), and
 #' \eqn{\alpha_i}{alpha_i} is a parameter representing the worth of item \eqn{i}.
 #' Then under an extension of the Plackett-Luce model allowing ties up to order
 #' \eqn{D}, the probability of the ranking \eqn{R} is given by
@@ -24,7 +26,7 @@
 #'       \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}}{
 #'       prod_{j = 1}^J f(C_j)/
 #'       (sum_{k = 1}^{min(D_j, D)} sum_{S in choose(A_j, k)} f(S))}
-#' where \eqn{D_j} is the cardinality of \eqn{C_j}, \eqn{A_j} is the set of
+#' where \eqn{D_j} is the cardinality of \eqn{A_j}, the set of
 #' alternatives from which \eqn{C_j} is chosen, and
 #' \eqn{A_j \choose k}{choose(A_j, k)} is all the possible choices of \eqn{k}
 #' items from \eqn{A_j}. The value of \eqn{D} can be set to the maximum number
@@ -62,7 +64,8 @@
 #' infinity the log-worth estimates all shrink towards 0. The default,
 #' \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 #' shrinkage effect. Even for networks that are already connected, adding
-#' pseudo-rankings reduces both the bias and variance of the estimates.
+#' pseudo-rankings typically reduces both the bias and variance of the
+#' estimators of the worth parameters.
 #'
 #' @section Incorporating prior information on log-worths:
 #'
@@ -109,7 +112,7 @@
 #'
 #' Since the number of adherence parameters will typically be large and it is
 #' assumed the worth and tie parameters are of primary interest, the adherence
-#' parameters are not included in model summaries, by are included in the
+#' parameters are not included in model summaries, but are included in the
 #' returned object.
 #'
 #' @section Controlling the fit:
@@ -146,24 +149,26 @@
 #'
 #' @seealso
 #'
-#' Handling rankings: \code{\link{rankings}}, \code{choices}, \code{adjacency},
-#' \code{connectivity}.
+#' Handling rankings: \code{\link{rankings}}, \code{\link{aggregate}},
+#' \code{\link{group}}, \code{\link{choices}},
+#' \code{\link{adjacency}}, \code{\link{connectivity}}.
 #'
 #' Inspect fitted Plackett-Luce models: \code{\link{coef}}, \code{deviance},
 #' \code{\link{fitted}}, \code{\link{itempar}}, \code{logLik}, \code{print},
 #' \code{\link{qvcalc}}, \code{\link{summary}}, \code{\link{vcov}}.
 #'
-#' Fit Plackett-Luce tree: \code{\link{grouped_rankings}}, \code{pltree}.
+#' Fit Plackett-Luce tree: \code{pltree}.
 #'
 #' Example data sets: \code{\link{beans}}, \code{\link{nascar}},
-#' \code{\link{pudding}}, \code{\link{read.soc}}.
+#' \code{\link{pudding}}, \code{\link{preflib}}.
 #'
 #' Vignette: \code{vignette("Overview", package = "PlackettLuce")}.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
-#' coerced by \code{as.rankings}. A \code{"\link{grouped_rankings}"} object
-#' should be used when estimating adherence for rankers
-#' with multiple rankings per ranker.
+#' coerced by \code{as.rankings}.  An [`"aggregated_rankings"`][aggregate()]
+#' object can be used to specify rankings and weights simultaneously.
+#' A \code{"\link{grouped_rankings}"} object should be used when estimating
+#' adherence for rankers with multiple rankings per ranker.
 #' @param npseudo when using pseudodata: the number of wins and losses to add
 #' between each object and a hypothetical reference object.
 #' @param normal a optional list with elements named \code{mu} and \code{Sigma}
@@ -179,6 +184,8 @@
 #' missing, adherence is fixed to 1 for all rankers. If \code{gamma} is not
 #' \code{NULL}, this specifies the starting values for the adherence.
 #' @param weights an optional vector of weights for each ranking.
+#' @param na.action a function to handle any missing rankings, see
+#' [na.omit()].
 #' @param start starting values for the worth parameters and the tie parameters
 #' on the raw scale (worth parameters need not be scaled to sum to 1). If
 #' \code{normal} is specified, \code{exp(normal$mu)} is used as starting values
@@ -252,6 +259,9 @@
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
 #'
+#' # create rankings object
+#' R <- as.rankings(R)
+#'
 #' # Standard maximum likelihood estimates
 #' mod_mle <- PlackettLuce(R, npseudo = 0)
 #' coef(mod_mle)
@@ -278,7 +288,7 @@
 #'
 #' # estimate adherence based on grouped rankings
 #' #  - assume two rankings from each ranker
-#' G <- grouped_rankings(R, rep(1:3, each = 2))
+#' G <- group(R, rep(1:3, each = 2))
 #' mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
 #' coef(mod_grouped)
 #' # first ranker is least consistent so down-weighted
@@ -293,31 +303,52 @@ PlackettLuce <- function(rankings,
                          normal = NULL,
                          gamma = NULL,
                          adherence = NULL,
-                         weights = NULL,
+                         weights = freq(rankings),
+                         na.action = getOption("na.action"),
                          start = NULL,
                          method = c("iterative scaling", "BFGS", "L-BFGS"),
                          epsilon = 1e-7, steffensen = 0.1, maxit = c(500, 10),
                          trace = FALSE, verbose = TRUE, ...){
     call <- match.call()
 
-    # check rankings
+    # check rankings object
     grouped_rankings <- inherits(rankings, "grouped_rankings")
+    if (inherits(rankings, "aggregated_rankings")){
+        force(weights)
+        rankings$freq <- NULL
+        rankings <- as.rankings(rankings)
+    }
+    if (!grouped_rankings & !inherits(rankings, "rankings")){
+        rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
+    }
+
+    # define ranker
     if (grouped_rankings){
         ranker <- attr(rankings, "index")
         # if weights are per group id expand to be per ranking
         if (!is.null(weights) & length(weights) == max(ranker)) {
             weights <- weights[ranker]
         }
+    }else if (!is.null(adherence)| !is.null(gamma)){
+        ranker <- seq_len(nrow(rankings))
+    } else ranker <- NULL
+
+    if (!is.null(na.action)) {
+        rankings <- match.fun(na.action)(rankings)
+        na.action <- attr(rankings, "na.action")
+        if (!is.null(na.action)) {
+            if (!is.null(weights)) weights <- weights[-na.action]
+            if (!is.null(adherence)) adherence <- adherence[-na.action]
+            if (!is.null(ranker)) ranker <- ranker[-na.action]
+        }
+    }
+
+    # unpack grouped rankings
+    if (grouped_rankings){
         R <- attr(rankings, "R")
         S <- attr(rankings, "S")
         id <- attr(rankings, "id")
         rankings <- attr(rankings, "rankings")
-    } else if (!is.null(adherence)| !is.null(gamma)){
-        ranker <- seq_len(nrow(rankings))
-    } else ranker <- NULL
-
-    if (!inherits(rankings, "rankings")){
-        rankings <- suppressWarnings(as.rankings(rankings, verbose = verbose))
     }
 
     # attributes
@@ -812,7 +843,8 @@ PlackettLuce <- function(rankings,
                 adherence = adherence,
                 ranker = ranker,
                 maxTied = D,
-                conv = conv)
+                conv = conv,
+                na.action = na.action)
     class(fit) <- "PlackettLuce"
     fit
 }

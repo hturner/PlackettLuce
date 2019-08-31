@@ -67,7 +67,7 @@ exchangeable part of the Plackett-Luce with ties." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -145,7 +145,7 @@ coerced by <code>as.rankings</code>.</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of class <code>"choices"</code> with elements:</p>
+    <p>A data frame of class <code>"choices"</code> with elements:</p>
 <dt>choices</dt><dd><p>A list where each element represents the set of items
 chosen for a single rank in the ranking.</p></dd>
 <dt>alternatives</dt><dd><p>A list where each element represents the set of items
@@ -165,32 +165,29 @@ attributes "nchoices" and "objects" respectively.
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
+
 <span class='no'>actual_choices</span> <span class='kw'>&lt;-</span> <span class='fu'>choices</span>(<span class='no'>R</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>actual_choices</span>[<span class='fl'>1</span>:<span class='fl'>6</span>,]</div><div class='output co'>#&gt; Ranking: 1 
+#&gt; -------------- 
+#&gt; {apple} from {apple, banana} 
+#&gt; {banana} from {banana} 
+#&gt; ============== 
+#&gt; Ranking: 2 
+#&gt; -------------- 
+#&gt; {banana} from {apple, banana, orange, pear} 
+#&gt; {orange} from {apple, orange, pear} 
+#&gt; {pear} from {apple, pear} 
+#&gt; {apple} from {apple} 
+#&gt; ============== </div><div class='input'>
 <span class='no'>coded_choices</span> <span class='kw'>&lt;-</span> <span class='fu'>choices</span>(<span class='no'>R</span>, <span class='kw'>names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>coded_choices</span>, <span class='st'>"objects"</span>)</div><div class='output co'>#&gt; [1] "apple"  "banana" "orange" "pear"  </div><div class='input'>
-<span class='co'>## Coercion to tibble is straightforwards</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>tibble</span>)){
-    <span class='fu'><a href='https://tibble.tidyverse.org/reference/deprecated.html'>as.tibble</a></span>(<span class='no'>coded_choices</span>)
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: tibble</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).</span>
-#&gt; <span class='warning'><span style='color: #555555;'>This warning is displayed once per session.</span><span></span></div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 16 x 3</span><span>
-#&gt;    choices   alternatives ranking
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>         </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [2]&gt;</span><span>          1
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          1
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [4]&gt;</span><span>          2
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [3]&gt;</span><span>          2
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [2]&gt;</span><span>          2
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          2
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> </span><span style='color: #949494;'>&lt;int [3]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [4]&gt;</span><span>          3
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          3
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [3]&gt;</span><span>          4
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [2]&gt;</span><span>          4
-#&gt; </span><span style='color: #BCBCBC;'>11</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          4
-#&gt; </span><span style='color: #BCBCBC;'>12</span><span> </span><span style='color: #949494;'>&lt;int [2]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [3]&gt;</span><span>          5
-#&gt; </span><span style='color: #BCBCBC;'>13</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          5
-#&gt; </span><span style='color: #BCBCBC;'>14</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [3]&gt;</span><span>          6
-#&gt; </span><span style='color: #BCBCBC;'>15</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [2]&gt;</span><span>          6
-#&gt; </span><span style='color: #BCBCBC;'>16</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span> </span><span style='color: #949494;'>&lt;int [1]&gt;</span><span>          6</div></span></pre>
+<span class='no'>coded_choices</span>[<span class='fl'>1</span>:<span class='fl'>2</span>,]</div><div class='output co'>#&gt; Ranking: 1 
+#&gt; -------------- 
+#&gt; {1} from {1, 2} 
+#&gt; {2} from {2} 
+#&gt; ============== </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/as.data.frame'>as.data.frame</a></span>(<span class='no'>coded_choices</span>)[<span class='fl'>1</span>:<span class='fl'>2</span>,]</div><div class='output co'>#&gt;   choices alternatives ranking
+#&gt; 1       1         1, 2       1
+#&gt; 2       2            2       1</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>coded_choices</span>, <span class='st'>"objects"</span>)</div><div class='output co'>#&gt; [1] "apple"  "banana" "orange" "pear"  </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

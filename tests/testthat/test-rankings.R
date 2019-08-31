@@ -6,9 +6,10 @@ R <- as.rankings(matrix(c(1, 2, 0, 0,
                           0, 0, 1, 2,
                           2, 1, 0, 0,
                           0, 1, 2, 3), ncol = 4, byrow = TRUE))
+R <- as.rankings(R)
 
 # grouped rankings (1st 3 from group 1, next 2 from group 2)
-G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
+G <- group(R, c(1, 1, 1, 2, 2))
 
 test_that("].grouped_rankings allows replicates [fake partial rankings]", {
     out <- paste0(
@@ -38,7 +39,8 @@ if (require(psychotools)){
                   0, 2, 1,
                   0, 1, 2), ncol = 3, byrow = TRUE)
     colnames(R) <- letters[1:3]
-    res2 <- grouped_rankings(R, rep(1:4, 3))
+    R <- as.rankings(R)
+    res2 <- group(R, rep(1:4, 3))
     expect_equal(res, res2)
 }
 

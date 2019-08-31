@@ -12,18 +12,18 @@
 <script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <meta property="og:title" content="Plackett-Luce Models for Rankings">
 <meta property="og:description" content="Functions to prepare rankings data and fit the Plackett-Luce model
-    jointly attributed to Plackett (1975) &lt;doi:10.2307/2346567&gt; and Luce 
-    (1959, ISBN:0486441369). The standard Plackett-Luce model is generalized 
-    to accommodate ties of any order in the ranking. Partial rankings, in which 
+    jointly attributed to Plackett (1975) &lt;doi:10.2307/2346567&gt; and Luce
+    (1959, ISBN:0486441369). The standard Plackett-Luce model is generalized
+    to accommodate ties of any order in the ranking. Partial rankings, in which
     only a subset of items are ranked in each ranking, are also accommodated in
-    the implementation. Disconnected/weakly connected networks implied by the 
-    rankings may be handled by adding pseudo-rankings with a hypothetical item. 
-    Optionally, a multivariate normal prior may be set on the log-worth 
-    parameters and ranker reliabilities may be incorporated as proposed by 
-    Raman and Joachims (2014) &lt;doi:10.1145/2623330.2623654&gt;. Maximum a 
-    posteriori estimation is used when priors are set. Methods are provided to 
-    estimate standard errors or quasi-standard errors for inference as well as 
-    to fit Plackett-Luce trees. See the package website or vignette for further 
+    the implementation. Disconnected/weakly connected networks implied by the
+    rankings may be handled by adding pseudo-rankings with a hypothetical item.
+    Optionally, a multivariate normal prior may be set on the log-worth
+    parameters and ranker reliabilities may be incorporated as proposed by
+    Raman and Joachims (2014) &lt;doi:10.1145/2623330.2623654&gt;. Maximum a
+    posteriori estimation is used when priors are set. Methods are provided to
+    estimate standard errors or quasi-standard errors for inference as well as
+    to fit Plackett-Luce trees. See the package website or vignette for further
     details.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -44,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -129,21 +129,21 @@
 <p>The data can be read in using the <code>read.soc</code> function in <strong>PlackettLuce</strong></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PlackettLuce)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">netflix &lt;-<span class="st"> </span><span class="kw"><a href="reference/read.soc.html">read.soc</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(preflib, <span class="st">"netflix/ED-00004-00000138.soc"</span>))</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">netflix &lt;-<span class="st"> </span><span class="kw"><a href="reference/preflib.html">read.soc</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(preflib, <span class="st">"netflix/ED-00004-00000138.soc"</span>))</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(netflix, <span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##    n Rank 1 Rank 2 Rank 3 Rank 4
-## 1 68      2      1      4      3
-## 2 53      1      2      4      3</code></pre>
+<pre><code>##   Freq Rank 1 Rank 2 Rank 3 Rank 4
+## 1   68      2      1      4      3
+## 2   53      1      2      4      3</code></pre>
 <p>Each row corresponds to a unique ordering of the four movies in this data set. The number of Netflix users that assigned that ordering is given in the first column, followed by the four movies in preference order. So for example, 68 users ranked movie 2 first, followed by movie 1, then movie 4 and finally movie 3.</p>
 <p><code>PlackettLuce</code>, the model-fitting function in <strong>PlackettLuce</strong> requires that the data are provided in the form of <em>rankings</em> rather than <em>orderings</em>, i.e. the rankings are expressed by giving the rank for each item, rather than ordering the items. We can create a <code>"rankings"</code> object from a set of orderings as follows</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="reference/rankings.html">as.rankings</a></span>(netflix[,<span class="op">-</span><span class="dv">1</span>], <span class="dt">input =</span> <span class="st">"ordering"</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames</a></span>(R) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(netflix, <span class="st">"item"</span>)</a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="reference/rankings.html">as.rankings</a></span>(netflix[,<span class="op">-</span><span class="dv">1</span>], <span class="dt">input =</span> <span class="st">"orderings"</span>,</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">                 <span class="dt">items =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(netflix, <span class="st">"items"</span>))</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, as.rankings =<span class="st"> </span><span class="ot">FALSE</span>]</a></code></pre></div>
 <pre><code>##   Mean Girls Beverly Hills Cop The Mummy Returns Mission: Impossible II
 ## 1          2                 1                 4                      3
 ## 2          1                 2                 4                      3
 ## 3          2                 1                 3                      4</code></pre>
-<p>Note that <code>read.soc</code> saved the names of the movies in the <code>"item"</code> attribute of <code>netflix</code>, so we have used these to label the items. Subsetting the rankings object <code>R</code> with <code>as.rankings = FALSE</code>, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.</p>
+<p>Note that <code>read.soc</code> saved the names of the movies in the <code>"items"</code> attribute of <code>netflix</code>, so we have used these to label the items. Subsetting the rankings object <code>R</code> with <code>as.rankings = FALSE</code>, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.</p>
 <p>Various methods are provided for <code>"rankings"</code> objects, in particular if we subset the rankings without <code>as.rankings = FALSE</code>, the result is again a <code>"rankings"</code> object and the corresponding print method is used:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">R[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a></code></pre></div>
 <pre><code>##                                          1 
@@ -160,7 +160,7 @@
 ##                                                              3 
 ## "Beverly Hills Cop &gt; Mean Girls &gt; The Mummy Returns &gt; Mis ..."</code></pre>
 <p>The rankings can now be passed to <code>PlackettLuce</code> to fit the Plackett-Luce model. The counts of each ranking provided in the downloaded data are used as weights when fitting the model.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> netflix<span class="op">$</span>n)</a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> netflix<span class="op">$</span>Freq)</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>##             Mean Girls      Beverly Hills Cop      The Mummy Returns 
 ##              0.2306285              0.4510655              0.1684719 
@@ -169,7 +169,7 @@
 <p>Calling <code>coef</code> with <code>log = FALSE</code> gives the worth parameters, constrained to sum to one. These parameters represent the probability that each movie is ranked first.</p>
 <p>For inference these parameters are converted to the log scale, by default setting the first parameter to zero so that the standard errors are estimable:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod)</a></code></pre></div>
-<pre><code>## Call: PlackettLuce(rankings = R, weights = netflix$n)
+<pre><code>## Call: PlackettLuce(rankings = R, weights = netflix$Freq)
 ## 
 ## Coefficients:
 ##                        Estimate Std. Error z value Pr(&gt;|z|)    

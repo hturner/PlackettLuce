@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read Strict Orders - Complete List Data from File — read.soc • PlackettLuce</title>
+<title>Read Preflib Election Data Files — preflib • PlackettLuce</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +32,11 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Read Strict Orders - Complete List Data from File — read.soc" />
+<meta property="og:title" content="Read Preflib Election Data Files — preflib" />
 
-<meta property="og:description" content="Read data from a &quot;Strict Orders - Complete List&quot; file, as provided by
-{PrefLib}: A Library for Preferences." />
+<meta property="og:description" content="Read orderings from .soc, .soi, .toc or .toi file types storing
+election data as defined by
+PrefLib: A Library for Preferences." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -66,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -112,37 +113,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read Strict Orders - Complete List Data from File</h1>
+    <h1>Read Preflib Election Data Files</h1>
     
-    <div class="hidden name"><code>read.soc.Rd</code></div>
+    <div class="hidden name"><code>preflib.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Read data from a "Strict Orders - Complete List" file, as provided by
-<a href='http://www.preflib.org'>{PrefLib}: A Library for Preferences</a>.</p>
+    <p>Read orderings from <code>.soc</code>, <code>.soi</code>, <code>.toc</code> or <code>.toi</code> file types storing
+election data as defined by
+<a href='http://www.preflib.org'>PrefLib: A Library for Preferences</a>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>read.soc</span>(<span class='no'>file</span>)</pre>
+    <pre class="usage"><span class='fu'>read.soc</span>(<span class='no'>file</span>)
+
+<span class='fu'>read.soi</span>(<span class='no'>file</span>)
+
+<span class='fu'>read.toc</span>(<span class='no'>file</span>)
+
+<span class='fu'>read.toi</span>(<span class='no'>file</span>)
+
+<span class='co'># S3 method for preflib</span>
+<span class='fu'><a href='aggregate.html'>as.aggregated_rankings</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>file</th>
-      <td><p>a path or url for the Strict Orders - Complete List file,
-conventionally with a <code>.soc</code> extension.</p></td>
+      <td><p>An election data file, conventionally with extension <code>.soc</code>,
+<code>.soi</code>, <code>.toc</code> or <code>.toi</code> according to data type.</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>An object of class <code>"preflib"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments passed to <code><a href='rankings.html'>as.rankings()</a></code>: <code>freq</code>,
+<code>input</code> or <code>items</code> will be ignored with a warning as they are set
+automatically.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data frame with first column <code>n</code>, giving the frequency of
-the ranking in that row, and remaining columns <code>Rank 1</code> &#8230;
-<code>Rank p</code> giving the items ranked from first to last place in that
-ranking. The data frame has an attribute <code>"item"</code> giving the labels
+    <p>A data frame of class <code>"preflib"</code> with first column <code>Freq</code>,
+giving the frequency of the ranking in that row, and remaining columns
+<code>Rank 1</code>, &#8230;, <code>Rank p</code> giving the items ranked from first to
+last place in that ranking. Ties are represented by vector elements in list
+columns. The data frame has an attribute <code>"items"</code> giving the labels
 corresponding to each item number.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The file types supported are</p><dl class='dl-horizontal'>
+<dt>.soc</dt><dd><p>Strict Orders - Complete List</p></dd>
+<dt>.soi</dt><dd><p>Strict Orders - Incomplete List</p></dd>
+<dt>.toc</dt><dd><p>Orders with Ties - Complete List</p></dd>
+<dt>.toi</dt><dd><p>Orders with Ties - Incomplete List</p></dd>
+</dl><p>Note that the file types do not distinguish between types of incomplete
+orderings, i.e. whether they are a complete ranking of a subset of items
+(as supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>) or top-\(r\) rankings of \(n\) items
+from the full set of items (not currently supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>).</p>
+<p>The numerically coded orderings and their frequencies are read into a
+data frame, storing the item names as an attribute. The
+<code>as.aggregated_rankings</code> method converts these to an
+<code><a href='aggregate.html'>"aggregated_rankings"</a></code> object with the items labelled
+by the item names.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -154,16 +193,32 @@ Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 # can take a little while depending on speed of internet connection
+
 </div><span class='co'># NOT RUN {</span>
 <span class='co'># url for preflib data in the "Election Data" category</span>
 <span class='no'>preflib</span> <span class='kw'>&lt;-</span> <span class='st'>"http://www.preflib.org/data/election/"</span>
 
-<span class='co'># strict orderings of four films on Netflix</span>
+<span class='co'># strict complete orderings of four films on Netflix</span>
 <span class='no'>netflix</span> <span class='kw'>&lt;-</span> <span class='fu'>read.soc</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>preflib</span>, <span class='st'>"netflix/ED-00004-00000101.soc"</span>))
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>netflix</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>netflix</span>, <span class='st'>"item"</span>)
-<span class='co'># }</span><div class='input'>
-</div></pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>netflix</span>, <span class='st'>"items"</span>)
+
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>netflix</span>))
+
+<span class='co'># strict incomplete orderings of 6 random cities from 36 in total</span>
+<span class='no'>cities</span> <span class='kw'>&lt;-</span> <span class='fu'>read.soi</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>preflib</span>, <span class='st'>"cities/ED-00034-00000001.soi"</span>))
+
+<span class='co'># strict incomplete orderings of drivers in the 1961 F1 races</span>
+<span class='co'># 8 races with 17 to 34 drivers in each</span>
+<span class='no'>f1</span> <span class='kw'>&lt;-</span> <span class='fu'>read.soi</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>preflib</span>, <span class='st'>"f1/ED-00010-00000001.soi"</span>))
+
+<span class='co'># complete orderings with ties of 30 skaters</span>
+<span class='no'>skaters</span> <span class='kw'>&lt;-</span> <span class='fu'>read.toc</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>preflib</span>, <span class='st'>"skate/ED-00006-00000001.toc"</span>))
+
+<span class='co'># incomplete orderings with ties of 10 sushi items from 100 total</span>
+<span class='co'># orderings were derived from numeric ratings</span>
+<span class='no'>sushi</span> <span class='kw'>&lt;-</span> <span class='fu'>read.toi</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>preflib</span>, <span class='st'>"sushi/ED-00014-00000003.toi"</span>))
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -171,6 +226,8 @@ Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#references">References</a></li>
       

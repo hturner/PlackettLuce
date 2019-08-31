@@ -1,10 +1,11 @@
 #' Extract Item Parameters of Plackett-Luce Models
 #'
-#' A method for \code{\link[psychotools]{itempar}} to extract the item
-#' parameters (abilities or log-abilities) from a Plackett-Luce model.
+#' Methods for \code{\link[psychotools]{itempar}} to extract the item
+#' parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+#' In the case of a tree, item parameters are extracted for each terminal node.
 #'
 #' @param object a fitted model object as returned by
-#' \code{\link{PlackettLuce}}.
+#' \code{\link{PlackettLuce}} or \code{\link{pltree}}.
 #' @param ref  a vector of labels or position indices of item parameters which
 #' should be used as restriction/for normalization. If \code{NULL}
 #' (the default), all items are used with a zero sum (\code{log = TRUE}) or
@@ -20,7 +21,7 @@
 #' @param log logical. Whether to return log-abilities (\code{TRUE}) or
 #' abilities (\code{FALSE}).
 #' @param ... further arguments which are currently not used.
-#' @return an object of class \code{"itempar"}, see
+#' @return An object of class \code{"itempar"}, see
 #' \code{\link[psychotools]{itempar}}.
 #' @examples
 #' R <- matrix(c(1, 2, 0, 0,
@@ -110,3 +111,17 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
 #' @importFrom psychotools itempar
 #' @export
 psychotools::itempar
+
+#' @rdname itempar.PlackettLuce
+#' @method itempar pltree
+#' @importFrom partykit nodeapply
+#' @export
+itempar.pltree <- function (object, ...){
+    # so unexported itempar.bttree is used from psychotree
+    requireNamespace("psychotree")
+    res <- NextMethod()
+    if (is.vector(res)){
+        return(matrix(res, nrow = 1L, dimnames = list("1", names(res))))
+    }
+    res
+}

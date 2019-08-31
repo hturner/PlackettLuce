@@ -4,10 +4,9 @@
 #' 36 car races in the 2002 NASCAR season in the United States. Each record is
 #' an ordering of the drivers according to their finishing position.
 #'
-#' @format A matrix with 36 rows corresponding to the races and 87 columns
-#' corresponding to the positions. Columns 1 to 43 contain the ID for the driver
-#' that came first to last place respectively. Columns 44 to 87 are zero, since
-#' only 43 out of 87 drivers participated in each race. The \code{"drivers"}
+#' @format A matrix with 36 rows corresponding to the races and 43 columns
+#' corresponding to the positions. The columns contain the ID for the driver
+#' that came first to last place respectively. The \code{"drivers"}
 #' attribute contains the names of the 87 drivers.
 #' @references
 #' Hunter, D. R. (2004) MM algorithms for generalized Bradley-Terry models.
@@ -15,11 +14,10 @@
 #' @examples
 #'
 #' # convert orderings to rankings
-#' nascar[1:2, 1:45]
-#' R <- as.rankings(nascar, input = "ordering")
-#' colnames(R) <- attr(nascar, "drivers")
-#' R[1:3, 1:3, as.rankings = FALSE]
-#' R[1:3]
+#' nascar[1:2, ]
+#' R <- as.rankings(nascar, input = "ordering", items = attr(nascar, "drivers"))
+#' R[1:2, 1:4, as.rankings = FALSE]
+#' format(R[1:2], width = 60)
 #'
 #' # fit model as in Hunter 2004, excluding drivers that only lose
 #' keep <- seq_len(83)

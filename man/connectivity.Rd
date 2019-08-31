@@ -15,7 +15,7 @@ by \code{as.rankings}.}
 is not strongly connected.}
 }
 \value{
-a list with elements
+A list with elements
 \item{membership}{a labelled vector of indices specifying membership of
 clusters in the network of items}
 \item{csize}{the sizes of clusters in the network of items}
@@ -45,7 +45,7 @@ X <- as.rankings(X)
 res <- connectivity(X)
 res$membership
 ## keep items in cluster 1
-X[,res$membership == 1]
+na.omit(X[,res$membership == 1])
 
 ## two weakly connected items:
 ## item 1 always loses; item 4 only wins against item 1

@@ -15,7 +15,7 @@
 #' by \code{as.rankings}.
 #' @param verbose logical, if \code{TRUE}, a message is given if the network
 #' is not strongly connected.
-#' @return a list with elements
+#' @return A list with elements
 #' \item{membership}{a labelled vector of indices specifying membership of
 #' clusters in the network of items}
 #' \item{csize}{the sizes of clusters in the network of items}
@@ -31,7 +31,7 @@
 #' res <- connectivity(X)
 #' res$membership
 #' ## keep items in cluster 1
-#' X[,res$membership == 1]
+#' na.omit(X[,res$membership == 1])
 #'
 #' ## two weakly connected items:
 #' ## item 1 always loses; item 4 only wins against item 1

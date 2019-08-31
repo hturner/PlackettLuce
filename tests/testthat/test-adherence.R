@@ -14,6 +14,7 @@ R <- matrix(c(1, 2, 3, 0,
               1, 2, 0, 0,
               0, 1, 2, 0), nrow = 8, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
 
 test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     m <- ncol(R)
@@ -26,9 +27,9 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     p <- 8 # switch for interactive testing (max = 8)
     # Fit model using sgdPL from AgRank with fixed adherence
     ## - no iterations, just checking log-likelihood calculations
-    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE,
-                 maxiter = 0, tol = 1e-12, start = c(mu, adherence[seq(p)]),
-                 decay = 1.001)
+    res <- sgdPL(as.matrix(R[seq(p),]), mu, sigma, rate = 0.1,
+                 adherence = FALSE, maxiter = 0, tol = 1e-12,
+                 start = c(mu, adherence[seq(p)]), decay = 1.001)
     # Fit model using PlackettLuce
     ## with normal prior to allow low p (BFGS by default)
     mod_PL1 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0, maxit = 0,
@@ -38,8 +39,8 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
     ##      - iterative scaling not implemented with adherence
     expect_equal(logLik(mod_PL1)[1], -res$value[1])
     # Same, now iterating to convergence
-    res <- sgdPL(R[seq(p),], mu, sigma, rate = 0.1, adherence = FALSE,
-                 maxiter = 8000,
+    res <- sgdPL(as.matrix(R[seq(p),]), mu, sigma, rate = 0.1,
+                 adherence = FALSE, maxiter = 8000,
                  tol = 1e-12, start = c(mu, adherence[seq(p)]), decay = 1.001)
     mod_PL2 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0,
                             adherence = adherence[seq(p)], start = alpha,
@@ -58,7 +59,7 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
 
 test_that('estimated adherence works for grouped_rankings [fake triples]', {
     # each ranking is a separate group
-    G <- grouped_rankings(R, seq(nrow(R)))
+    G <- group(R, seq(nrow(R)))
     mod1 <- PlackettLuce(rankings = R, npseudo = 0,
                          gamma = list(shape = 10, rate = 10))
     mod2 <- PlackettLuce(G, npseudo = 0, gamma = list(shape = 10, rate = 10))
@@ -89,7 +90,8 @@ test_that('estimated adherence works w/ npseudo != 0 [fake triples]', {
     mod1 <- PlackettLuce(rankings = R,
                          gamma = list(shape = 100, rate = 100))
     expect_known_value(mod1,
-                       file = test_path("outputs/pl_adherence_pseudo.rds"))
+                       file = test_path("outputs/pl_adherence_pseudo.rds"),
+                       version = 2)
 })
 
 test_that('default prior for adherence works [fake triples]', {
@@ -107,45 +109,33 @@ test_that('check on prior for adherence works [fake triples]', {
 })
 
 data(beans, package = "PlackettLuce")
-# Add middle ranked variety
-beans <- within(beans, {
-    best <- match(best, c("A", "B", "C"))
-    worst <- match(worst, c("A", "B", "C"))
-    middle <- 6 - best - worst
-})
 
-# Convert the variety IDs to the variety names
-varieties <- as.matrix(beans[c("variety_a", "variety_b", "variety_c")])
-n <- nrow(beans)
-beans <- within(beans, {
-    best <- varieties[cbind(seq_len(n), best)]
-    worst <- varieties[cbind(seq_len(n), worst)]
-    middle <- varieties[cbind(seq_len(n), middle)]
-})
+# Fill in the missing ranking
+beans$middle <- complete(beans[c("best", "worst")],
+                         items = c("A", "B", "C"))
 
-# Create a rankings object from the rankings of order three
-## each ranking is a sub-ranking of three varieties from the full set
-lab <- c("Local", sort(unique(as.vector(varieties))))
-R <- as.rankings(beans[c("best", "middle", "worst")],
-                 input = "ordering", labels = lab)
+# Use these names to decode the orderings of order 3
+order3 <- decode(beans[c("best", "middle", "worst")],
+                 items = beans[c("variety_a", "variety_b", "variety_c")],
+                 code = c("A", "B", "C"))
 
-# Convert worse/better columns to ordered pairs
-head(beans[c("var_a", "var_b", "var_c")], 2)
-paired <- list()
-for (id in c("a", "b", "c")){
-    ordering <- matrix("Local", nrow = n, ncol = 2)
-    worse <- beans[[paste0("var_", id)]] == "Worse"
-    ## put trial variety in column 1 when it is not worse than local
-    ordering[!worse, 1] <- beans[[paste0("variety_", id)]][!worse]
-    ## put trial variety in column 2 when it is worse than local
-    ordering[worse, 2] <- beans[[paste0("variety_", id)]][worse]
-    paired[[id]] <- ordering
-}
+# Convert these results to a vector and get the corresponding trial variety
+outcome <- unlist(beans[c("var_a", "var_b", "var_c")])
+trial_variety <- unlist(beans[c("variety_a", "variety_b", "variety_c")])
 
-# Convert orderings to sub-rankings of full set and combine all rankings
-paired <- lapply(paired, as.rankings, input = "ordering", labels = lab)
-R <- rbind(R, paired[["a"]], paired[["b"]], paired[["c"]])
-G <- grouped_rankings(R, rep(seq_len(nrow(beans)), 4))
+# Create a data frame of the implied orderings of order 2
+order2 <- data.frame(Winner = ifelse(outcome == "Worse",
+                                     "Local", trial_variety),
+                     Loser = ifelse(outcome == "Worse",
+                                    trial_variety, "Local"),
+                     stringsAsFactors = FALSE, row.names = NULL)
+
+# Finally combine the rankings of order 2 and order 3
+R <- rbind(as.rankings(order3, input = "ordering"),
+           as.rankings(order2, input = "ordering"))
+
+# Group the rankings by the corresponding farm
+G <- group(R, rep(seq_len(nrow(beans)), 4))
 
 test_that('fixed adherence works for grouped_rankings [beans]', {
     # adherence = 1 is same as no adherence
@@ -176,6 +166,7 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
 
 test_that('estimated adherence works for grouped_rankings [partial + ties]', {
     w <- c(3, 2, 5, 4, 3, 7)
@@ -184,7 +175,7 @@ test_that('estimated adherence works for grouped_rankings [partial + ties]', {
                                            weights = w,
                                            gamma = list(shape = 10, rate = 10)))
     # replicates grouped together by ranker
-    G <- grouped_rankings(R[rep(seq(6), w),], index = rep(seq(6), w))
+    G <- group(R[rep(seq(6), w),], index = rep(seq(6), w))
     mod2 <- suppressWarnings(PlackettLuce(rankings = G, npseudo = 0,
                                           method = "BFGS",
                                           gamma = list(shape = 10, rate = 10)))

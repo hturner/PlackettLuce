@@ -2,33 +2,23 @@
 % Please edit documentation in R/pltree.R
 \name{pltree}
 \alias{pltree}
-\alias{vcov.pltree}
-\alias{predict.pltree}
-\alias{AIC.pltree}
 \title{Plackett-Luce Trees}
 \usage{
 pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
-
-\method{vcov}{pltree}(object, node = nodeids(object, terminal = TRUE),
-  ...)
-
-\method{predict}{pltree}(object, newdata = NULL, type = c("itempar",
-  "rank", "best", "node"), ...)
-
-\method{AIC}{pltree}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted, of the form
 \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
 \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as
- partitioning variables.}
+partitioning variables.}
 
 \item{data}{an optional data frame containing the variables in the model.}
 
 \item{subset}{A specification of the rows to be used, passed to
 \code{\link{model.frame}}.}
 
-\item{na.action}{how NAs are treated, passed to \code{\link{model.frame}}.}
+\item{na.action}{how NAs are treated, applied to the underlying rankings and
+then passed to \code{\link{model.frame}}.}
 
 \item{cluster}{an optional vector of cluster IDs to be employed for clustered
 covariances in the parameter stability tests, see \code{\link{mob}}.}
@@ -36,23 +26,7 @@ covariances in the parameter stability tests, see \code{\link{mob}}.}
 \item{ref}{an integer or character string specifying the reference item (for
 which log ability will be set to zero). If NULL the first item is used.}
 
-\item{...}{additional arguments, passed to \code{\link{PlackettLuce}} by
-\code{pltree}; to \code{\link{itempar}} by \code{predict}, and to
-\code{\link{model.frame}} by \code{AIC}.}
-
-\item{object}{a fitted model object of class \code{"pltree"}.}
-
-\item{node}{a vector of node ids specifying the nodes to summarise, by
-default the ids of the terminal nodes.}
-
-\item{newdata}{an optional data frame to use instead of the
-original data. For \code{AIC} this must include the response variable.}
-
-\item{type}{the type of prediction to return for each group, one of:
-\code{"itempar"} to give the result of \code{\link{itempar}} (by default the
-fitted probability of each item being ranked first out of all objects),
-\code{"rank"} the corresponding rank, \code{"best"} the topped ranked item,
-or \code{"node"} the node of the tree the group belongs to.}
+\item{...}{additional arguments, passed to \code{\link{PlackettLuce}}.}
 }
 \value{
 An object of class \code{"pltree"} inheriting from \code{"bttree"}
@@ -77,14 +51,10 @@ the nodes of the Plackett-Luce tree.
 
 Various methods are provided for \code{"pltree"} objects, most of them
 inherited from \code{"modelparty"} objects (e.g. \code{print},
-\code{summary}), or \code{"bttree"} objects (\code{plot}). \code{itempar}
-extracts the abilities or item parameters from the Plackett-Luce models in
-each node of the tree using \code{\link{itempar.PlackettLuce}}. The plot
+\code{summary}), or \code{"bttree"} objects (\code{plot}). The plot
 method employs the \code{\link[psychotree]{node_btplot}}
-panel-generating function. \code{AIC} computes
-\eqn{-2L + 2p}{-2 * L + 2 * p} where \eqn{L} is the joint likelihood of
-the observed rankings under the tree model and \eqn{p} is the degrees of
-freedom used to fit the tree model.
+panel-generating function. The See Also
+section gives details of separately documented methods.
 }
 \examples{
 # Bradley-Terry example
@@ -95,9 +65,9 @@ if (require(psychotree)){
     ## convert paircomp object to grouped rankings
     R <- as.grouped_rankings(Topmodel2007$preference)
     ## rankings are grouped by judge
-    print(R[1:2,], max = 6)
+    print(R[1:2,], max = 4)
     ## Topmodel2007[, -1] gives covariate values for each judge
-    head(Topmodel2007[, -1], 2)
+    print(Topmodel2007[1:2, -1])
 
     ## fit partition model based on all variables except preference
     ## set npseudo = 0 as all judges rank all models
@@ -112,24 +82,18 @@ if (require(psychotree)){
 
     ## log-abilities, zero sum contrast
     itempar(tm_tree, log = TRUE)
-    ## abilities with Anja as reference
-    itempar(tm_tree, ref = "Anja")
-
-    ## results for the first three judges
-    newdata <- Topmodel2007[1:3,]
-    ### fitted probabilities
-    predict(tm_tree, newdata)
-    ### fitted log-abilities, with Anni as reference
-    predict(tm_tree, newdata, log = TRUE, ref = "Anni")
-    ###  item ranks
-    predict(tm_tree, newdata, type = "rank")
-    ### top ranked item
-    predict(tm_tree, newdata, type = "best")
-    ### node the judge belongs to
-    predict(tm_tree, newdata, type = "node")
-
 }
 }
 \seealso{
-\code{\link[psychotree]{bttree}}
+\code{\link[psychotree]{bttree}} For fitting Bradley-Terry trees
+(equivalent to the Plackett-Luce model for paired comparisons without ties).
+
+\code{coef}, \code{vcov}, \code{AIC} and \code{predict} methods are documented on
+\code{\link{pltree-summaries}}.
+
+\code{\link[=itempar.PlackettLuce]{itempar}}, extracts the abilities or item parameters
+in each node of the tree using \code{\link{itempar.PlackettLuce}}.
+
+\code{\link[=fitted.PlackettLuce]{fitted}}, computes probabilities for the observed
+choices based on the full tree.
 }

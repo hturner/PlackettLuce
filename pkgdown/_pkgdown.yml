@@ -4,13 +4,18 @@ reference:
   - beans
   - nascar
   - pudding
-  - read.soc
-- title: Handling rankings data
+  - preflib
+- title: Handling orderings
+  contents:
+  - complete
+  - decode
+- title: Handling rankings
   contents:
   - adjacency
+  - aggregate
   - choices
   - connectivity
-  - grouped_rankings
+  - group
   - rankings
 - title: Model Fitting
   contents:
@@ -19,6 +24,7 @@ reference:
 - title: Model Summary
   contents:
   - summaries
+  - pltree-summaries
   - fitted.PlackettLuce
   - itempar.PlackettLuce
   - qvcalc.PlackettLuce

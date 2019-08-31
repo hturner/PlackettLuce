@@ -67,7 +67,7 @@ include tied outcomes, i.e. no preference." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -131,13 +131,13 @@ include tied outcomes, i.e. no preference.</p>
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
     <p>A data frame with 15 records and 6 variables:</p><dl class='dl-horizontal'>
-    <dt><code>i</code></dt><dd><p>The first brand in the comparison.</p></dd>
-    <dt><code>j</code></dt><dd><p>The second brand in the comparison.</p></dd>
-    <dt><code>r_ij</code></dt><dd><p>The frequency of paired comparisons of brand i and
-    brand j.</p></dd>
-    <dt><code>w_ij</code></dt><dd><p>The frequency of preferences for i over j.</p></dd>
-    <dt><code>w_ji</code></dt><dd><p>The frequency of preferences for j over i.</p></dd>
-    <dt><code>t_ij</code></dt><dd><p>The frequency of no preference between i and j.</p></dd>
+<dt><code>i</code></dt><dd><p>The first brand in the comparison.</p></dd>
+<dt><code>j</code></dt><dd><p>The second brand in the comparison.</p></dd>
+<dt><code>r_ij</code></dt><dd><p>The frequency of paired comparisons of brand i and
+brand j.</p></dd>
+<dt><code>w_ij</code></dt><dd><p>The frequency of preferences for i over j.</p></dd>
+<dt><code>w_ji</code></dt><dd><p>The frequency of preferences for j over i.</p></dd>
+<dt><code>t_ij</code></dt><dd><p>The frequency of no preference between i and j.</p></dd>
 </dl>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -149,15 +149,19 @@ Statistical Association</em>, <b>65</b>, 317--328.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'># reshape to give one row per unique ranking</span>
-<span class='no'>nr</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>*<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>pudding</span>)
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>0</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nr</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-            <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>NULL</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='fl'>6</span>)))
-<span class='no'>i</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='no'>pudding</span>$<span class='no'>i</span>, <span class='fl'>3</span>)
-<span class='no'>j</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='no'>pudding</span>$<span class='no'>j</span>, <span class='fl'>3</span>)
-<span class='no'>R</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='no'>nr</span>), <span class='no'>i</span>)] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>1</span>), <span class='kw'>each</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>pudding</span>))
-<span class='no'>R</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='no'>nr</span>), <span class='no'>j</span>)] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>), <span class='kw'>each</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>pudding</span>))
-<span class='co'># weights are frequencies of each ranking</span>
+<span class='co'># create orderings for each set of paired comparisons</span>
+<span class='no'>i_wins</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>i</span>, <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>j</span>)
+<span class='no'>j_wins</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>j</span>, <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>i</span>)
+<span class='no'>ties</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/asplit'>asplit</a></span>(<span class='no'>pudding</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"i"</span>, <span class='st'>"j"</span>)], <span class='fl'>1</span>),
+                   <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>15</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>ties</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt;   Winner Loser
+#&gt; 1   1, 2    NA
+#&gt; 2   1, 3    NA</div><div class='input'>
+<span class='co'># convert to rankings</span>
+<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='no'>i_wins</span>, <span class='no'>j_wins</span>, <span class='no'>ties</span>),
+                 <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>R</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] "1 &gt; 2" "1 &gt; 3"</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>tail</a></span>(<span class='no'>R</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] "4 = 6" "5 = 6"</div><div class='input'>
+<span class='co'># define weights as frequencies of each ranking</span>
 <span class='no'>w</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unlist'>unlist</a></span>(<span class='no'>pudding</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"w_ij"</span>, <span class='st'>"w_ji"</span>, <span class='st'>"t_ij"</span>)])
 
 <span class='co'># fit Plackett-Luce model: limit iterations to match paper</span>

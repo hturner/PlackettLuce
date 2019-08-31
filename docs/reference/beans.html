@@ -69,7 +69,7 @@ local variety and state whether they considered it to be better or worse." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -135,24 +135,24 @@ local variety and state whether they considered it to be better or worse.</p>
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
     <p>A data frame with 842 records and 11 variables:</p><dl class='dl-horizontal'>
-    <dt><code>variety_a</code></dt><dd><p>The name of variety A in the comparison.</p></dd>
-    <dt><code>variety_b</code></dt><dd><p>The name of variety B in the comparison.</p></dd>
-    <dt><code>variety_c</code></dt><dd><p>The name of variety C in the comparison.</p></dd>
-    <dt><code>best</code></dt><dd><p>The variety the farmer ranked in first place ("A",
-    "B" or "C").</p></dd>
-    <dt><code>worst</code></dt><dd><p>The variety the farmer ranked in last place ("A",
-    "B" or "C").</p></dd>
-    <dt><code>var_a</code></dt><dd><p>How the farmer ranked variety A compared to the local
-    variety ("Worse" or "Better").</p></dd>
-    <dt><code>var_b</code></dt><dd><p>How the farmer ranked variety B compared to the local
-    variety ("Worse" or "Better").</p></dd>
-    <dt><code>var_c</code></dt><dd><p>How the farmer ranked variety C compared to the local
-    variety ("Worse" or "Better").</p></dd>
-    <dt><code>season</code></dt><dd><p>A factor specifying the growing season ("Po - 15",
-    "Ap - 15", "Pr - 16", "Po - 16", "Ap - 16".</p></dd>
-    <dt><code>year</code></dt><dd><p>The year of planting.</p></dd>
-    <dt><code>maxTN</code></dt><dd><p>The maximum temperature at night during the
-    vegetative cycle (degrees Celsius).</p></dd>
+<dt><code>variety_a</code></dt><dd><p>The name of variety A in the comparison.</p></dd>
+<dt><code>variety_b</code></dt><dd><p>The name of variety B in the comparison.</p></dd>
+<dt><code>variety_c</code></dt><dd><p>The name of variety C in the comparison.</p></dd>
+<dt><code>best</code></dt><dd><p>The variety the farmer ranked in first place ("A",
+"B" or "C").</p></dd>
+<dt><code>worst</code></dt><dd><p>The variety the farmer ranked in last place ("A",
+"B" or "C").</p></dd>
+<dt><code>var_a</code></dt><dd><p>How the farmer ranked variety A compared to the local
+variety ("Worse" or "Better").</p></dd>
+<dt><code>var_b</code></dt><dd><p>How the farmer ranked variety B compared to the local
+variety ("Worse" or "Better").</p></dd>
+<dt><code>var_c</code></dt><dd><p>How the farmer ranked variety C compared to the local
+variety ("Worse" or "Better").</p></dd>
+<dt><code>season</code></dt><dd><p>A factor specifying the growing season ("Po - 15",
+"Ap - 15", "Pr - 16", "Po - 16", "Ap - 16".</p></dd>
+<dt><code>year</code></dt><dd><p>The year of planting.</p></dd>
+<dt><code>maxTN</code></dt><dd><p>The maximum temperature at night during the
+vegetative cycle (degrees Celsius).</p></dd>
 </dl>
     
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
@@ -163,9 +163,9 @@ centre <a href='https://www.bioversityinternational.org'>https://www.bioversityi
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>There are three crop seasons in Central America:</p><dl class='dl-horizontal'>
-    <dt>Primera</dt><dd><p>May - August.</p></dd>
-    <dt>Postrera</dt><dd><p>September - October.</p></dd>
-    <dt>Apante</dt><dd><p>November - January.</p></dd>
+<dt>Primera</dt><dd><p>May - August.</p></dd>
+<dt>Postrera</dt><dd><p>September - October.</p></dd>
+<dt>Apante</dt><dd><p>November - January.</p></dd>
 </dl><p>Beans can be planted near the beginning of each season, though are most
 commonly planted in the Postrera or Apante seasons.</p>
     
@@ -177,86 +177,54 @@ commonly planted in the Postrera or Apante seasons.</p>
 <span class='co'># first, second or third variety assigned to the farmer</span>
 <span class='co'># respectively.</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>beans</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"worst"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2 x 2</span><span>
-#&gt;   best  worst
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> C     A    
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> B     A    </div><div class='input'>
-<span class='co'># Convert these to numeric values, allowing us to impute the</span>
-<span class='co'># middle-ranked variety (a strict ranking is assumed here, so the</span>
-<span class='co'># sum of each row should be 6)</span>
-<span class='no'>beans</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/with'>within</a></span>(<span class='no'>beans</span>, {
-   <span class='no'>best</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/match'>match</a></span>(<span class='no'>best</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>, <span class='st'>"C"</span>))
-   <span class='no'>worst</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/match'>match</a></span>(<span class='no'>worst</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>, <span class='st'>"C"</span>))
-   <span class='no'>middle</span> <span class='kw'>&lt;-</span> <span class='fl'>6</span> - <span class='no'>best</span> - <span class='no'>worst</span>
-})
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"middle"</span>, <span class='st'>"worst"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2 x 3</span><span>
-#&gt;    best middle worst
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     3      2     1
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     2      3     1</div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"worst"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt;   best worst
+#&gt; 1    C     A
+#&gt; 2    B     A</div><div class='input'>
+<span class='co'># Fill in the missing item</span>
+<span class='no'>beans</span>$<span class='no'>middle</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='complete.html'>complete</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"worst"</span>)],
+                         <span class='kw'>items</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>, <span class='st'>"C"</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"middle"</span>, <span class='st'>"worst"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt;   best middle worst
+#&gt; 1    C      B     A
+#&gt; 2    B      C     A</div><div class='input'>
 <span class='co'># This gives an ordering of the three varieties the farmer was</span>
 <span class='co'># given. The names of these varieties are stored in separate</span>
 <span class='co'># columns</span>
-<span class='no'>varieties</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"variety_a"</span>, <span class='st'>"variety_b"</span>, <span class='st'>"variety_c"</span>)])
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>varieties</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt;      variety_a     variety_b         variety_c    
-#&gt; [1,] "BRT 103-182" "SJC 730-79"      "PM2 Don Rey"
-#&gt; [2,] "INTA Rojo"   "INTA Centro Sur" "INTA Sequia"</div><div class='input'>
-<span class='co'># So we can convert the variety IDs to the variety names</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>beans</span>)
-<span class='no'>beans</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/with'>within</a></span>(<span class='no'>beans</span>, {
-    <span class='no'>best</span> <span class='kw'>&lt;-</span> <span class='no'>varieties</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='no'>n</span>), <span class='no'>best</span>)]
-    <span class='no'>worst</span> <span class='kw'>&lt;-</span> <span class='no'>varieties</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='no'>n</span>), <span class='no'>worst</span>)]
-    <span class='no'>middle</span> <span class='kw'>&lt;-</span> <span class='no'>varieties</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='no'>n</span>), <span class='no'>middle</span>)]
-})
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"middle"</span>, <span class='st'>"worst"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2 x 3</span><span>
-#&gt;   best            middle      worst      
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>           </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> PM2 Don Rey     SJC 730-79  BRT 103-182
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> INTA Centro Sur INTA Sequia INTA Rojo  </div><div class='input'>
-<span class='co'># Create a rankings object from the rankings of order three</span>
-<span class='co'>## each ranking is a sub-ranking of three varieties from the full set</span>
-<span class='no'>lab</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Local"</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sort'>sort</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/vector'>as.vector</a></span>(<span class='no'>varieties</span>))))
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"middle"</span>, <span class='st'>"worst"</span>)],
-                 <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>, <span class='kw'>labels</span> <span class='kw'>=</span> <span class='no'>lab</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
-#&gt; [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
-#&gt; [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."
-#&gt; [4] "INTA Rojo &gt; INTA Centro Sur &gt; ALS 0532-6"
-#&gt; [5] "PM2 Don Rey &gt; INTA Sequia &gt; SJC 730-79"  
-#&gt; [6] "ALS 0532-6 &gt; INTA Matagalpa &gt; INTA Rojo" </div><div class='input'>
-<span class='co'># Convert worse/better columns to ordered pairs</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"var_a"</span>, <span class='st'>"var_b"</span>, <span class='st'>"var_c"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2 x 3</span><span>
-#&gt;   var_a var_b  var_c 
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> 
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> Worse Worse  Better
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> Worse Better Better</div><div class='input'><span class='no'>paired</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
-<span class='kw'>for</span> (<span class='no'>id</span> <span class='kw'>in</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span>)){
-    <span class='no'>ordering</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='st'>"Local"</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-    <span class='no'>worse</span> <span class='kw'>&lt;-</span> <span class='no'>beans</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='st'>"var_"</span>, <span class='no'>id</span>)]] <span class='kw'>==</span> <span class='st'>"Worse"</span>
-    <span class='co'>## put trial variety in column 1 when it is not worse than local</span>
-    <span class='no'>ordering</span>[!<span class='no'>worse</span>, <span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='no'>beans</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='st'>"variety_"</span>, <span class='no'>id</span>)]][!<span class='no'>worse</span>]
-    <span class='co'>## put trial variety in column 2 when it is worse than local</span>
-    <span class='no'>ordering</span>[<span class='no'>worse</span>, <span class='fl'>2</span>] <span class='kw'>&lt;-</span> <span class='no'>beans</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='st'>"variety_"</span>, <span class='no'>id</span>)]][<span class='no'>worse</span>]
-    <span class='no'>paired</span><span class='kw'>[[</span><span class='no'>id</span>]] <span class='kw'>&lt;-</span> <span class='no'>ordering</span>
-}
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>paired</span><span class='kw'>[[</span><span class='st'>"a"</span>]])</div><div class='output co'>#&gt;      [,1]              [,2]         
-#&gt; [1,] "Local"           "BRT 103-182"
-#&gt; [2,] "Local"           "INTA Rojo"  
-#&gt; [3,] "INTA Ferroso"    "Local"      
-#&gt; [4,] "INTA Centro Sur" "Local"      
-#&gt; [5,] "INTA Sequia"     "Local"      
-#&gt; [6,] "ALS 0532-6"      "Local"      </div><div class='input'>
-<span class='co'># Convert orderings to sub-rankings of full set and combine all rankings</span>
-<span class='no'>paired</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>paired</span>, <span class='no'>as.rankings</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>, <span class='kw'>labels</span> <span class='kw'>=</span> <span class='no'>lab</span>)
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='no'>R</span>, <span class='no'>paired</span><span class='kw'>[[</span><span class='st'>"a"</span>]], <span class='no'>paired</span><span class='kw'>[[</span><span class='st'>"b"</span>]], <span class='no'>paired</span><span class='kw'>[[</span><span class='st'>"c"</span>]])
+<span class='no'>varieties</span> <span class='kw'>&lt;-</span> <span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"variety_a"</span>, <span class='st'>"variety_b"</span>, <span class='st'>"variety_c"</span>)]
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>varieties</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt;     variety_a       variety_b   variety_c
+#&gt; 1 BRT 103-182      SJC 730-79 PM2 Don Rey
+#&gt; 2   INTA Rojo INTA Centro Sur INTA Sequia</div><div class='input'>
+<span class='co'># Use these names to decode the orderings of order 3</span>
+<span class='no'>order3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='decode.html'>decode</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"best"</span>, <span class='st'>"middle"</span>, <span class='st'>"worst"</span>)],
+                 <span class='kw'>items</span> <span class='kw'>=</span> <span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"variety_a"</span>, <span class='st'>"variety_b"</span>, <span class='st'>"variety_c"</span>)],
+                 <span class='kw'>code</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>, <span class='st'>"C"</span>))
+
+<span class='co'># Now consider the paired comparisons agains the local variety</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"var_a"</span>, <span class='st'>"var_b"</span>, <span class='st'>"var_c"</span>)], <span class='fl'>2</span>)</div><div class='output co'>#&gt;   var_a  var_b  var_c
+#&gt; 1 Worse  Worse Better
+#&gt; 2 Worse Better Better</div><div class='input'>
+<span class='co'># Convert these results to a vector and get the corresponding trial variety</span>
+<span class='no'>outcome</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unlist'>unlist</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"var_a"</span>, <span class='st'>"var_b"</span>, <span class='st'>"var_c"</span>)])
+<span class='no'>trial_variety</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unlist'>unlist</a></span>(<span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"variety_a"</span>, <span class='st'>"variety_b"</span>, <span class='st'>"variety_c"</span>)])
+
+<span class='co'># Create a data frame of the implied orderings of order 2</span>
+<span class='no'>order2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse</a></span>(<span class='no'>outcome</span> <span class='kw'>==</span> <span class='st'>"Worse"</span>,
+                                     <span class='st'>"Local"</span>, <span class='no'>trial_variety</span>),
+                     <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse</a></span>(<span class='no'>outcome</span> <span class='kw'>==</span> <span class='st'>"Worse"</span>,
+                                    <span class='no'>trial_variety</span>, <span class='st'>"Local"</span>),
+                     <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>order2</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt;   Winner       Loser
+#&gt; 1  Local BRT 103-182
+#&gt; 2  Local   INTA Rojo</div><div class='input'>
+<span class='co'># Finally combine the rankings of order 2 and order 3</span>
+<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order3</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>),
+           <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order2</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>))
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
 #&gt; [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
 #&gt; [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."
 #&gt; [4] "INTA Rojo &gt; INTA Centro Sur &gt; ALS 0532-6"
 #&gt; [5] "PM2 Don Rey &gt; INTA Sequia &gt; SJC 730-79"  
 #&gt; [6] "ALS 0532-6 &gt; INTA Matagalpa &gt; INTA Rojo" </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>tail</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] "INTA Sequia &gt; Local"    "INTA Sequia &gt; Local"    "BRT 103-182 &gt; Local"   
-#&gt; [4] "Local &gt; INTA Matagalpa" "Local &gt; INTA Rojo"      "Local &gt; SJC 730-79"    </div></span></pre>
+#&gt; [4] "Local &gt; INTA Matagalpa" "Local &gt; INTA Rojo"      "Local &gt; SJC 730-79"    </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -67,7 +67,7 @@ not intended for general use." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -134,7 +134,7 @@ not intended for general use.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>y</th>
-      <td><p>a <code>"<a href='grouped_rankings.html'>grouped_rankings</a>"</code> object giving the rankings to
+      <td><p>a <code>"<a href='PlackettLuce-deprecated.html'>grouped_rankings</a>"</code> object giving the rankings to
 model.</p></td>
     </tr>
     <tr>
@@ -198,9 +198,10 @@ element of a <code>"PlackettLuce"</code> object.</p></td>
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
+<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>R</span>)
 
 <span class='co'># group rankings into two groups</span>
-<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grouped_rankings.html'>grouped_rankings</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>3</span>))
+<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='group.html'>group</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>3</span>))
 
 <span class='co'># plfit() gives the same results as PlackettLuce()</span>
 <span class='no'>pl</span> <span class='kw'>&lt;-</span> <span class='fu'>plfit</span>(<span class='no'>G</span>)

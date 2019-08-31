@@ -1,4 +1,4 @@
-#' PlackettLuce Wrapper for Model-based Recursive Partitioning
+8#' PlackettLuce Wrapper for Model-based Recursive Partitioning
 #'
 #' This is a wrapper around \code{PlackettLuce} as required by
 #' \code{\link[partykit]{mob}} for model-based recursive partitioning. It is
@@ -29,9 +29,10 @@
 #'               2, 1, 1, 0,
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
+#' R <- as.rankings(R)
 #'
 #' # group rankings into two groups
-#' G <- grouped_rankings(R, rep(1:2, 3))
+#' G <- group(R, rep(1:2, 3))
 #'
 #' # plfit() gives the same results as PlackettLuce()
 #' pl <- plfit(G)
@@ -53,7 +54,8 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
     if ("adherence" %in% names(dots) & !"gamma" %in% names(dots)){
         stop("adherence can not be fixed in a Plackett-Luce tree")
     }
-    res <- PlackettLuce(y, start = start, weights = weights, ...)
+    res <- PlackettLuce(y, start = start, weights = weights,
+                        na.action = NULL, ...)
     if (estfun) {
         percomp <- estfun.PlackettLuce(res, ref = ref)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))

@@ -56,9 +56,10 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
 
 # group rankings into two groups
-G <- grouped_rankings(R, rep(1:2, 3))
+G <- group(R, rep(1:2, 3))
 
 # plfit() gives the same results as PlackettLuce()
 pl <- plfit(G)

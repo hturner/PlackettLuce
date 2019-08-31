@@ -12,6 +12,7 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+R <- as.rankings(R)
 
 if (require("gnm")) {
     test_that("vcov.PlackettLuce matches vcov.gnm [partial + ties]", {
@@ -118,7 +119,7 @@ test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
                                    0.1, 0.1, 1.2, 0.2,
                                    -0.5, 0.1, 0.2, 1.3), 4, 4, byrow = TRUE))
     # use grouped rankings so no. of rankings != no.of adherence par
-    G <- grouped_rankings(R, index = c(1, 2, 3, 3, 4, 4))
+    G <- group(R, index = c(1, 2, 3, 3, 4, 4))
     both_priors <- PlackettLuce(rankings = G, npseudo = 0, method = "BFGS",
                                 normal = prior,
                                 gamma = list(shape = 100, rate = 100))

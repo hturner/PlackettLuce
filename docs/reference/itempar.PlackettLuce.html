@@ -34,8 +34,9 @@
   
 <meta property="og:title" content="Extract Item Parameters of Plackett-Luce Models — itempar.PlackettLuce" />
 
-<meta property="og:description" content="A method for itempar to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model." />
+<meta property="og:description" content="Methods for itempar to extract the item
+parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+In the case of a tree, item parameters are extracted for each terminal node." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -66,7 +67,7 @@ parameters (abilities or log-abilities) from a Plackett-Luce model." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -119,14 +120,18 @@ parameters (abilities or log-abilities) from a Plackett-Luce model." />
 
     <div class="ref-description">
     
-    <p>A method for <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code> to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model.</p>
+    <p>Methods for <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code> to extract the item
+parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+In the case of a tree, item parameters are extracted for each terminal node.</p>
     
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PlackettLuce</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></span>(<span class='no'>object</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alias</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for pltree</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -134,7 +139,7 @@ parameters (abilities or log-abilities) from a Plackett-Luce model.</p>
     <tr>
       <th>object</th>
       <td><p>a fitted model object as returned by
-<code><a href='PlackettLuce.html'>PlackettLuce</a></code>.</p></td>
+<code><a href='PlackettLuce.html'>PlackettLuce</a></code> or <code><a href='pltree.html'>pltree</a></code>.</p></td>
     </tr>
     <tr>
       <th>ref</th>
@@ -148,8 +153,8 @@ unit sum (<code>log = FALSE</code>) constraint.</p></td>
       <td><p>logical. If <code>TRUE</code> (the default), the aliased parameter is
 included in the return vector (and in the variance-covariance matrix if
 <code>vcov = TRUE</code>). If <code>FALSE</code>, it is removed. If the restriction given
- in ref depends on several parameters, the first parameter of the restriction
- specified is (arbitrarily) chosen to be removed if alias is <code>FALSE</code>.</p></td>
+in ref depends on several parameters, the first parameter of the restriction
+specified is (arbitrarily) chosen to be removed if alias is <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>vcov</th>
@@ -170,7 +175,7 @@ abilities (<code>FALSE</code>).</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an object of class <code>"itempar"</code>, see
+    <p>An object of class <code>"itempar"</code>, see
 <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code>.</p>
     
 

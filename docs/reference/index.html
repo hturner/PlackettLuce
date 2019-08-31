@@ -62,7 +62,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -147,14 +147,34 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="read.soc.html">read.soc()</a></code> </p>
+          <p><code><a href="preflib.html">read.soc()</a></code> <code><a href="preflib.html">read.soi()</a></code> <code><a href="preflib.html">read.toc()</a></code> <code><a href="preflib.html">read.toi()</a></code> <code><a href="preflib.html">as.aggregated_rankings(<i>&lt;preflib&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Read Strict Orders - Complete List Data from File</p></td>
+        <td><p>Read Preflib Election Data Files</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-handling-rankings-data" class="hasAnchor"><a href="#section-handling-rankings-data" class="anchor"></a>Handling rankings data</h2>
+          <h2 id="section-handling-orderings" class="hasAnchor"><a href="#section-handling-orderings" class="anchor"></a>Handling orderings</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="complete.html">complete()</a></code> </p>
+        </td>
+        <td><p>Complete Orderings with the Missing Redundant Rank</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="decode.html">decode()</a></code> </p>
+        </td>
+        <td><p>Decode Orderings using a Key to Item Names</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-handling-rankings" class="hasAnchor"><a href="#section-handling-rankings" class="anchor"></a>Handling rankings</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -164,6 +184,12 @@
           <p><code><a href="adjacency.html">adjacency()</a></code> </p>
         </td>
         <td><p>Create an Adjacency Matrix for a set of Rankings</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="aggregate.html">aggregate(<i>&lt;rankings&gt;</i>)</a></code> <code><a href="aggregate.html">as.aggregated_rankings()</a></code> <code><a href="aggregate.html">`[`(<i>&lt;aggregated_rankings&gt;</i>)</a></code> <code><a href="aggregate.html">freq()</a></code> </p>
+        </td>
+        <td><p>Aggregate Rankings</p></td>
       </tr><tr>
         
         <td>
@@ -179,13 +205,13 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="grouped_rankings.html">grouped_rankings()</a></code> <code><a href="grouped_rankings.html">`[`(<i>&lt;grouped_rankings&gt;</i>)</a></code> <code><a href="grouped_rankings.html">as.grouped_rankings()</a></code> <code><a href="grouped_rankings.html">format(<i>&lt;grouped_rankings&gt;</i>)</a></code> </p>
+          <p><code><a href="group.html">group()</a></code> <code><a href="group.html">as.grouped_rankings()</a></code> <code><a href="group.html">`[`(<i>&lt;grouped_rankings&gt;</i>)</a></code> <code><a href="group.html">format(<i>&lt;grouped_rankings&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Grouped Rankings Object</p></td>
+        <td><p>Group Rankings</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rankings.html">rankings()</a></code> <code><a href="rankings.html">as.rankings()</a></code> <code><a href="rankings.html">`[`(<i>&lt;rankings&gt;</i>)</a></code> <code><a href="rankings.html">format(<i>&lt;rankings&gt;</i>)</a></code> <code><a href="rankings.html">rbind(<i>&lt;rankings&gt;</i>)</a></code> </p>
+          <p><code><a href="rankings.html">rankings()</a></code> <code><a href="rankings.html">as.rankings()</a></code> <code><a href="rankings.html">`[`(<i>&lt;rankings&gt;</i>)</a></code> <code><a href="rankings.html">format(<i>&lt;rankings&gt;</i>)</a></code> </p>
         </td>
         <td><p>Rankings Object</p></td>
       </tr>
@@ -205,7 +231,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="pltree.html">pltree()</a></code> <code><a href="pltree.html">vcov(<i>&lt;pltree&gt;</i>)</a></code> <code><a href="pltree.html">predict(<i>&lt;pltree&gt;</i>)</a></code> <code><a href="pltree.html">AIC(<i>&lt;pltree&gt;</i>)</a></code> </p>
+          <p><code><a href="pltree.html">pltree()</a></code> </p>
         </td>
         <td><p>Plackett-Luce Trees</p></td>
       </tr>
@@ -225,13 +251,19 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="pltree-summaries.html">coef(<i>&lt;pltree&gt;</i>)</a></code> <code><a href="pltree-summaries.html">vcov(<i>&lt;pltree&gt;</i>)</a></code> <code><a href="pltree-summaries.html">AIC(<i>&lt;pltree&gt;</i>)</a></code> <code><a href="pltree-summaries.html">predict(<i>&lt;pltree&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plackett-Luce Tree Summaries</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="fitted.PlackettLuce.html">fitted(<i>&lt;PlackettLuce&gt;</i>)</a></code> <code><a href="fitted.PlackettLuce.html">fitted(<i>&lt;pltree&gt;</i>)</a></code> </p>
         </td>
         <td><p>Fitted Probabilities for PlackettLuce Objects</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="itempar.PlackettLuce.html">itempar(<i>&lt;PlackettLuce&gt;</i>)</a></code> </p>
+          <p><code><a href="itempar.PlackettLuce.html">itempar(<i>&lt;PlackettLuce&gt;</i>)</a></code> <code><a href="itempar.PlackettLuce.html">itempar(<i>&lt;pltree&gt;</i>)</a></code> </p>
         </td>
         <td><p>Extract Item Parameters of Plackett-Luce Models</p></td>
       </tr><tr>
@@ -263,7 +295,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-data-sets-importing-data">Data sets/importing data</a></li>
-      <li><a href="#section-handling-rankings-data">Handling rankings data</a></li>
+      <li><a href="#section-handling-orderings">Handling orderings</a></li>
+      <li><a href="#section-handling-rankings">Handling rankings</a></li>
       <li><a href="#section-model-fitting">Model Fitting</a></li>
       <li><a href="#section-model-summary">Model Summary</a></li>
       <li><a href="#section-other">Other</a></li>

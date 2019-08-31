@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Grouped Rankings Object — grouped_rankings • PlackettLuce</title>
+<title>Group Rankings — group • PlackettLuce</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Grouped Rankings Object — grouped_rankings" />
+<meta property="og:title" content="Group Rankings — group" />
 
 <meta property="og:description" content="Create an object of class &quot;grouped_rankings&quot; which associates a
 group index with an object of class &quot;rankings&quot;. This allows the
@@ -68,7 +68,7 @@ for model-based recursive partitioning, see pltree." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -114,9 +114,9 @@ for model-based recursive partitioning, see pltree." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Grouped Rankings Object</h1>
+    <h1>Group Rankings</h1>
     
-    <div class="hidden name"><code>grouped_rankings.Rd</code></div>
+    <div class="hidden name"><code>group.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -128,16 +128,16 @@ for model-based recursive partitioning, see <code><a href='pltree.html'>pltree</
     
     </div>
 
-    <pre class="usage">grouped_rankings(rankings, index, ...)
-
-# S3 method for grouped_rankings
-[(x, i, j, ..., drop = TRUE,
-  as.grouped_rankings = TRUE)
+    <pre class="usage">group(x, index, ...)
 
 as.grouped_rankings(x, ...)
 
 # S3 method for paircomp
 as.grouped_rankings(x, ...)
+
+# S3 method for grouped_rankings
+[(x, i, j, ..., drop = TRUE,
+  as.grouped_rankings = TRUE)
 
 # S3 method for grouped_rankings
 format(x, max = 2L, width = 20L, ...)</pre>
@@ -146,9 +146,10 @@ format(x, max = 2L, width = 20L, ...)</pre>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>rankings</th>
-      <td><p>a <code><a href='rankings.html'>rankings</a></code> object or an object that can be
-coerced by <code>as.rankings</code>.</p></td>
+      <th>x</th>
+      <td><p>a <code><a href='rankings.html'>"rankings"</a></code> object for <code>group()</code>; an
+object that can be coerced to a <code>"grouped_rankings"</code> object for
+<code>as.grouped_rankings()</code>, otherwise a <code>"grouped_rankings"</code> object.</p></td>
     </tr>
     <tr>
       <th>index</th>
@@ -160,12 +161,6 @@ specifying the subject for each ranking.</p></td>
       <td><p>additional arguments passed on to <code><a href='rankings.html'>as.rankings</a></code>
 by <code>grouped_rankings</code> or <code>as.grouped_rankings</code>; unused by
 <code>format</code>.</p></td>
-    </tr>
-    <tr>
-      <th>x</th>
-      <td><p>an object that can be coerced to a <code>"grouped_rankings"</code> object
-for <code>as.group_rankings</code>, or a <code>"grouped_rankings"</code> object for
-<code>[</code> and <code>format</code>.</p></td>
     </tr>
     <tr>
       <th>i</th>
@@ -198,7 +193,7 @@ ranking.</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an object of class <code>"grouped_rankings"</code>, which is a vector of
+    <p>An object of class <code>"grouped_rankings"</code>, which is a vector of
 of group IDs with the following attributes:</p>
 <dt>rankings</dt><dd><p>The <code>"rankings"</code> object.</p></dd>
 <dt>index</dt><dd><p>An index match each ranking to each group ID.</p></dd>
@@ -224,20 +219,25 @@ by each ranking.</p></dd>
                           <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
                           <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='no'>R</span></div><div class='output co'>#&gt; [1] "1 &gt; 2"     "3 &gt; 2"     "3 &gt; 4"     "2 &gt; 1"     "2 &gt; 3 &gt; 4"</div><div class='input'>
-<span class='co'># grouped rankings (first three in group 1, next two in group 2)</span>
-<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'>grouped_rankings</span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'><span class='co'>## by default up to 2 rankings are shown per group, "..." indicates if</span>
+<span class='co'># group rankings (first three in group 1, next two in group 2)</span>
+<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'>group</span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
+<span class='co'>## by default up to 2 rankings are shown per group, "..." indicates if</span>
 <span class='co'>## there are further rankings</span>
 <span class='no'>G</span></div><div class='output co'>#&gt;                   1                   2 
 #&gt; "1 &gt; 2, 3 &gt; 2, ..."  "2 &gt; 1, 2 &gt; 3 &gt; 4" </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>G</span>, <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;            1            2 
-#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'><span class='co'>## select rankings from group 1</span>
+#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'>
+<span class='co'>## select rankings from group 1</span>
 <span class='no'>G</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt;                   1 
-#&gt; "1 &gt; 2, 3 &gt; 2, ..." </div><div class='input'><span class='co'>## exclude item 3 from ranking</span>
-<span class='no'>G</span>[, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Removed rankings with less than 2 items</span></div><div class='output co'>#&gt;              1              2 
-#&gt;        "1 &gt; 2" "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## rankings from group 2, excluding item 3</span>
+#&gt; "1 &gt; 2, 3 &gt; 2, ..." </div><div class='input'>
+<span class='co'>## exclude item 3 from ranking</span>
+<span class='no'>G</span>[, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;                1                2 
+#&gt; "1 &gt; 2, NA, ..."   "2 &gt; 1, 2 &gt; 4" </div><div class='input'>
+<span class='co'>## rankings from group 2, excluding item 3</span>
 <span class='co'>## - note group 2 becomes the first group</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt;              1 
-#&gt; "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## index underlying rankings without creating new grouped_rankings object</span>
+#&gt; "2 &gt; 1, 2 &gt; 4" </div><div class='input'>
+<span class='co'>## index underlying rankings without creating new grouped_rankings object</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>, <span class='kw'>as.grouped_rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      1 2 4
 #&gt; [1,] 2 1 0
 #&gt; [2,] 0 1 3</div></pre>

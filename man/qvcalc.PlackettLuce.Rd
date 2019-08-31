@@ -86,9 +86,9 @@ Department of Statistics, University of Oxford.
 
 Ridout, M.S. (1989). Summarizing the results of fitting generalized
 linear models to data from designed experiments. In: \emph{Statistical
-    Modelling: Proceedings of GLIM89 and the 4th International
-    Workshop on Statistical Modelling held in Trento, Italy, July 17--21,
-    1989} (A. Decarli et al., eds.), pp 262--269. New York: Springer.
+Modelling: Proceedings of GLIM89 and the 4th International
+Workshop on Statistical Modelling held in Trento, Italy, July 17--21,
+1989} (A. Decarli et al., eds.), pp 262--269. New York: Springer.
 }
 \seealso{
 \code{\link{worstErrors}}, \code{\link{plot.qv}}.

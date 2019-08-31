@@ -8,7 +8,7 @@
 #' coerced by \code{as.rankings}.
 #' @param names logical: if \code{TRUE} use the object names in the returned
 #' \code{"choices"} object, else use object indices.
-#' @return A list of class \code{"choices"} with elements:
+#' @return A data frame of class \code{"choices"} with elements:
 #' \item{choices}{ A list where each element represents the set of items
 #' chosen for a single rank in the ranking.}
 #' \item{alternatives}{ A list where each element represents the set of items
@@ -25,14 +25,15 @@
 #'               2, 1, 1, 0,
 #'               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 #' colnames(R) <- c("apple", "banana", "orange", "pear")
+#'
 #' actual_choices <- choices(R, names = TRUE)
+#' actual_choices[1:6,]
+#'
 #' coded_choices <- choices(R, names = FALSE)
+#' coded_choices[1:2,]
+#' as.data.frame(coded_choices)[1:2,]
 #' attr(coded_choices, "objects")
 #'
-#' ## Coercion to tibble is straightforwards
-#' if (require(tibble)){
-#'     as.tibble(coded_choices)
-#' }
 #' @export
 choices <- function(rankings, names = FALSE) {
     # check rankings are valid
@@ -66,9 +67,12 @@ choices <- function(rankings, names = FALSE) {
         ranking <- c(ranking, which(J >= j))
     }
     ii <- order(ranking)
-    out <- list(choices = choices[ii], alternatives = alternatives[ii],
-                ranking = ranking[ii])
-    attr(out, "nchoices") <- length(choices)
+    nchoices <- length(choices)
+    out <- data.frame(matrix(NA, nrow = nchoices, ncol = 0))
+    out$choices <- choices[ii]
+    out$alternatives <- alternatives[ii]
+    out$ranking <- ranking[ii]
+    attr(out, "nchoices") <- nchoices
     attr(out, "objects") <- onames
     class(out) <- c("choices", class(out))
     out

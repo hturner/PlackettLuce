@@ -67,7 +67,7 @@ an ordering of the drivers according to their finishing position." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -130,10 +130,9 @@ an ordering of the drivers according to their finishing position.</p>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A matrix with 36 rows corresponding to the races and 87 columns
-corresponding to the positions. Columns 1 to 43 contain the ID for the driver
-that came first to last place respectively. Columns 44 to 87 are zero, since
-only 43 out of 87 drivers participated in each race. The <code>"drivers"</code>
+    <p>A matrix with 36 rows corresponding to the races and 43 columns
+corresponding to the positions. The columns contain the ID for the driver
+that came first to last place respectively. The <code>"drivers"</code>
 attribute contains the names of the 87 drivers.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -145,7 +144,7 @@ attribute contains the names of the 87 drivers.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># convert orderings to rankings</span>
-<span class='no'>nascar</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>45</span>]</div><div class='output co'>#&gt;      rank1 rank2 rank3 rank4 rank5 rank6 rank7 rank8 rank9 rank10 rank11 rank12
+<span class='no'>nascar</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, ]</div><div class='output co'>#&gt;      rank1 rank2 rank3 rank4 rank5 rank6 rank7 rank8 rank9 rank10 rank11 rank12
 #&gt; [1,]    83    18    20    48    53    51    67    72    32     42      2     31
 #&gt; [2,]    52    72     4    82    60    31    32    66     3     44      2     48
 #&gt;      rank13 rank14 rank15 rank16 rank17 rank18 rank19 rank20 rank21 rank22
@@ -157,16 +156,13 @@ attribute contains the names of the 87 drivers.</p>
 #&gt;      rank33 rank34 rank35 rank36 rank37 rank38 rank39 rank40 rank41 rank42
 #&gt; [1,]     52      4      9     45     41     61     34     39     49     15
 #&gt; [2,]     39     59     43     55     49     56      9     53      7     13
-#&gt;      rank43 rank44 rank45
-#&gt; [1,]     82      0      0
-#&gt; [2,]     71      0      0</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>)
-<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      Austin Cameron Bill Elliott Bobby Hamilton
-#&gt; [1,]              0           11             32
-#&gt; [2,]              0           11              9
-#&gt; [3,]              0            8             43</div><div class='input'><span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>]</div><div class='output co'>#&gt; [1] "Ward Burton &gt; Elliott Sadler &gt; Geoff ..."
-#&gt; [2] "Matt Kenseth &gt; Sterling Marlin &gt; Bob ..."
-#&gt; [3] "Sterling Marlin &gt; Jeremy Mayfield &gt;  ..."</div><div class='input'>
+#&gt;      rank43
+#&gt; [1,]     82
+#&gt; [2,]     71</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>, <span class='kw'>items</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>))
+<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      Austin Cameron Bill Elliott Bobby Hamilton Bobby Labonte
+#&gt; [1,]              0           11             32            34
+#&gt; [2,]              0           11              9             3</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>], <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>60</span>)</div><div class='output co'>#&gt; [1] "Ward Burton &gt; Elliott Sadler &gt; Geoffrey Bodine &gt; Kurt Bu ..."
+#&gt; [2] "Matt Kenseth &gt; Sterling Marlin &gt; Bobby Labonte &gt; Tony St ..."</div><div class='input'>
 <span class='co'># fit model as in Hunter 2004, excluding drivers that only lose</span>
 <span class='no'>keep</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='fl'>83</span>)
 <span class='no'>R2</span> <span class='kw'>&lt;-</span> <span class='no'>R</span>[, <span class='no'>keep</span>]

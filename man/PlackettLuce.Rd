@@ -5,16 +5,18 @@
 \title{Fit a Plackett-Luce Model}
 \usage{
 PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
-  adherence = NULL, weights = NULL, start = NULL,
+  adherence = NULL, weights = freq(rankings),
+  na.action = getOption("na.action"), start = NULL,
   method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
   steffensen = 0.1, maxit = c(500, 10), trace = FALSE,
   verbose = TRUE, ...)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
-coerced by \code{as.rankings}. A \code{"\link{grouped_rankings}"} object
-should be used when estimating adherence for rankers
-with multiple rankings per ranker.}
+coerced by \code{as.rankings}.  An \code{\link[=aggregate]{"aggregated_rankings"}}
+object can be used to specify rankings and weights simultaneously.
+A \code{"\link{grouped_rankings}"} object should be used when estimating
+adherence for rankers with multiple rankings per ranker.}
 
 \item{npseudo}{when using pseudodata: the number of wins and losses to add
 between each object and a hypothetical reference object.}
@@ -35,6 +37,9 @@ missing, adherence is fixed to 1 for all rankers. If \code{gamma} is not
 \code{NULL}, this specifies the starting values for the adherence.}
 
 \item{weights}{an optional vector of weights for each ranking.}
+
+\item{na.action}{a function to handle any missing rankings, see
+\code{\link[=na.omit]{na.omit()}}.}
 
 \item{start}{starting values for the worth parameters and the tie parameters
 on the raw scale (worth parameters need not be scaled to sum to 1). If
@@ -104,7 +109,8 @@ for other reason.}
 }
 \description{
 Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-(not all objects ranked) and include ties of any order.
+(each ranking completely ranks a subset of the items) and include ties of
+any order.
 }
 \section{Model definition}{
 
@@ -120,7 +126,8 @@ For a set if items \eqn{S}, let
       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}}{
       f(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(1/|S|)}
 where \eqn{|S|} is the cardinality (size) of the set, \eqn{\delta_n}{delta_n} is a
-parameter related to the prevalence of ties of order \eqn{n}, and
+parameter related to the prevalence of ties of order \eqn{n}
+(with \eqn{\delta_1 \equiv 1}), and
 \eqn{\alpha_i}{alpha_i} is a parameter representing the worth of item \eqn{i}.
 Then under an extension of the Plackett-Luce model allowing ties up to order
 \eqn{D}, the probability of the ranking \eqn{R} is given by
@@ -128,7 +135,7 @@ Then under an extension of the Plackett-Luce model allowing ties up to order
       \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}}{
       prod_{j = 1}^J f(C_j)/
       (sum_{k = 1}^{min(D_j, D)} sum_{S in choose(A_j, k)} f(S))}
-where \eqn{D_j} is the cardinality of \eqn{C_j}, \eqn{A_j} is the set of
+where \eqn{D_j} is the cardinality of \eqn{A_j}, the set of
 alternatives from which \eqn{C_j} is chosen, and
 \eqn{A_j \choose k}{choose(A_j, k)} is all the possible choices of \eqn{k}
 items from \eqn{A_j}. The value of \eqn{D} can be set to the maximum number
@@ -168,7 +175,8 @@ the MLE is the posterior mode.  As \code{npseudo} approaches
 infinity the log-worth estimates all shrink towards 0. The default,
 \code{npseudo = 0.5}, is sufficient to connect the network and has a weak
 shrinkage effect. Even for networks that are already connected, adding
-pseudo-rankings reduces both the bias and variance of the estimates.
+pseudo-rankings typically reduces both the bias and variance of the
+estimators of the worth parameters.
 }
 
 \section{Incorporating prior information on log-worths}{
@@ -219,7 +227,7 @@ more concentrated (and more symmetrical) about 1.
 
 Since the number of adherence parameters will typically be large and it is
 assumed the worth and tie parameters are of primary interest, the adherence
-parameters are not included in model summaries, by are included in the
+parameters are not included in model summaries, but are included in the
 returned object.
 }
 
@@ -270,6 +278,9 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
+# create rankings object
+R <- as.rankings(R)
+
 # Standard maximum likelihood estimates
 mod_mle <- PlackettLuce(R, npseudo = 0)
 coef(mod_mle)
@@ -296,7 +307,7 @@ mod_separate$adherence
 
 # estimate adherence based on grouped rankings
 #  - assume two rankings from each ranker
-G <- grouped_rankings(R, rep(1:3, each = 2))
+G <- group(R, rep(1:3, each = 2))
 mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
 coef(mod_grouped)
 # first ranker is least consistent so down-weighted
@@ -308,17 +319,18 @@ Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.
 \href{https://arxiv.org/abs/1404.3656}{arXiv:1404.3656}.
 }
 \seealso{
-Handling rankings: \code{\link{rankings}}, \code{choices}, \code{adjacency},
-\code{connectivity}.
+Handling rankings: \code{\link{rankings}}, \code{\link{aggregate}},
+\code{\link{group}}, \code{\link{choices}},
+\code{\link{adjacency}}, \code{\link{connectivity}}.
 
 Inspect fitted Plackett-Luce models: \code{\link{coef}}, \code{deviance},
 \code{\link{fitted}}, \code{\link{itempar}}, \code{logLik}, \code{print},
 \code{\link{qvcalc}}, \code{\link{summary}}, \code{\link{vcov}}.
 
-Fit Plackett-Luce tree: \code{\link{grouped_rankings}}, \code{pltree}.
+Fit Plackett-Luce tree: \code{pltree}.
 
 Example data sets: \code{\link{beans}}, \code{\link{nascar}},
-\code{\link{pudding}}, \code{\link{read.soc}}.
+\code{\link{pudding}}, \code{\link{preflib}}.
 
 Vignette: \code{vignette("Overview", package = "PlackettLuce")}.
 }

@@ -1,17 +1,15 @@
-#' Grouped Rankings Object
+#' Group Rankings
 #'
 #' Create an object of class \code{"grouped_rankings"} which associates a
 #' group index with an object of class \code{"rankings"}. This allows the
 #' rankings to be linked to covariates with group-specific values as the basis
 #' for model-based recursive partitioning, see \code{\link{pltree}}.
 #'
-#' @param rankings a \code{\link{rankings}} object or an object that can be
-#' coerced by \code{as.rankings}.
 #' @param index a numeric vector of length equal to the number of rankings
 #' specifying the subject for each ranking.
-#' @param x an object that can be coerced to a \code{"grouped_rankings"} object
-#' for \code{as.group_rankings}, or a \code{"grouped_rankings"} object for
-#' \code{[} and \code{format}.
+#' @param x a [`"rankings"`][rankings] object for `group()`; an
+#' object that can be coerced to a \code{"grouped_rankings"} object for
+#' \code{as.grouped_rankings()}, otherwise a \code{"grouped_rankings"} object.
 #' @param i indices specifying groups to extract, may be any data type accepted
 #' by \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
@@ -24,7 +22,7 @@
 #' @param ... additional arguments passed on to \code{\link{as.rankings}}
 #' by \code{grouped_rankings} or \code{as.grouped_rankings}; unused by
 #' \code{format}.
-#' @return an object of class \code{"grouped_rankings"}, which is a vector of
+#' @return An object of class \code{"grouped_rankings"}, which is a vector of
 #' of group IDs with the following attributes:
 #' \item{rankings}{ The \code{"rankings"} object.}
 #' \item{index}{ An index match each ranking to each group ID.}
@@ -46,41 +44,44 @@
 #' length(R)
 #' R
 #'
-#' # grouped rankings (first three in group 1, next two in group 2)
-#' G <- grouped_rankings(R, c(1, 1, 1, 2, 2))
+#' # group rankings (first three in group 1, next two in group 2)
+#' G <- group(R, c(1, 1, 1, 2, 2))
 #' length(G)
+#'
 #' ## by default up to 2 rankings are shown per group, "..." indicates if
 #' ## there are further rankings
 #' G
 #' print(G, max = 1)
+#'
 #' ## select rankings from group 1
 #' G[1,]
+#'
 #' ## exclude item 3 from ranking
 #' G[, -3]
+#'
 #' ## rankings from group 2, excluding item 3
 #' ## - note group 2 becomes the first group
 #' G[2, -3]
+#'
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
 #' @export
-grouped_rankings <- function(rankings, index, ...){
-    if (!(is.vector(index) & length(index) == nrow(rankings)))
+group <- function(x, index, ...){
+    UseMethod("group")
+}
+
+#' @method group rankings
+#' @export
+group.rankings <- function(x, index, ...){
+    if (!(is.vector(index) & length(index) == nrow(x)))
         stop("index must be a vector with length equal to rankings")
-    nm <- rownames(rankings)
-    if (!inherits(rankings, "rankings"))
-        rankings <- as.rankings(rankings, ...)
     index <- as.numeric(index)
-    if (!is.null(attr(rankings, "omit"))){
-        if (!is.null(nm)) {
-            omit <- match(attr(rankings, "omit"), nm)
-        } else omit <- attr(rankings, "omit")
-        index <- index[-omit]
-    }
     do.call("structure",
-            c(list(seq_len(max(index)), rankings = rankings, index = index),
-              ranking_stats(rankings),
+            c(list(seq_len(max(index)), rankings = x, index = index),
+              ranking_stats(x),
               list(class = "grouped_rankings")))
 }
+
 
 # ranking stats - summaries used in model fitting, compute once for all
 ranking_stats <- function(rankings){
@@ -92,6 +93,7 @@ ranking_stats <- function(rankings){
     for (i in seq_len(nr)){
         x <- rankings[i, ]
         ind <- which(as.logical(x))
+        if (length(ind) < 2L) next # no contribution to modelling
         ord <- order(x[ind], decreasing = TRUE)
         j <- seq_along(ind)
         # items ranked from last to 1st place
@@ -103,7 +105,6 @@ ranking_stats <- function(rankings){
         if (size[1L] == 1L) size[1L] <- 0L
         S[i, j] <- size
         # contribution to adjacency matrix
-        if (x[1L] < 2L) next # x[1] gives max rank
         add <- list()
         for (s in seq_len(x[1L] - 1L)){
             one <- which(rankings[i, ] == s)
@@ -116,7 +117,48 @@ ranking_stats <- function(rankings){
     list(R = R, S = S, id = id)
 }
 
-#' @rdname grouped_rankings
+#' @rdname group
+#' @export
+as.grouped_rankings <- function(x, ...){
+    UseMethod("as.grouped_rankings")
+}
+
+#' @rdname group
+#' @method as.grouped_rankings paircomp
+#' @export
+as.grouped_rankings.paircomp <- function(x, ...){
+    if (attr(x, "mscale")[1L] < -1L) {
+        warning("strength of preference ignored")
+        x <- sign(x)
+    }
+    id <- which(!is.na(as.matrix(x)), arr.ind = TRUE)
+    ncomp <- nrow(id)
+    nobj <- length(attr(x, "labels"))
+    pairs <- which(upper.tri(diag(nobj)), arr.ind = TRUE)
+    rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
+                       dimnames = list(NULL, attr(x, "labels")))
+    x <- as.matrix(x)[id]
+    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <-
+        ifelse(x == -1L, 2L, 1L)
+    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <-
+        ifelse(x == 1L, 2L, 1L)
+    rankings <- structure(rankings, class = "rankings")
+    do.call("structure",
+            c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),
+              ranking_stats(rankings),
+              list(class = "grouped_rankings")))
+}
+
+#' @rdname PlackettLuce-deprecated
+#' @section grouped_rankings:
+#' `grouped_rankings()` has been replaced by [group()].
+#' @export
+grouped_rankings <- function(rankings, index, ...){
+    .Deprecated("group", package = "PlackettLuce")
+    group(rankings, index, ...)
+}
+
+#' @rdname group
 #' @method [ grouped_rankings
 #' @export
 "[.grouped_rankings" <- function(x, i, j, ..., drop = TRUE,
@@ -163,41 +205,11 @@ ranking_stats <- function(rankings){
     } else {
         # convert rankings matrix to grouped_rankings
         # (will recode as necessary, omit redundant rankings, create R, S, id)
-        grouped_rankings(rankings, index)
+        group(as.rankings(rankings), index)
     }
 }
 
-#' @rdname grouped_rankings
-#' @export
-as.grouped_rankings <- function(x, ...){
-    UseMethod("as.grouped_rankings")
-}
 
-#' @rdname grouped_rankings
-#' @method as.grouped_rankings paircomp
-#' @export
-as.grouped_rankings.paircomp <- function(x, ...){
-    if (attr(x, "mscale")[1L] < -1L) {
-        warning("strength of preference ignored")
-        x <- sign(x)
-    }
-    id <- which(!is.na(as.matrix(x)), arr.ind = TRUE)
-    ncomp <- nrow(id)
-    nobj <- length(attr(x, "labels"))
-    pairs <- which(upper.tri(diag(nobj)), arr.ind = TRUE)
-    rankings <- matrix(0L, nrow = ncomp, ncol = nobj,
-                       dimnames = list(NULL, attr(x, "labels")))
-    x <- as.matrix(x)[id]
-    rankings[cbind(seq_len(ncomp), pairs[,1L][id[,2L]])] <-
-        ifelse(x == -1L, 2L, 1L)
-    rankings[cbind(seq_len(ncomp), pairs[,2L][id[,2L]])] <-
-        ifelse(x == 1L, 2L, 1L)
-    rankings <- structure(rankings, class = "rankings")
-    do.call("structure",
-            c(list(seq_len(max(id[,1L])), rankings = rankings, index = id[,1L]),
-              ranking_stats(rankings),
-              list(class = "grouped_rankings")))
-}
 
 #' @method as.data.frame grouped_rankings
 #' @export
@@ -233,7 +245,7 @@ print.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     print.default(format(x, max = max, width = width, ...))
 }
 
-#' @rdname grouped_rankings
+#' @rdname group
 #' @method format grouped_rankings
 #' @export
 format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
@@ -242,10 +254,50 @@ format.grouped_rankings <- function(x, max = 2L, width = 20L, ...){
     rep[order(attr(x, "index"))] <- sequence(tab)
     R <- attr(x, "rankings")[rep <= max, ]
     char <- format.rankings(R, width = width)
-    value <- vapply(split(char, attr(x, "index")[rep <= max]), paste,
-                    collapse = ", ", "a")
+    value <- vapply(split(char, attr(x, "index")[rep <= max]),
+                    function(x) {
+                        if (all(is.na(x))) return(NA_character_)
+                        paste(x, collapse = ", ")
+                        }, "a")
     # add ... if more than max rankings
-    trunc <- tab > max
+    trunc <- tab > max & !is.na(value)
     value[trunc] <- paste0(value[trunc], ", ...")
     value
+}
+
+#' @method na.omit grouped_rankings
+#' @importFrom stats na.omit
+na.omit.grouped_rankings <- function(object, ...) {
+    omit <- seq_along(attr(object, "rankings"))[is.na(attr(object, "rankings"))]
+    if (length(omit) == 0L)
+        return(object)
+    nm <- names(object)
+    index <- attr(object, "index")[-omit]
+    index <- match(index, unique(index))
+    names(omit) <- nm[omit]
+    attr(omit, "class") <- "omit"
+    structure(unique(index),
+              rankings = attr(object, "rankings")[-omit, , drop = FALSE],
+              index = index,
+              R = attr(object, "R")[-omit, , drop = FALSE],
+              S = attr(object, "S")[-omit, , drop = FALSE],
+              id = attr(object, "id")[-omit],
+              na.action = omit,
+              class = "grouped_rankings")
+}
+
+#' @method na.exclude grouped_rankings
+#' @importFrom stats na.exclude
+na.exclude.grouped_rankings <- function(object, ...) {
+    out  <- na.omit(object)
+    class(attr(out, "na.action")) <- "na.exclude"
+    out
+}
+
+#' @method is.na grouped_rankings
+#' @export
+is.na.grouped_rankings <- function(x) {
+    out <- tapply(attr(x, "rankings"), attr(x, "index"), sum) == 0
+    names(out) <- names(x)
+    out
 }

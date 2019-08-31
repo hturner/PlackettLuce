@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -149,7 +149,7 @@ choices of one item from a set of one item are excluded.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments passed to method (ignored).</p></td>
+      <td><p>further arguments, currently ignored.</p></td>
     </tr>
     </table>
     
@@ -163,15 +163,37 @@ choices of one item from a set of one item are excluded.</p></td>
 choice (equal to the ranking weight if <code>aggregate = FALSE</code>.</p></dd>
 <dt>fitted</dt><dd><p>The fitted probability of making this choice.</p></dd>
 If object was a "pltree" object, the list has an
-additional element node, specifying which node the ranking corresponds
+additional element, node, specifying which node the ranking corresponds
 to.
 
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>choices</p></div>
+    <div class='dont-index'><p><code><a href='choices.html'>choices</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
+              <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>,
+              <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>,
+              <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>0</span>,
+              <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
+              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
+
+<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span>(<span class='no'>R</span>)
+<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/fitted.values'>fitted</a></span>(<span class='no'>mod</span>)
+<span class='no'>fit</span></div><div class='output co'>#&gt;    choices alternatives ranking     fitted n
+#&gt; 1        1         1, 2       1 0.41325484 1
+#&gt; 2        2   1, 2, 3, 4       2 0.21428983 1
+#&gt; 3        3      1, 3, 4       2 0.17489657 1
+#&gt; 4        4         1, 4       2 0.45200924 1
+#&gt; 5  2, 3, 4   1, 2, 3, 4       3 0.06489882 1
+#&gt; 6        1      1, 2, 3       4 0.28204215 1
+#&gt; 7        2         2, 3       4 0.66847071 1
+#&gt; 8     2, 3      1, 2, 3       5 0.02741414 1
+#&gt; 9        1      1, 3, 4       6 0.32301592 1
+#&gt; 10       4         3, 4       6 0.59521895 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -181,7 +203,9 @@ to.
       <li><a href="#value">Value</a></li>
 
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

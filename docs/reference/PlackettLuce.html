@@ -35,7 +35,8 @@
 <meta property="og:title" content="Fit a Plackett-Luce Model — PlackettLuce" />
 
 <meta property="og:description" content="Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-(not all objects ranked) and include ties of any order." />
+(each ranking completely ranks a subset of the items) and include ties of
+any order." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -66,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -120,12 +121,14 @@
     <div class="ref-description">
     
     <p>Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-(not all objects ranked) and include ties of any order.</p>
+(each ranking completely ranks a subset of the items) and include ties of
+any order.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>PlackettLuce</span>(<span class='no'>rankings</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>normal</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>adherence</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>adherence</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='aggregate.html'>freq</a></span>(<span class='no'>rankings</span>),
+  <span class='kw'>na.action</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/options'>getOption</a></span>(<span class='st'>"na.action"</span>), <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"iterative scaling"</span>, <span class='st'>"BFGS"</span>, <span class='st'>"L-BFGS"</span>), <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>,
   <span class='kw'>steffensen</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>500</span>, <span class='fl'>10</span>), <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
@@ -136,9 +139,10 @@
     <tr>
       <th>rankings</th>
       <td><p>a <code>"<a href='rankings.html'>rankings</a>"</code> object, or an object that can be
-coerced by <code>as.rankings</code>. A <code>"<a href='grouped_rankings.html'>grouped_rankings</a>"</code> object
-should be used when estimating adherence for rankers
-with multiple rankings per ranker.</p></td>
+coerced by <code>as.rankings</code>.  An <code><a href='aggregate.html'>"aggregated_rankings"</a></code>
+object can be used to specify rankings and weights simultaneously.
+A <code>"<a href='PlackettLuce-deprecated.html'>grouped_rankings</a>"</code> object should be used when estimating
+adherence for rankers with multiple rankings per ranker.</p></td>
     </tr>
     <tr>
       <th>npseudo</th>
@@ -169,6 +173,11 @@ missing, adherence is fixed to 1 for all rankers. If <code>gamma</code> is not
     <tr>
       <th>weights</th>
       <td><p>an optional vector of weights for each ranking.</p></td>
+    </tr>
+    <tr>
+      <th>na.action</th>
+      <td><p>a function to handle any missing rankings, see
+<code><a href='https://www.rdocumentation.org/packages/stats/topics/na.fail'>na.omit()</a></code>.</p></td>
     </tr>
     <tr>
       <th>start</th>
@@ -268,13 +277,14 @@ these items are tied in the ranking.</p>
 $$f(S) = \delta_{|S|}
       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
 where \(|S|\) is the cardinality (size) of the set, \(\delta_n\) is a
-parameter related to the prevalence of ties of order \(n\), and
+parameter related to the prevalence of ties of order \(n\)
+(with \(\delta_1 \equiv 1\)), and
 \(\alpha_i\) is a parameter representing the worth of item \(i\).
 Then under an extension of the Plackett-Luce model allowing ties up to order
 \(D\), the probability of the ranking \(R\) is given by
 $$\prod_{j = 1}^J \frac{f(C_j)}{
       \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}$$
-where \(D_j\) is the cardinality of \(C_j\), \(A_j\) is the set of
+where \(D_j\) is the cardinality of \(A_j\), the set of
 alternatives from which \(C_j\) is chosen, and
 \(A_j \choose k\) is all the possible choices of \(k\)
 items from \(A_j\). The value of \(D\) can be set to the maximum number
@@ -308,7 +318,8 @@ the MLE is the posterior mode.  As <code>npseudo</code> approaches
 infinity the log-worth estimates all shrink towards 0. The default,
 <code>npseudo = 0.5</code>, is sufficient to connect the network and has a weak
 shrinkage effect. Even for networks that are already connected, adding
-pseudo-rankings reduces both the bias and variance of the estimates.</p>
+pseudo-rankings typically reduces both the bias and variance of the
+estimators of the worth parameters.</p>
     
     <h2 class="hasAnchor" id="incorporating-prior-information-on-log-worths"><a class="anchor" href="#incorporating-prior-information-on-log-worths"></a>Incorporating prior information on log-worths</h2>
 
@@ -353,7 +364,7 @@ to near-zero adherence; as \(\theta\) increases the density becomes
 more concentrated (and more symmetrical) about 1.</p>
 <p>Since the number of adherence parameters will typically be large and it is
 assumed the worth and tie parameters are of primary interest, the adherence
-parameters are not included in model summaries, by are included in the
+parameters are not included in model summaries, but are included in the
 returned object.</p>
     
     <h2 class="hasAnchor" id="controlling-the-fit"><a class="anchor" href="#controlling-the-fit"></a>Controlling the fit</h2>
@@ -392,14 +403,15 @@ is used by default.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Handling rankings: <code><a href='rankings.html'>rankings</a></code>, <code>choices</code>, <code>adjacency</code>,
-<code>connectivity</code>.</p>
+    <div class='dont-index'><p>Handling rankings: <code><a href='rankings.html'>rankings</a></code>, <code><a href='aggregate.html'>aggregate</a></code>,
+<code><a href='group.html'>group</a></code>, <code><a href='choices.html'>choices</a></code>,
+<code><a href='adjacency.html'>adjacency</a></code>, <code><a href='connectivity.html'>connectivity</a></code>.</p>
 <p>Inspect fitted Plackett-Luce models: <code><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></code>, <code>deviance</code>,
 <code><a href='https://www.rdocumentation.org/packages/stats/topics/fitted.values'>fitted</a></code>, <code><a href='https://www.rdocumentation.org/packages/psychotools/topics/itempar'>itempar</a></code>, <code>logLik</code>, <code>print</code>,
 <code><a href='https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></code>, <code><a href='https://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></code>.</p>
-<p>Fit Plackett-Luce tree: <code><a href='grouped_rankings.html'>grouped_rankings</a></code>, <code>pltree</code>.</p>
+<p>Fit Plackett-Luce tree: <code>pltree</code>.</p>
 <p>Example data sets: <code><a href='beans.html'>beans</a></code>, <code><a href='nascar.html'>nascar</a></code>,
-<code><a href='pudding.html'>pudding</a></code>, <code><a href='read.soc.html'>read.soc</a></code>.</p>
+<code><a href='pudding.html'>pudding</a></code>, <code><a href='preflib.html'>preflib</a></code>.</p>
 <p>Vignette: <code><a href='../articles/Overview.html'>vignette("Overview", package = "PlackettLuce")</a></code>.</p></div>
     
 
@@ -415,6 +427,9 @@ is used by default.</p>
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
+
+<span class='co'># create rankings object</span>
+<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>R</span>)
 
 <span class='co'># Standard maximum likelihood estimates</span>
 <span class='no'>mod_mle</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='no'>R</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0</span>)
@@ -441,7 +456,7 @@ is used by default.</p>
 <span class='no'>mod_separate</span>$<span class='no'>adherence</span></div><div class='output co'>#&gt; [1] 0.8889778 0.8732159 0.8876840 0.9431440 0.8818594 0.9506536</div><div class='input'>
 <span class='co'># estimate adherence based on grouped rankings</span>
 <span class='co'>#  - assume two rankings from each ranker</span>
-<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='grouped_rankings.html'>grouped_rankings</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>2</span>))
+<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='group.html'>group</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>2</span>))
 <span class='no'>mod_grouped</span> <span class='kw'>&lt;-</span> <span class='fu'>PlackettLuce</span>(<span class='kw'>rankings</span> <span class='kw'>=</span> <span class='no'>G</span>, <span class='kw'>normal</span> <span class='kw'>=</span> <span class='no'>prior</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod_grouped</span>)</div><div class='output co'>#&gt;      apple     banana     orange       pear       tie2       tie3 
 #&gt;  0.0000000  0.2855958 -0.7611189 -0.1201862 -1.8678374 -0.7453447 </div><div class='input'><span class='co'># first ranker is least consistent so down-weighted</span>

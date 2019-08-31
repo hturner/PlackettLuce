@@ -7,25 +7,23 @@
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
-\alias{rbind.rankings}
 \title{Rankings Object}
 \usage{
-rankings(data, id, item, rank, verbose = TRUE, ...)
+rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
-as.rankings(x, input = c("ranking", "ordering"), labels = NULL,
-  verbose = TRUE, ...)
+as.rankings(x, ..., verbose = TRUE)
 
-\method{as.rankings}{default}(x, input = c("ranking", "ordering"),
-  labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{default}(x, input = c("rankings", "orderings"),
+  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
+  labels = NULL, ..., verbose = TRUE)
 
-\method{as.rankings}{matrix}(x, input = c("ranking", "ordering"),
-  labels = NULL, verbose = TRUE, ...)
+\method{as.rankings}{matrix}(x, input = c("rankings", "orderings"),
+  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
+  labels = NULL, ..., verbose = TRUE)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
 \method{format}{rankings}(x, width = 40L, ...)
-
-\method{rbind}{rankings}(..., labels = NULL)
 }
 \arguments{
 \item{data}{a data frame with columns specified by \code{id}, \code{item} and
@@ -40,6 +38,9 @@ IDs,}
 \item{rank}{an index of \code{data} specifying the column containing item
 ranks.}
 
+\item{aggregate}{if \code{TRUE}, aggregate the rankings via
+\code{\link[=aggregate.rankings]{aggregate()}} before returning.}
+
 \item{verbose}{logical; if \code{TRUE} print messages when changes are made
 to rankings data.}
 
@@ -49,13 +50,27 @@ to rankings data.}
 row per ranking, or an object that can be coerced to such as matrix; for
 \code{[} and \code{format}, a \code{"rankings"} object.}
 
-\item{input}{for \code{as.rankings}, whether each row in the input matrix
-contains a numeric \code{"ranking"} (dense, standard/modified competition or
-fractional ranking) or an \code{"ordering"}, i.e. the items ordered by rank.}
+\item{input}{for \code{as.rankings}, whether rows in the input matrix
+contain numeric \code{"rankings"} (dense, standard/modified competition or
+fractional rankings) or \code{"orderings"}, i.e. the items ordered by rank.}
 
-\item{labels}{for \code{input = "ordering"} an optional vector of labels for
-the items. If \code{NULL}, the items will be labelled by the sorted unique
-values of \code{x}.}
+\item{freq}{an optional column index (number, character or logical)
+specifying a column of \code{x} that holds ranking frequencies, or a vector
+of ranking frequencies. If provided, an \code{"aggregated_rankings"} object
+will be returned.}
+
+\item{index}{an optional column index (number, character or logical)
+specifying a column of \code{x} that holds a grouping index, or a
+numeric vector to for grouping. If provided, the rankings will be grouped by
+\code{\link[=group]{group()}} before returning.}
+
+\item{items}{for \code{input = "orderings"}, a character vector specifying
+the full set of items. Values in \code{x} are matched to this by value (if
+character) or position (if numeric). Use \code{\link[=decode]{decode()}} for orderings requiring
+more complex decoding.}
+
+\item{labels}{for \code{input = "orderings"} an optional vector of labels for
+the items, corresponding to the sorted unique values of \code{x}.}
 
 \item{i}{indices specifying rankings to extract, as for \code{\link{[}}.}
 
@@ -70,9 +85,17 @@ a matrix/vector.}
 rankings that are too wide will be truncated.}
 }
 \value{
-a \code{"rankings"} object, which is a matrix of dense rankings
-with one attribute \code{omit} the indices of any rankings that were
-omitted due to insufficient data (less than two non-missing ranks).
+By default, a \code{"rankings"} object, which is a
+matrix of dense rankings with methods for several generics including
+\code{\link[=aggregate.rankings]{aggregate}}, \code{[}, \code{format}, \code{\link[=rbind]{rbind()}} and
+\code{\link[=as.matrix]{as.matrix()}}.
+
+If the object is created with \code{aggregate = TRUE}, or ranking frequencies are
+specified via \code{freq}, the rankings are post-processed to create an
+\code{"aggregated_rankings"} object.
+
+If a group index is specified via \code{index}, the (possibly aggregated) rankings
+are post-processed to create a \code{"grouped_rankings"} object.
 }
 \description{
 Create a \code{"rankings"} object from data or convert a matrix of rankings
@@ -81,33 +104,47 @@ or ordered items to a \code{"rankings"} object.
 \details{
 Each ranking in the input data will be converted to a dense ranking, which
 rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
-should have a rank of 0. Tied items are given the same rank with no rank
-skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+should have a rank of 0 or \code{NA}. Tied items are given the same rank with no
+rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
 first place and the third item in second place; the second item is unranked.
 
-Rankings with less than 2 items are dropped.
+Records in \code{data} with missing \code{id} or \code{item} are dropped. Duplicated items
+in the rankings are resolved if possible: redundant or inconsistent ranks
+are set to \code{NA}. Rankings with only 1 item are set to \code{NA} (rankings with
+zero items are automatically treated as \code{NA}). Any issues
+causing records to be removed or recoded produce a message if
+\code{verbose = TRUE}.
+
+For \code{as.rankings} with \code{input = "orderings"}, unused ranks may be filled with
+zeroes for numeric \code{x} or \code{NA}. It is only necessary to have as many columns
+as ranks that are used.
 
 The method for \code{[} will return a reduced rankings object by default,
-recoding and dropping invalid rankings as necessary. To extract rows
-and/or columns of the rankings as a matrix or vector,
+recoding as dense rankings and setting invalid rankings to \code{NA} as necessary.
+To extract rows and/or columns of the rankings as a matrix or vector,
 set \code{as.rankings = FALSE}, see examples.
 }
 \examples{
 # create rankings from data in long form
+
+# example long form data
 x <- data.frame(ranking = c(rep(1:4, each = 4), 5, 5, 5),
                 letter = c(LETTERS[c(1:3, 3, 1:4, 2:5, 1:2, 1)], NA,
                            LETTERS[3:5]),
                 rank = c(4:1, rep(NA, 4), 3:4, NA, NA, 1, 3, 4, 2, 2, 2, 3))
+
 # ranking 1 has different rank for same item, but order of items unambiguous
 # all ranks are missing in ranking 2
 # some ranks are missing in ranking 3
 # ranking 4 has inconsistent ranks for two items and a rank with missing item
 # ranking 5 is fine - an example of a tie
 split(x, x$ranking)
+
 # fix issues when creating rankings object
 rankings(x, id = "ranking", item = "letter", rank = "rank")
 
 # convert existing matrix of rankings
+
 R <- matrix(c(1, 2, 0, 0,
               4, 1, 2, 3,
               2, 1, 1, 1,
@@ -116,14 +153,19 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 R <- as.rankings(R)
+
 # first three rankings
 R[1:3,]
+
 # exclude pear from the rankings
 R[, -4]
+
 # extract rankings 2 and 3 as numeric matrix
 R[2:3, , as.rankings = FALSE]
+
 # same as
-unclass(R)[2:3,]
+as.matrix(R)[2:3,]
+
 # extract rankings for item 1 as a vector
 R[,1, as.rankings = FALSE]
 
