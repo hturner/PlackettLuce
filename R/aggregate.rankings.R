@@ -4,7 +4,9 @@
 #' unique rankings and their frequencies. The frequencies can be extracted via
 #' the function `freq()`.
 #'
-#' @param x A [`"rankings"`][rankings] or `"aggregated_rankings"` object.
+#' @param x A [`"rankings"`][rankings] object for `aggregate()`; an
+#' object that can be coerced to a \code{"aggregated_rankings"} object for
+#' \code{as.aggregated_rankings()}, otherwise an `"aggregated_rankings"` object.
 #' @param freq A vector of frequencies for rankings that have been previously
 #' aggregated.
 #' @param i indices specifying rankings to extract, as for \code{\link{[}}.
@@ -16,9 +18,11 @@
 #' corresponding frequencies.
 #' @param ... Additional arguments, currently unused.
 #' @return A data frame of class `"aggregated_rankings"`, with columns
-#' \item{ranking}{ A `"rankings"` object of the unique rankings.}
+#' \item{ranking}{ A [`"rankings"`][rankings] object of the unique rankings.}
 #' \item{freq}{The corresponding frequencies.}
-#' Methods are available for [rbind()] and [as.matrix()].
+#' Methods are available for [`rbind()`] and [`as.matrix()`].
+#' @seealso [preflib()] for an object that can be coerced to an
+#' `"aggregated_rankings"` object.
 #' @examples
 #' # create a rankings object with duplicated rankings
 #' R <- matrix(c(1, 2, 0, 0,
@@ -35,8 +39,12 @@
 #'
 #' # subsetting applies to the rankings, e.g. first two unique rankings
 #' A[1:2]
+#'
 #' # (partial) rankings of items 2 to 4 only
 #' A[, 2:4]
+#'
+#' # convert to a matrix
+#' as.matrix(A)
 #'
 #' # frequencies are automatically used as weights by PlackettLuce()
 #' mod <- PlackettLuce(A)

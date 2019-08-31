@@ -31,7 +31,7 @@ assignInNamespace(
 )
 
 # either a) rebuild whole pkgdown site including help files
-build_site()
+build_site(lazy = FALSE)
 file.remove("vignettes/Overview.knit.md")
 file.remove("vignettes/Overview.utf8.md")
 
@@ -42,4 +42,4 @@ build_home()
 
 build_reference_index()
 
-build_reference()
+build_reference() #Rd files

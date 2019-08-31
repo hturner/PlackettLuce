@@ -20,15 +20,20 @@
 #' Statistical Association}, \bold{65}, 317--328.
 #' @examples
 #'
-#' # reshape to give one row per unique ranking
-#' nr <- 3*nrow(pudding)
-#' R <- matrix(0, nrow = nr, ncol = 6,
-#'             dimnames = list(NULL, seq_len(6)))
-#' i <- rep(pudding$i, 3)
-#' j <- rep(pudding$j, 3)
-#' R[cbind(seq_len(nr), i)] <- rep(c(1, 2, 1), each = nrow(pudding))
-#' R[cbind(seq_len(nr), j)] <- rep(c(2, 1, 1), each = nrow(pudding))
-#' # weights are frequencies of each ranking
+#' # create orderings for each set of paired comparisons
+#' i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
+#' j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
+#' ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
+#'                    Loser = rep(NA, 15))
+#' head(ties, 2)
+#'
+#' # convert to rankings
+#' R <- as.rankings(rbind(i_wins, j_wins, ties),
+#'                  input = "orderings")
+#' head(R, 2)
+#' tail(R, 2)
+#'
+#' # define weights as frequencies of each ranking
 #' w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
 #'
 #' # fit Plackett-Luce model: limit iterations to match paper

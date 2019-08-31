@@ -142,7 +142,9 @@ freq(x)</pre>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A <code><a href='rankings.html'>"rankings"</a></code> or <code>"aggregated_rankings"</code> object.</p></td>
+      <td><p>A <code><a href='rankings.html'>"rankings"</a></code> object for <code>aggregate()</code>; an
+object that can be coerced to a <code>"aggregated_rankings"</code> object for
+<code>as.aggregated_rankings()</code>, otherwise an <code>"aggregated_rankings"</code> object.</p></td>
     </tr>
     <tr>
       <th>freq</th>
@@ -177,10 +179,15 @@ corresponding frequencies.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame of class <code>"aggregated_rankings"</code>, with columns</p>
-<dt>ranking</dt><dd><p>A <code>"rankings"</code> object of the unique rankings.</p></dd>
+<dt>ranking</dt><dd><p>A <code><a href='rankings.html'>"rankings"</a></code> object of the unique rankings.</p></dd>
 <dt>freq</dt><dd><p>The corresponding frequencies.</p></dd>
 Methods are available for <a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind()</a> and <a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix()</a>.
 
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='preflib.html'>preflib()</a></code> for an object that can be coerced to an
+<code>"aggregated_rankings"</code> object.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -200,12 +207,19 @@ Methods are available for <a href='https://www.rdocumentation.org/packages/base/
 <span class='co'># subsetting applies to the rankings, e.g. first two unique rankings</span>
 <span class='no'>A</span>[<span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt;                  ranking freq
 #&gt; 1         apple &gt; banana    2
-#&gt; 2 banana &gt; orange &gt; pear    1</div><div class='input'><span class='co'># (partial) rankings of items 2 to 4 only</span>
+#&gt; 2 banana &gt; orange &gt; pear    1</div><div class='input'>
+<span class='co'># (partial) rankings of items 2 to 4 only</span>
 <span class='no'>A</span>[, <span class='fl'>2</span>:<span class='fl'>4</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;                  ranking freq
 #&gt; 1                   &lt;NA&gt;    2
 #&gt; 2 banana &gt; orange &gt; pear    1
 #&gt; 3        banana = orange    2
 #&gt; 4          pear &gt; orange    1</div><div class='input'>
+<span class='co'># convert to a matrix</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix</a></span>(<span class='no'>A</span>)</div><div class='output co'>#&gt;      apple banana orange pear freq
+#&gt; [1,]     1      2      0    0    2
+#&gt; [2,]     0      1      2    3    1
+#&gt; [3,]     2      1      1    0    2
+#&gt; [4,]     1      0      3    2    1</div><div class='input'>
 <span class='co'># frequencies are automatically used as weights by PlackettLuce()</span>
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span>(<span class='no'>A</span>)
 <span class='no'>mod</span>$<span class='no'>weights</span></div><div class='output co'>#&gt; [1] 2 1 2 1</div></pre>
@@ -216,6 +230,8 @@ Methods are available for <a href='https://www.rdocumentation.org/packages/base/
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

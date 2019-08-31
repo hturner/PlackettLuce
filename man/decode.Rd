@@ -13,14 +13,15 @@ decode(orderings, items, code = NULL)
 common items.}
 
 \item{code}{(Optional) a vector giving the key to the code. If missing,
-\code{names(items)} is used for a character code, while a \code{seq(items)} is used
+\code{names(items)} is used for a character code, while \code{seq(items)} is used
 for a numeric code.}
 }
 \value{
-A data frame with the coded values replaced by the item labels.
+A data frame with the coded values replaced by the item names.
 }
 \description{
-Decode Orderings using a Key to Item Names
+Decode orderings by replacing numeric or character coded values with item
+names.
 }
 \examples{
 # orderings of up to 3 items coded as A, B, C

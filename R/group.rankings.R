@@ -5,13 +5,11 @@
 #' rankings to be linked to covariates with group-specific values as the basis
 #' for model-based recursive partitioning, see \code{\link{pltree}}.
 #'
-#' @param rankings a \code{\link{rankings}} object or an object that can be
-#' coerced by \code{as.rankings}.
 #' @param index a numeric vector of length equal to the number of rankings
 #' specifying the subject for each ranking.
-#' @param x an object that can be coerced to a \code{"grouped_rankings"} object
-#' for \code{as.grouped_rankings}, or a \code{"grouped_rankings"} object for
-#' \code{[} and \code{format}.
+#' @param x a [`"rankings"`][rankings] object for `group()`; an
+#' object that can be coerced to a \code{"grouped_rankings"} object for
+#' \code{as.grouped_rankings()}, otherwise a \code{"grouped_rankings"} object.
 #' @param i indices specifying groups to extract, may be any data type accepted
 #' by \code{\link{[}}.
 #' @param j indices specifying items to extract, as for \code{\link{[}}.
@@ -24,7 +22,7 @@
 #' @param ... additional arguments passed on to \code{\link{as.rankings}}
 #' by \code{grouped_rankings} or \code{as.grouped_rankings}; unused by
 #' \code{format}.
-#' @return an object of class \code{"grouped_rankings"}, which is a vector of
+#' @return An object of class \code{"grouped_rankings"}, which is a vector of
 #' of group IDs with the following attributes:
 #' \item{rankings}{ The \code{"rankings"} object.}
 #' \item{index}{ An index match each ranking to each group ID.}
@@ -49,17 +47,22 @@
 #' # group rankings (first three in group 1, next two in group 2)
 #' G <- group(R, c(1, 1, 1, 2, 2))
 #' length(G)
+#'
 #' ## by default up to 2 rankings are shown per group, "..." indicates if
 #' ## there are further rankings
 #' G
 #' print(G, max = 1)
+#'
 #' ## select rankings from group 1
 #' G[1,]
+#'
 #' ## exclude item 3 from ranking
 #' G[, -3]
+#'
 #' ## rankings from group 2, excluding item 3
 #' ## - note group 2 becomes the first group
 #' G[2, -3]
+#'
 #' ## index underlying rankings without creating new grouped_rankings object
 #' G[2, -3, as.grouped_rankings = FALSE]
 #' @export

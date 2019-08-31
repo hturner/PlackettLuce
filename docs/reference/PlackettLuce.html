@@ -35,7 +35,8 @@
 <meta property="og:title" content="Fit a Plackett-Luce Model — PlackettLuce" />
 
 <meta property="og:description" content="Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-(not all objects ranked) and include ties of any order." />
+(each ranking completely ranks a subset of the items) and include ties of
+any order." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,7 +121,8 @@
     <div class="ref-description">
     
     <p>Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
-(not all objects ranked) and include ties of any order.</p>
+(each ranking completely ranks a subset of the items) and include ties of
+any order.</p>
     
     </div>
 
@@ -137,7 +139,7 @@
     <tr>
       <th>rankings</th>
       <td><p>a <code>"<a href='rankings.html'>rankings</a>"</code> object, or an object that can be
-coerced by <code>as.rankings</code>.  A <code>"aggregated_rankings"</code>
+coerced by <code>as.rankings</code>.  An <code><a href='aggregate.html'>"aggregated_rankings"</a></code>
 object can be used to specify rankings and weights simultaneously.
 A <code>"<a href='PlackettLuce-deprecated.html'>grouped_rankings</a>"</code> object should be used when estimating
 adherence for rankers with multiple rankings per ranker.</p></td>
@@ -275,13 +277,14 @@ these items are tied in the ranking.</p>
 $$f(S) = \delta_{|S|}
       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
 where \(|S|\) is the cardinality (size) of the set, \(\delta_n\) is a
-parameter related to the prevalence of ties of order \(n\), and
+parameter related to the prevalence of ties of order \(n\)
+(with \(\delta_1 \equiv 1\)), and
 \(\alpha_i\) is a parameter representing the worth of item \(i\).
 Then under an extension of the Plackett-Luce model allowing ties up to order
 \(D\), the probability of the ranking \(R\) is given by
 $$\prod_{j = 1}^J \frac{f(C_j)}{
       \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}$$
-where \(D_j\) is the cardinality of \(C_j\), \(A_j\) is the set of
+where \(D_j\) is the cardinality of \(A_j\), the set of
 alternatives from which \(C_j\) is chosen, and
 \(A_j \choose k\) is all the possible choices of \(k\)
 items from \(A_j\). The value of \(D\) can be set to the maximum number
@@ -315,7 +318,8 @@ the MLE is the posterior mode.  As <code>npseudo</code> approaches
 infinity the log-worth estimates all shrink towards 0. The default,
 <code>npseudo = 0.5</code>, is sufficient to connect the network and has a weak
 shrinkage effect. Even for networks that are already connected, adding
-pseudo-rankings reduces both the bias and variance of the estimates.</p>
+pseudo-rankings typically reduces both the bias and variance of the
+estimators of the worth parameters.</p>
     
     <h2 class="hasAnchor" id="incorporating-prior-information-on-log-worths"><a class="anchor" href="#incorporating-prior-information-on-log-worths"></a>Incorporating prior information on log-worths</h2>
 
@@ -360,7 +364,7 @@ to near-zero adherence; as \(\theta\) increases the density becomes
 more concentrated (and more symmetrical) about 1.</p>
 <p>Since the number of adherence parameters will typically be large and it is
 assumed the worth and tie parameters are of primary interest, the adherence
-parameters are not included in model summaries, by are included in the
+parameters are not included in model summaries, but are included in the
 returned object.</p>
     
     <h2 class="hasAnchor" id="controlling-the-fit"><a class="anchor" href="#controlling-the-fit"></a>Controlling the fit</h2>

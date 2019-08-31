@@ -264,7 +264,7 @@ rank skipped. For example 1, 0, 2, 1, ranks the first and fourth items in
 first place and the third item in second place; the second item is unranked.</p>
 <p>Records in <code>data</code> with missing <code>id</code> or <code>item</code> are dropped. Duplicated items
 in the rankings are resolved if possible: redundant or inconsistent ranks
-are set to <code>NA</code>. Rankings with only 1 items are set to <code>NA</code> (rankings with
+are set to <code>NA</code>. Rankings with only 1 item are set to <code>NA</code> (rankings with
 zero items are automatically treated as <code>NA</code>). Any issues
 causing records to be removed or recoded produce a message if
 <code>verbose = TRUE</code>.</p>
@@ -279,10 +279,13 @@ set <code>as.rankings = FALSE</code>, see examples.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># create rankings from data in long form</span>
+
+<span class='co'># example long form data</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>ranking</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>4</span>), <span class='fl'>5</span>, <span class='fl'>5</span>, <span class='fl'>5</span>),
                 <span class='kw'>letter</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>LETTERS</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='fl'>2</span>:<span class='fl'>5</span>, <span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>)], <span class='fl'>NA</span>,
                            <span class='no'>LETTERS</span>[<span class='fl'>3</span>:<span class='fl'>5</span>]),
                 <span class='kw'>rank</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>:<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>4</span>), <span class='fl'>3</span>:<span class='fl'>4</span>, <span class='fl'>NA</span>, <span class='fl'>NA</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))
+
 <span class='co'># ranking 1 has different rank for same item, but order of items unambiguous</span>
 <span class='co'># all ranks are missing in ranking 2</span>
 <span class='co'># some ranks are missing in ranking 3</span>
@@ -321,10 +324,12 @@ set <code>as.rankings = FALSE</code>, see examples.</p>
 #&gt; 17       5      C    2
 #&gt; 18       5      D    2
 #&gt; 19       5      E    3
-#&gt; </div><div class='input'><span class='co'># fix issues when creating rankings object</span>
+#&gt; </div><div class='input'>
+<span class='co'># fix issues when creating rankings object</span>
 <span class='fu'>rankings</span>(<span class='no'>x</span>, <span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>"ranking"</span>, <span class='kw'>item</span> <span class='kw'>=</span> <span class='st'>"letter"</span>, <span class='kw'>rank</span> <span class='kw'>=</span> <span class='st'>"rank"</span>)</div><div class='output co'>#&gt; <span class='message'>Removed records with unknown id or item</span></div><div class='output co'>#&gt; <span class='message'>Duplicated items within rankings: set redundant/inconsistent to `NA`.</span></div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;           1           2           3           4           5 
 #&gt;     "B &gt; A"          NA     "B &gt; C"          NA "C = D &gt; E" </div><div class='input'>
 <span class='co'># convert existing matrix of rankings</span>
+
 <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
               <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>,
@@ -333,18 +338,23 @@ set <code>as.rankings = FALSE</code>, see examples.</p>
               <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
 <span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'>as.rankings</span>(<span class='no'>R</span>)
+
 <span class='co'># first three rankings</span>
 <span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>,]</div><div class='output co'>#&gt; [1] "apple &gt; banana"                 "banana &gt; orange &gt; pear &gt; apple"
-#&gt; [3] "banana = orange = pear &gt; apple"</div><div class='input'><span class='co'># exclude pear from the rankings</span>
+#&gt; [3] "banana = orange = pear &gt; apple"</div><div class='input'>
+<span class='co'># exclude pear from the rankings</span>
 <span class='no'>R</span>[, -<span class='fl'>4</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; [1] "apple &gt; banana"          "banana &gt; orange &gt; apple"
 #&gt; [3] "banana = orange &gt; apple" "apple &gt; banana &gt; orange"
-#&gt; [5] "banana = orange &gt; apple" "apple &gt; orange"         </div><div class='input'><span class='co'># extract rankings 2 and 3 as numeric matrix</span>
+#&gt; [5] "banana = orange &gt; apple" "apple &gt; orange"         </div><div class='input'>
+<span class='co'># extract rankings 2 and 3 as numeric matrix</span>
 <span class='no'>R</span>[<span class='fl'>2</span>:<span class='fl'>3</span>, , <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      apple banana orange pear
 #&gt; [1,]     4      1      2    3
-#&gt; [2,]     2      1      1    1</div><div class='input'><span class='co'># same as</span>
+#&gt; [2,]     2      1      1    1</div><div class='input'>
+<span class='co'># same as</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix</a></span>(<span class='no'>R</span>)[<span class='fl'>2</span>:<span class='fl'>3</span>,]</div><div class='output co'>#&gt;      apple banana orange pear
 #&gt; [1,]     4      1      2    3
-#&gt; [2,]     2      1      1    1</div><div class='input'><span class='co'># extract rankings for item 1 as a vector</span>
+#&gt; [2,]     2      1      1    1</div><div class='input'>
+<span class='co'># extract rankings for item 1 as a vector</span>
 <span class='no'>R</span>[,<span class='fl'>1</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt; [1] 1 4 2 1 2 1</div><div class='input'>
 </div></pre>
   </div>

@@ -18,7 +18,9 @@ as.aggregated_rankings(x, ...)
 freq(x)
 }
 \arguments{
-\item{x}{A \code{\link[=rankings]{"rankings"}} or \code{"aggregated_rankings"} object.}
+\item{x}{A \code{\link[=rankings]{"rankings"}} object for \code{aggregate()}; an
+object that can be coerced to a \code{"aggregated_rankings"} object for
+\code{as.aggregated_rankings()}, otherwise an \code{"aggregated_rankings"} object.}
 
 \item{freq}{A vector of frequencies for rankings that have been previously
 aggregated.}
@@ -38,7 +40,7 @@ corresponding frequencies.}
 }
 \value{
 A data frame of class \code{"aggregated_rankings"}, with columns
-\item{ranking}{ A \code{"rankings"} object of the unique rankings.}
+\item{ranking}{ A \code{\link[=rankings]{"rankings"}} object of the unique rankings.}
 \item{freq}{The corresponding frequencies.}
 Methods are available for \code{\link[=rbind]{rbind()}} and \code{\link[=as.matrix]{as.matrix()}}.
 }
@@ -63,10 +65,18 @@ A <- aggregate(R)
 
 # subsetting applies to the rankings, e.g. first two unique rankings
 A[1:2]
+
 # (partial) rankings of items 2 to 4 only
 A[, 2:4]
+
+# convert to a matrix
+as.matrix(A)
 
 # frequencies are automatically used as weights by PlackettLuce()
 mod <- PlackettLuce(A)
 mod$weights
+}
+\seealso{
+\code{\link[=preflib]{preflib()}} for an object that can be coerced to an
+\code{"aggregated_rankings"} object.
 }

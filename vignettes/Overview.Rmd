@@ -20,7 +20,7 @@ abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
   generalization accommodates both ties (of any order) and partial rankings
-  (rankings of only some items). By default, the implementation adds a set of
+  (complete rankings of only some items). By default, the implementation adds a set of
   pseudo-rankings with a hypothetical item, ensuring that the network of wins
   and losses is always strongly connected, i.e. all items are connected to every
   other item by both a path of wins and a path of losses. This means that the
@@ -286,12 +286,13 @@ As the number of items increases, it is typically more common to
 observe partial rankings than complete rankings. Partial rankings can be of two
 types: *sub-rankings*, where only a subset of items are ranked each time, and
 *incomplete rankings*, where the top $n$ items are selected and the remaining
-items are unranked, but implicitly ranked lower than the top $n$. Sub-rankings
-are accommodated by the standard Plackett-Luce model, while incomplete rankings
-require an extension of the Plackett-Luce model. **PlackettLuce** handles
+items are unranked, but implicitly ranked lower than the top $n$. 
+**PlackettLuce** handles
 sub-rankings only, while **PLMIX** handles incomplete rankings only and
 **hyper2** can handle both types. **StatRank** seems to support partial rankings, but
-the extent of this support is not clear. The timings in Table \@ref(tab:nascar) for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 illustrate that **PlackettLuce** is more efficient than
+the extent of this support is not clear. The timings in Table \@ref(tab:nascar) 
+for fitting the Plackett-Luce model on the NASCAR data from @Hunter2004 
+illustrate that **PlackettLuce** is more efficient than
 **hyper2** for modelling sub-rankings of a relatively large number of items.
 
 ```{r timings-sub, eval = eval_all, echo = FALSE, message = FALSE, warning = FALSE}
@@ -377,7 +378,8 @@ are tied in the ranking. For a set $S$, let
 $$f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}$$
 
 where $|S|$ is the cardinality of the set $S$, $\delta_n$ is a parameter
-representing the prevalence of ties of order $n$, and $\alpha_i$ is a parameter
+representing the prevalence of ties of order $n$ (with $\delta_1 \equiv 1$), 
+and $\alpha_i$ is a parameter
 representing the worth of item $i$. Then under an extension of the
 Plackett-Luce model allowing ties up to order $D$, the probability of the
 ranking $R$ is given by
@@ -388,7 +390,7 @@ ranking $R$ is given by
 (\#eq:PL)
 \end{equation}
 
-where $D_j$ is the cardinality of $C_j$, $A_j$ is the set of alternatives from
+where $D_j$ is the cardinality of $A_j$, the set of alternatives from
 which $C_j$ is chosen, and $A_j \choose k$ is all the possible choices of $k$
 items from $A_j$. The value of $D$ can be set to the maximum number of tied
 items observed in the data, so that $\delta_n = 0$ for $n > D$.
@@ -722,8 +724,9 @@ uncertainty about drivers' relative abilities. The results of using
 
 Although the prior pseudo-rankings are only necessary to add when the network is
 incomplete, the default behaviour is always to use them (with a weight of 0.5)
-because the small shrinkage effect that the pseudo-data delivers
-has also a beneficial impact in terms of reducing the bias and the variance of the estimators.
+because the small shrinkage effect that the pseudo-data delivers typically 
+has a beneficial impact in terms of reducing both the bias and the variance of 
+the estimators of the worth parameters.
 
 # Plackett-Luce Trees
 

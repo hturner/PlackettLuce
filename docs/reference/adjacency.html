@@ -146,13 +146,13 @@ coerced by <code>as.rankings</code>.</p></td>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an N by N matrix, where N is the number of items that can be ranked.</p>
+    <p>An N by N matrix, where N is the number of items that can be ranked.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>For a <code>"rankings"</code> object based on N items, the adjacency matrix is an
 N by N matrix, with element (i, j) being the number of times item i wins over
-item j. For example, in the ranking 1 &gt; 3, 4 &gt; 2, item 1 wins over
+item j. For example, in the ranking {1} &gt; {3, 4} &gt; {2}, item 1 wins over
 items 2, 3, and 4, and items 3 and 4 win over item 2.</p>
 <p>If <code>weights</code> is specified, the values in the adjacency matrix are the
 weighted counts.</p>

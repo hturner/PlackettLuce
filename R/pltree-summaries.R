@@ -40,14 +40,19 @@
 #'
 #' # treat first row from each year as new data
 #' newdata <- beans[!duplicated(beans$year),]
+#'
 #' ## fitted probabilities
 #' predict(mod, newdata)
+#'
 #' ## fitted log-abilities, with Local as reference
 #' predict(mod, newdata, log = TRUE, ref = "Local")
+#'
 #' ## variety ranks
 #' predict(mod, newdata, type = "rank")
+#'
 #' ## top ranked variety
 #' predict(mod, newdata, type = "best")
+#'
 #' ## node the trial belongs to
 #' predict(mod, newdata, type = "node")
 #' @name pltree-summaries

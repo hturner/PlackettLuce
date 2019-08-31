@@ -27,29 +27,12 @@ read.toi(file)
 
 \item{...}{Additional arguments passed to \code{\link[=as.rankings]{as.rankings()}}: \code{freq},
 \code{input} or \code{items} will be ignored with a warning as they are set
-automatically.
-
-The file types supported are
-\describe{
-\item{.soc}{Strict Orders - Complete List}
-\item{.soi}{Strict Orders - Incomplete List}
-\item{.toc}{Orders with Ties - Complete List}
-\item{.toi}{Orders with Ties - Incomplete List}
-}
-Note that the file types do not distinguish between types of incomplete
-orderings, i.e. whether they are a complete ranking of a subset of item
-(as supported by \code{\link[=PlackettLuce]{PlackettLuce()}}) or top-$n$ rankings of $n$ items from
-the full set of items (not currently supported by \code{\link[=PlackettLuce]{PlackettLuce()}}).
-
-The numerically coded orderings and their frequencies are read into a
-data frame, storing the item name as an attribute. The
-\code{as.aggregated_rankings} method converts these to an
-\code{"aggregated_rankings"} object with the items labelled by the item names.}
+automatically.}
 }
 \value{
 A data frame of class \code{"preflib"} with first column \code{Freq},
 giving the frequency of the ranking in that row, and remaining columns
-\code{Rank 1} \ldots \code{Rank p} giving the items ranked from first to
+\code{Rank 1}, \ldots, \code{Rank p} giving the items ranked from first to
 last place in that ranking. Ties are represented by vector elements in list
 columns. The data frame has an attribute \code{"items"} giving the labels
 corresponding to each item number.
@@ -58,6 +41,25 @@ corresponding to each item number.
 Read orderings from \code{.soc}, \code{.soi}, \code{.toc} or \code{.toi} file types storing
 election data as defined by
 \href{http://www.preflib.org}{{PrefLib}: A Library for Preferences}.
+}
+\details{
+The file types supported are
+\describe{
+\item{.soc}{Strict Orders - Complete List}
+\item{.soi}{Strict Orders - Incomplete List}
+\item{.toc}{Orders with Ties - Complete List}
+\item{.toi}{Orders with Ties - Incomplete List}
+}
+Note that the file types do not distinguish between types of incomplete
+orderings, i.e. whether they are a complete ranking of a subset of items
+(as supported by \code{\link[=PlackettLuce]{PlackettLuce()}}) or top-\eqn{r} rankings of \eqn{n} items
+from the full set of items (not currently supported by \code{\link[=PlackettLuce]{PlackettLuce()}}).
+
+The numerically coded orderings and their frequencies are read into a
+data frame, storing the item names as an attribute. The
+\code{as.aggregated_rankings} method converts these to an
+\code{\link[=aggregate.rankings]{"aggregated_rankings"}} object with the items labelled
+by the item names.
 }
 \examples{
 

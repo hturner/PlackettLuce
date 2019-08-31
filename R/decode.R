@@ -1,12 +1,15 @@
 #' Decode Orderings using a Key to Item Names
 #'
+#' Decode orderings by replacing numeric or character coded values with item
+#' names.
+#'
 #' @param orderings A data frame of coded orderings.
 #' @param items A data frame of the items in each ranking, or a vector of
 #' common items.
 #' @param code (Optional) a vector giving the key to the code. If missing,
-#' `names(items)` is used for a character code, while a `seq(items)` is used
+#' `names(items)` is used for a character code, while `seq(items)` is used
 #' for a numeric code.
-#' @return A data frame with the coded values replaced by the item labels.
+#' @return A data frame with the coded values replaced by the item names.
 #' @examples
 #' # orderings of up to 3 items coded as A, B, C
 #' orderings <- data.frame(Rank1 = c("A", "B"),
@@ -76,31 +79,4 @@ decode_vector <- function(x, items, code, i){
         x[j != 0] <- items[cbind(i, j)]
     } else x[j != 0] <- items[j]
     x
-}
-
-
-#' Complete Orderings with the Missing Redundant Rank
-#'
-#' Given orderings with one rank missing, complete the ordering by assigning
-#' the remaining item(s) to the final rank.
-#'
-#' @param orderings A data frame of orderings with one rank missing.
-#' @param items A vector of item names.
-#' @return A data frame wit
-#'
-#' @examples
-#' # Orderings of 3 items, when only the best and worst are recorded
-#' orderings <- data.frame(best = c("A", "B", "A"),
-#'                         worst = c("C", "C", NA))
-#' orderings$middle <- complete(orderings, items = c("A", "B", "C"))
-#' @export
-complete <- function(orderings, items){
-    res <- vector(mode = "list", length = nrow(orderings))
-    for (i in seq_along(res)){
-        res[[i]] <- setdiff(items, unlist(orderings[i,]))
-        if (!length(res[[i]])) res[[i]] <- NA
-    }
-    if (all(lengths(res) == 1)) {
-        unlist(res)
-    } else res
 }

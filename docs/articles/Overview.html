@@ -97,7 +97,7 @@
       The <strong>PlackettLuce</strong> package implements a generalization of the model jointly
       attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The
       generalization accommodates both ties (of any order) and partial rankings
-      (rankings of only some items). By default, the implementation adds a set of
+      (complete rankings of only some items). By default, the implementation adds a set of
       pseudo-rankings with a hypothetical item, ensuring that the network of wins
       and losses is always strongly connected, i.e. all items are connected to every
       other item by both a path of wins and a path of losses. This means that the
@@ -365,12 +365,13 @@ a
 observe partial rankings than complete rankings. Partial rankings can be of two
 types: <em>sub-rankings</em>, where only a subset of items are ranked each time, and
 <em>incomplete rankings</em>, where the top <span class="math inline">\(n\)</span> items are selected and the remaining
-items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>. Sub-rankings
-are accommodated by the standard Plackett-Luce model, while incomplete rankings
-require an extension of the Plackett-Luce model. <strong>PlackettLuce</strong> handles
+items are unranked, but implicitly ranked lower than the top <span class="math inline">\(n\)</span>.
+<strong>PlackettLuce</strong> handles
 sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and
 <strong>hyper2</strong> can handle both types. <strong>StatRank</strong> seems to support partial rankings, but
-the extent of this support is not clear. The timings in Table <a href="#tab:nascar">1.3</a> for fitting the Plackett-Luce model on the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> illustrate that <strong>PlackettLuce</strong> is more efficient than
+the extent of this support is not clear. The timings in Table <a href="#tab:nascar">1.3</a>
+for fitting the Plackett-Luce model on the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>
+illustrate that <strong>PlackettLuce</strong> is more efficient than
 <strong>hyper2</strong> for modelling sub-rankings of a relatively large number of items.</p>
 
 <table class="table table">
@@ -585,7 +586,8 @@ in <span class="math inline">\(C_2\)</span>, and so on. If there are multiple ob
 are tied in the ranking. For a set <span class="math inline">\(S\)</span>, let</p>
 <p><span class="math display">\[f(S) = \delta_{|S|} \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}\]</span></p>
 <p>where <span class="math inline">\(|S|\)</span> is the cardinality of the set <span class="math inline">\(S\)</span>, <span class="math inline">\(\delta_n\)</span> is a parameter
-representing the prevalence of ties of order <span class="math inline">\(n\)</span>, and <span class="math inline">\(\alpha_i\)</span> is a parameter
+representing the prevalence of ties of order <span class="math inline">\(n\)</span> (with <span class="math inline">\(\delta_1 \equiv 1\)</span>),
+and <span class="math inline">\(\alpha_i\)</span> is a parameter
 representing the worth of item <span class="math inline">\(i\)</span>. Then under an extension of the
 Plackett-Luce model allowing ties up to order <span class="math inline">\(D\)</span>, the probability of the
 ranking <span class="math inline">\(R\)</span> is given by</p>
@@ -594,7 +596,7 @@ ranking <span class="math inline">\(R\)</span> is given by</p>
 \sum_{k = 1}^{\min(D_j, D)} \sum_{S \in {A_j \choose k}} f(S)}
 \tag{2.1}
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(D_j\)</span> is the cardinality of <span class="math inline">\(C_j\)</span>, <span class="math inline">\(A_j\)</span> is the set of alternatives from
+<p>where <span class="math inline">\(D_j\)</span> is the cardinality of <span class="math inline">\(A_j\)</span>, the set of alternatives from
 which <span class="math inline">\(C_j\)</span> is chosen, and <span class="math inline">\(A_j \choose k\)</span> is all the possible choices of <span class="math inline">\(k\)</span>
 items from <span class="math inline">\(A_j\)</span>. The value of <span class="math inline">\(D\)</span> can be set to the maximum number of tied
 items observed in the data, so that <span class="math inline">\(\delta_n = 0\)</span> for <span class="math inline">\(n &gt; D\)</span>.</p>
@@ -980,8 +982,9 @@ uncertainty about drivers’ relative abilities. The results of using
 <code><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary(qv)</a></code> are not shown here, as they would occupy too much space.</p>
 <p>Although the prior pseudo-rankings are only necessary to add when the network is
 incomplete, the default behaviour is always to use them (with a weight of 0.5)
-because the small shrinkage effect that the pseudo-data delivers
-has also a beneficial impact in terms of reducing the bias and the variance of the estimators.</p>
+because the small shrinkage effect that the pseudo-data delivers typically
+has a beneficial impact in terms of reducing both the bias and the variance of
+the estimators of the worth parameters.</p>
 </div>
 </div>
 <div id="plackett-luce-trees" class="section level1">

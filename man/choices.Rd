@@ -14,7 +14,7 @@ coerced by \code{as.rankings}.}
 \code{"choices"} object, else use object indices.}
 }
 \value{
-A list of class \code{"choices"} with elements:
+A data frame of class \code{"choices"} with elements:
 \item{choices}{ A list where each element represents the set of items
 chosen for a single rank in the ranking.}
 \item{alternatives}{ A list where each element represents the set of items
@@ -37,8 +37,13 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+
 actual_choices <- choices(R, names = TRUE)
+actual_choices[1:6,]
+
 coded_choices <- choices(R, names = FALSE)
+coded_choices[1:2,]
+as.data.frame(coded_choices)[1:2,]
 attr(coded_choices, "objects")
 
 }

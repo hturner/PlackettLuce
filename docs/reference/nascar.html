@@ -158,14 +158,11 @@ attribute contains the names of the 87 drivers.</p>
 #&gt; [2,]     39     59     43     55     49     56      9     53      7     13
 #&gt;      rank43
 #&gt; [1,]     82
-#&gt; [2,]     71</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>)
-<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      Austin Cameron Bill Elliott Bobby Hamilton
-#&gt; [1,]              0           11             32
-#&gt; [2,]              0           11              9
-#&gt; [3,]              0            8             43</div><div class='input'><span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>]</div><div class='output co'>#&gt; [1] "Ward Burton &gt; Elliott Sadler &gt; Geoff ..."
-#&gt; [2] "Matt Kenseth &gt; Sterling Marlin &gt; Bob ..."
-#&gt; [3] "Sterling Marlin &gt; Jeremy Mayfield &gt;  ..."</div><div class='input'>
+#&gt; [2,]     71</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>, <span class='kw'>items</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>))
+<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      Austin Cameron Bill Elliott Bobby Hamilton Bobby Labonte
+#&gt; [1,]              0           11             32            34
+#&gt; [2,]              0           11              9             3</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>], <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>60</span>)</div><div class='output co'>#&gt; [1] "Ward Burton &gt; Elliott Sadler &gt; Geoffrey Bodine &gt; Kurt Bu ..."
+#&gt; [2] "Matt Kenseth &gt; Sterling Marlin &gt; Bobby Labonte &gt; Tony St ..."</div><div class='input'>
 <span class='co'># fit model as in Hunter 2004, excluding drivers that only lose</span>
 <span class='no'>keep</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_len</a></span>(<span class='fl'>83</span>)
 <span class='no'>R2</span> <span class='kw'>&lt;-</span> <span class='no'>R</span>[, <span class='no'>keep</span>]

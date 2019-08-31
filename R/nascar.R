@@ -15,10 +15,9 @@
 #'
 #' # convert orderings to rankings
 #' nascar[1:2, ]
-#' R <- as.rankings(nascar, input = "ordering")
-#' colnames(R) <- attr(nascar, "drivers")
-#' R[1:3, 1:3, as.rankings = FALSE]
-#' R[1:3]
+#' R <- as.rankings(nascar, input = "ordering", items = attr(nascar, "drivers"))
+#' R[1:2, 1:4, as.rankings = FALSE]
+#' format(R[1:2], width = 60)
 #'
 #' # fit model as in Hunter 2004, excluding drivers that only lose
 #' keep <- seq_len(83)

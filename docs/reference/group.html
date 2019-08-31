@@ -147,9 +147,9 @@ format(x, max = 2L, width = 20L, ...)</pre>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an object that can be coerced to a <code>"grouped_rankings"</code> object
-for <code>as.grouped_rankings</code>, or a <code>"grouped_rankings"</code> object for
-<code>[</code> and <code>format</code>.</p></td>
+      <td><p>a <code><a href='rankings.html'>"rankings"</a></code> object for <code>group()</code>; an
+object that can be coerced to a <code>"grouped_rankings"</code> object for
+<code>as.grouped_rankings()</code>, otherwise a <code>"grouped_rankings"</code> object.</p></td>
     </tr>
     <tr>
       <th>index</th>
@@ -189,16 +189,11 @@ otherwise return a matrix/vector.</p></td>
       <td><p>the maximum width in number of characters to format each
 ranking.</p></td>
     </tr>
-    <tr>
-      <th>rankings</th>
-      <td><p>a <code><a href='rankings.html'>rankings</a></code> object or an object that can be
-coerced by <code>as.rankings</code>.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an object of class <code>"grouped_rankings"</code>, which is a vector of
+    <p>An object of class <code>"grouped_rankings"</code>, which is a vector of
 of group IDs with the following attributes:</p>
 <dt>rankings</dt><dd><p>The <code>"rankings"</code> object.</p></dd>
 <dt>index</dt><dd><p>An index match each ranking to each group ID.</p></dd>
@@ -226,18 +221,23 @@ by each ranking.</p></dd>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='no'>R</span></div><div class='output co'>#&gt; [1] "1 &gt; 2"     "3 &gt; 2"     "3 &gt; 4"     "2 &gt; 1"     "2 &gt; 3 &gt; 4"</div><div class='input'>
 <span class='co'># group rankings (first three in group 1, next two in group 2)</span>
 <span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'>group</span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'><span class='co'>## by default up to 2 rankings are shown per group, "..." indicates if</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>G</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
+<span class='co'>## by default up to 2 rankings are shown per group, "..." indicates if</span>
 <span class='co'>## there are further rankings</span>
 <span class='no'>G</span></div><div class='output co'>#&gt;                   1                   2 
 #&gt; "1 &gt; 2, 3 &gt; 2, ..."  "2 &gt; 1, 2 &gt; 3 &gt; 4" </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>G</span>, <span class='kw'>max</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;            1            2 
-#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'><span class='co'>## select rankings from group 1</span>
+#&gt; "1 &gt; 2, ..." "2 &gt; 1, ..." </div><div class='input'>
+<span class='co'>## select rankings from group 1</span>
 <span class='no'>G</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt;                   1 
-#&gt; "1 &gt; 2, 3 &gt; 2, ..." </div><div class='input'><span class='co'>## exclude item 3 from ranking</span>
+#&gt; "1 &gt; 2, 3 &gt; 2, ..." </div><div class='input'>
+<span class='co'>## exclude item 3 from ranking</span>
 <span class='no'>G</span>[, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;                1                2 
-#&gt; "1 &gt; 2, NA, ..."   "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## rankings from group 2, excluding item 3</span>
+#&gt; "1 &gt; 2, NA, ..."   "2 &gt; 1, 2 &gt; 4" </div><div class='input'>
+<span class='co'>## rankings from group 2, excluding item 3</span>
 <span class='co'>## - note group 2 becomes the first group</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt;              1 
-#&gt; "2 &gt; 1, 2 &gt; 4" </div><div class='input'><span class='co'>## index underlying rankings without creating new grouped_rankings object</span>
+#&gt; "2 &gt; 1, 2 &gt; 4" </div><div class='input'>
+<span class='co'>## index underlying rankings without creating new grouped_rankings object</span>
 <span class='no'>G</span>[<span class='fl'>2</span>, -<span class='fl'>3</span>, <span class='kw'>as.grouped_rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      1 2 4
 #&gt; [1,] 2 1 0
 #&gt; [2,] 0 1 3</div></pre>

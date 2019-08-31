@@ -4,13 +4,6 @@
 #' election data as defined by
 #' \href{http://www.preflib.org}{\{PrefLib\}: A Library for Preferences}.
 #'
-#' @param file An election data file, conventionally with extension `.soc`,
-#' `.soi`, `.toc` or `.toi` according to data type.
-#' @param x An object of class `"preflib"`.
-#' @param ... Additional arguments passed to [as.rankings()]: `freq`,
-#' `input` or `items` will be ignored with a warning as they are set
-#' automatically.
-#'
 #' The file types supported are
 #' \describe{
 #' \item{.soc}{Strict Orders - Complete List}
@@ -19,20 +12,28 @@
 #' \item{.toi}{Orders with Ties - Incomplete List}
 #' }
 #' Note that the file types do not distinguish between types of incomplete
-#' orderings, i.e. whether they are a complete ranking of a subset of item
-#' (as supported by [PlackettLuce()]) or top-$n$ rankings of $n$ items from
-#' the full set of items (not currently supported by [PlackettLuce()]).
+#' orderings, i.e. whether they are a complete ranking of a subset of items
+#' (as supported by [PlackettLuce()]) or top-\eqn{r} rankings of \eqn{n} items
+#' from the full set of items (not currently supported by [PlackettLuce()]).
 #'
 #' The numerically coded orderings and their frequencies are read into a
-#' data frame, storing the item name as an attribute. The
+#' data frame, storing the item names as an attribute. The
 #' `as.aggregated_rankings` method converts these to an
-#' `"aggregated_rankings"` object with the items labelled by the item names.
+#' [`"aggregated_rankings"`][aggregate.rankings] object with the items labelled
+#' by the item names.
 #' @return A data frame of class `"preflib"` with first column \code{Freq},
 #' giving the frequency of the ranking in that row, and remaining columns
-#' \code{Rank 1} \ldots \code{Rank p} giving the items ranked from first to
+#' \code{Rank 1}, \ldots, \code{Rank p} giving the items ranked from first to
 #' last place in that ranking. Ties are represented by vector elements in list
 #' columns. The data frame has an attribute \code{"items"} giving the labels
 #' corresponding to each item number.
+#'
+#' @param file An election data file, conventionally with extension `.soc`,
+#' `.soi`, `.toc` or `.toi` according to data type.
+#' @param x An object of class `"preflib"`.
+#' @param ... Additional arguments passed to [as.rankings()]: `freq`,
+#' `input` or `items` will be ignored with a warning as they are set
+#' automatically.
 #' @references
 #' Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
 #' \emph{Proceedings of Third International Conference on Algorithmic Decision

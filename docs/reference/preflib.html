@@ -153,20 +153,7 @@ election data as defined by
       <th>...</th>
       <td><p>Additional arguments passed to <code><a href='rankings.html'>as.rankings()</a></code>: <code>freq</code>,
 <code>input</code> or <code>items</code> will be ignored with a warning as they are set
-automatically.</p>
-<p>The file types supported are</p><dl class='dl-horizontal'>
-<dt>.soc</dt><dd><p>Strict Orders - Complete List</p></dd>
-<dt>.soi</dt><dd><p>Strict Orders - Incomplete List</p></dd>
-<dt>.toc</dt><dd><p>Orders with Ties - Complete List</p></dd>
-<dt>.toi</dt><dd><p>Orders with Ties - Incomplete List</p></dd>
-</dl><p>Note that the file types do not distinguish between types of incomplete
-orderings, i.e. whether they are a complete ranking of a subset of item
-(as supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>) or top-$n$ rankings of $n$ items from
-the full set of items (not currently supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>).</p>
-<p>The numerically coded orderings and their frequencies are read into a
-data frame, storing the item name as an attribute. The
-<code>as.aggregated_rankings</code> method converts these to an
-<code>"aggregated_rankings"</code> object with the items labelled by the item names.</p></td>
+automatically.</p></td>
     </tr>
     </table>
     
@@ -174,10 +161,27 @@ data frame, storing the item name as an attribute. The
 
     <p>A data frame of class <code>"preflib"</code> with first column <code>Freq</code>,
 giving the frequency of the ranking in that row, and remaining columns
-<code>Rank 1</code> &#8230; <code>Rank p</code> giving the items ranked from first to
+<code>Rank 1</code>, &#8230;, <code>Rank p</code> giving the items ranked from first to
 last place in that ranking. Ties are represented by vector elements in list
 columns. The data frame has an attribute <code>"items"</code> giving the labels
 corresponding to each item number.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The file types supported are</p><dl class='dl-horizontal'>
+<dt>.soc</dt><dd><p>Strict Orders - Complete List</p></dd>
+<dt>.soi</dt><dd><p>Strict Orders - Incomplete List</p></dd>
+<dt>.toc</dt><dd><p>Orders with Ties - Complete List</p></dd>
+<dt>.toi</dt><dd><p>Orders with Ties - Incomplete List</p></dd>
+</dl><p>Note that the file types do not distinguish between types of incomplete
+orderings, i.e. whether they are a complete ranking of a subset of items
+(as supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>) or top-\(r\) rankings of \(n\) items
+from the full set of items (not currently supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>).</p>
+<p>The numerically coded orderings and their frequencies are read into a
+data frame, storing the item names as an attribute. The
+<code>as.aggregated_rankings</code> method converts these to an
+<code><a href='aggregate.html'>"aggregated_rankings"</a></code> object with the items labelled
+by the item names.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -222,6 +226,8 @@ Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#references">References</a></li>
       
