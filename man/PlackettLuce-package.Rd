@@ -39,7 +39,7 @@ Several data sets are provided in the package: \code{\link{beans}},
 further illustration of preparing rankings data for modelling. The
 \code{\link{read.soc}} function enables further example data sets of
 "Strict Orders - Complete List" format (i.e. complete rankings with no ties)
-to be downloaded from \href{PrefLib}{http://www.preflib.org}.
+to be downloaded from \href{http://www.preflib.org/}{PrefLib}.
 
 A full explanation of the methods with illustrations using the package data
 sets is given in the vignette,

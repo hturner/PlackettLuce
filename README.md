@@ -209,7 +209,7 @@ difference in users’ preference for these last two movies.
 
 ## Going Further
 
-The full functionality of **PlackettLuce** is illustrated in the package
+The core functionality of **PlackettLuce** is illustrated in the package
 vignette, along with details of the model used in the package and a
 comparison to other packages. The vignette can be found on the [package
 website](https://hturner.github.io/PlackettLuce/) or from within R once
@@ -220,8 +220,8 @@ the package has been installed, e.g. via
 ## Code of Conduct
 
 Please note that this project is released with a [Contributor Code of
-Conduct](CONDUCT.md). By participating in this project you agree to
-abide by its terms.
+Conduct](https://github.com/hturner/PlackettLuce/blob/master/CONDUCT.md).
+By participating in this project you agree to abide by its terms.
 
 ## References
 

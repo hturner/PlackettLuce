@@ -5,6 +5,7 @@
 ^codecov\.yml$
 ^docs$
 ^pkgdown$
+^revdep$
 ^CONDUCT\.md$
 ^README.Rmd
 ^readme.bib

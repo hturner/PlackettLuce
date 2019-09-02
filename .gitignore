@@ -40,3 +40,6 @@ docs/articles/*_cache/*
 *.utf8.md
 *.knit.md
 .Rproj.user
+
+# Reverse dependency check files
+revdep/*

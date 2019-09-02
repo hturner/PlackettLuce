@@ -40,7 +40,7 @@ corresponding to each item number.
 \description{
 Read orderings from \code{.soc}, \code{.soi}, \code{.toc} or \code{.toi} file types storing
 election data as defined by
-\href{http://www.preflib.org}{{PrefLib}: A Library for Preferences}.
+\href{http://www.preflib.org/}{{PrefLib}: A Library for Preferences}.
 }
 \details{
 The file types supported are

@@ -2,7 +2,7 @@
 #'
 #' Read orderings from `.soc`, `.soi`, `.toc` or `.toi` file types storing
 #' election data as defined by
-#' \href{http://www.preflib.org}{\{PrefLib\}: A Library for Preferences}.
+#' \href{http://www.preflib.org/}{\{PrefLib\}: A Library for Preferences}.
 #'
 #' The file types supported are
 #' \describe{
