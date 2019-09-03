@@ -227,7 +227,7 @@ as.rankings.matrix <- function(x,
             code <- items <- sort(setdiff(unlist(c(x)), 0L))
         } else if (mode(x[[1]]) == "numeric"){
             code <- seq_along(items)
-        }
+        } else code <- items
         # convert ordered items to dense ranking
         if (mode(x) == "list"){
             # i.e. there are ties

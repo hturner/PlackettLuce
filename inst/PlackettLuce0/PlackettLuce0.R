@@ -186,7 +186,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     ## (scaled, un-damped) PageRank based on underlying paired comparisons
     X <- igraph::as_adj(igraph::graph_from_edgelist(as.edgelist(rankings)))[
         colnames(rankings), colnames(rankings)]
-    alpha <- drop(abs(rARPACK::eigs(X/colSums(X), 1,
+    alpha <- drop(abs(RSpectra::eigs(X/colSums(X), 1,
                            opts = list(ncv = min(nrow(X), 10)))$vectors))
     if (pseudo) {
         alpha <- alpha/alpha[1]

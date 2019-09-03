@@ -37,7 +37,7 @@ R <- matrix(c(1, 2, 0, 0,
 colnames(R) <- c("apple", "banana", "orange", "pear")
 R <- as.rankings(R)
 if (require("Matrix") & requireNamespace("igraph") &
-    requireNamespace("rARPACK")) {
+    requireNamespace("RSpectra")) {
     model0 <- PlackettLuce0(rankings = R)
     model1 <- PlackettLuce(rankings = R, npseudo = 0)
     test_that("coef match legacy code [fake partial rankings with ties]", {

@@ -295,7 +295,7 @@
 #' mod_grouped$adherence
 #'
 #' @importFrom igraph as_adj graph_from_edgelist
-#' @importFrom rARPACK eigs
+#' @importFrom RSpectra eigs
 #' @importFrom stats optim
 #' @export
 PlackettLuce <- function(rankings,
