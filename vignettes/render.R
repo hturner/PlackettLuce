@@ -40,6 +40,8 @@ build_articles(lazy = FALSE) #vignette
 
 build_home()
 
+build_news()
+
 build_reference_index()
 
 build_reference() #Rd files

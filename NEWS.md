@@ -1,7 +1,7 @@
 # PlackettLuce 0.2-8
 
 * Fix bug in `as.rankings.matrix()`.
-* import `eigs` from RSpectra vs rARPACK.
+* Import `eigs` from RSpectra vs rARPACK.
 
 # PlackettLuce 0.2-7
 
