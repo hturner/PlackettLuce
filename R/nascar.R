@@ -15,7 +15,7 @@
 #'
 #' # convert orderings to rankings
 #' nascar[1:2, ]
-#' R <- as.rankings(nascar, input = "ordering", items = attr(nascar, "drivers"))
+#' R <- as.rankings(nascar, input = "orderings", items = attr(nascar, "drivers"))
 #' R[1:2, 1:4, as.rankings = FALSE]
 #' format(R[1:2], width = 60)
 #'

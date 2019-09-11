@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -616,7 +616,7 @@ tie probabilities among equal-worth items.</p>
 <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set,
 available in <strong>PlackettLuce</strong>, provides the data from Example 2 of that paper, in
 which respondents were asked to test two brands of chocolate pudding from a
-total of six brands. For each comparison of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set
+total of six brands. For each pair of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set
 gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span>
 was preferred (<span class="math inline">\(w_{ji}\)</span>) and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PlackettLuce)</a>
@@ -964,8 +964,9 @@ alphabetically: A. Cameron. We can plot the quasi-variances for a better
 comparison:</p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod2)</a>
 <a class="sourceLine" id="cb54-2" data-line-number="2">qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="op">$</span>qvframe[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/order">order</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod2)),]</a>
-<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>, <span class="dt">xaxt=</span><span class="st">"n"</span>)</a>
-<a class="sourceLine" id="cb54-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/axis">axis</a></span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">rownames</a></span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.7</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb54-4" data-line-number="4">     <span class="dt">xaxt=</span><span class="st">"n"</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">85</span>))</a>
+<a class="sourceLine" id="cb54-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/axis">axis</a></span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">rownames</a></span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.6</span>)</a></code></pre></div>
 <div class="figure">
 <span id="fig:nascar-qv"></span>
 <img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="700"><p class="caption">

@@ -69,7 +69,7 @@ local variety and state whether they considered it to be better or worse." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -216,8 +216,8 @@ commonly planted in the Postrera or Apante seasons.</p>
 #&gt; 1  Local BRT 103-182
 #&gt; 2  Local   INTA Rojo</div><div class='input'>
 <span class='co'># Finally combine the rankings of order 2 and order 3</span>
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order3</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>),
-           <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order2</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>))
+<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order3</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>),
+           <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>order2</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>))
 <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>R</span>)</div><div class='output co'>#&gt; [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
 #&gt; [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
 #&gt; [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."

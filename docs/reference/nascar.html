@@ -67,7 +67,7 @@ an ordering of the drivers according to their finishing position." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -158,7 +158,7 @@ attribute contains the names of the 87 drivers.</p>
 #&gt; [2,]     39     59     43     55     49     56      9     53      7     13
 #&gt;      rank43
 #&gt; [1,]     82
-#&gt; [2,]     71</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>, <span class='kw'>items</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>))
+#&gt; [2,]     71</div><div class='input'><span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>nascar</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>, <span class='kw'>items</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>nascar</span>, <span class='st'>"drivers"</span>))
 <span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      Austin Cameron Bill Elliott Bobby Hamilton Bobby Labonte
 #&gt; [1,]              0           11             32            34
 #&gt; [2,]              0           11              9             3</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>2</span>], <span class='kw'>width</span> <span class='kw'>=</span> <span class='fl'>60</span>)</div><div class='output co'>#&gt; [1] "Ward Burton &gt; Elliott Sadler &gt; Geoffrey Bodine &gt; Kurt Bu ..."

@@ -79,8 +79,8 @@
 #' head(order2, 2)
 #'
 #' # Finally combine the rankings of order 2 and order 3
-#' R <- rbind(as.rankings(order3, input = "ordering"),
-#'            as.rankings(order2, input = "ordering"))
+#' R <- rbind(as.rankings(order3, input = "orderings"),
+#'            as.rankings(order2, input = "orderings"))
 #' head(R)
 #' tail(R)
 "beans"

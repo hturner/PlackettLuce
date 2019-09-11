@@ -30,7 +30,7 @@
 #'                     Loser = ifelse(beans$var_b == "Worse",
 #'                                    beans$variety_b, "Local"),
 #'                     stringsAsFactors = FALSE, row.names = NULL)
-#' beans$G <- as.rankings(pairB, input = "ordering",
+#' beans$G <- as.rankings(pairB, input = "orderings",
 #'                        index = rep(seq(nrow(beans)), 1))
 #'
 #' mod <- pltree(G ~ ., data = beans[c("G", "maxTN")])

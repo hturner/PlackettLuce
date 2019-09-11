@@ -66,7 +66,7 @@ from a Plackett-Luce tree fitted by pltree()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -191,7 +191,7 @@ joint likelihood of the observed rankings under the tree model and
                     <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse</a></span>(<span class='no'>beans</span>$<span class='no'>var_b</span> <span class='kw'>==</span> <span class='st'>"Worse"</span>,
                                    <span class='no'>beans</span>$<span class='no'>variety_b</span>, <span class='st'>"Local"</span>),
                     <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>row.names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-<span class='no'>beans</span>$<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>pairB</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"ordering"</span>,
+<span class='no'>beans</span>$<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>pairB</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>,
                        <span class='kw'>index</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>beans</span>)), <span class='fl'>1</span>))
 
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pltree.html'>pltree</a></span>(<span class='no'>G</span> ~ <span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>beans</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"maxTN"</span>)])
