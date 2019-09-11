@@ -1,6 +1,10 @@
+# PlackettLuce 0.2-8.9000
+
+* `vcov.PlackettLuce()` works again for `ref = NULL` (bug introduced with vcov method in version 0.2-4)
+
 # PlackettLuce 0.2-8
 
-* Fix bug in `as.rankings.matrix()`.
+* Fix bug in `as.rankings.matrix()` introduced in version 0.2-7.
 * Import `eigs` from RSpectra vs rARPACK.
 
 # PlackettLuce 0.2-7

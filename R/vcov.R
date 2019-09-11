@@ -13,7 +13,9 @@ vcov.PlackettLuce <- function(object, ref = 1L,
   # so need to check reference
   if (any(ref %in% object_names)) {
       ref <- match(ref, object_names)
-  } else if (!all(ref %in% seq(p))){
+  } else if (is.null(ref)){
+      ref <- seq(nobj)
+  } else if (!all(ref %in% seq(nobj))){
       stop("cannot match `ref` with items")
   }
   # get setup for equivalent poisson glm/gnm

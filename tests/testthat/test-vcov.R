@@ -141,3 +141,37 @@ test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
                  vcov_hessian(gamma_prior),
                  check.attributes = FALSE, tol = 1e-6)
 })
+
+test_that("vcov.PlackettLuce works w/ different ref [pudding]", {
+    # create orderings for each set of paired comparisons
+    i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
+    j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
+    ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
+                       Loser = rep(NA, 15))
+    # convert to rankings
+    R <- as.rankings(rbind(i_wins, j_wins, ties),
+                     input = "orderings")
+    # define weights as frequencies of each ranking
+    w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
+    # fit Plackett-Luce model: limit iterations to match Davidson 1970
+    mod <- PlackettLuce(R, npseudo = 0, weights = w, maxit = 7)
+    V <- vcov(mod)
+
+    # different ref id
+    D <- diag(nrow(V))
+    D[1:6, 2] <- D[1:6, 2] - 1
+    expect_equal(vcov(mod, ref = 2), D %*% V %*% t(D),
+                 check.attributes = FALSE)
+
+    # mean of multiple items
+    D <- diag(nrow(V))
+    D[1:6, 2:3] <- D[1:6, 2:3] - 1/2
+    expect_equal(vcov(mod, ref = 2:3), D %*% V %*% t(D),
+                 check.attributes = FALSE)
+
+    # mean of all items
+    D <- diag(nrow(V))
+    D[1:6, 1:6] <- D[1:6, 1:6] - 1/6
+    expect_equal(vcov(mod, ref = NULL), D %*% V %*% t(D),
+                 check.attributes = FALSE)
+})
