@@ -56,7 +56,9 @@ NULL
 #' @rdname aggregate
 #' @export
 aggregate.rankings <- function(x, freq = NULL, ...){
-    r <- asplit(unclass(x), 1L)
+    if (getRversion() < "3.6.0") {
+        r <- lapply(seq(nrow(x)), function(i) x[i, , as.rankings = FALSE])
+    } else r <- asplit(unclass(x), 1L)
     dup <- duplicated(r)
     if (any(dup)){
         r_new <-r[!dup]

@@ -1,6 +1,7 @@
 # PlackettLuce 0.2-8.9000
 
 * `vcov.PlackettLuce()` works again for `ref = NULL` (bug introduced with vcov method in version 0.2-4)
+* avoid dependency on R >= 3.6.0 by providing alternatives to `asplit()`
 
 # PlackettLuce 0.2-8
 
