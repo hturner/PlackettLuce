@@ -223,11 +223,27 @@ as.rankings.matrix <- function(x,
     }
     if (input == "orderings"){
         # define items, N.B. matrix cells may be vectors; may have NAs
+        code <- sort(setdiff(unlist(c(x)), 0L))
         if (is.null(items)){
-            code <- items <- sort(setdiff(unlist(c(x)), 0L))
+            items  <- code
         } else if (mode(x[[1]]) == "numeric"){
-            code <- seq_along(items)
-        } else code <- items
+            unnamed <- setdiff(code, seq_along(items))
+            n <- length(unnamed)
+            if (n) {
+               stop("Coded items with no name:\n",
+                    paste(unnamed[seq(min(n, 10L))], ", ..."[n > 10L],
+                          collapse = ", "))
+            } else code <- seq_along(items)
+        } else {
+            unnamed <- setdiff(code, items)
+            n <- length(unnamed)
+            if (n) {
+                warning("Some items not in `items:\n",
+                        paste(unnamed[seq(min(n, 10L))], ", ..."[n > 10L],
+                              collapse = ", "),
+                        "\nUsing observed unique items.")
+            } else code <- items
+        }
         # convert ordered items to dense ranking
         if (mode(x) == "list"){
             # i.e. there are ties

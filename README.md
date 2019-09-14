@@ -66,10 +66,10 @@ The [Netflix Prize](https://www.netflixprize.com/) was a competition
 devised by Netflix to improve the accuracy of its recommendation system.
 To facilitate this they released ratings about movies from the users of
 the system that have been transformed to preference data and are
-available from [PrefLib](http://www.preflib.org/data/election/netflix/).
-Each data set comprises rankings of a set of 3 or 4 movies selected at
-random. Here we consider rankings for just one set of movies to
-illustrate the functionality of **PlackettLuce**.
+available from [PrefLib](http://www.preflib.org/data/election/netflix/),
+(Bennett and Lanning 2007). Each data set comprises rankings of a set of
+3 or 4 movies selected at random. Here we consider rankings for just one
+set of movies to illustrate the functionality of **PlackettLuce**.
 
 The data can be read in using the `read.soc` function in
 **PlackettLuce**
@@ -226,6 +226,13 @@ By participating in this project you agree to abide by its terms.
 ## References
 
 <div id="refs" class="references">
+
+<div id="ref-Bennett2007">
+
+Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In *Proceedings
+of the Kdd Cup Workshop 2007*, 3–6. ACM.
+
+</div>
 
 <div id="ref-Luce1959">
 

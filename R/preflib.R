@@ -13,7 +13,7 @@
 #' }
 #' Note that the file types do not distinguish between types of incomplete
 #' orderings, i.e. whether they are a complete ranking of a subset of items
-#' (as supported by [PlackettLuce()]) or top-\eqn{r} rankings of \eqn{n} items
+#' (as supported by [PlackettLuce()]) or top-\eqn{n} rankings of \eqn{n} items
 #' from the full set of items (not currently supported by [PlackettLuce()]).
 #'
 #' The numerically coded orderings and their frequencies are read into a
@@ -21,6 +21,11 @@
 #' `as.aggregated_rankings` method converts these to an
 #' [`"aggregated_rankings"`][aggregate.rankings] object with the items labelled
 #' by the item names.
+#'
+#' A Preflib file may be corrupt, in the sense that the ordered items do not
+#' match the named items. In this case, the file can be read is as a data
+#' frame (with a warning) using the corresponding `read.*` function, but
+#' `as.aggregated_rankings` will throw an error.
 #' @return A data frame of class `"preflib"` with first column \code{Freq},
 #' giving the frequency of the ranking in that row, and remaining columns
 #' \code{Rank 1}, \ldots, \code{Rank p} giving the items ranked from first to
@@ -34,10 +39,22 @@
 #' @param ... Additional arguments passed to [as.rankings()]: `freq`,
 #' `input` or `items` will be ignored with a warning as they are set
 #' automatically.
+#' @note The Netflix and cities datasets used in the examples are from
+#' Caragiannis et al (2017) and Bennet and Lanning (2007) respectively. These
+#' data sets require a citation for re-use.
 #' @references
 #' Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
 #' \emph{Proceedings of Third International Conference on Algorithmic Decision
 #' Theory (ADT 2013)}. Lecture Notes in Artificial Intelligence, Springer.
+#'
+#' Caragiannis, I., Chatzigeorgiou, X, Krimpas, G. A., and Voudouris, A. A.
+#' (2017) Optimizing positional scoring rules for rank aggregation.
+#' In \emph{Proceedings of the 31st AAAI Conference on Artificial Intelligence}.
+#'
+#' Bennett, J. and Lanning, S. (2007) The Netflix Prize.
+#' \emph{Proceedings of The KDD Cup and Workshops}.
+#'
+#' @note
 #'
 #' @examples
 #'
@@ -72,59 +89,94 @@
 #' @name preflib
 NULL
 
-#' @rdname preflib
-#' @export
-read.soc <- function(file){
-    # read one line to find number of items
+read.items <- function(file){ # read one line to find number of items
+    if (!file.exists(file)) stop ("file does not exist")
     p <- as.integer(read.csv(file, nrows = 1L, header = FALSE))
     # get items
     items <- read.csv(file, skip = 1L, nrows = p, header = FALSE,
                       stringsAsFactors = FALSE, strip.white = TRUE)[,2L]
     names(items) <- seq_len(p)
+    items
+}
+
+read.strict <- function(file, incomplete = FALSE){
+    items <- read.items(file)
+    # count maximum number of ranks
+    if (incomplete){
+        r <- max(count.fields(file, sep = ",")) - 1L
+    } else r <- length(items)
+    # read frequencies and ordered items
+    nm <- c("Freq", paste("Rank", seq_len(r)))
+    obs <- read.csv(file, skip = length(items) + 2L, header = FALSE,
+                    col.names = nm, check.names = FALSE)
+    preflib(obs, items)
+}
+
+read.ties <- function(file, incomplete = FALSE){
+    items <- read.items(file)
+    skip <- length(items) + 2L
+    input <- chartr("{}", "''", readLines(file))
+    # count maximum number of ranks (not needed for complete rankings)
+    if (incomplete){
+        r <- max(count.fields(textConnection(input), quote = "'",
+                              sep = ",", skip = skip)) - 1L
+    } else r <- length(items)
     # read counts and ordered items
-    obs <- read.csv(file, skip = p + 2L, header = FALSE,
-                    check.names = FALSE)
-    colnames(obs) <- c("Freq", paste("Rank", seq_len(ncol(obs) - 1)))
+    nm <- c("Freq", paste("Rank", seq_len(r)))
+    obs <- read.csv(text = input, skip = skip, header = FALSE, quote = "'",
+                    col.names = nm, check.names = FALSE,
+                    na.strings = "", stringsAsFactors = FALSE)
+    n <- nrow(obs)
+    obs <- as.data.frame(lapply(obs, function(x) {
+        if (is.character(x)) {
+            x <- strsplit(x, ",")
+            array(lapply(x, as.numeric), n)
+        } else x }), check.names = FALSE)
+    preflib(obs, items)
+}
+
+preflib <- function(obs, items){
+    obs_items <- sort(unique(unlist(obs[, -1])))
+    unnamed <- setdiff(as.character(obs_items), names(items))
+    n <- length(unnamed)
+    if (n) {
+        warning("Corrupt file. Items with no name:\n",
+                paste(unnamed[seq(min(n, 10L))], ", ..."[n > 10L],
+                      collapse = ", "))
+    }
     structure(obs, items = items, class = c("preflib", class(obs)))
+}
+
+#' @rdname preflib
+#' @export
+read.soc <- function(file){
+    read.strict(file, incomplete = FALSE)
 }
 
 #' @rdname preflib
 #' @export
 read.soi <- function(file){
-    # keep unused ranks as NA
-    read.soc(file)
+    # unused ranks will be NA
+    read.strict(file, incomplete = TRUE)
 }
 
 #' @rdname preflib
 #' @export
 read.toc <- function(file){
-    # read one line to find number of items
-    p <- as.integer(read.csv(file, nrows = 1L, header = FALSE))
-    # get items
-    items <- read.csv(file, skip = 1L, nrows = p, header = FALSE,
-                      stringsAsFactors = FALSE, strip.white = TRUE)[,2L]
-    names(items) <- seq_len(p)
-    # read counts and ordered items
-    obs <- read.csv(text = chartr("{}", "''", readLines(file)),
-                    skip = p + 2L, header = FALSE, quote = "'",
-                    check.names = FALSE, stringsAsFactors = FALSE)
-    colnames(obs) <- c("Freq", paste("Rank", seq_len(ncol(obs) - 1)))
-    obs <- as.data.frame(sapply(obs, function(x) {
-        x <- strsplit(as.character(x), ",")
-        sapply(x, as.numeric)}))
-    structure(obs, items = items, class = c("preflib", class(obs)))
+    read.ties(file, incomplete = FALSE)
 }
 
 #' @rdname preflib
 #' @export
 read.toi <- function(file){
-    read.toc(file)
+    # unused ranks will be NA
+    read.ties(file, incomplete = TRUE)
 }
 
 #' @rdname preflib
 #' @method as.aggregated_rankings preflib
 #' @export
-as.aggregated_rankings.preflib <- function(x, ...){
+as.aggregated_rankings.preflib <- function(x){
     nc <- ncol(x)
     if (identical(colnames(x), c("Freq", paste("Rank", seq(nc - 1))))){
         dots <- match.call(as.aggregated_rankings.preflib,

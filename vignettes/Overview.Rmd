@@ -239,7 +239,7 @@ if (eval_all){
 }
 ```
 
-(ref:features) Features of example data sets from PrefLib [@Mattei2013]
+(ref:features) Features of example data sets from PrefLib [@Mattei2013]. The Netflix data are from [@Bennett2007].
 
 ```{r data-features, echo = FALSE}
 features <- cbind(c(1256, 30, 5000),
