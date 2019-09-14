@@ -14,10 +14,11 @@ R <- matrix(c(1, 2, 0, 0,
 colnames(R) <- c("apple", "banana", "orange", "pear")
 R <- as.rankings(R)
 
+# standard Plackett-Luce model
+noprior <- PlackettLuce(rankings = R, npseudo = 0)
+
 if (require("gnm")) {
     test_that("vcov.PlackettLuce matches vcov.gnm [partial + ties]", {
-        # standard Plackett-Luce model
-        noprior <- PlackettLuce(rankings = R, npseudo = 0)
         dat <- poisson_rankings(R, aggregate = FALSE)
         dat$X <- as.matrix(dat$X)
         n <- nrow(dat$X)
@@ -50,6 +51,11 @@ if (require("gnm")) {
                      check.attributes = FALSE, tol = 1e-11)
     })
 }
+
+test_that("qvcalc.PlackettLuce works with different ref [partial + ties]", {
+    expect_equal(qvcalc(noprior)$qvframe[c("quasiSE", "quasiVar")],
+                 qvcalc(noprior, ref = NULL)$qvframe[c("quasiSE", "quasiVar")])
+})
 
 test_that("vcov.PlackettLuce matches vcov_hessian [normal prior]", {
     # non-informative prior
