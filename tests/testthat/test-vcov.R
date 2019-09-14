@@ -160,7 +160,9 @@ test_that("vcov.PlackettLuce works w/ different ref [pudding]", {
     # define weights as frequencies of each ranking
     w <- unlist(pudding[c("w_ij", "w_ji", "t_ij")])
     # fit Plackett-Luce model: limit iterations to match Davidson 1970
-    mod <- PlackettLuce(R, npseudo = 0, weights = w, maxit = 7)
+    expect_warning(mod <- PlackettLuce(R, npseudo = 0, weights = w,
+                                       maxit = 7),
+                   "Iterations have not converged.")
     V <- vcov(mod)
 
     # different ref id

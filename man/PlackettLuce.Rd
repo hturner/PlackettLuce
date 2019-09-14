@@ -110,7 +110,19 @@ for other reason.}
 \description{
 Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 (each ranking completely ranks a subset of the items) and include ties of
-any order.
+arbitrary order.
+}
+\note{
+As the maximum tie order increases, the number of possible choices for
+each rank increases rapidly, particularly when the total number of items is
+high. This means that the model will be slower to fit with higher \eqn{D}.
+Moreover, due to the current implementation of the \code{vcov()} method,
+computation of the standard errors (as by \code{summary()}) becomes extremely
+slow or infeasible due to memory limits. Therefore we recommend
+\code{PlackettLuce()} for ties up to order 4. For higher order ties, a
+rank-ordered logit model, see \code{\link[ROlogit:rologit]{ROlogit::rologit()}} or
+generalized Mallows Model as in \code{\link[BayesMallows:compute_mallows]{BayesMallows::compute_mallows()}} may be
+more suitable.
 }
 \section{Model definition}{
 

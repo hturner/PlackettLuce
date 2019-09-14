@@ -54,8 +54,6 @@
 #' Bennett, J. and Lanning, S. (2007) The Netflix Prize.
 #' \emph{Proceedings of The KDD Cup and Workshops}.
 #'
-#' @note
-#'
 #' @examples
 #'
 #' # can take a little while depending on speed of internet connection
@@ -99,6 +97,7 @@ read.items <- function(file){ # read one line to find number of items
     items
 }
 
+#' @importFrom utils count.fields
 read.strict <- function(file, incomplete = FALSE){
     items <- read.items(file)
     # count maximum number of ranks
@@ -112,6 +111,7 @@ read.strict <- function(file, incomplete = FALSE){
     preflib(obs, items)
 }
 
+#' @importFrom utils count.fields
 read.ties <- function(file, incomplete = FALSE){
     items <- read.items(file)
     skip <- length(items) + 2L
@@ -176,7 +176,7 @@ read.toi <- function(file){
 #' @rdname preflib
 #' @method as.aggregated_rankings preflib
 #' @export
-as.aggregated_rankings.preflib <- function(x){
+as.aggregated_rankings.preflib <- function(x, ...){
     nc <- ncol(x)
     if (identical(colnames(x), c("Freq", paste("Rank", seq(nc - 1))))){
         dots <- match.call(as.aggregated_rankings.preflib,

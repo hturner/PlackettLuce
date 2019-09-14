@@ -52,7 +52,7 @@ The file types supported are
 }
 Note that the file types do not distinguish between types of incomplete
 orderings, i.e. whether they are a complete ranking of a subset of items
-(as supported by \code{\link[=PlackettLuce]{PlackettLuce()}}) or top-\eqn{r} rankings of \eqn{n} items
+(as supported by \code{\link[=PlackettLuce]{PlackettLuce()}}) or top-\eqn{n} rankings of \eqn{n} items
 from the full set of items (not currently supported by \code{\link[=PlackettLuce]{PlackettLuce()}}).
 
 The numerically coded orderings and their frequencies are read into a
@@ -60,6 +60,16 @@ data frame, storing the item names as an attribute. The
 \code{as.aggregated_rankings} method converts these to an
 \code{\link[=aggregate.rankings]{"aggregated_rankings"}} object with the items labelled
 by the item names.
+
+A Preflib file may be corrupt, in the sense that the ordered items do not
+match the named items. In this case, the file can be read is as a data
+frame (with a warning) using the corresponding \code{read.*} function, but
+\code{as.aggregated_rankings} will throw an error.
+}
+\note{
+The Netflix and cities datasets used in the examples are from
+Caragiannis et al (2017) and Bennet and Lanning (2007) respectively. These
+data sets require a citation for re-use.
 }
 \examples{
 
@@ -95,4 +105,11 @@ sushi <- read.toi(file.path(preflib, "sushi/ED-00014-00000003.toi"))
 Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
 \emph{Proceedings of Third International Conference on Algorithmic Decision
 Theory (ADT 2013)}. Lecture Notes in Artificial Intelligence, Springer.
+
+Caragiannis, I., Chatzigeorgiou, X, Krimpas, G. A., and Voudouris, A. A.
+(2017) Optimizing positional scoring rules for rank aggregation.
+In \emph{Proceedings of the 31st AAAI Conference on Artificial Intelligence}.
+
+Bennett, J. and Lanning, S. (2007) The Netflix Prize.
+\emph{Proceedings of The KDD Cup and Workshops}.
 }

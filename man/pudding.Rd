@@ -25,10 +25,20 @@ include tied outcomes, i.e. no preference.
 \examples{
 
 # create orderings for each set of paired comparisons
+
+# wins for brand i and wins for brand j
 i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
 j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
-ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
-                   Loser = rep(NA, 15))
+
+# ties: use an array list (easier with R >= 3.6.0)
+if (getRversion() < "3.6.0"){
+  n <- nrow(pudding)
+  ties <- data.frame(Winner = array(split(pudding[, c("i", "j")], 1:n, n)),
+                     Loser = rep(NA, 15))
+} else {
+  ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
+                     Loser = rep(NA, 15))
+}
 head(ties, 2)
 
 # convert to rankings
