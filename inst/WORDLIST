@@ -1,3 +1,4 @@
+AAAI
 ADT
 Apante
 Appl
@@ -9,7 +10,9 @@ Biometrika
 Bioversity
 Broyden
 BRT
+Caragiannis
 CGIAR
+Chatzigeorgiou
 Decarli
 doi
 edgelist
@@ -29,6 +32,9 @@ io
 ji
 Joachims
 jstatsoft
+KDD
+Krimpas
+Lanning
 lbfgs
 ldots
 Mattei
@@ -46,7 +52,6 @@ pmr
 Poisson
 Postrera
 prec
-preflib
 Preflib
 PrefLib
 pseudodata
@@ -54,9 +59,11 @@ psychotree
 qvcalc
 r'th
 Raman
+rARPACK
 rd
 Ridout
 Rojo
+RSpectra
 Sequia
 Shanno
 soc
@@ -71,5 +78,6 @@ th
 Trento
 users’
 vcov
+Voudouris
 www
 Xlisp

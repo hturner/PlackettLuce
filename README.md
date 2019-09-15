@@ -230,7 +230,7 @@ By participating in this project you agree to abide by its terms.
 <div id="ref-Bennett2007">
 
 Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In *Proceedings
-of the Kdd Cup Workshop 2007*, 3–6. ACM.
+of the KDD Cup Workshop 2007*, 3–6. ACM.
 
 </div>
 

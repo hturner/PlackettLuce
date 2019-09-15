@@ -623,6 +623,7 @@ PlackettLuce <- function(rankings,
     }
 
     if (method == "L-BFGS"){
+        if (trace) message("No trace implemented for L-BFGS")
         opt <- function(par, obj, gr, ...){
             lbfgs::lbfgs(obj, gr, par, invisible = 1L,
                          max_iterations = maxit[1L], ...)
@@ -793,8 +794,8 @@ PlackettLuce <- function(rankings,
                 } else res <- res2
             }
         }
+        if (trace) message("iter ", iter, ", loglik: ", res$logl)
     }
-    if (trace) message("iter ", iter, ", loglik: ", res$logl)
     if (conv[1L] == 1L) warning("Iterations have not converged.")
 
     res$delta <- structure(res$delta, names = paste0("tie", 1L:D))[-1L]
