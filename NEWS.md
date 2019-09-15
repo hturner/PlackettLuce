@@ -3,8 +3,10 @@
 * `vcov.PlackettLuce()` works again for `ref = NULL` (bug introduced with vcov method in version 0.2-4)
 * avoid dependency on R >= 3.6.0 by providing alternatives to `asplit()`
 * `read.soi()` and `read.toi()` now handle incomplete rankings with very irregular lengths correctly.
-* `read.*()` functions for Preflib formats now give a meaningful error when the file does not exists, and a warning of the file is corrupt.
+* `read.*()` functions for Preflib formats now give a meaningful error when the file or URL does not exist, and a warning if the file is corrupt.
 * `as.rankings` with `input = "orderings"` now checks coded values can be matched to item names, if provided.
+* `PlackettLuce()` now works with `nspeudo > 0` when there are no observed paired comparisons.
+* `?PlackettLuce` now gives advice on analysing data with higher order ties.
 
 # PlackettLuce 0.2-8
 

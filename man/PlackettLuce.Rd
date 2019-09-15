@@ -116,13 +116,14 @@ arbitrary order.
 As the maximum tie order increases, the number of possible choices for
 each rank increases rapidly, particularly when the total number of items is
 high. This means that the model will be slower to fit with higher \eqn{D}.
-Moreover, due to the current implementation of the \code{vcov()} method,
-computation of the standard errors (as by \code{summary()}) becomes extremely
-slow or infeasible due to memory limits. Therefore we recommend
+In addition, due to the current implementation of the \code{vcov()} method,
+computation of the standard errors (as by \code{summary()}) can take almost as
+long as the model fit and may even become infeasible due to memory limits.
+As a rule of thumb, for > 10 items and > 1000 rankings, we recommend
 \code{PlackettLuce()} for ties up to order 4. For higher order ties, a
 rank-ordered logit model, see \code{\link[ROlogit:rologit]{ROlogit::rologit()}} or
 generalized Mallows Model as in \code{\link[BayesMallows:compute_mallows]{BayesMallows::compute_mallows()}} may be
-more suitable.
+more suitable, as they do not model tied events explicitly.
 }
 \section{Model definition}{
 

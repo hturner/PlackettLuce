@@ -167,13 +167,14 @@
 #' @note As the maximum tie order increases, the number of possible choices for
 #' each rank increases rapidly, particularly when the total number of items is
 #' high. This means that the model will be slower to fit with higher \eqn{D}.
-#' Moreover, due to the current implementation of the `vcov()` method,
-#' computation of the standard errors (as by `summary()`) becomes extremely
-#' slow or infeasible due to memory limits. Therefore we recommend
+#' In addition, due to the current implementation of the `vcov()` method,
+#' computation of the standard errors (as by `summary()`) can take almost as
+#' long as the model fit and may even become infeasible due to memory limits.
+#' As a rule of thumb, for > 10 items and > 1000 rankings, we recommend
 #' `PlackettLuce()` for ties up to order 4. For higher order ties, a
 #' rank-ordered logit model, see [ROlogit::rologit()] or
 #' generalized Mallows Model as in [BayesMallows::compute_mallows()] may be
-#' more suitable.
+#' more suitable, as they do not model tied events explicitly.
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.  An [`"aggregated_rankings"`][aggregate()]
@@ -550,6 +551,8 @@ PlackettLuce <- function(rankings,
         W[[2L]] <- c(W[[2L]], rep.int(2L*npseudo, N))
         # update indices
         G[[2L]] <- c(G[[2L]], (nr + 1L):(nr + N))
+        # add set size of 2 to observed set sizes, if necessary
+        P <- unique(c(2L, P))
         # update A: npseudo wins for item N + 1 against each other item;
         # npseudo wins for other items
         A <- c(A + npseudo, N*npseudo)
