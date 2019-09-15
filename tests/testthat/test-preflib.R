@@ -36,7 +36,10 @@ test_that("can handle .toi files", {
 })
 
 test_that("reading non-existant Preflib file gives error", {
-    expect_error(read.soc("my.soc"), "file does not exist")
+    expect_error(read.soc("my.soc"),
+                 "cannot open file 'my.soc': No such file or directory")
+    expect_error(read.soc("http://www.w3.org/my.soc"),
+                 "cannot open URL 'http://www.w3.org/my.soc': HTTP status was '404 Not Found'")
 })
 
 test_that("corrupt Preflib file detected", {

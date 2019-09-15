@@ -88,7 +88,11 @@
 NULL
 
 read.items <- function(file){ # read one line to find number of items
-    if (!file.exists(file)) stop ("file does not exist")
+    test  <- tryCatch(file(file, "rt"), silent = TRUE,
+                      warning = function(w) w, error = function(e) e)
+    if (!inherits(test, "connection")){
+        stop(test$message, call. = FALSE)
+    } else close(test)
     p <- as.integer(read.csv(file, nrows = 1L, header = FALSE))
     # get items
     items <- read.csv(file, skip = 1L, nrows = p, header = FALSE,
