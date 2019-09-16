@@ -62,7 +62,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -112,12 +112,33 @@
       
     </div>
 
+    <div id="plackettluce-0-2-8-9000" class="section level1">
+<h1 class="page-header">
+<a href="#plackettluce-0-2-8-9000" class="anchor"></a>PlackettLuce 0.2-8.9000<small> Unreleased </small>
+</h1>
+<ul>
+<li>
+<code><a href="../reference/summaries.html">vcov.PlackettLuce()</a></code> works again for <code>ref = NULL</code> (bug introduced with vcov method in version 0.2-4)</li>
+<li>avoid dependency on R &gt;= 3.6.0 by providing alternatives to <code><a href="https://www.rdocumentation.org/packages/base/topics/asplit">asplit()</a></code>
+</li>
+<li>
+<code><a href="../reference/preflib.html">read.soi()</a></code> and <code><a href="../reference/preflib.html">read.toi()</a></code> now handle incomplete rankings with very irregular lengths correctly.</li>
+<li>
+<code>read.*()</code> functions for Preflib formats now give a meaningful error when the file or URL does not exist, and a warning if the file is corrupt.</li>
+<li>
+<code>as.rankings</code> with <code>input = "orderings"</code> now checks coded values can be matched to item names, if provided.</li>
+<li>
+<code><a href="../reference/PlackettLuce.html">PlackettLuce()</a></code> now works with <code>nspeudo &gt; 0</code> when there are no observed paired comparisons.</li>
+<li>
+<code><a href="../reference/PlackettLuce.html">?PlackettLuce</a></code> now gives advice on analysing data with higher order ties.</li>
+</ul>
+</div>
     <div id="plackettluce-0-2-8" class="section level1">
 <h1 class="page-header">
 <a href="#plackettluce-0-2-8" class="anchor"></a>PlackettLuce 0.2-8<small> 2019-09-05 </small>
 </h1>
 <ul>
-<li>Fix bug in <code><a href="../reference/rankings.html">as.rankings.matrix()</a></code>.</li>
+<li>Fix bug in <code><a href="../reference/rankings.html">as.rankings.matrix()</a></code> introduced in version 0.2-7.</li>
 <li>Import <code>eigs</code> from RSpectra vs rARPACK.</li>
 </ul>
 </div>
@@ -373,6 +394,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#plackettluce-0-2-8-9000">0.2-8.9000</a></li>
         <li><a href="#plackettluce-0-2-8">0.2-8</a></li>
         <li><a href="#plackettluce-0-2-7">0.2-7</a></li>
         <li><a href="#plackettluce-0-2-6">0.2-6</a></li>

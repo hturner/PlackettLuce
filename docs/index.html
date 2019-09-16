@@ -44,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<p>The <a href="https://www.netflixprize.com/">Netflix Prize</a> was a competition devised by Netflix to improve the accuracy of its recommendation system. To facilitate this they released ratings about movies from the users of the system that have been transformed to preference data and are available from <a href="http://www.preflib.org/data/election/netflix/">PrefLib</a>. Each data set comprises rankings of a set of 3 or 4 movies selected at random. Here we consider rankings for just one set of movies to illustrate the functionality of <strong>PlackettLuce</strong>.</p>
+<p>The <a href="https://www.netflixprize.com/">Netflix Prize</a> was a competition devised by Netflix to improve the accuracy of its recommendation system. To facilitate this they released ratings about movies from the users of the system that have been transformed to preference data and are available from <a href="http://www.preflib.org/data/election/netflix/">PrefLib</a>, <span class="citation">(Bennett and Lanning 2007)</span>. Each data set comprises rankings of a set of 3 or 4 movies selected at random. Here we consider rankings for just one set of movies to illustrate the functionality of <strong>PlackettLuce</strong>.</p>
 <p>The data can be read in using the <code>read.soc</code> function in <strong>PlackettLuce</strong></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PlackettLuce)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span></a>
@@ -205,6 +205,9 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-Bennett2007">
+<p>Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In <em>Proceedings of the KDD Cup Workshop 2007</em>, 3–6. ACM.</p>
+</div>
 <div id="ref-Luce1959">
 <p>Luce, R. Duncan. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. New York: Wiley.</p>
 </div>

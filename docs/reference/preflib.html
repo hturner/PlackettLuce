@@ -67,7 +67,7 @@ PrefLib: A Library for Preferences." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -175,19 +175,34 @@ corresponding to each item number.</p>
 <dt>.toi</dt><dd><p>Orders with Ties - Incomplete List</p></dd>
 </dl><p>Note that the file types do not distinguish between types of incomplete
 orderings, i.e. whether they are a complete ranking of a subset of items
-(as supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>) or top-\(r\) rankings of \(n\) items
+(as supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>) or top-\(n\) rankings of \(n\) items
 from the full set of items (not currently supported by <code><a href='PlackettLuce.html'>PlackettLuce()</a></code>).</p>
 <p>The numerically coded orderings and their frequencies are read into a
 data frame, storing the item names as an attribute. The
 <code>as.aggregated_rankings</code> method converts these to an
 <code><a href='aggregate.html'>"aggregated_rankings"</a></code> object with the items labelled
 by the item names.</p>
+<p>A Preflib file may be corrupt, in the sense that the ordered items do not
+match the named items. In this case, the file can be read is as a data
+frame (with a warning) using the corresponding <code>read.*</code> function, but
+<code>as.aggregated_rankings</code> will throw an error.</p>
+    
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>The Netflix and cities datasets used in the examples are from
+Caragiannis et al (2017) and Bennet and Lanning (2007) respectively. These
+data sets require a citation for re-use.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Mattei, N. and Walsh, T. (2013) PrefLib: A Library of Preference Data.
 <em>Proceedings of Third International Conference on Algorithmic Decision
 Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
+<p>Caragiannis, I., Chatzigeorgiou, X, Krimpas, G. A., and Voudouris, A. A.
+(2017) Optimizing positional scoring rules for rank aggregation.
+In <em>Proceedings of the 31st AAAI Conference on Artificial Intelligence</em>.</p>
+<p>Bennett, J. and Lanning, S. (2007) The Netflix Prize.
+<em>Proceedings of The KDD Cup and Workshops</em>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -228,6 +243,8 @@ Theory (ADT 2013)</em>. Lecture Notes in Artificial Intelligence, Springer.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#note">Note</a></li>
 
       <li><a href="#references">References</a></li>
       

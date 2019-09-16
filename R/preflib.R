@@ -118,24 +118,24 @@ read.strict <- function(file, incomplete = FALSE){
 #' @importFrom utils count.fields
 read.ties <- function(file, incomplete = FALSE){
     items <- read.items(file)
-    skip <- length(items) + 2L
-    input <- chartr("{}", "''", readLines(file))
-    # count maximum number of ranks (not needed for complete rankings)
+    r <- length(items)
+    skip <- r + 2L
+    input <- chartr("{}", "''", readLines(file, encoding = "UTF-8"))
+    # count maximum number of ranks for incomplete rankings
     if (incomplete){
         r <- max(count.fields(textConnection(input), quote = "'",
                               sep = ",", skip = skip)) - 1L
-    } else r <- length(items)
+    }
     # read counts and ordered items
     nm <- c("Freq", paste("Rank", seq_len(r)))
     obs <- read.csv(text = input, skip = skip, header = FALSE, quote = "'",
                     col.names = nm, check.names = FALSE,
                     na.strings = "", stringsAsFactors = FALSE)
-    n <- nrow(obs)
-    obs <- as.data.frame(lapply(obs, function(x) {
-        if (is.character(x)) {
-            x <- strsplit(x, ",")
-            array(lapply(x, as.numeric), n)
-        } else x }), check.names = FALSE)
+    # split up ties (don't use array list as dim attribute kep on MacOS)
+    rank_class <- vapply(obs, is.character, logical(1))
+    for (i in which(rank_class)){
+        obs[[i]] <- lapply(strsplit( obs[[i]], ","), as.numeric)
+    }
     preflib(obs, items)
 }
 

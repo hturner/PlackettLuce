@@ -36,7 +36,7 @@
 
 <meta property="og:description" content="Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 (each ranking completely ranks a subset of the items) and include ties of
-any order." />
+arbitrary order." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -67,7 +67,7 @@ any order." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -122,7 +122,7 @@ any order." />
     
     <p>Fit a Plackett-Luce model to a set of rankings. The rankings may be partial
 (each ranking completely ranks a subset of the items) and include ties of
-any order.</p>
+arbitrary order.</p>
     
     </div>
 
@@ -264,6 +264,20 @@ alternatives including ties have equal probability).</p></dd>
 cause log-likelihood to increase; negative number if L-BFGS algorithm failed
 for other reason.</p></dd>
 
+    
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>As the maximum tie order increases, the number of possible choices for
+each rank increases rapidly, particularly when the total number of items is
+high. This means that the model will be slower to fit with higher \(D\).
+In addition, due to the current implementation of the <code><a href='https://www.rdocumentation.org/packages/stats/topics/vcov'>vcov()</a></code> method,
+computation of the standard errors (as by <code><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary()</a></code>) can take almost as
+long as the model fit and may even become infeasible due to memory limits.
+As a rule of thumb, for &gt; 10 items and &gt; 1000 rankings, we recommend
+<code>PlackettLuce()</code> for ties up to order 4. For higher order ties, a
+rank-ordered logit model, see <code><a href='https://www.rdocumentation.org/packages/ROlogit/topics/rologit'>ROlogit::rologit()</a></code> or
+generalized Mallows Model as in <code><a href='https://www.rdocumentation.org/packages/BayesMallows/topics/compute_mallows'>BayesMallows::compute_mallows()</a></code> may be
+more suitable, as they do not model tied events explicitly.</p>
     
     <h2 class="hasAnchor" id="model-definition"><a class="anchor" href="#model-definition"></a>Model definition</h2>
 
@@ -469,6 +483,8 @@ is used by default.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#note">Note</a></li>
 
       <li><a href="#model-definition">Model definition</a></li>
 
