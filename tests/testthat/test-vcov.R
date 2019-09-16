@@ -152,8 +152,14 @@ test_that("vcov.PlackettLuce works w/ different ref [pudding]", {
     # create orderings for each set of paired comparisons
     i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
     j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
-    ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
-                       Loser = rep(NA, 15))
+    if (getRversion() < "3.6.0"){
+        n <- nrow(pudding)
+        ties <- data.frame(Winner = array(split(pudding[c("i", "j")], 1:n), n),
+                           Loser = rep(NA, 15))
+    } else {
+        ties <- data.frame(Winner = asplit(pudding[c("i", "j")], 1),
+                           Loser = rep(NA, 15))
+    }
     # convert to rankings
     R <- as.rankings(rbind(i_wins, j_wins, ties),
                      input = "orderings")

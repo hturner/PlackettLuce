@@ -430,13 +430,19 @@ corresponding to the wins for item $i$, the wins for item $j$ and the ties:
 ```{r}
 i_wins <- data.frame(Winner = pudding$i, Loser = pudding$j)
 j_wins <- data.frame(Winner = pudding$j, Loser = pudding$i)
-ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
-                   Loser = rep(NA, 15))
+if (getRversion() < "3.6.0"){
+  n <- nrow(pudding)
+  ties <- data.frame(Winner = array(split(pudding[c("i", "j")], 1:n), n),
+                     Loser = rep(NA, 15))
+} else {
+  ties <- data.frame(Winner = asplit(pudding[c("i", "j")], 1),
+                     Loser = rep(NA, 15))
+}
 head(ties, 2)
 ```
-In the last case, the base R function `asplit` is used to split the `i` and `j` 
-columns of `pudding` by row, giving a vector of items that we can specify as 
-the winner, while the loser is missing.
+In the last case, we split the `i` and `j` columns of `pudding` by row, using 
+the base R function `asplit`, if available. For each pair, this gives a vector 
+of items that we can specify as the winner, while the loser is missing.
 
 Now the `as.rankings()` function from **PlackettLuce** can be used to convert 
 the combined orderings to an object of class `"rankings"`.

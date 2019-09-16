@@ -29,10 +29,10 @@
 #' # ties: use an array list (easier with R >= 3.6.0)
 #' if (getRversion() < "3.6.0"){
 #'   n <- nrow(pudding)
-#'   ties <- data.frame(Winner = array(split(pudding[, c("i", "j")], 1:n, n)),
+#'   ties <- data.frame(Winner = array(split(pudding[c("i", "j")], 1:n), n),
 #'                      Loser = rep(NA, 15))
 #' } else {
-#'   ties <- data.frame(Winner = asplit(pudding[, c("i", "j")], 1),
+#'   ties <- data.frame(Winner = asplit(pudding[c("i", "j")], 1),
 #'                      Loser = rep(NA, 15))
 #' }
 #' head(ties, 2)
