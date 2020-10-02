@@ -10,13 +10,16 @@
 \usage{
 \method{coef}{pltree}(object, node = NULL, drop = TRUE, ...)
 
-\method{vcov}{pltree}(object, node = nodeids(object, terminal = TRUE),
-  ...)
+\method{vcov}{pltree}(object, node = nodeids(object, terminal = TRUE), ...)
 
 \method{AIC}{pltree}(object, newdata = NULL, ...)
 
-\method{predict}{pltree}(object, newdata = NULL, type = c("itempar",
-  "rank", "best", "node"), ...)
+\method{predict}{pltree}(
+  object,
+  newdata = NULL,
+  type = c("itempar", "rank", "best", "node"),
+  ...
+)
 }
 \arguments{
 \item{object}{a fitted model object of class \code{"pltree"}.}

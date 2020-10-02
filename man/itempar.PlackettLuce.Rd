@@ -5,8 +5,7 @@
 \alias{itempar.pltree}
 \title{Extract Item Parameters of Plackett-Luce Models}
 \usage{
-\method{itempar}{PlackettLuce}(object, ref = NULL, alias = TRUE,
-  vcov = TRUE, log = FALSE, ...)
+\method{itempar}{PlackettLuce}(object, ref = NULL, alias = TRUE, vcov = TRUE, log = FALSE, ...)
 
 \method{itempar}{pltree}(object, ...)
 }

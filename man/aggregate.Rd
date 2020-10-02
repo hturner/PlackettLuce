@@ -12,8 +12,7 @@
 
 as.aggregated_rankings(x, ...)
 
-\method{[}{aggregated_rankings}(x, i, j, ..., drop = FALSE,
-  as.aggregated_rankings = TRUE)
+\method{[}{aggregated_rankings}(x, i, j, ..., drop = FALSE, as.aggregated_rankings = TRUE)
 
 freq(x)
 }

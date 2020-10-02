@@ -14,8 +14,7 @@ as.grouped_rankings(x, ...)
 
 \method{as.grouped_rankings}{paircomp}(x, ...)
 
-\method{[}{grouped_rankings}(x, i, j, ..., drop = TRUE,
-  as.grouped_rankings = TRUE)
+\method{[}{grouped_rankings}(x, i, j, ..., drop = TRUE, as.grouped_rankings = TRUE)
 
 \method{format}{grouped_rankings}(x, max = 2L, width = 20L, ...)
 }

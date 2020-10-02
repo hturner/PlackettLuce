@@ -71,28 +71,20 @@ M <- matrix(c(1, 2,
 R <- as.rankings(M, "ordering")
 mod1 <- PlackettLuce(R, npseudo = 0)
 dat <- poisson_rankings(R, aggregate = FALSE, as.data.frame = TRUE)
-if (require(gnm) & require(BradleyTerry2) &
-    requireNamespace("BradleyTerryScalable")){
+if (require(gnm) & require(BradleyTerry2)){
     ## fit loglinear model
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
     BT_data <- data.frame(p1 = factor(M[,1]), p2 = factor(M[,2]))
     mod3 <- BTm(rep(1, 6), p1, p2, data = BT_data)
-    cdat <- BradleyTerryScalable::btdata(as.data.frame(cbind(M, 1)))
-    mod4 <- BradleyTerryScalable::btfit(cdat, 1, epsilon = 1e-7)
-    pp <- mod4$pi[[1]]
-    pp <- (pp/sum(pp))[cdat$components$`1`]
-    pp <- log(pp) - log(pp)[1]
-    test_that("estimates match gnm, BTm, btfit [fake paired comparisons]", {
+    test_that("estimates match gnm, BTm [fake paired comparisons]", {
         ## coefficients
         expect_equal(unname(coef(mod1)[-1]), unname(coef(mod2)[-1]),
                      tolerance = coef_tol)
         expect_equal(unname(coef(mod2)[-1]), unname(coef(mod3)),
                      tolerance = coef_tol)
-        expect_equal(unname(coef(mod3)), unname(pp[-1]),
-                     tolerance = coef_tol)
     })
-    test_that("logLik matches gnm, BTm, btfit [fake paired comparisons]", {
+    test_that("logLik matches gnm, BTm [fake paired comparisons]", {
         ## log-likelihood
         expect_equal(logLik(mod1), logLik(mod3), check.attributes = FALSE,
                      tolerance = 1e-12)

@@ -13,13 +13,29 @@ rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
 
 as.rankings(x, ..., verbose = TRUE)
 
-\method{as.rankings}{default}(x, input = c("rankings", "orderings"),
-  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, ..., verbose = TRUE)
+\method{as.rankings}{default}(
+  x,
+  input = c("rankings", "orderings"),
+  freq = NULL,
+  index = NULL,
+  aggregate = FALSE,
+  items = NULL,
+  labels = NULL,
+  ...,
+  verbose = TRUE
+)
 
-\method{as.rankings}{matrix}(x, input = c("rankings", "orderings"),
-  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, ..., verbose = TRUE)
+\method{as.rankings}{matrix}(
+  x,
+  input = c("rankings", "orderings"),
+  freq = NULL,
+  index = NULL,
+  aggregate = FALSE,
+  items = NULL,
+  labels = NULL,
+  ...,
+  verbose = TRUE
+)
 
 \method{[}{rankings}(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 

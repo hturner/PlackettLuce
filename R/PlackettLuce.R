@@ -132,7 +132,7 @@
 #' method (does not use derivatives of the likelihood). From a set of starting
 #' values that are 'close enough' to the final solution, the algorithm can be
 #' accelerated using
-#' \href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
+#' \href{https://en.wikipedia.org/wiki/Steffensen's_method}{Steffensen's method}.
 #' \code{PlackettLuce} attempts to apply Steffensen's acceleration when all
 #' differences between the observed and expected values of the sufficient
 #' statistics are less than \code{steffensen}. This is an ad-hoc rule defining

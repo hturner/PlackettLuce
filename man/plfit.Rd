@@ -4,8 +4,17 @@
 \alias{plfit}
 \title{PlackettLuce Wrapper for Model-based Recursive Partitioning}
 \usage{
-plfit(y, x = NULL, ref = 1L, start = NULL, weights = NULL,
-  offset = NULL, ..., estfun = FALSE, object = FALSE)
+plfit(
+  y,
+  x = NULL,
+  ref = 1L,
+  start = NULL,
+  weights = NULL,
+  offset = NULL,
+  ...,
+  estfun = FALSE,
+  object = FALSE
+)
 }
 \arguments{
 \item{y}{a \code{"\link{grouped_rankings}"} object giving the rankings to

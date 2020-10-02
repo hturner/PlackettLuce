@@ -4,7 +4,8 @@
 \name{beans}
 \alias{beans}
 \title{Preferred Bean Varieties in Nicaragua}
-\format{A data frame with 842 records and 11 variables:
+\format{
+A data frame with 842 records and 11 variables:
 \describe{
 \item{\code{variety_a}}{The name of variety A in the comparison.}
 \item{\code{variety_b}}{The name of variety B in the comparison.}
@@ -24,7 +25,8 @@ variety ("Worse" or "Better").}
 \item{\code{year}}{The year of planting.}
 \item{\code{maxTN}}{The maximum temperature at night during the
 vegetative cycle (degrees Celsius).}
-}}
+}
+}
 \source{
 The data were provided by Bioversity International, a CGIAR research
 centre \url{https://www.bioversityinternational.org}.

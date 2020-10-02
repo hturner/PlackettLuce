@@ -4,12 +4,23 @@
 \alias{PlackettLuce}
 \title{Fit a Plackett-Luce Model}
 \usage{
-PlackettLuce(rankings, npseudo = 0.5, normal = NULL, gamma = NULL,
-  adherence = NULL, weights = freq(rankings),
-  na.action = getOption("na.action"), start = NULL,
-  method = c("iterative scaling", "BFGS", "L-BFGS"), epsilon = 1e-07,
-  steffensen = 0.1, maxit = c(500, 10), trace = FALSE,
-  verbose = TRUE, ...)
+PlackettLuce(
+  rankings,
+  npseudo = 0.5,
+  normal = NULL,
+  gamma = NULL,
+  adherence = NULL,
+  weights = freq(rankings),
+  na.action = getOption("na.action"),
+  start = NULL,
+  method = c("iterative scaling", "BFGS", "L-BFGS"),
+  epsilon = 1e-07,
+  steffensen = 0.1,
+  maxit = c(500, 10),
+  trace = FALSE,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -262,7 +273,7 @@ The \code{"iterative scaling"} algorithm is slow because it is a first order
 method (does not use derivatives of the likelihood). From a set of starting
 values that are 'close enough' to the final solution, the algorithm can be
 accelerated using
-\href{https://en.wikipedia.org/wiki/Steffensen\%27s_method}{Steffensen's method}.
+\href{https://en.wikipedia.org/wiki/Steffensen's_method}{Steffensen's method}.
 \code{PlackettLuce} attempts to apply Steffensen's acceleration when all
 differences between the observed and expected values of the sufficient
 statistics are less than \code{steffensen}. This is an ad-hoc rule defining

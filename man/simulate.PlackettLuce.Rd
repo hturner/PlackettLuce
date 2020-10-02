@@ -4,8 +4,14 @@
 \alias{simulate.PlackettLuce}
 \title{Simulate from \code{PlackettLuce} fitted objects}
 \usage{
-\method{simulate}{PlackettLuce}(object, nsim = 1L, seed = NULL,
-  multinomial = FALSE, max_combinations = 20000, ...)
+\method{simulate}{PlackettLuce}(
+  object,
+  nsim = 1L,
+  seed = NULL,
+  multinomial = FALSE,
+  max_combinations = 20000,
+  ...
+)
 }
 \arguments{
 \item{object}{an object representing a fitted model.}
