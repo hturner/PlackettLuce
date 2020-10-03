@@ -43,7 +43,7 @@ coef.PlackettLuce <- function(object, ref = 1L, log = TRUE,
                               type = "all", ...){
   type <-  match.arg(type, c("ties", "worth", "all"))
   ncoefs <- length(object$coefficients)
-  id <- seq_len(ncoefs - object$maxTied + 1L)
+  id <- seq_len(ncoefs - length(object$ties) + 1L)
   if (!log) {
       # ignore ref here, always return probabilities
       const <- sum(object$coefficients[id])

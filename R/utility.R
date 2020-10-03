@@ -42,18 +42,18 @@ poisson_rankings <- function(rankings, weights = NULL,
 
     # now create X matrix for (unique) alternative sets
     S <- unique(size)
-    D <- max(lengths(choices$choices))
+    d <- sort(unique(lengths(choices$choices)))
     N <- ncol(rankings)
     items <- n <- val <- list()
     for (s in S){
         # generic choices from set of size s
-        x <- min(s, D)
         comb <- list()
-        for (d in seq_len(x)){
-            comb[[d]] <- combn(seq_len(s), d)
+        x <- d[d <= s]
+        for (i in seq_along(x)){
+            comb[[i]] <- combn(seq_len(s), x[i])
         }
         id <- which(size == s)
-        n[id] <- list(rep(seq_len(x), vapply(comb, ncol, 1.0)))
+        n[id] <- list(rep(x, vapply(comb, ncol, 1.0)))
         if (aggregate){
             items[id] <- lapply(unique_alternatives[id], `[`, unlist(comb))
         } else items[id] <- lapply(choices$alternatives[id], `[`, unlist(comb))
@@ -71,11 +71,12 @@ poisson_rankings <- function(rankings, weights = NULL,
     ord <- order(A@i)
     all_choices <- split(unlist(items), A@i[ord])
     # columns for tie parameters
-    if (D > 1L){
+    if (length(d) > 1L){
         nr <- nrow(rankings)
         tied <- list()
-        for (d in seq_len(D - 1L)){
-            tied[[d]] <- which(size == (d + 1L))
+        x <- d[-1]
+        for (i in seq_along(x)){
+            tied[[i]] <- which(size == x[i])
         }
         B <- sparseMatrix(i = unlist(tied), p = c(0L, cumsum(lengths(tied))))
         X <- cbind2(A, B)
@@ -116,7 +117,7 @@ poisson_rankings <- function(rankings, weights = NULL,
     }
 }
 
-## A quick way to generate arbitrary ranking data to experinment with
+## A quick way to generate arbitrary ranking data to experiment with
 ## The larger tie is the lower the chance of a tie is
 #' @importFrom stats runif
 generate_rankings <- function(maxi, n_rankings = 10L, tie = 5L, seed = NULL) {

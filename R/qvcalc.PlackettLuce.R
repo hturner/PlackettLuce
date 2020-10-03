@@ -78,7 +78,7 @@
 qvcalc.PlackettLuce <- function(object, ref = 1L, ...) {
   coefs <- coef(object, ref = ref)
   vc <- vcov(object, ref = ref)
-  nobj <- length(coefs) - object$maxTied + 1L
+  nobj <- length(coefs) - length(object$ties) + 1L
   qvcalc(vc[1L:nobj, 1L:nobj], estimates = coefs[1L:nobj],
          modelcall = object$call)
 }

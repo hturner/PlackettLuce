@@ -44,7 +44,9 @@ if (require("Matrix")){
     }
 
     result_biases <- sim(PlackettLuce(R, npseudo = 0))
-    result_biases0 <- sim(PlackettLuce0(R))
+    mod0 <- PlackettLuce0(R)
+    mod0$ties <- seq_len(mod0$maxTied)
+    result_biases0 <- sim(mod0)
 
     test_that("simulation results are consistent to first version", {
         expect_equivalent(result_biases, result_biases0, tolerance = 1e-06)

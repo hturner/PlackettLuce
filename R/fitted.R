@@ -38,9 +38,11 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     # get choices and alternatives for each ranking
     choices <- choices(object$rankings, names = FALSE)
     # get parameters
-    id <- seq(length(object$coefficients) - object$maxTied + 1L)
+    d <- object$ties
+    id <- seq(length(object$coefficients) - length(d) + 1L)
     alpha <- object$coefficients[id]
-    delta <- c(1.0, unname(object$coefficients[-id]))
+    delta <- rep.int(0L, max(d))
+    delta[d] <- c(1.0, unname(object$coefficients[-id]))
     # if free = TRUE, ignore forced choice (choice of 1)
     if (free) choices <- choices[lengths(choices$alternatives) != 1L,]
     # id unique choices
@@ -74,9 +76,8 @@ fitted.PlackettLuce <- function(object, aggregate = TRUE, free = TRUE, ...) {
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
     S <- unique(na)
     if (free) S <- setdiff(S, 1L)
-    D <- object$maxTied
     N <- ncol(object$rankings)
-    theta <- expectation("theta", alpha, delta, a, N, D, S, R, G)$theta
+    theta <- expectation("theta", alpha, delta[d], a, N, d, S, R, G)$theta
     if (!is.null(object$adherence)){
         denominator <- theta[order(unlist(G[S]))]
     } else {

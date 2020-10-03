@@ -45,7 +45,7 @@
 #' @export
 itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
                                  log = FALSE, ...){
-    item <- seq_len(length(object$coefficients) - object$maxTied + 1L)
+    item <- seq_len(length(object$coefficients) - length(object$ties) + 1L)
     coefs <- log(object$coefficients[item])
     object_names <- names(coefs)
     n <- length(coefs)

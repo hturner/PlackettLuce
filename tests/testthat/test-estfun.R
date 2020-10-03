@@ -36,7 +36,7 @@ test_that("estfun matches agRank, fixed adherence [fake triple comparisons]", {
     W <- list(NULL, c(1, 1, 1, 1), c(1, 1, 1, 1), c(1, 1))
     par <- mod_PL$coefficients
     fit <- expectation(c("alpha", "delta"), par[1:m], c(1.0, par[-(1:m)]),
-                       adherence, m, 3, 2:4, R2, G, W)
+                       adherence, m, 1:3, 2:4, R2, G, W)
     # score wrt log-parameters
     score <- score_common(par = par, N = m,
                           mu = NULL, Kinv = NULL, A = A, B = B, fit = fit)*par
@@ -54,7 +54,7 @@ test_that("estfun matches agRank, fixed adherence [fake triple comparisons]", {
     W <- list(NULL, w[G[[2]]], w[G[[3]]], w[G[[4]]])
     par <- mod_PL$coefficients
     fit <- expectation(c("alpha", "delta"), par[1:m], c(1.0, par[-(1:m)]),
-                       adherence, m, 3, 2:4, R2, G, W)
+                       adherence, m, 1:3, 2:4, R2, G, W)
     score <- score_common(par = par, N = m,
                           mu = NULL, Kinv = NULL, A = A, B = B, fit = fit)*par
 

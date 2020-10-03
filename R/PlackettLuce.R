@@ -46,6 +46,11 @@
 #' The 3-way and higher tie-prevalence parameters are similarly interpretable,
 #' in terms of tie probabilities among equal-worth items.
 #'
+#' When intermediate tie orders are not observed (e.g. ties of order 2
+#' and order 4 are observed, but no ties of order 3), the maximum
+#' likelihood estimate of the corresponding tie prevalence parameters
+#' is zero, so these parameters are excluded from the model.
+#'
 #' @section Pseudo-rankings:
 #'
 #' In order for the maximum likelihood estimate of an object's worth to be
@@ -250,7 +255,8 @@
 #' \item{ranker}{ The ranker index mapping rankings to rankers (the
 #' \code{"index"} attribute of \code{rankings} if specified as a
 #' \code{"grouped_rankings"} object.)}
-#' \item{maxTied}{ The maximum number of objects observed in a tie. }
+#' \item{ties}{ The observed tie orders corresponding to the estimated tie
+#' parameters. }
 #' \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
 #' \code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
 #' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
@@ -440,9 +446,10 @@ PlackettLuce <- function(rankings,
     }
     # sufficient statistics
     # for delta d, (number of sets with cardinality d)/cardinality
-    B <- unname(rowsum(ws, S)[,1L])
-    D <- length(B)
-    B <- B/seq(D)
+    d <- sort(unique(S))
+    D <- length(d)
+    B <- rowsum(ws, S)[,1L]
+    B <- B/d
     # from now only only need weight/size per set, so replace S with this
     S <- ws/S
     rm(ws)
@@ -618,7 +625,7 @@ PlackettLuce <- function(rankings,
                     c(list(par, obj, gr, method = "BFGS",
                            control = c(eval(dts$control),
                                        list(maxit = maxit[1L]))),
-                           dts[setdiff(names(dts), "control")]))
+                      dts[setdiff(names(dts), "control")]))
         }
     }
 
@@ -636,7 +643,7 @@ PlackettLuce <- function(rankings,
         delta <- exp(par[-c(1L:N)])
         # assign to parent environment so can use further quantities in score
         assign("fit", expectation("all", alpha, c(1.0, delta),
-                                  a, N, D, P, R, G, W),
+                                  a, N, d, P, R, G, W),
                envir = parent.env(environment()))
         -loglik_common(c(alpha, delta), N, normal$mu, Rinv, A, B, fit)
     }
@@ -652,7 +659,7 @@ PlackettLuce <- function(rankings,
         adherence <- exp(par)
         # assign to parent environment so can use further quantities in score
         assign("fit", normalization(alpha, c(1.0, delta),
-                                    adherence[ranker], D, P, R, G, W),
+                                    adherence[ranker], d, P, R, G, W),
                envir = parent.env(environment()))
         -loglik_adherence(adherence, gamma$shape, gamma$rate, wa, Z, fit)
     }
@@ -683,7 +690,7 @@ PlackettLuce <- function(rankings,
                 if (i > 0L) logp_old <- logp
                 # log-posterior after worth update
                 logp <- -res$value + sum(wa*((gamma$shape - 1L)*log(adherence) -
-                                             gamma$rate*adherence))
+                                                 gamma$rate*adherence))
                 if (i > 0L && abs(logp_old - logp) <=
                     epsilon * (abs(logp) + epsilon)) {
                     conv <- 0L
@@ -717,7 +724,7 @@ PlackettLuce <- function(rankings,
     } else {
         res <- list(alpha = alpha, delta = delta)
         res[c("expA", "expB", "theta")] <-
-            expectation("all", alpha, delta, a, N, D, P, R, G, W)
+            expectation("all", alpha, delta, a, N, d, P, R, G, W)
         res$logl <- sum(B[-1L]*log(res$delta)[-1L]) + sum(A*log(res$alpha)) -
             sum(res$theta)
         oneUpdate <- function(res){
@@ -728,19 +735,19 @@ PlackettLuce <- function(rankings,
             if (D > 1L) {
                 res$delta[-1L] <- B[-1L]/
                     expectation("delta", res$alpha, res$delta,
-                                a, N, D, P, R, G, W)$expB
+                                a, N, d, P, R, G, W)$expB
             }
             res[c("expA", "expB", "theta")] <-
                 expectation("all", res$alpha, res$delta,
-                            a, N, D, P, R, G, W)
+                            a, N, d, P, R, G, W)
             res$logl <- sum(B[-1L]*log(res$delta)[-1L]) +
                 sum(A*log(res$alpha)) - sum(res$theta)
             res
         }
         accelerate <- function(p, p1, p2){
             # only accelerate if parameter has changed in last iteration
-            d <- p2 != p1
-            p2[d] <- p[d] - (p1[d] - p[d])^2L / (p2[d] - 2L * p1[d] + p[d])
+            z <- p2 != p1
+            p2[z] <- p[z] - (p1[z] - p[z])^2L / (p2[z] - 2L * p1[z] + p[z])
             p2
         }
         # stopping rule: compare observed & expected sufficient stats
@@ -784,7 +791,7 @@ PlackettLuce <- function(rankings,
                         accelerate(res$delta, res1$delta, res2$delta)[-1L]
                     res[c("expA", "expB", "theta")] <-
                         expectation("all", res$alpha, res$delta,
-                                    a, N, D, P, R, G, W)
+                                    a, N, d, P, R, G, W)
                     res$logl <-
                         sum(B[-1L]*log(res$delta)[-1L]) +
                         sum(A*log(res$alpha)) - sum(res$theta)
@@ -798,7 +805,7 @@ PlackettLuce <- function(rankings,
     }
     if (conv[1L] == 1L) warning("Iterations have not converged.")
 
-    res$delta <- structure(res$delta, names = paste0("tie", 1L:D))[-1L]
+    res$delta <- structure(res$delta, names = paste0("tie", names(B)))[-1L]
 
     if (npseudo > 0L) {
         # drop hypothetical object
@@ -826,8 +833,8 @@ PlackettLuce <- function(rankings,
     # recompute log-likelihood excluding pseudo-observations/priors
     if (npseudo > 0L | !is.null(normal) | !is.null(gamma)) {
         if (!is.null(normal) & is.null(gamma)) {
-          # logp not yet assigned
-          logp <- res$logl
+            # logp not yet assigned
+            logp <- res$logl
         }
         normal <- NULL
         logl <- -obj_common(log(cf))
@@ -839,7 +846,7 @@ PlackettLuce <- function(rankings,
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- vapply(W[P], sum, 1.0)
     # number of possible selections overall
-    n <- sum(vapply(P, choose, numeric(D), k = seq(D)) %*% freq)
+    n <- sum(vapply(P, choose, numeric(D), k = d) %*% freq)
     df.residual <- n - sum(freq) - rank
 
     fit <- list(call = call,
@@ -857,10 +864,9 @@ PlackettLuce <- function(rankings,
                 weights = weights,
                 adherence = adherence,
                 ranker = ranker,
-                maxTied = D,
+                ties = d,
                 conv = conv,
                 na.action = na.action)
     class(fit) <- "PlackettLuce"
     fit
 }
-

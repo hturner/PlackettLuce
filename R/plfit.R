@@ -72,7 +72,7 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
         }
     }
     list(coefficients = coef(res, ref = ref),
-         maxTied = res$maxTied,
+         ties = res$ties,
          objfun = -res$loglik,
          estfun = estfun,
          object = if (object) res else NULL)
@@ -83,7 +83,8 @@ plfit <- function (y, x = NULL, ref = 1L, start = NULL, weights = NULL,
 #' @importFrom sandwich estfun
 #' @export
 estfun.PlackettLuce <- function(x, ref = 1L, ...) {
-    D <- x$maxTied
+    d <- x$ties
+    D <- length(d)
     # get coefficients (unconstrained)
     coef <- x$coefficients
     N <- length(coef) - D + 1L
@@ -109,10 +110,10 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     if (D > 1L){
         B <- matrix(nrow = nr, ncol = D - 1L,
                     dimnames = list(NULL, names(delta[-1L])))
-        for (d in 2L:D){
+        for (i in seq_along(d[-1L])){
             if (!is.null(x$adherence)) {
-                B[, d - 1L] <- apply(A == x$adherence[x$ranker]/d, 1L, any)
-            } else B[, d - 1L] <- apply(A == 1L/d, 1L, any)
+                B[, i] <- apply(A == x$adherence[x$ranker]/d[i + 1L], 1L, any)
+            } else B[, i] <- apply(A == 1L/d[i + 1L], 1L, any)
         }
     }
     # derivatives part 2: expectation of alpha | delta per set to choose from
@@ -134,7 +135,7 @@ estfun.PlackettLuce <- function(x, ref = 1L, ...) {
     G <- lapply(seq_len(max(na)), function(i) G[na == i])
     P <- unique(na)
     res <- expectation(c("alpha", "delta"), alpha, delta,
-                       a, N, D, P, R, G, W = NULL)
+                       a, N, d, P, R, G, W = NULL)
 
     if (!is.null(x$adherence)){
         h <- seq_len(nrow(R))

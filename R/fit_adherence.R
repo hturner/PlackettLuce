@@ -33,7 +33,7 @@ score_adherence <- function(adherence, ranker, shape, rate, wa, Z, fit) {
 normalization <- function(alpha, # alpha par (worth)
                           delta, # delta par (tie)
                           a, # adherence for each ranking
-                          D, # max tie order
+                          d, # max tie order
                           P, # set sizes in representative rankings
                           R, # items in each ranking, from last to first place
                           G, # group of rankings to include; list for each P
@@ -56,45 +56,46 @@ normalization <- function(alpha, # alpha par (worth)
             r <- G[[p]][real]
         } else r <- G[[p]]
         nr <- length(r)
-        x1 <- matrix(alpha[R[r, 1L:p]],
+        item_id <- as.integer(R[r, 1L:p])
+        x1 <- matrix(alpha[item_id],
                      nrow = nr, ncol = p)
         y1 <- rowSums(x1^a[r]*log(x1))
         ## denominator of score = exp(contribution to norm constant)
         z1 <- rowSums(x1^a[r])
         # D > 1
-        d <- min(D, p)
-        if (d > 1L){
-            # index up to d items: start with 1:n
-            i <- seq_len(d)
+        e <- d[d <= p][-1]
+        if (length(e)){
+            # index up to max(e) items: start with 1:n
+            i <- seq_len(max(e))
             # id = index to change next; id2 = first index changed
-            if (d == p) {
+            if (max(e) == p) {
                 id <- p - 1L
-            } else id <- d
+            } else id <- max(e)
             id2 <- 1L
             repeat{
-                # work along index vector from 1 to end/first index = s
+                # work along index vector from 1 to end/first index that = p
                 v1 <- alpha[R[r, i[1L]]] # ability for first ranked item
                 last <- i[id] == p
                 if (last) {
                     end <- id
-                } else end <- min(d, id + 1L)
+                } else end <- min(max(e), id + 1L)
                 for (k in 2L:end){
                     # product of first k alphas indexed by i
                     v1 <- v1 * alpha[R[r, i[k]]]
-                    # ignore if already recorded
-                    if (k < id2) next
-                    # add to numerators/denominators for sets of order s
+                    # ignore if already recorded/tie order not observed
+                    if (k < id2 | ! k %in% d) next
+                    # add to numerators/denominators for sets of order p
                     v2 <- v1^(a[r]/k)
-                    y1 <- y1 + delta[k]*v2*log(v1)/k
+                    y1 <- y1 + delta[d == k]*v2*log(v1)/k
                     # add to denominators for sets
-                    z1 <- z1 + delta[k]*v2
+                    z1 <- z1 + delta[d == k]*v2
                 }
                 # update index
                 if (i[1L] == (p - 1L)) break
                 if (last){
                     id2 <- id - 1L
                     v <- i[id2]
-                    len <- min(p - 2L - v, d - id2)
+                    len <- min(p - 2L - v, max(e) - id2)
                     id <- id2 + len
                     i[id2:id] <- v + seq_len(len + 1L)
                 } else {

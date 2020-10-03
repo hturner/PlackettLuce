@@ -9,7 +9,7 @@ vcov.PlackettLuce <- function(object, ref = 1L,
   coefs  <- log(object$coefficients)
   object_names <- names(coefs)
   p <- length(coefs)
-  nobj <- p - object$maxTied + 1L
+  nobj <- p - length(object$ties) + 1L
   # so need to check reference
   if (any(ref %in% object_names)) {
       ref <- match(ref, object_names)

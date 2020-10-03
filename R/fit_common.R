@@ -69,11 +69,12 @@ expectation <- function(par, # par to compute expectations for
                         delta, # delta par (tie)
                         a, # adherence for each ranking
                         N, # number of objects
-                        D, # max tie order
+                        d, # observed tie orders
                         P, # set sizes in representative rankings
                         R, # items in each ranking, from last to first place
                         G, # group of rankings to include; list for each P
                         W = NULL){ # weight of rankings; list for each P
+    D <- length(d)
     keepAlpha <- any(par %in% c("alpha", "all"))
     keepDelta <- D > 1L && any(par %in% c("delta", "all"))
     keepTheta <- any(par %in% c("theta", "all"))
@@ -102,41 +103,41 @@ expectation <- function(par, # par to compute expectations for
         ## denominators
         z1 <- rowSums(x1)
         # D > 1
-        d <- min(D, p)
-        if (d > 1L){
+        e <- d[d <= p][-1]
+        if (length(e)){
             if (keepDelta)
-                y1 <- matrix(0.0, nrow = nr, ncol = d - 1L)
-            # index up to d items: start with 1:n
-            i <- seq_len(d)
+                y1 <- matrix(0.0, nrow = nr, ncol = length(e))
+            # index up to max(e) items: start with 1:n
+            i <- seq_len(max(e))
             # id = index to change next; id2 = first index changed
-            if (d == p) {
+            if (max(e) == p) {
                 id <- p - 1L
-            } else id <- d
+            } else id <- max(e)
             id2 <- 1L
             repeat{
-                # work along index vector from 1 to end/first index = s
+                # work along index vector from 1 to end/first index that = p
                 v1 <- alpha[R[r, i[1L]]] # ability for first ranked item
                 last <- i[id] == p
                 if (last) {
                     end <- id
-                } else end <- min(d, id + 1L)
+                } else end <- min(max(e), id + 1L)
                 for (k in 2L:end){
                     # product of first k alphas indexed by i
                     v1 <- v1 * alpha[R[r, i[k]]]
-                    # ignore if already recorded
-                    if (k < id2) next
-                    # add to numerators/denominators for sets of order s
+                    # ignore if already recorded/tie order not observed
+                    if (k < id2 | ! k %in% d) next
+                    # add to numerators/denominators for sets of order p
                     if (!is.null(a)) {
                         v2 <- v1^(a[r]/k)
                     } else v2 <- v1^(1L/k)
-                    v3 <- delta[k]*v2
+                    v3 <- delta[d == k]*v2
                     if (keepAlpha) {
                         # add to numerators for objects in sets
                         x1[, i[1L:k]] <- x1[, i[1L:k]] + v3/k
                     }
                     if (keepDelta) {
                         # add to numerator for current tie order for sets
-                        y1[, k - 1L] <- y1[, k - 1L] + v2
+                        y1[, which(d == k) - 1L] <- y1[, which(d == k) - 1L] + v2
                     }
                     # add to denominators for sets
                     z1 <- z1 + v3
@@ -146,7 +147,7 @@ expectation <- function(par, # par to compute expectations for
                 if (last){
                     id2 <- id - 1L
                     v <- i[id2]
-                    len <- min(p - 2L - v, d - id2)
+                    len <- min(p - 2L - v, max(e) - id2)
                     id <- id2 + len
                     i[id2:id] <- v + seq_len(len + 1L)
                 } else {
@@ -169,11 +170,10 @@ expectation <- function(par, # par to compute expectations for
                 expA[id] <- expA[id] + c(x1/z1)
             }
         }
-        if (keepDelta && p > 1L){
+        if (keepDelta && length(e)){
             if (!is.null(W)){
-                expB[seq_len(d - 1L)] <- expB[seq_len(d - 1L)] +
-                    colSums(W[[p]] * y1/z1)
-            } else expB[r, seq_len(d - 1L)] <- expB[r, seq_len(d - 1L)] + y1/z1
+                expB[seq_along(e)] <- expB[seq_along(e)] + colSums(W[[p]] * y1/z1)
+            } else expB[r, seq_along(e)] <- expB[r, seq_along(e)] + y1/z1
         }
         if (keepTheta){
             if (par == "all"){

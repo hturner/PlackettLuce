@@ -37,9 +37,10 @@ vcov_hessian <- function(object){
 
     # sufficient statistics
     # for delta d, (number of sets with cardinality d)/cardinality
+    d <- sort(unique(S))
+    D <- length(d)
     B <- unname(rowsum(w, S)[,1L])
-    D <- length(B)
-    B <- B/seq(D)
+    B <- B/d
     # from now only only need weight/size per set, so replace S with this
     S <- w/S
     rm(w)
@@ -117,7 +118,7 @@ vcov_hessian <- function(object){
         }
         # assign to parent environment so can use further quantities in score
         assign("fit", PlackettLuce:::expectation("all", alpha, c(1.0, delta),
-                                                 a, N, D, P, R, G, W),
+                                                 a, N, d, P, R, G, W),
                envir = parent.env(environment()))
         # update A
         if (!length(adherence)){
@@ -135,7 +136,7 @@ vcov_hessian <- function(object){
         adherence <- exp(par[-(1L:(N + D - 1L))])
         if (!is.null(gamma)){
             norm <- normalization(alpha, c(1.0, delta),
-                                  adherence[ranker], D, P, R, G, W)
+                                  adherence[ranker], d, P, R, G, W)
             # update Z
             Z <- unname(rowsum(S*log(alpha[item_id]), ranker_id)[,1L])
         } else Z <- NULL

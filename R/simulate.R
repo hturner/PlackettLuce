@@ -17,7 +17,7 @@
 #' @details
 #'
 #' If \code{multinomial} is \code{FALSE} (default) and there are no
-#' tie parameters in the object (i.e. \code{object$maxTied == 1}),
+#' tie parameters in the object (i.e. \code{length(object$ties) == 1}),
 #' then rankings are sampled by ordering exponential random variates
 #' with rate 1 scaled by the estimated item-worth parameters
 #' \code{object$coefficients} (see, Diaconis, 1988, Chapter 9D for
@@ -29,7 +29,7 @@
 #' has to decide from. This is a hard-coded exit to prevent issues
 #' relating to the creation of massive objects in memory.
 #'
-#' If \code{object$maxTied > 1} the user's setting for
+#' If \code{length(object$ties) > 1} the user's setting for
 #' \code{multinomial} is ignored and \code{simulate.PlackettLuce} operates as if
 #' \code{multinomial} is \code{TRUE}.
 #'
@@ -77,10 +77,10 @@ simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
     rankings <- unclass(object$rankings)
     N <- ncol(rankings)
     n_rankings <- nrow(rankings)
-    id <- seq(length(object$coefficients) - object$maxTied + 1L)
+    id <- seq(length(object$coefficients) - length(object$ties) + 1L)
     alpha <- object$coefficients[id]
-    delta <- numeric(N)
-    delta[seq_len(object$maxTied)] <- c(1.0, unname(object$coefficients[-id]))
+    delta <- numeric(max(object$ties))
+    delta[object$ties] <- c(1.0, unname(object$coefficients[-id]))
     opt <- seq_len(N)
     sets <- as.list(numeric(n_rankings))
     for (i in seq_len(n_rankings)) {
@@ -90,7 +90,7 @@ simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
 
     ## If there are no ties use Louis Gordon (1983, Annals of Stat);
     ## Diaconis (1988, Chapter 9D)
-    if (object$maxTied == 1L & !multinomial) {
+    if (length(object$ties) == 1L & !multinomial) {
         sampler <- function(objects) {
             v <- numeric(N)
             len <- length(objects)
@@ -105,8 +105,7 @@ simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
         ## with potentially massive objects FIX, IK 10/12/2017: Remove
         ## dependence on all combinations. For now a preventive stop
         ## if n_combinations is more than max_combinations
-        n_combinations <- sum(choose(N, seq_len(max(len)))
-                              )
+        n_combinations <- sum(choose(N, object$ties))
         if (n_combinations > max_combinations) {
             stop(paste("simulate.PlackettLuce needs to decide between",
                        n_combinations,
@@ -116,7 +115,7 @@ simulate.PlackettLuce <- function(object, nsim = 1L, seed = NULL,
 
         ## Get all possible combinations of objects
         combinations <- NULL
-        for (j in seq_len(max(len))) {
+        for (j in object$ties) {
             combinations <- c(combinations, combn(opt, j, simplify = FALSE))
         }
 

@@ -412,6 +412,11 @@ first place is not a 3-way or higher tie.  Specifically, that probability is $\d
 The 3-way and higher tie-prevalence parameters are interpretable similarly, in terms of
 tie probabilities among equal-worth items.
 
+When intermediate tie orders are not observed (e.g. ties of order 2
+and order 4 are observed, but no ties of order 3), the maximum
+likelihood estimate of the corresponding tie prevalence parameters
+is zero, so these parameters are excluded from the model.
+
 ### Pudding example (with ties)
 
 When each ranking contains only two items, then the model in Equation

@@ -84,7 +84,8 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
                       lapply(ids, FUN = function(n, ...){
                           # compute coef as returned from original fit
                           info <- info_node(object[[n]]$node)
-                          n <- length(info$coefficients) - info$maxTied + 1L
+                          n <- length(info$coefficients) -
+                              length(info$ties) + 1L
                           info$coefficients <- exp(info$coefficients)
                           id <- seq_len(n)
                           info$coefficients[id] <-
