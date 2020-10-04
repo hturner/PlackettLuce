@@ -52,8 +52,6 @@ test_that("logLik matches agRank with normal prior [fake triple comparisons]", {
     ## numDeriv::grad(function(par) obj_common(par), log(c(alpha, delta[-1])))
     mod_PL <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
                            start = exp(prior$mu))
-    mod_PL2 <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
-                           start = exp(prior$mu), method = "L-BFGS")
     ## lowish tolerance as stochastic gradient descent only approximate
     expect_equal(mod_PL$logposterior, -tail(res$value, 1),
                  tolerance = 1e-5)

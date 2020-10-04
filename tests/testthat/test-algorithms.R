@@ -14,19 +14,28 @@ tol <- 1e-6
 model_fruits1 <- PlackettLuce(rankings = R)
 model_fruits2 <- PlackettLuce(rankings = R, method = "BFGS",
                               control = list(reltol = 1e-10))
-model_fruits3 <- PlackettLuce(rankings = R, method = "L-BFGS",
-                              gtol = 0.2)
 
-test_that("different algorithms give same log-likelihood", {
+test_that("BFGS gives same log-likelihood as iterative scaling", {
     expect_equal(logLik(model_fruits1), logLik(model_fruits2),
                  tolerance = tol)
-    expect_equal(logLik(model_fruits1), logLik(model_fruits3),
-                 tolerance = tol)
 })
 
-test_that("different algorithms give same coef", {
+test_that("BFGS gives same coef as iterative scaling", {
     expect_equal(coef(model_fruits1), coef(model_fruits2),
                  tolerance = tol, check.attributes = FALSE)
-    expect_equal(coef(model_fruits1), coef(model_fruits3),
-                 tolerance = tol, check.attributes = FALSE)
 })
+
+if (require(lbfgs)){
+    model_fruits3 <- PlackettLuce(rankings = R, method = "L-BFGS",
+                                  gtol = 0.2)
+
+    test_that("L-BFGS gives same log-likelihood as iterative scaling", {
+        expect_equal(logLik(model_fruits1), logLik(model_fruits3),
+                     tolerance = tol)
+    })
+
+    test_that("L-BFGS gives same coef as iterative scaling", {
+        expect_equal(coef(model_fruits1), coef(model_fruits3),
+                     tolerance = tol, check.attributes = FALSE)
+    })
+}
