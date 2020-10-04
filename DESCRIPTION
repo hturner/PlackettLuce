@@ -34,7 +34,7 @@ Depends: R (>= 2.10)
 Imports: Matrix, igraph, methods, partykit, psychotools,
     psychotree, RSpectra, qvcalc, sandwich, stats
 Suggests: BiocStyle, BayesMallows, BradleyTerry2,
-    PLMIX, ROlogit, StatRank, covr, hyper2, kableExtra, knitr,
+    PLMIX, ROlogit, StatRank, bookdown, covr, hyper2, kableExtra, knitr,
     lbfgs, gnm, pmr, rmarkdown, testthat
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)

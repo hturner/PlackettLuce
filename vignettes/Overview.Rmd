@@ -10,12 +10,6 @@ author:
 - name: Ioannis Kosmidis
   affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK
 package: PlackettLuce
-output:
-  if (requireNamespace("BiocStyle", quietly = TRUE)) {
-    BiocStyle::html_document
-  } else if (requireNamespace("bookdown", quietly = TRUE)) {
-    bookdown::html_document2
-  } else html_document
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
   attributed to @Plackett1975 and @Luce1959 for modelling rankings data. The
@@ -38,6 +32,18 @@ vignette: |
 bibliography: ["plackettluce.bib"]
 biblio-style: "apalike"
 link-citations: true
+---
+
+```{r output, include = FALSE}
+output <- if (requireNamespace("BiocStyle", quietly = TRUE)) {
+  BiocStyle::html_document
+} else if (requireNamespace("bookdown", quietly = TRUE)) {
+  bookdown::html_document2
+} else html_document
+```
+
+---
+output: output
 ---
 
 ```{r setup, include = FALSE}
