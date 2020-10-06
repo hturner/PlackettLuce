@@ -6,7 +6,7 @@
 
 # omit following constants from log-likelihood/log-posterior:
 # contribution from tie in numerator: sum(B[-1]*log(delta))
-# contribution from normal prior: - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
+# contribution from normal prior: -0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
 # normalising constant from gamma prior: shape*log(rate) - log(gamma(shape))
 loglik_adherence <- function(adherence, shape, rate, wa, Z, fit) {
     ## Z = sum(average log worth for each choice)

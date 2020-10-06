@@ -54,7 +54,8 @@ if (require("Matrix")){
 }
 
 ## par(mfrow = c(3, 3))
-## for (j in 1:9) { hist(coefs[j,], main = paste(j)); abline(v = coef(mod1)[j]) }
+## for (j in 1:9) {
+##   hist(coefs[j,], main = paste(j)); abline(v = coef(mod1)[j]) }
 
 ## ## ## No ties
 ## R <- PlackettLuce:::generate_rankings(maxi = 10, n_rankings = 100,

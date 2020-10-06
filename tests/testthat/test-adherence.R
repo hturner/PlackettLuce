@@ -49,7 +49,8 @@ test_that("logLik matches agRank, fixed adherence [fake triple comparisons]", {
                  tolerance = 1e-5)
     if (require(lbfgs)){
         mod_PL3 <- PlackettLuce(rankings = R[seq(p),], npseudo = 0,
-                                method = "L-BFGS", adherence = adherence[seq(p)],
+                                method = "L-BFGS",
+                                adherence = adherence[seq(p)],
                                 start = alpha,
                                 normal = list(mu = mu, Sigma = sigma))
         expect_equal(mod_PL3$logposterior, -tail(res$value, 1),

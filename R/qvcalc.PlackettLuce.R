@@ -19,9 +19,9 @@
 #' @return A list of class \code{"qv"}, with components
 #' \item{covmat}{The full variance-covariance matrix for the item
 #' parameters.}
-#' \item{qvframe}{A data frame with variables \code{estimate}, \code{SE}, \code{quasiSE} and
-#' \code{quasiVar}, the last two being a quasi standard error and quasi-variance
-#' for each parameter.}
+#' \item{qvframe}{A data frame with variables \code{estimate}, \code{SE},
+#' \code{quasiSE} and \code{quasiVar}, the last two being a quasi standard
+#' error and quasi-variance for each parameter.}
 #' \item{dispersion}{\code{NULL} (dispersion is fixed to 1).}
 #' \item{relerrs}{Relative errors for approximating the standard errors of all
 #' simple contrasts.}
@@ -33,8 +33,8 @@
 #' @references
 #' Easton, D. F, Peto, J. and Babiker, A. G. A. G. (1991) Floating absolute
 #' risk: an alternative to relative risk in survival and case-control analysis
-#' avoiding an arbitrary reference group. \emph{Statistics in Medicine} \bold{10},
-#' 1025--1035.
+#' avoiding an arbitrary reference group. \emph{Statistics in Medicine}
+#' \bold{10}, 1025--1035.
 #'
 #' Firth, D. (2000)  Quasi-variances in Xlisp-Stat and on the web.
 #' \emph{Journal of Statistical Software} \bold{5.4}, 1--13.

@@ -67,7 +67,7 @@ N <- ncol(R2)
 
 
 if (require("gnm")){
-    test_that("works with missing tie orders [fake partial rankings with ties]", {
+    test_that("works with missing tie orders", {
         # missing lowest tie order
         model1 <- PlackettLuce(rankings = R, npseudo = 0)
         ## fit model via gnm
@@ -109,8 +109,8 @@ if (require("gnm")){
         fit <- expectation(c("alpha", "delta"), par[1:N], c(1.0, par[-(1:N)]),
                            NULL, N, d, P, R2orderings, G, W)
         # score wrt log-parameters
-        score <- score_common(par = par, N = N,
-                              mu = NULL, Kinv = NULL, A = A, B = B, fit = fit)*par
+        score <- score_common(par = par, N = N, mu = NULL, Kinv = NULL,
+                              A = A, B = B, fit = fit)*par
         # score = c(A - fit$expA, B[-1] - fit$expB*par[-(1:m)])
         expect_equal(colSums(estfun(model1, ref = NULL)), score)
     })

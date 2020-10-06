@@ -16,10 +16,10 @@
 #' \deqn{f(S) = \delta_{|S|}
 #'       \left(\prod_{i \in S} \alpha_i \right)^\frac{1}{|S|}}{
 #'       f(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(1/|S|)}
-#' where \eqn{|S|} is the cardinality (size) of the set, \eqn{\delta_n}{delta_n} is a
-#' parameter related to the prevalence of ties of order \eqn{n}
-#' (with \eqn{\delta_1 \equiv 1}), and
-#' \eqn{\alpha_i}{alpha_i} is a parameter representing the worth of item \eqn{i}.
+#' where \eqn{|S|} is the cardinality (size) of the set, \eqn{\delta_n}{delta_n}
+#' is a parameter related to the prevalence of ties of order \eqn{n}
+#' (with \eqn{\delta_1 \equiv 1}), and \eqn{\alpha_i}{alpha_i} is a
+#' parameter representing the worth of item \eqn{i}.
 #' Then under an extension of the Plackett-Luce model allowing ties up to order
 #' \eqn{D}, the probability of the ranking \eqn{R} is given by
 #' \deqn{\prod_{j = 1}^J \frac{f(C_j)}{
@@ -30,8 +30,8 @@
 #' alternatives from which \eqn{C_j} is chosen, and
 #' \eqn{A_j \choose k}{choose(A_j, k)} is all the possible choices of \eqn{k}
 #' items from \eqn{A_j}. The value of \eqn{D} can be set to the maximum number
-#' of tied items observed in the data, so that \eqn{\delta_n = 0}{delta_n = 0} for
-#' \eqn{n > D}.
+#' of tied items observed in the data, so that \eqn{\delta_n = 0}{delta_n = 0}
+#' for \eqn{n > D}.
 #'
 #' When the worth parameters are constrained to sum to one, they represent the
 #' probability that the corresponding item comes first in a ranking of all
@@ -76,12 +76,12 @@
 #'
 #' Prior information can be incorporated by using \code{normal} to specify a
 #' multivariate normal prior on the \emph{log}-worths. The log-worths are then
-#' estimated by maximum a posteriori (MAP) estimation. Model summaries (deviance, AIC,
-#' standard errors) are based on the log-likelihood evaluated at the MAP
-#' estimates, resulting in a finite sample bias that should disappear as
-#' the number of rankings increases. Inference based on these model summaries
-#' is valid as long as the prior is considered fixed and not tuned as part of
-#' the model.
+#' estimated by maximum a posteriori (MAP) estimation. Model summaries
+#' (deviance, AIC, standard errors) are based on the log-likelihood evaluated
+#' at the MAP estimates, resulting in a finite sample bias that should
+#' disappear as the number of rankings increases. Inference based on these
+#' model summaries is valid as long as the prior is considered fixed and not
+#' tuned as part of the model.
 #'
 #' Incorporating a prior is an alternative method of penalization, therefore
 #' \code{npseudo} is set to zero when a prior is specified.
@@ -94,12 +94,13 @@
 #' \deqn{h(S) = \delta_{|S|}
 #'       \left(\prod_{i \in S} \alpha_i \right)^\frac{\eta_g}{|S|}}{
 #'       h(S) = delta_{|S|} * (prod_{i in S} alpha_i)^(eta_g/|S|)}
-#' where \eqn{\eta_g > 0}{eta_g > 0} is the adherence parameter for ranker \eqn{g}. In
-#' the standard model, all rankers are assumed to have equal reliability, so
-#' \eqn{\eta_g = 1}{eta_g = 1} for all rankers. Higher \eqn{\eta_g = 1}{eta_g = 1}
-#' increases the distance between item worths, giving greater weight
-#' to the ranker's choice. Conversely, lower \eqn{\eta_g = 1}{eta_g = 1} shrinks
-#' the item worths towards equality so the ranker's choice is less relevant.
+#' where \eqn{\eta_g > 0}{eta_g > 0} is the adherence parameter for ranker
+#' \eqn{g}. In the standard model, all rankers are assumed to have equal
+#' reliability, so \eqn{\eta_g = 1}{eta_g = 1} for all rankers.
+#' Higher \eqn{\eta_g = 1}{eta_g = 1} increases the distance between item
+#' worths, giving greater weight' to the ranker's choice. Conversely, lower
+#' \eqn{\eta_g = 1}{eta_g = 1} shrinks the item worths towards equality so the
+#' ranker's choice is less relevant.
 #'
 #' The adherence parameters are not estimable by maximum likelihood, since
 #' for given item worths the maximum likelihood estimate of adherence would be
@@ -111,9 +112,9 @@
 #' 1 and a probability of 0.99 that the adherence is between 0.37 and 2.
 #' Alternative parameters can be specified by a list with elements \code{shape}
 #' and \code{rate}. Setting scale and rate to a common value \eqn{\theta}{theta}
-#' specifies a mean of 1; \eqn{\theta \ge}{theta >=} 2 will give low prior probability
-#' to near-zero adherence; as \eqn{\theta}{theta} increases the density becomes
-#' more concentrated (and more symmetrical) about 1.
+#' specifies a mean of 1; \eqn{\theta \ge}{theta >=} 2 will give low prior
+#' probability to near-zero adherence; as \eqn{\theta}{theta} increases the
+#' density becomes more concentrated (and more symmetrical) about 1.
 #'
 #' Since the number of adherence parameters will typically be large and it is
 #' assumed the worth and tie parameters are of primary interest, the adherence
@@ -234,8 +235,8 @@
 #' In particular the convergence tolerance may be adjusted using e.g.
 #' \code{control = list(reltol = 1e-10)}.
 #'
-#' @return An object of class \code{"PlackettLuce"}, which is a list containing the
-#' following elements:
+#' @return An object of class \code{"PlackettLuce"}, which is a list containing
+#' the following elements:
 #' \item{call}{ The matched call. }
 #' \item{coefficients}{ The model coefficients. }
 #' \item{loglik}{ The maximized log-likelihood. }
@@ -258,9 +259,9 @@
 #' \item{ties}{ The observed tie orders corresponding to the estimated tie
 #' parameters. }
 #' \item{conv}{ The convergence code: 0 for successful convergence; 1 if reached
-#' \code{maxit} (outer) iterations without convergence; 2 if Steffensen acceleration
-#' cause log-likelihood to increase; negative number if L-BFGS algorithm failed
-#' for other reason.}
+#' \code{maxit} (outer) iterations without convergence; 2 if Steffensen
+#' acceleration cause log-likelihood to increase; negative number if L-BFGS
+#' algorithm failed for other reason.}
 #' @references
 #' Raman, K. and Joachims, T. (2014)  Methods for Ordinal Peer Grading.
 #' \href{https://arxiv.org/abs/1404.3656}{arXiv:1404.3656}.

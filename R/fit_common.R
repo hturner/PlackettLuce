@@ -40,7 +40,7 @@ score_full <- function(alpha, delta, adherence, ranker,
 
 # omit following constants from log-likelihood/log-posterior:
 # contribution from tie in numerator: sum(B[-1]*log(delta))
-# contribution from normal prior: - 0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1L]
+# contribution from normal prior: -0.5*tcrossprod((log(alpha) - mu) %*% Rinv)[1]
 # normalising constant from gamma prior: shape*log(rate) - log(gamma(shape))
 loglik_common <- function(par, N, mu, Rinv, A, B, fit){
     alpha <- par[1L:N]
@@ -62,8 +62,8 @@ score_common <- function(par, N, mu, Kinv, A, B, fit) {
     res
 }
 
-# function to compute expectations of the sufficient statistics of the alphas/deltas
-# (for fixed adherence) if ranking weight is NULL, do not aggregate across rankings
+# compute expectations of the sufficient statistics of the alphas/deltas
+# (for fixed adherence) if ranking weight is NULL, do not aggregate rankings
 expectation <- function(par, # par to compute expectations for
                         alpha, # alpha par (worth)
                         delta, # delta par (tie)
@@ -137,7 +137,8 @@ expectation <- function(par, # par to compute expectations for
                     }
                     if (keepDelta) {
                         # add to numerator for current tie order for sets
-                        y1[, which(d == k) - 1L] <- y1[, which(d == k) - 1L] + v2
+                        y1[, which(d == k) - 1L] <-
+                            y1[, which(d == k) - 1L] + v2
                     }
                     # add to denominators for sets
                     z1 <- z1 + v3
@@ -172,7 +173,8 @@ expectation <- function(par, # par to compute expectations for
         }
         if (keepDelta && length(e)){
             if (!is.null(W)){
-                expB[seq_along(e)] <- expB[seq_along(e)] + colSums(W[[p]] * y1/z1)
+                expB[seq_along(e)] <- expB[seq_along(e)] +
+                    colSums(W[[p]] * y1/z1)
             } else expB[r, seq_along(e)] <- expB[r, seq_along(e)] + y1/z1
         }
         if (keepTheta){
