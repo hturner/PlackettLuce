@@ -6,19 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Introduction to PlackettLuce • PlackettLuce</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Introduction to PlackettLuce">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="PlackettLuce">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -39,7 +40,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -62,7 +63,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/hturner/PlackettLuce/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -71,10 +79,14 @@
 <!--/.navbar -->
 
       
-      </header><script src="Overview_files/kePrint-0.0.1/kePrint.js"></script><div class="row">
+
+      </header><script src="Overview_files/jquery-1.11.3/jquery.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="Overview_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<script src="Overview_files/bootstrap-3.3.5/js/bootstrap.min.js"></script><script src="Overview_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script><script src="Overview_files/bootstrap-3.3.5/shim/respond.min.js"></script><script src="Overview_files/navigation-1.1/tabsets.js"></script><script src="Overview_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="Overview_files/kePrint-0.0.1/kePrint.js"></script><link href="Overview_files/lightable-0.0.1/lightable.css" rel="stylesheet">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Introduction to PlackettLuce</h1>
+      <h1 data-toc-skip>Introduction to PlackettLuce</h1>
                         <h4 class="author">Heather Turner</h4>
             <address class="author_afil">
       Department of Statistics, University of Warwick, UK<br><h4 class="author">Jacob van Etten</h4>
@@ -83,7 +95,8 @@
             <address class="author_afil">
       Department of Statistics, University of Warwick, UK; and Alan Turing Institute, London, UK<br><h4 class="author">Ioannis Kosmidis</h4>
             <address class="author_afil">
-      Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK<br><div class="hidden name"><code>Overview.Rmd</code></div>
+      Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK<br><small class="dont-index">Source: <a href="https://github.com/hturner/PlackettLuce/blob/master/vignettes/Overview.Rmd"><code>vignettes/Overview.Rmd</code></a></small>
+      <div class="hidden name"><code>Overview.Rmd</code></div>
 
     </address>
 </address>
@@ -94,8 +107,8 @@
     
         <div class="abstract">
       <p class="abstract">Abstract</p>
-      The <strong>PlackettLuce</strong> package implements a generalization of the model jointly
-      attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959">1959</a>)</span> for modelling rankings data. The
+      <p>The <strong>PlackettLuce</strong> package implements a generalization of the model jointly
+      attributed to <span class="citation">Plackett (<a href="#ref-Plackett1975" role="doc-biblioref">1975</a>)</span> and <span class="citation">Luce (<a href="#ref-Luce1959" role="doc-biblioref">1959</a>)</span> for modelling rankings data. The
       generalization accommodates both ties (of any order) and partial rankings
       (complete rankings of only some items). By default, the implementation adds a set of
       pseudo-rankings with a hypothetical item, ensuring that the network of wins
@@ -107,7 +120,7 @@
       estimate quasi-standard errors for the item parameters, so that comparison
       intervals can be derived even when a reference item is set. Finally the
       package provides a method for model-based partitioning using ranking-specific covariates, enabling the
-      identification of subgroups where items have been ranked differently.
+      identification of subgroups where items have been ranked differently.</p>
     </div>
     
 <div id="introduction" class="section level1">
@@ -116,7 +129,7 @@
 <p>Rankings data, in which each observation is an ordering of a set of items,
 arises in a range of applications, for example sports tournaments and consumer
 studies. A classic model for such data is the Plackett-Luce model. This model
-depends on Luce’s axiom of choice <span class="citation">(Luce <a href="#ref-Luce1959">1959</a>, <a href="#ref-Luce1977">1977</a>)</span> which states that the odds of
+depends on Luce’s axiom of choice <span class="citation">(Luce <a href="#ref-Luce1959" role="doc-biblioref">1959</a>, <a href="#ref-Luce1977" role="doc-biblioref">1977</a>)</span> which states that the odds of
 choosing an item over another do not depend on the set of items from which the
 choice is made. Suppose we have a set of <span class="math inline">\(J\)</span> items</p>
 <p><span class="math display">\[S = \{i_1, i_2, \ldots, i_J\}.\]</span></p>
@@ -130,7 +143,7 @@ on — it follows that the probability of the ranking
 <span class="math inline">\({i_1 \succ \ldots \succ i_J}\)</span> is</p>
 <p><span class="math display">\[\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}\]</span></p>
 <p>where <span class="math inline">\(A_j\)</span> is the set of alternatives <span class="math inline">\(\{i_j, i_{j + 1}, \ldots, i_J\}\)</span> from
-which item <span class="math inline">\(i_j\)</span> is chosen. The above model is also derived in <span class="citation">Plackett (<a href="#ref-Plackett1975">1975</a>)</span>,
+which item <span class="math inline">\(i_j\)</span> is chosen. The above model is also derived in <span class="citation">Plackett (<a href="#ref-Plackett1975" role="doc-biblioref">1975</a>)</span>,
 hence the name Plackett-Luce model.</p>
 <p>The <strong>PlackettLuce</strong> package implements a novel extension of the Plackett-Luce
 model that accommodates tied rankings, which may be applied to either full or
@@ -146,7 +159,7 @@ package to fit Plackett-Luce trees.</p>
 <p>Even though the Plackett-Luce model is a well-established method for analysing
 rankings, the software available to fit the model is limited. By considering
 each choice in the ranking as a multinomial observation, with one item observed
-out of a possible set, the “Poisson trick” <span class="citation">(see, for example, Baker <a href="#ref-Baker1994">1994</a>)</span> can be
+out of a possible set, the “Poisson trick” <span class="citation">(see, for example, Baker <a href="#ref-Baker1994" role="doc-biblioref">1994</a>)</span> can be
 applied to express the model as a log-linear model, where the response is the
 count (one or zero) of each possible outcome within each choice. In principle, the
 model can then be fitted using standard software for generalized linear
@@ -174,7 +187,7 @@ together:</p>
 alternatives, but the number of combinations increases quickly with the number
 of items.</p>
 <p>Given the issues with applying general methods, custom algorithms and software
-have been developed. One approach is using Hunter’s <span class="citation">(<a href="#ref-Hunter2004">2004</a>)</span>
+have been developed. One approach is using Hunter’s <span class="citation">(<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span>
 minorization-maximization (MM) algorithm to maximize the likelihood, which is
 equivalent to an iterative scaling algorithm; this algorithm is used by the
 <strong>StatRank</strong> package. Alternatively
@@ -190,7 +203,7 @@ optimization using either BFGS or a limited memory variant (L-BFGS) via the
 <strong>lbfgs</strong> package.</p>
 <p>Even some of these specialized implementations can scale poorly with the number
 of items and/or the number of rankings as shown by the example timings in Table
-<a href="#tab:timings-kable">1.2</a>. Specifically <code><a href="https://www.rdocumentation.org/packages/pmr/topics/pl">pmr::pl</a></code> becomes impractical to use with
+<a href="#tab:timings-kable">1.2</a>. Specifically <code><a href="https://rdrr.io/pkg/pmr/man/pl.html">pmr::pl</a></code> becomes impractical to use with
 a moderate number of items (~10), while the functions from <strong>hyper2</strong> and
 <strong>StatRank</strong> take much longer to run with a large number (1000s) of unique
 rankings. <strong>PlackettLuce</strong> copes well with these moderately-sized data sets,
@@ -199,7 +212,7 @@ number of unique rankings is large.</p>
 
 <table class="table table">
 <caption>
-<span id="tab:data-features">Table 1.1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span>. The Netflix data are from <span class="citation">(Bennett and Lanning <a href="#ref-Bennett2007">2007</a>)</span>.
+<span id="tab:data-features">Table 1.1: </span>Features of example data sets from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013" role="doc-biblioref">2013</a>)</span>. The Netflix data are from <span class="citation">(Bennett and Lanning <a href="#ref-Bennett2007" role="doc-biblioref">2007</a>)</span>.
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -265,9 +278,9 @@ Sushi
 </caption>
 <thead>
 <tr>
-<th style="border-bottom:hidden" colspan="1">
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
 </th>
-<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="5">
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="5">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 Time elapsed (s)
 </div>
@@ -370,22 +383,22 @@ items are unranked, but implicitly ranked lower than the top <span class="math i
 sub-rankings only, while <strong>PLMIX</strong> handles incomplete rankings only and
 <strong>hyper2</strong> can handle both types. <strong>StatRank</strong> seems to support partial rankings, but
 the extent of this support is not clear. The timings in Table <a href="#tab:nascar">1.3</a>
-for fitting the Plackett-Luce model on the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>
+for fitting the Plackett-Luce model on the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span>
 illustrate that <strong>PlackettLuce</strong> is more efficient than
 <strong>hyper2</strong> for modelling sub-rankings of a relatively large number of items.</p>
 
 <table class="table table">
 <caption>
-<span id="tab:nascar">Table 1.3: </span>Timings in seconds for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> using different packages. All rankings are unique.
+<span id="tab:nascar">Table 1.3: </span>Timings in seconds for fitting the Plackett-Luce model to the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span> using different packages. All rankings are unique.
 </caption>
 <thead>
 <tr>
-<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 Features of NASCAR data
 </div>
 </th>
-<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 Time elapsed (s)
 </div>
@@ -608,19 +621,24 @@ that two given items <em>of equal worth</em> tie for first place, given that the
 first place is not a 3-way or higher tie. Specifically, that probability is <span class="math inline">\(\delta_2/(2 + \delta_2)\)</span>.</p>
 <p>The 3-way and higher tie-prevalence parameters are interpretable similarly, in terms of
 tie probabilities among equal-worth items.</p>
+<p>When intermediate tie orders are not observed (e.g. ties of order 2
+and order 4 are observed, but no ties of order 3), the maximum
+likelihood estimate of the corresponding tie prevalence parameters
+is zero, so these parameters are excluded from the model.</p>
 <div id="pudding-example-with-ties" class="section level3">
 <h3 class="hasAnchor">
 <a href="#pudding-example-with-ties" class="anchor"></a><span class="header-section-number">2.1.1</span> Pudding example (with ties)</h3>
 <p>When each ranking contains only two items, then the model in Equation
 <a href="#eq:PL">(2.1)</a> reduces to extended Bradley-Terry model proposed by
-<span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set,
+<span class="citation">Davidson (<a href="#ref-Davidson1970" role="doc-biblioref">1970</a>)</span> for paired comparisons with ties. The <code>pudding</code> data set,
 available in <strong>PlackettLuce</strong>, provides the data from Example 2 of that paper, in
 which respondents were asked to test two brands of chocolate pudding from a
 total of six brands. For each pair of brands <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the data set
 gives the frequencies that brand <span class="math inline">\(i\)</span> was preferred (<span class="math inline">\(w_{ij}\)</span>), that brand <span class="math inline">\(j\)</span>
 was preferred (<span class="math inline">\(w_{ji}\)</span>) and that the brands were tied (<span class="math inline">\(t_{ij}\)</span>).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PlackettLuce)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(pudding)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://hturner.github.io/PlackettLuce/">PlackettLuce</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">pudding</span><span class="op">)</span></pre></div>
 <pre><code>##   i j r_ij w_ij w_ji t_ij
 ## 1 1 2   57   19   22   16
 ## 2 1 3   47   16   19   12
@@ -632,17 +650,18 @@ was preferred (<span class="math inline">\(w_{ji}\)</span>) and that the brands 
 rankings, with the rank (1st, 2nd, 3rd, <span class="math inline">\(\ldots\)</span>) for each item. In this case it is
 more straight-forward to define the orderings (winner, loser) initially,
 corresponding to the wins for item <span class="math inline">\(i\)</span>, the wins for item <span class="math inline">\(j\)</span> and the ties:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">i_wins &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Winner =</span> pudding<span class="op">$</span>i, <span class="dt">Loser =</span> pudding<span class="op">$</span>j)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">j_wins &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Winner =</span> pudding<span class="op">$</span>j, <span class="dt">Loser =</span> pudding<span class="op">$</span>i)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric_version">getRversion</a></span>() <span class="op">&lt;</span><span class="st"> "3.6.0"</span>){</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">  n &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(pudding)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">  ties &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Winner =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/split">split</a></span>(pudding[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"i"</span>, <span class="st">"j"</span>)], <span class="dv">1</span><span class="op">:</span>n), n),</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">                     <span class="dt">Loser =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="ot">NA</span>, <span class="dv">15</span>))</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">} <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">  ties &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Winner =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/asplit">asplit</a></span>(pudding[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"i"</span>, <span class="st">"j"</span>)], <span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">                     <span class="dt">Loser =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="ot">NA</span>, <span class="dv">15</span>))</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">}</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(ties, <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="va">i_wins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Winner <span class="op">=</span> <span class="va">pudding</span><span class="op">$</span><span class="va">i</span>, Loser <span class="op">=</span> <span class="va">pudding</span><span class="op">$</span><span class="va">j</span><span class="op">)</span>
+<span class="va">j_wins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Winner <span class="op">=</span> <span class="va">pudding</span><span class="op">$</span><span class="va">j</span>, Loser <span class="op">=</span> <span class="va">pudding</span><span class="op">$</span><span class="va">i</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html">getRversion</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"3.6.0"</span><span class="op">)</span><span class="op">{</span>
+  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">pudding</span><span class="op">)</span>
+  <span class="va">ties</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Winner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/split.html">split</a></span><span class="op">(</span><span class="va">pudding</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"i"</span>, <span class="st">"j"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span>, <span class="va">n</span><span class="op">)</span>,
+                     Loser <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+  <span class="va">ties</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Winner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/asplit.html">asplit</a></span><span class="op">(</span><span class="va">pudding</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"i"</span>, <span class="st">"j"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span>,
+                     Loser <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ties</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##   Winner Loser
 ## 1   1, 2    NA
 ## 2   1, 3    NA</code></pre>
@@ -651,16 +670,19 @@ the base R function <code>asplit</code>, if available. For each pair, this gives
 of items that we can specify as the winner, while the loser is missing.</p>
 <p>Now the <code><a href="../reference/rankings.html">as.rankings()</a></code> function from <strong>PlackettLuce</strong> can be used to convert
 the combined orderings to an object of class <code>"rankings"</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(i_wins, j_wins, ties),</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">                 <span class="dt">input =</span> <span class="st">"orderings"</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(R, <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">i_wins</span>, <span class="va">j_wins</span>, <span class="va">ties</span><span class="op">)</span>,
+                 input <span class="op">=</span> <span class="st">"orderings"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">R</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>## [1] "1 &gt; 2" "1 &gt; 3"</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">tail</a></span>(R, <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">R</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>## [1] "4 = 6" "5 = 6"</code></pre>
 <p>The print method displays the rankings in a readable
 form, however the underlying data structure stores the rankings in the form
 of a matrix:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">unclass</a></span>(R), <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">unclass</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##      1 2 3 4 5 6
 ## [1,] 1 2 0 0 0 0
 ## [2,] 1 0 2 0 0 0</code></pre>
@@ -669,15 +691,18 @@ unranked brand (not in the comparison), <code>1</code> represents the brand(s) r
 in first place and <code>2</code> represents the brand in second place, if applicable.</p>
 <p>To specify the full set of rankings, we need the frequency of each ranking,
 which will be specified to the model-fitting function as a weight vector:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">w &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(pudding[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"w_ij"</span>, <span class="st">"w_ji"</span>, <span class="st">"t_ij"</span>)])</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">pudding</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"w_ij"</span>, <span class="st">"w_ji"</span>, <span class="st">"t_ij"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <p>Now we can fit the model with <code>PlackettLuce</code>, passing the rankings object
 and the weight vector as arguments. Setting <code>npseudo = 0</code> means that standard
 maximum likelihood estimation is performed and <code>maxit = 7</code> limits the number of
-iterations to obtain the same worth parameters as <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">weights =</span> w, <span class="dt">npseudo =</span> <span class="dv">0</span>, <span class="dt">maxit =</span> <span class="dv">7</span>)</a></code></pre></div>
-<pre><code>## Warning in PlackettLuce(R, weights = w, npseudo = 0, maxit = 7): Iterations
-## have not converged.</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod, <span class="dt">log =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+iterations to obtain the same worth parameters as <span class="citation">Davidson (<a href="#ref-Davidson1970" role="doc-biblioref">1970</a>)</span>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span>, weights <span class="op">=</span> <span class="va">w</span>, npseudo <span class="op">=</span> <span class="fl">0</span>, maxit <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in PlackettLuce(R, weights = w, npseudo = 0, maxit = 7): Iterations have
+## not converged.</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span>, log <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <pre><code>##         1         2         3         4         5         6      tie2 
 ## 0.1388005 0.1729985 0.1617420 0.1653930 0.1586805 0.2023855 0.7468147</code></pre>
 <p>Note here that we have specified <code>log = FALSE</code> in order to report the estimates
@@ -703,8 +728,9 @@ cannot be outside of these limits.</p>
 <p>On the log scale however, there are no bounds on the parameters and we can set
 a reference level to provide meaningful comparisons. By default, the summary
 method for <code>"PlackettLuce"</code> objects sets the first item (the first element of
-<code><a href="https://www.rdocumentation.org/packages/base/topics/colnames">colnames(R)</a></code>) as the reference:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod)</a></code></pre></div>
+<code><a href="https://rdrr.io/r/base/colnames.html">colnames(R)</a></code>) as the reference:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7)
 ## 
 ## Coefficients:
@@ -724,12 +750,13 @@ method for <code>"PlackettLuce"</code> objects sets the first item (the first el
 ## Number of iterations: 7</code></pre>
 <p>None of the Z tests for the item parameters provides significant evidence
 against the null hypothesis of no difference from the worth of item 1, which is consistent with the test for equal
-preferences presented in <span class="citation">Davidson (<a href="#ref-Davidson1970">1970</a>)</span>. The tie parameter is also shown on the
+preferences presented in <span class="citation">Davidson (<a href="#ref-Davidson1970" role="doc-biblioref">1970</a>)</span>. The tie parameter is also shown on the
 log scale here, but it is an integral part of the model rather than a parameter
 of interest for inference, and its scale is not as relevant as that of the worth parameters.</p>
 <p>The reference level for the item parameters can be changed via the <code>ref</code>
 argument, for example setting to <code>NULL</code> sets the mean worth as the reference:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod, <span class="dt">ref =</span> <span class="ot">NULL</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span>, ref <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7)
 ## 
 ## Coefficients:
@@ -757,8 +784,9 @@ so even in cases where there is a natural reference, the uncertainty around the
 worth of that item can still be represented.</p>
 <p>Quasi standard errors for the item parameters are implemented via a method for
 the <code>qvcalc</code> function from the <strong>qvcalc</strong> package:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod)</a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(qv)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit">
+<span class="va">qv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://davidfirth.github.io/qvcalc/reference/qvcalc.html">qvcalc</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">qv</span><span class="op">)</span></pre></div>
 <pre><code>## Model call:  PlackettLuce(rankings = R, npseudo = 0, weights = w, maxit = 7) 
 ##        estimate        SE   quasiSE   quasiVar
 ##     1 0.0000000 0.0000000 0.1328950 0.01766108
@@ -774,14 +802,15 @@ changed via a <code>ref</code> argument. The plot method for the returned object
 the item parameters (log-worth parameters) along with comparison intervals -
 item parameters for which the comparison intervals do not cross are
 significantly different:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(qv, <span class="dt">xlab =</span> <span class="st">"Brand of pudding"</span>, <span class="dt">ylab =</span> <span class="st">"Worth (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">qv</span>, xlab <span class="op">=</span> <span class="st">"Brand of pudding"</span>, ylab <span class="op">=</span> <span class="st">"Worth (log)"</span>, main <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></pre></div>
 <div class="figure">
 <span id="fig:pudding-qv"></span>
-<img src="Overview_files/figure-html/pudding-qv-1.png" alt="Worth of brands of chocolate pudding. Intervals based on quasi-standard errors." width="700"><p class="caption">
+<img src="Overview_files/figure-html/pudding-qv-1.png" alt="Worth of brands of chocolate pudding. Intervals based on quasi-standard errors." width="672"><p class="caption">
 Figure 2.1: Worth of brands of chocolate pudding. Intervals based on quasi-standard errors.
 </p>
 </div>
-<p>The quasi-variances allow comparisons that are <em>approximately</em> correct, for every possible contrast among the parameters. The routine error report in the last two lines printed above by <code><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary(qv)</a></code> tells us that, in this example, the approximation error has been very small: the approximation error for the standard error of any simple
+<p>The quasi-variances allow comparisons that are <em>approximately</em> correct, for every possible contrast among the parameters. The routine error report in the last two lines printed above by <code><a href="https://rdrr.io/r/base/summary.html">summary(qv)</a></code> tells us that, in this example, the approximation error has been very small: the approximation error for the standard error of any simple
 contrast among the parameters is less than 0.8%.</p>
 </div>
 <div id="disconnected-networks" class="section level2">
@@ -789,13 +818,14 @@ contrast among the parameters is less than 0.8%.</p>
 <a href="#disconnected-networks" class="anchor"></a><span class="header-section-number">2.3</span> Disconnected networks</h2>
 <p>The wins and losses between items can be represented as a directed network. For
 example, consider the following set of paired comparisons</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">              <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">              <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">              <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb24-5" data-line-number="5">              <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="dt">byrow =</span> <span class="ot">TRUE</span>, <span class="dt">ncol =</span> <span class="dv">4</span>,</a>
-<a class="sourceLine" id="cb24-6" data-line-number="6">            <span class="dt">dimnames =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="ot">NULL</span>, LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>]))</a>
-<a class="sourceLine" id="cb24-7" data-line-number="7">R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(R)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit">
+<span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>,
+              <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>,
+              <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">2</span>,
+              <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>,
+              <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">0</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, ncol <span class="op">=</span> <span class="fl">4</span>,
+            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span></pre></div>
 <p>Note that even though the data were specified as a rankings matrix, we have
 used <code><a href="../reference/rankings.html">as.rankings()</a></code> to create a formal rankings object (<code>input</code> is set to
 <code>"rankings"</code> by default). The
@@ -806,8 +836,9 @@ uninformative, and adds column names if necessary.</p>
 <p>The <code>adjacency</code> function from <strong>PlackettLuce</strong> can be used to convert these
 rankings to an adjacency matrix where element <span class="math inline">\((i, j)\)</span> is the number of times
 item <span class="math inline">\(i\)</span> is ranked higher than item <span class="math inline">\(j\)</span>:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">A &lt;-<span class="st"> </span><span class="kw"><a href="../reference/adjacency.html">adjacency</a></span>(R)</a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">A</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit">
+<span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjacency.html">adjacency</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span>
+<span class="va">A</span></pre></div>
 <pre><code>##   A B C D
 ## A 0 1 0 1
 ## B 1 0 1 0
@@ -816,9 +847,10 @@ item <span class="math inline">\(i\)</span> is ranked higher than item <span cla
 ## attr(,"class")
 ## [1] "adjacency" "matrix"</code></pre>
 <p>Using functions from <strong>igraph</strong> we can visualise the corresponding network:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(igraph)</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">net &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/igraph/topics/graph_from_adjacency_matrix">graph_from_adjacency_matrix</a></span>(A)</a>
-<a class="sourceLine" id="cb27-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(net, <span class="dt">edge.arrow.size =</span> <span class="fl">0.5</span>, <span class="dt">vertex.size =</span> <span class="dv">30</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://igraph.org">igraph</a></span><span class="op">)</span>
+<span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/graph_from_adjacency_matrix.html">graph_from_adjacency_matrix</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">net</span>, edge.arrow.size <span class="op">=</span> <span class="fl">0.5</span>, vertex.size <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></pre></div>
 <div class="figure">
 <span id="fig:always-loses"></span>
 <img src="Overview_files/figure-html/always-loses-1.png" alt="Network representation of toy rankings." width="336"><p class="caption">
@@ -842,7 +874,8 @@ undefined, because there is no information on the relative worth of the
 clusters or one cluster is infinitely worse than the other.</p>
 <p>The connectivity of the network can be checked with the <code>connectivity</code> function
 from <strong>PlackettLuce</strong></p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="../reference/connectivity.html">connectivity</a></span>(A)</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="downlit">
+<span class="fu"><a href="../reference/connectivity.html">connectivity</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span></pre></div>
 <pre><code>## $membership
 ## A B C D 
 ## 1 1 1 2 
@@ -855,11 +888,13 @@ from <strong>PlackettLuce</strong></p>
 <p>If the network is not strongly connected, information on the clusters within
 the network is returned. In this case a model could be estimated by excluding
 item D:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">R2 &lt;-<span class="st"> </span>R[, <span class="dv">-4</span>]</a>
-<a class="sourceLine" id="cb30-2" data-line-number="2">R2</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit">
+<span class="va">R2</span> <span class="op">&lt;-</span> <span class="va">R</span><span class="op">[</span>, <span class="op">-</span><span class="fl">4</span><span class="op">]</span>
+<span class="va">R2</span></pre></div>
 <pre><code>## [1] "A &gt; B" "C &gt; A" NA      "B &gt; A" "B &gt; C"</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">mod &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R2, <span class="dt">npseudo =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod)</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit">
+<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R2</span>, npseudo <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></pre></div>
 <pre><code>## Call: PlackettLuce(rankings = R2, npseudo = 0)
 ## 
 ## Coefficients:
@@ -888,78 +923,89 @@ network is strongly connected and throw an error otherwise. The larger
 is set to 0.5, so each pseudo-ranking is weighted by 0.5. This is enough to
 connect the network, but is a weak prior. In this toy example, the item
 parameters change quite considerably:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)</a>
-<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod2)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit">
+<span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span></pre></div>
 <pre><code>##          A          B          C          D 
 ##  0.0000000  0.5184185  0.1354707 -1.1537565</code></pre>
 <p>This is because there are only 5 rankings, so there is not much information in
 the data. In more realistic examples, the default prior will have a weak
 shrinkage effect, shrinking the items’ worth parameters towards <span class="math inline">\(1/N\)</span>,
 where <span class="math inline">\(N\)</span> is the number of items.</p>
-<p>For a practical example, we consider the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>. This
+<p>For a practical example, we consider the NASCAR data from <span class="citation">Hunter (<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span>. This
 collects the results of the 36 races in the 2002 NASCAR season in the United
 States. Each race involves 43 drivers out of a total of 87 drivers. The
 <code>nascar</code> data provided by <strong>PlackettLuce</strong> records the results as an ordering
 of the drivers in each race:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(nascar)</a>
-<a class="sourceLine" id="cb36-2" data-line-number="2">nascar[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, ]</a></code></pre></div>
-<pre><code>##      rank1 rank2 rank3 rank4 rank5 rank6 rank7 rank8 rank9 rank10 rank11
-## [1,]    83    18    20    48    53    51    67    72    32     42      2
-## [2,]    52    72     4    82    60    31    32    66     3     44      2
-##      rank12 rank13 rank14 rank15 rank16 rank17 rank18 rank19 rank20 rank21
-## [1,]     31     62     13     37      6     60     66     33     77     56
-## [2,]     48     83     67     41     77     33     61     45     38     51
-##      rank22 rank23 rank24 rank25 rank26 rank27 rank28 rank29 rank30 rank31
-## [1,]     63     55     70     14     43     71     35     12     44     79
-## [2,]     14     42     62     35     12     25     37     34      6     18
-##      rank32 rank33 rank34 rank35 rank36 rank37 rank38 rank39 rank40 rank41
-## [1,]      3     52      4      9     45     41     61     34     39     49
-## [2,]     79     39     59     43     55     49     56      9     53      7
-##      rank42 rank43
-## [1,]     15     82
-## [2,]     13     71</code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nascar</span><span class="op">)</span>
+<span class="va">nascar</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></pre></div>
+<pre><code>##      rank1 rank2 rank3 rank4 rank5 rank6 rank7 rank8 rank9 rank10 rank11 rank12
+## [1,]    83    18    20    48    53    51    67    72    32     42      2     31
+## [2,]    52    72     4    82    60    31    32    66     3     44      2     48
+##      rank13 rank14 rank15 rank16 rank17 rank18 rank19 rank20 rank21 rank22
+## [1,]     62     13     37      6     60     66     33     77     56     63
+## [2,]     83     67     41     77     33     61     45     38     51     14
+##      rank23 rank24 rank25 rank26 rank27 rank28 rank29 rank30 rank31 rank32
+## [1,]     55     70     14     43     71     35     12     44     79      3
+## [2,]     42     62     35     12     25     37     34      6     18     79
+##      rank33 rank34 rank35 rank36 rank37 rank38 rank39 rank40 rank41 rank42
+## [1,]     52      4      9     45     41     61     34     39     49     15
+## [2,]     39     59     43     55     49     56      9     53      7     13
+##      rank43
+## [1,]     82
+## [2,]     71</code></pre>
 <p>For example, in the first race, driver 83 came first, followed by driver 18 and
 so on. The names corresponding to the driver IDs are available as an attribute of
 <code>nascar</code>; we can provide these names when converting the orderings to rankings
 via the <code>items</code> argument:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(nascar, <span class="dt">input =</span> <span class="st">"orderings"</span>, <span class="dt">items =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attr">attr</a></span>(nascar, <span class="st">"drivers"</span>))</a>
-<a class="sourceLine" id="cb38-2" data-line-number="2">R[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit">
+<span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">nascar</span>, input <span class="op">=</span> <span class="st">"orderings"</span>, items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">nascar</span>, <span class="st">"drivers"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">R</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></pre></div>
 <pre><code>## [1] "Ward Burton &gt; Elliott Sadler &gt; Geoff ..."
 ## [2] "Matt Kenseth &gt; Sterling Marlin &gt; Bob ..."</code></pre>
 <p>Maximum likelihood estimation cannot be used in this example, because four
-drivers placed last in each race they entered. So <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span> dropped these
+drivers placed last in each race they entered. So <span class="citation">Hunter (<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span> dropped these
 four drivers to fit the Plackett-Luce model, which we can reproduce as follows:</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1">keep &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="dv">83</span>)</a>
-<a class="sourceLine" id="cb40-2" data-line-number="2">R2 &lt;-<span class="st"> </span>R[, keep]</a>
-<a class="sourceLine" id="cb40-3" data-line-number="3">mod &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R2, <span class="dt">npseudo =</span> <span class="dv">0</span>)</a></code></pre></div>
-<p>In order to demonstrate the correspondence with the results from <span class="citation">Hunter (<a href="#ref-Hunter2004">2004</a>)</span>, we
+<div class="sourceCode" id="cb40"><pre class="downlit">
+<span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fl">83</span><span class="op">)</span>
+<span class="va">R2</span> <span class="op">&lt;-</span> <span class="va">R</span><span class="op">[</span>, <span class="va">keep</span><span class="op">]</span>
+<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R2</span>, npseudo <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></pre></div>
+<p>In order to demonstrate the correspondence with the results from <span class="citation">Hunter (<a href="#ref-Hunter2004" role="doc-biblioref">2004</a>)</span>, we
 order the item parameters by the driver’s average rank:</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">avRank &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/apply">apply</a></span>(R, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(x[x <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>]))</a>
-<a class="sourceLine" id="cb41-2" data-line-number="2">coefs &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod)[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/order">order</a></span>(avRank[keep])], <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb41-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(coefs, <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="downlit">
+<span class="va">avRank</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">R</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="va">coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">avRank</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span><span class="op">)</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">coefs</span>, <span class="fl">3</span><span class="op">)</span></pre></div>
 <pre><code>##     PJ Jones Scott Pruett  Mark Martin 
 ##         4.15         3.62         2.08</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">tail</a></span>(coefs, <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">coefs</span>, <span class="fl">3</span><span class="op">)</span></pre></div>
 <pre><code>##  Dave Marcis Dick Trickle    Joe Varde 
 ##         0.03        -0.31        -0.15</code></pre>
 <p>Now we fit the Plackett-Luce model to the full data, using the default
 pseudo-rankings method.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">mod2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R)</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="downlit">
+<span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span></pre></div>
 <p>For items that were in the previous model, we see that the log-worth parameters
 generally shrink towards zero:</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1">coefs2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod2), <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb46-2" data-line-number="2">coefs2[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(coefs)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]]</a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="downlit">
+<span class="va">coefs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="va">coefs2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">coefs</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></pre></div>
 <pre><code>##     PJ Jones Scott Pruett  Mark Martin 
 ##         3.20         2.77         1.91</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1">coefs2[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(coefs)[<span class="dv">81</span><span class="op">:</span><span class="dv">83</span>]]</a></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="downlit">
+<span class="va">coefs2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">coefs</span><span class="op">)</span><span class="op">[</span><span class="fl">81</span><span class="op">:</span><span class="fl">83</span><span class="op">]</span><span class="op">]</span></pre></div>
 <pre><code>##  Dave Marcis Dick Trickle    Joe Varde 
 ##         0.02        -0.38        -0.12</code></pre>
 <p>The new items have relative large negative log worth</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1">coefs2[<span class="dv">84</span><span class="op">:</span><span class="dv">87</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="downlit">
+<span class="va">coefs2</span><span class="op">[</span><span class="fl">84</span><span class="op">:</span><span class="fl">87</span><span class="op">]</span></pre></div>
 <pre><code>## Andy Hillenburg  Gary Bradberry  Jason Hedlesky   Randy Renfrow 
 ##           -2.17           -1.74           -1.59           -1.77</code></pre>
 <p>Nonetheless, the estimates are finite and have finite standard errors:</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(mod2))[<span class="dv">84</span><span class="op">:</span><span class="dv">87</span>,]</a></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">84</span><span class="op">:</span><span class="fl">87</span>,<span class="op">]</span></pre></div>
 <pre><code>##                  Estimate Std. Error    z value  Pr(&gt;|z|)
 ## Andy Hillenburg -2.171065   1.812994 -1.1975028 0.2311106
 ## Gary Bradberry  -1.744754   1.855365 -0.9403828 0.3470212
@@ -968,25 +1014,26 @@ generally shrink towards zero:</p>
 <p>Note that the reference here is simply the driver that comes first
 alphabetically: A. Cameron. We can plot the quasi-variances for a better
 comparison:</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1">qv &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc">qvcalc</a></span>(mod2)</a>
-<a class="sourceLine" id="cb54-2" data-line-number="2">qv<span class="op">$</span>qvframe &lt;-<span class="st"> </span>qv<span class="op">$</span>qvframe[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/order">order</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(mod2)),]</a>
-<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(qv, <span class="dt">xlab =</span> <span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="st">"Ability (log)"</span>, <span class="dt">main =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb54-4" data-line-number="4">     <span class="dt">xaxt=</span><span class="st">"n"</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">85</span>))</a>
-<a class="sourceLine" id="cb54-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/axis">axis</a></span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="dv">87</span>), <span class="dt">labels =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/colnames">rownames</a></span>(qv<span class="op">$</span>qvframe), <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.axis =</span> <span class="fl">0.6</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="downlit">
+<span class="va">qv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://davidfirth.github.io/qvcalc/reference/qvcalc.html">qvcalc</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span>
+<span class="va">qv</span><span class="op">$</span><span class="va">qvframe</span> <span class="op">&lt;-</span> <span class="va">qv</span><span class="op">$</span><span class="va">qvframe</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">qv</span>, xlab <span class="op">=</span> <span class="cn">NULL</span>, ylab <span class="op">=</span> <span class="st">"Ability (log)"</span>, main <span class="op">=</span> <span class="cn">NULL</span>,
+     xaxt<span class="op">=</span><span class="st">"n"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">85</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/axis.html">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fl">87</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">qv</span><span class="op">$</span><span class="va">qvframe</span><span class="op">)</span>, las <span class="op">=</span> <span class="fl">2</span>, cex.axis <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></pre></div>
 <div class="figure">
 <span id="fig:nascar-qv"></span>
-<img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="700"><p class="caption">
+<img src="Overview_files/figure-html/nascar-qv-1.png" alt="Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors." width="672"><p class="caption">
 Figure 2.3: Ability of drivers based on NASCAR 2002 season. Intervals based on quasi-standard errors.
 </p>
 </div>
-<p>As in the previous example, we can use <code><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary(qv)</a></code> to see a report on the
+<p>As in the previous example, we can use <code><a href="https://rdrr.io/r/base/summary.html">summary(qv)</a></code> to see a report on the
 accuracy of the quasi-variance approximation. In this example the error of
 approximation, across the standard errors of all of the 3741 possible simple
 contrasts (contrasts between pairs of the 87 driver-specific parameters),
 ranges between -0.7% and +6.7% — which is still remarkably accurate, and which
 means that the plot of comparison intervals is a good visual guide to the
 uncertainty about drivers’ relative abilities. The results of using
-<code><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary(qv)</a></code> are not shown here, as they would occupy too much space.</p>
+<code><a href="https://rdrr.io/r/base/summary.html">summary(qv)</a></code> are not shown here, as they would occupy too much space.</p>
 <p>Although the prior pseudo-rankings are only necessary to add when the network is
 incomplete, the default behaviour is always to use them (with a weight of 0.5)
 because the small shrinkage effect that the pseudo-data delivers typically
@@ -1015,9 +1062,9 @@ improvement in model fit.</li>
 split produces a sub-group below a given size threshold.</li>
 </ol>
 <p>This is an extension of Bradley-Terry trees, implemented in the R package
-<strong>psychotree</strong> and described in more detail by <span class="citation">Strobl, Wickelmaier, and Zeileis (<a href="#ref-Strobl2011">2011</a>)</span>.</p>
+<strong>psychotree</strong> and described in more detail by <span class="citation">Strobl, Wickelmaier, and Zeileis (<a href="#ref-Strobl2011" role="doc-biblioref">2011</a>)</span>.</p>
 <p>To illustrate this approach, we consider data from a trial of different
-varieties of bean in Nicaragua, run by Bioversity International <span class="citation">(Van Etten et al. <a href="#ref-vanEtten2016">2016</a>)</span>.
+varieties of bean in Nicaragua, run by Bioversity International <span class="citation">(Van Etten et al. <a href="#ref-vanEtten2016" role="doc-biblioref">2016</a>)</span>.
 Farmers were
 asked to grow three experimental varieties of bean in one of the growing
 seasons, Primera (May - August), Postrera (September - October) or Apante
@@ -1031,7 +1078,8 @@ some preparation to collate the rankings, which is detailed in
 Appendix <a href="#app:beans">5.2</a>.
 The same code is provided in the examples section of the help file of
 <code>beans</code></p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/example">example</a></span>(<span class="st">"beans"</span>, <span class="dt">package =</span> <span class="st">"PlackettLuce"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/example.html">example</a></span><span class="op">(</span><span class="st">"beans"</span>, package <span class="op">=</span> <span class="st">"PlackettLuce"</span><span class="op">)</span></pre></div>
 <p>The result is a <code>rankings</code> object <code>R</code> with all rankings of the three
 experimental varieties and the output of their comparison with the local
 variety.</p>
@@ -1041,9 +1089,10 @@ we wish to group by each record in the original data set, so we group by an
 index that identifies the record number for each of the four rankings from
 each farmer (one ranking of order three plus three pairwise rankings with the
 local variety):</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(beans)</a>
-<a class="sourceLine" id="cb56-2" data-line-number="2">G &lt;-<span class="st"> </span><span class="kw"><a href="../reference/group.html">group</a></span>(R, <span class="dt">index =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(n), <span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb56-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(G, <span class="dv">2</span>), <span class="dt">width =</span> <span class="dv">50</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="downlit">
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">beans</span><span class="op">)</span>
+<span class="va">G</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/group.html">group</a></span><span class="op">(</span><span class="va">R</span>, index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">G</span>, <span class="fl">2</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></pre></div>
 <pre><code>##                                                                   1 
 ##  "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182, Local &gt; BRT 103-182, ..." 
 ##                                                                   2 
@@ -1053,10 +1102,11 @@ the season-year the beans were planted, <code>year</code> the year of planting,
 and <code>maxTN</code> the maximum temperature at night during the vegetative cycle.
 The following code fits a Plackett-Luce tree with up to three nodes and at
 least 5% of the records in each node:</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1">beans<span class="op">$</span>year &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(beans<span class="op">$</span>year)</a>
-<a class="sourceLine" id="cb58-2" data-line-number="2">tree &lt;-<span class="st"> </span><span class="kw"><a href="../reference/pltree.html">pltree</a></span>(G <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"season"</span>, <span class="st">"year"</span>, <span class="st">"maxTN"</span>)],</a>
-<a class="sourceLine" id="cb58-3" data-line-number="3">               <span class="dt">minsize =</span> <span class="fl">0.05</span><span class="op">*</span>n, <span class="dt">maxdepth =</span> <span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb58-4" data-line-number="4">tree</a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="downlit">
+<span class="va">beans</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">beans</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>
+<span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pltree.html">pltree</a></span><span class="op">(</span><span class="va">G</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"season"</span>, <span class="st">"year"</span>, <span class="st">"maxTN"</span><span class="op">)</span><span class="op">]</span>,
+               minsize <span class="op">=</span> <span class="fl">0.05</span><span class="op">*</span><span class="va">n</span>, maxdepth <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+<span class="va">tree</span></pre></div>
 <p>The algorithm identifies three nodes, with the first split defined by high
 night-time temperatures, and the second splitting the single Primera season
 from the others. So for early planting in regions where the night-time
@@ -1067,10 +1117,11 @@ local variety was most preferred, closely followed by INTA Sequia (8). Finally
 in regions where the maximum night-time temperature was high, INTA Sequia (8)
 was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur
 (3). A plot method is provided to visualise the tree:</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(tree, <span class="dt">names =</span> <span class="ot">FALSE</span>, <span class="dt">abbreviate =</span> <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tree</span>, names <span class="op">=</span> <span class="cn">FALSE</span>, abbreviate <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></pre></div>
 <div class="figure">
 <span id="fig:plot-pltree"></span>
-<img src="Overview_files/figure-html/plot-pltree-1.png" alt="Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79." width="700"><p class="caption">
+<img src="Overview_files/figure-html/plot-pltree-1.png" alt="Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79." width="672"><p class="caption">
 Figure 3.1: Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.
 </p>
 </div>
@@ -1098,87 +1149,90 @@ parameters.</p>
 <h2 class="hasAnchor">
 <a href="#app:timings" class="anchor"></a><span class="header-section-number">5.1</span> Timings</h2>
 <p>Data for the package comparison in Table <a href="#tab:timings-kable">1.2</a> was downloaded
-from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013">2013</a>)</span> using the <code>read.soc</code> function provided in
+from PrefLib <span class="citation">(Mattei and Walsh <a href="#ref-Mattei2013" role="doc-biblioref">2013</a>)</span> using the <code>read.soc</code> function provided in
 <strong>PlackettLuce</strong> to read in files with the “Strict Orders - Complete List”
 format.</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(PlackettLuce)</a>
-<a class="sourceLine" id="cb60-2" data-line-number="2"><span class="co"># read in example data sets</span></a>
-<a class="sourceLine" id="cb60-3" data-line-number="3">preflib &lt;-<span class="st"> "http://www.preflib.org/data/election/"</span></a>
-<a class="sourceLine" id="cb60-4" data-line-number="4">netflix &lt;-<span class="st"> </span><span class="kw"><a href="../reference/preflib.html">read.soc</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(preflib, <span class="st">"netflix/ED-00004-00000101.soc"</span>))</a>
-<a class="sourceLine" id="cb60-5" data-line-number="5">tshirt &lt;-<span class="st"> </span><span class="kw"><a href="../reference/preflib.html">read.soc</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(preflib, <span class="st">"shirt/ED-00012-00000001.soc"</span>))</a>
-<a class="sourceLine" id="cb60-6" data-line-number="6">sushi &lt;-<span class="st"> </span><span class="kw"><a href="../reference/preflib.html">read.soc</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(preflib, <span class="st">"sushi/ED-00014-00000001.soc"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://hturner.github.io/PlackettLuce/">PlackettLuce</a></span><span class="op">)</span>
+<span class="co"># read in example data sets</span>
+<span class="va">preflib</span> <span class="op">&lt;-</span> <span class="st">"https://www.preflib.org/data/election/"</span>
+<span class="va">netflix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preflib.html">read.soc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">preflib</span>, <span class="st">"netflix/ED-00004-00000101.soc"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">tshirt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preflib.html">read.soc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">preflib</span>, <span class="st">"shirt/ED-00012-00000001.soc"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sushi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preflib.html">read.soc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">preflib</span>, <span class="st">"sushi/ED-00014-00000001.soc"</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>A wrapper was defined for each function in the comparison, to prepare the
 rankings and run each function with reasonable defaults. The Plackett-Luce model
 was fitted to aggregated rankings where possible (for <code>PlackettLuce</code>, <code>hyper2</code>,
 and <code>pmr</code>). Arguments were set to obtain the maximum likelihood estimate, with
 the default convergence criteria. The default iterative scaling algorithm was
 used for <code>PlackettLuce</code>.</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1">pl &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){</a>
-<a class="sourceLine" id="cb61-2" data-line-number="2">    <span class="co"># convert ordered items to ranking</span></a>
-<a class="sourceLine" id="cb61-3" data-line-number="3">    R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(dat[,<span class="op">-</span><span class="dv">1</span>], <span class="st">"ordering"</span>)</a>
-<a class="sourceLine" id="cb61-4" data-line-number="4">    <span class="co"># fit without adding pseudo-rankings, weight rankings by count</span></a>
-<a class="sourceLine" id="cb61-5" data-line-number="5">    <span class="kw"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span>(R, <span class="dt">npseudo =</span> <span class="dv">0</span>, <span class="dt">weights =</span> dat<span class="op">$</span>Freq)</a>
-<a class="sourceLine" id="cb61-6" data-line-number="6">}</a>
-<a class="sourceLine" id="cb61-7" data-line-number="7">hyper2 &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){</a>
-<a class="sourceLine" id="cb61-8" data-line-number="8">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"hyper2"</span>)</a>
-<a class="sourceLine" id="cb61-9" data-line-number="9">    <span class="co"># create likelihood object based on ordered items and counts</span></a>
-<a class="sourceLine" id="cb61-10" data-line-number="10">    H &lt;-<span class="st"> </span>hyper2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/hyper2/topics/hyper2">hyper2</a></span>(<span class="dt">pnames =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"p"</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(dat) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)))</a>
-<a class="sourceLine" id="cb61-11" data-line-number="11">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(dat))){</a>
-<a class="sourceLine" id="cb61-12" data-line-number="12">        x &lt;-<span class="st">  </span>dat[i, <span class="dv">-1</span>][dat[i, <span class="dv">-1</span>] <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>]</a>
-<a class="sourceLine" id="cb61-13" data-line-number="13">        H &lt;-<span class="st"> </span>H <span class="op">+</span><span class="st"> </span>hyper2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/hyper2/topics/ggol">order_likelihood</a></span>(x, <span class="dt">times =</span> dat[i, <span class="dv">1</span>])</a>
-<a class="sourceLine" id="cb61-14" data-line-number="14">    }</a>
-<a class="sourceLine" id="cb61-15" data-line-number="15">    <span class="co"># find parameters to maximise likelihood</span></a>
-<a class="sourceLine" id="cb61-16" data-line-number="16">    p &lt;-<span class="st"> </span>hyper2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/hyper2/topics/maxp">maxp</a></span>(H)</a>
-<a class="sourceLine" id="cb61-17" data-line-number="17">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/structure">structure</a></span>(p, <span class="dt">loglik =</span> hyper2<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/hyper2/topics/loglik">loglik</a></span>(H, p[<span class="op">-</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(p)]))</a>
-<a class="sourceLine" id="cb61-18" data-line-number="18">}</a>
-<a class="sourceLine" id="cb61-19" data-line-number="19">plmix &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){</a>
-<a class="sourceLine" id="cb61-20" data-line-number="20">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"PLMIX"</span>)</a>
-<a class="sourceLine" id="cb61-21" data-line-number="21">    <span class="co"># disaggregate data (no functionality for weights or counts)</span></a>
-<a class="sourceLine" id="cb61-22" data-line-number="22">    r &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(dat)), dat<span class="op">$</span>Freq)</a>
-<a class="sourceLine" id="cb61-23" data-line-number="23">    <span class="co"># maximum a posteriori estimate, with non-informative prior</span></a>
-<a class="sourceLine" id="cb61-24" data-line-number="24">    <span class="co"># K items in each ranking, single component distribution</span></a>
-<a class="sourceLine" id="cb61-25" data-line-number="25">    <span class="co"># default starting values do not always work so specify as uniform</span></a>
-<a class="sourceLine" id="cb61-26" data-line-number="26">    K &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">ncol</a></span>(dat) <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb61-27" data-line-number="27">    PLMIX<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/PLMIX/topics/mapPLMIX">mapPLMIX</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(dat[r, <span class="dv">-1</span>]), <span class="dt">K =</span> K, <span class="dt">G =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb61-28" data-line-number="28">                    <span class="dt">init =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">p =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep.int</a></span>(<span class="dv">1</span><span class="op">/</span>K, K)), <span class="dt">plot_objective =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb61-29" data-line-number="29">}</a>
-<a class="sourceLine" id="cb61-30" data-line-number="30">pmr &lt;-<span class="st"> </span><span class="cf">function</span>(dat, ...){</a>
-<a class="sourceLine" id="cb61-31" data-line-number="31">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"pmr"</span>)</a>
-<a class="sourceLine" id="cb61-32" data-line-number="32">    <span class="co"># convert ordered items to ranking</span></a>
-<a class="sourceLine" id="cb61-33" data-line-number="33">    R &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(dat[,<span class="op">-</span><span class="dv">1</span>], <span class="st">"ordering"</span>)</a>
-<a class="sourceLine" id="cb61-34" data-line-number="34">    <span class="co"># create data frame with counts as required by pl</span></a>
-<a class="sourceLine" id="cb61-35" data-line-number="35">    X &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">unclass</a></span>(R))</a>
-<a class="sourceLine" id="cb61-36" data-line-number="36">    X<span class="op">$</span>Freq &lt;-<span class="st"> </span>dat<span class="op">$</span>Freq</a>
-<a class="sourceLine" id="cb61-37" data-line-number="37">    <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/capture.output">capture.output</a></span>(res &lt;-<span class="st"> </span>pmr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pmr/topics/pl">pl</a></span>(X))</a>
-<a class="sourceLine" id="cb61-38" data-line-number="38">    res</a>
-<a class="sourceLine" id="cb61-39" data-line-number="39">}</a>
-<a class="sourceLine" id="cb61-40" data-line-number="40">statrank &lt;-<span class="st"> </span><span class="cf">function</span>(dat, iter){</a>
-<a class="sourceLine" id="cb61-41" data-line-number="41">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"StatRank"</span>)</a>
-<a class="sourceLine" id="cb61-42" data-line-number="42">    <span class="co"># disaggregate data (no functionality for weights or counts)</span></a>
-<a class="sourceLine" id="cb61-43" data-line-number="43">    r &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq_len</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(dat)), dat<span class="op">$</span>Freq)</a>
-<a class="sourceLine" id="cb61-44" data-line-number="44">    <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/capture.output">capture.output</a></span>(res &lt;-<span class="st"> </span>StatRank<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/StatRank/topics/Estimation.PL.MLE">Estimation.PL.MLE</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(dat[r, <span class="dv">-1</span>]),</a>
-<a class="sourceLine" id="cb61-45" data-line-number="45">                                                      <span class="dt">iter =</span> iter))</a>
-<a class="sourceLine" id="cb61-46" data-line-number="46">    res</a>
-<a class="sourceLine" id="cb61-47" data-line-number="47">}</a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="downlit">
+<span class="va">pl</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span>
+    <span class="co"># convert ordered items to ranking</span>
+    <span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"ordering"</span><span class="op">)</span>
+    <span class="co"># fit without adding pseudo-rankings, weight rankings by count</span>
+    <span class="fu"><a href="../reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span>, npseudo <span class="op">=</span> <span class="fl">0</span>, weights <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Freq</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">hyper2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"hyper2"</span><span class="op">)</span>
+    <span class="co"># create likelihood object based on ordered items and counts</span>
+    <span class="va">H</span> <span class="op">&lt;-</span> <span class="fu">hyper2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hyper2/man/hyper2.html">hyper2</a></span><span class="op">(</span>pnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"p"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
+        <span class="va">x</span> <span class="op">&lt;-</span>  <span class="va">dat</span><span class="op">[</span><span class="va">i</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">[</span><span class="va">dat</span><span class="op">[</span><span class="va">i</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span>
+        <span class="va">H</span> <span class="op">&lt;-</span> <span class="va">H</span> <span class="op">+</span> <span class="fu">hyper2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hyper2/man/ggol.html">order_likelihood</a></span><span class="op">(</span><span class="va">x</span>, times <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+    <span class="op">}</span>
+    <span class="co"># find parameters to maximise likelihood</span>
+    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">hyper2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hyper2/man/maxp.html">maxp</a></span><span class="op">(</span><span class="va">H</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="op">(</span><span class="va">p</span>, loglik <span class="op">=</span> <span class="fu">hyper2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/hyper2/man/loglik.html">loglik</a></span><span class="op">(</span><span class="va">H</span>, <span class="va">p</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">plmix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"PLMIX"</span><span class="op">)</span>
+    <span class="co"># disaggregate data (no functionality for weights or counts)</span>
+    <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span>, <span class="va">dat</span><span class="op">$</span><span class="va">Freq</span><span class="op">)</span>
+    <span class="co"># maximum a posteriori estimate, with non-informative prior</span>
+    <span class="co"># K items in each ranking, single component distribution</span>
+    <span class="co"># default starting values do not always work so specify as uniform</span>
+    <span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>
+    <span class="fu">PLMIX</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/PLMIX/man/mapPLMIX.html">mapPLMIX</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">r</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, K <span class="op">=</span> <span class="va">K</span>, G <span class="op">=</span> <span class="fl">1</span>,
+                    init <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep.int</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">K</span>, <span class="va">K</span><span class="op">)</span><span class="op">)</span>, plot_objective <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">pmr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"pmr"</span><span class="op">)</span>
+    <span class="co"># convert ordered items to ranking</span>
+    <span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"ordering"</span><span class="op">)</span>
+    <span class="co"># create data frame with counts as required by pl</span>
+    <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">unclass</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">X</span><span class="op">$</span><span class="va">Freq</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">$</span><span class="va">Freq</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html">capture.output</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">pmr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pmr/man/pl.html">pl</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">res</span>
+<span class="op">}</span>
+<span class="va">statrank</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">iter</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"StatRank"</span><span class="op">)</span>
+    <span class="co"># disaggregate data (no functionality for weights or counts)</span>
+    <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span>, <span class="va">dat</span><span class="op">$</span><span class="va">Freq</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html">capture.output</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">StatRank</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/StatRank/man/Estimation.PL.MLE.html">Estimation.PL.MLE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">r</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
+                                                      iter <span class="op">=</span> <span class="va">iter</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">res</span>
+<span class="op">}</span></pre></div>
 <p>When recording timings, the number of iterations for StatRank was set so
 that the log-likelihood on exit was equal to the log-likelihood returned by the
 other functions with relative tolerance 1e-6.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">timings &lt;-<span class="st"> </span><span class="cf">function</span>(dat, <span class="dt">iter =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb62-2" data-line-number="2">                    <span class="dt">fun =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span>)){</a>
-<a class="sourceLine" id="cb62-3" data-line-number="3">    res &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
-<a class="sourceLine" id="cb62-4" data-line-number="4">    <span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span>)){</a>
-<a class="sourceLine" id="cb62-5" data-line-number="5">        <span class="cf">if</span> (nm <span class="op">%in%</span><span class="st"> </span>fun){</a>
-<a class="sourceLine" id="cb62-6" data-line-number="6">            res[[nm]] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/warning">suppressWarnings</a></span>(</a>
-<a class="sourceLine" id="cb62-7" data-line-number="7">                <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.time">system.time</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(nm, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(dat, iter)))[[<span class="st">"elapsed"</span>]])</a>
-<a class="sourceLine" id="cb62-8" data-line-number="8">        } <span class="cf">else</span> res[[nm]] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb62-9" data-line-number="9">    }</a>
-<a class="sourceLine" id="cb62-10" data-line-number="10">    res</a>
-<a class="sourceLine" id="cb62-11" data-line-number="11">}</a>
-<a class="sourceLine" id="cb62-12" data-line-number="12">netflix_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(netflix, <span class="dv">6</span>)</a>
-<a class="sourceLine" id="cb62-13" data-line-number="13">tshirt_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(tshirt, <span class="dv">341</span>,</a>
-<a class="sourceLine" id="cb62-14" data-line-number="14">                          <span class="dt">fun =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span>))</a>
-<a class="sourceLine" id="cb62-15" data-line-number="15">sushi_timings &lt;-<span class="st"> </span><span class="kw">timings</span>(sushi, <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb62-16" data-line-number="16">                         <span class="dt">fun =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="downlit">
+<span class="va">timings</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat</span>, <span class="va">iter</span> <span class="op">=</span> <span class="cn">NULL</span>,
+                    <span class="va">fun</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">nm</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"pmr"</span>, <span class="st">"statrank"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
+        <span class="kw">if</span> <span class="op">(</span><span class="va">nm</span> <span class="op">%in%</span> <span class="va">fun</span><span class="op">)</span><span class="op">{</span>
+            <span class="va">res</span><span class="op">[[</span><span class="va">nm</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span>
+                <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">nm</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">iter</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[[</span><span class="st">"elapsed"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+        <span class="op">}</span> <span class="kw">else</span> <span class="va">res</span><span class="op">[[</span><span class="va">nm</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>
+    <span class="op">}</span>
+    <span class="va">res</span>
+<span class="op">}</span>
+<span class="va">netflix_timings</span> <span class="op">&lt;-</span> <span class="fu">timings</span><span class="op">(</span><span class="va">netflix</span>, <span class="fl">6</span><span class="op">)</span>
+<span class="va">tshirt_timings</span> <span class="op">&lt;-</span> <span class="fu">timings</span><span class="op">(</span><span class="va">tshirt</span>, <span class="fl">341</span>,
+                          fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sushi_timings</span> <span class="op">&lt;-</span> <span class="fu">timings</span><span class="op">(</span><span class="va">sushi</span>, <span class="fl">5</span>,
+                         fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pl"</span>, <span class="st">"hyper2"</span>, <span class="st">"plmix"</span>, <span class="st">"statrank"</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 <div id="app:beans" class="section level2">
 <h2 class="hasAnchor">
@@ -1186,63 +1240,71 @@ other functions with relative tolerance 1e-6.</p>
 <p>First we handle the best and worst rankings. These give the variety the farmer
 thought was best or worst, coded as A, B or C for the first, second or third
 variety assigned to the farmer respectively.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(beans)</a>
-<a class="sourceLine" id="cb63-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"best"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">beans</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"best"</span>, <span class="st">"worst"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##   best worst
 ## 1    C     A
 ## 2    B     A</code></pre>
 <p>We fill in the missing item using the <code>complete</code> function from <strong>PlackettLuce</strong>:</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1">beans<span class="op">$</span>middle &lt;-<span class="st"> </span><span class="kw"><a href="../reference/complete.html">complete</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"best"</span>, <span class="st">"worst"</span>)],</a>
-<a class="sourceLine" id="cb65-2" data-line-number="2">                         <span class="dt">items =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</a>
-<a class="sourceLine" id="cb65-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)], <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="downlit">
+<span class="va">beans</span><span class="op">$</span><span class="va">middle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/complete.html">complete</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"best"</span>, <span class="st">"worst"</span><span class="op">)</span><span class="op">]</span>,
+                         items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##   best middle worst
 ## 1    C      B     A
 ## 2    B      C     A</code></pre>
 <p>This gives an ordering of the three varieties the farmer was given. The names of
 these varieties are stored in separate columns:</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span>)], <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##     variety_a       variety_b   variety_c
 ## 1 BRT 103-182      SJC 730-79 PM2 Don Rey
 ## 2   INTA Rojo INTA Centro Sur INTA Sequia</code></pre>
 <p>We can use the <code>decode</code> function from <strong>PlackettLuce</strong> to decode the orderings,
 replacing the coded values with the actual varieties:</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1">order3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/decode.html">decode</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span>)],</a>
-<a class="sourceLine" id="cb69-2" data-line-number="2">                 <span class="dt">items =</span> beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span>)],</a>
-<a class="sourceLine" id="cb69-3" data-line-number="3">                 <span class="dt">code =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="downlit">
+<span class="va">order3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/decode.html">decode</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"best"</span>, <span class="st">"middle"</span>, <span class="st">"worst"</span><span class="op">)</span><span class="op">]</span>,
+                 items <span class="op">=</span> <span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span><span class="op">)</span><span class="op">]</span>,
+                 code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>The pairwise comparisons with the local variety are stored in another set of
 columns</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span>)], <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##   var_a  var_b  var_c
 ## 1 Worse  Worse Better
 ## 2 Worse Better Better</code></pre>
 <p>To convert these data to orderings we first create vectors of the trial variety
 and the outcome in each paired comparison:</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1">trial_variety &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span>)])</a>
-<a class="sourceLine" id="cb72-2" data-line-number="2">outcome &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/unlist">unlist</a></span>(beans[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span>)])</a></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="downlit">
+<span class="va">trial_variety</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"variety_a"</span>, <span class="st">"variety_b"</span>, <span class="st">"variety_c"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="va">outcome</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">beans</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"var_a"</span>, <span class="st">"var_b"</span>, <span class="st">"var_c"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <p>We can then derive the winner and loser in each comparison:</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1">order2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Winner =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(outcome <span class="op">==</span><span class="st"> "Worse"</span>,</a>
-<a class="sourceLine" id="cb73-2" data-line-number="2">                                     <span class="st">"Local"</span>, trial_variety),</a>
-<a class="sourceLine" id="cb73-3" data-line-number="3">                     <span class="dt">Loser =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(outcome <span class="op">==</span><span class="st"> "Worse"</span>,</a>
-<a class="sourceLine" id="cb73-4" data-line-number="4">                                    trial_variety, <span class="st">"Local"</span>),</a>
-<a class="sourceLine" id="cb73-5" data-line-number="5">                     <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">NULL</span>)</a>
-<a class="sourceLine" id="cb73-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(order2, <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="downlit">
+<span class="va">order2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Winner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">==</span> <span class="st">"Worse"</span>,
+                                     <span class="st">"Local"</span>, <span class="va">trial_variety</span><span class="op">)</span>,
+                     Loser <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">==</span> <span class="st">"Worse"</span>,
+                                    <span class="va">trial_variety</span>, <span class="st">"Local"</span><span class="op">)</span>,
+                     stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">order2</span>, <span class="fl">2</span><span class="op">)</span></pre></div>
 <pre><code>##   Winner       Loser
 ## 1  Local BRT 103-182
 ## 2  Local   INTA Rojo</code></pre>
 <p>Finally we covert each set of orderings to rankings and combine them</p>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">rbind</a></span>(<span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(order3, <span class="dt">input =</span> <span class="st">"ordering"</span>),</a>
-<a class="sourceLine" id="cb75-2" data-line-number="2">           <span class="kw"><a href="../reference/rankings.html">as.rankings</a></span>(order2, <span class="dt">input =</span> <span class="st">"ordering"</span>))</a>
-<a class="sourceLine" id="cb75-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(R)</a></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="downlit">
+<span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">order3</span>, input <span class="op">=</span> <span class="st">"ordering"</span><span class="op">)</span>,
+           <span class="fu"><a href="../reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">order2</span>, input <span class="op">=</span> <span class="st">"ordering"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span></pre></div>
 <pre><code>## [1] "PM2 Don Rey &gt; SJC 730-79 &gt; BRT 103-182"  
 ## [2] "INTA Centro Sur &gt; INTA Sequia &gt; INTA ..."
 ## [3] "INTA Ferroso &gt; INTA Matagalpa &gt; BRT  ..."
 ## [4] "INTA Rojo &gt; INTA Centro Sur &gt; ALS 0532-6"
 ## [5] "PM2 Don Rey &gt; INTA Sequia &gt; SJC 730-79"  
 ## [6] "ALS 0532-6 &gt; INTA Matagalpa &gt; INTA Rojo"</code></pre>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">tail</a></span>(R)</a></code></pre></div>
-<pre><code>## [1] "INTA Sequia &gt; Local"    "INTA Sequia &gt; Local"   
-## [3] "BRT 103-182 &gt; Local"    "Local &gt; INTA Matagalpa"
-## [5] "Local &gt; INTA Rojo"      "Local &gt; SJC 730-79"</code></pre>
+<div class="sourceCode" id="cb77"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span></pre></div>
+<pre><code>## [1] "INTA Sequia &gt; Local"    "INTA Sequia &gt; Local"    "BRT 103-182 &gt; Local"   
+## [4] "Local &gt; INTA Matagalpa" "Local &gt; INTA Rojo"      "Local &gt; SJC 730-79"</code></pre>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -1250,70 +1312,47 @@ and the outcome in each paired comparison:</p>
 <a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
 <div id="ref-Baker1994">
-<p>Baker, Stuart G. 1994. “The multinomial-Poisson transformation.” <em>Journal of the Royal Statistical Society. Series D (the Statistician)</em> 43 (4): 495–504. <a href="https://doi.org/10.2307/2348134" class="uri">https://doi.org/10.2307/2348134</a>.</p>
+<p>Baker, Stuart G. 1994. “The multinomial-Poisson transformation.” <em>Journal of the Royal Statistical Society. Series D (the Statistician)</em> 43 (4): 495–504. <a href="https://doi.org/10.2307/2348134">https://doi.org/10.2307/2348134</a>.</p>
 </div>
 <div id="ref-Bennett2007">
 <p>Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In <em>Proceedings of the Kdd Cup Workshop 2007</em>, 3–6. ACM.</p>
 </div>
 <div id="ref-Davidson1970">
-<p>Davidson, Roger R. 1970. “On extending the bradley-terry model to accommodate ties in paired comparison experiments.” <em>Journal of the American Statistical Association</em> 65 (329): 317–28. <a href="https://doi.org/10.1080/01621459.1970.10481082" class="uri">https://doi.org/10.1080/01621459.1970.10481082</a>.</p>
+<p>Davidson, Roger R. 1970. “On extending the bradley-terry model to accommodate ties in paired comparison experiments.” <em>Journal of the American Statistical Association</em> 65 (329): 317–28. <a href="https://doi.org/10.1080/01621459.1970.10481082">https://doi.org/10.1080/01621459.1970.10481082</a>.</p>
 </div>
 <div id="ref-Hunter2004">
-<p>Hunter, David R. 2004. “MM algorithms for generalized Bradley-Terry models.” <em>Annals of Statistics</em> 32 (1): 384–406. <a href="https://doi.org/10.1214/aos/1079120141" class="uri">https://doi.org/10.1214/aos/1079120141</a>.</p>
+<p>Hunter, David R. 2004. “MM algorithms for generalized Bradley-Terry models.” <em>Annals of Statistics</em> 32 (1): 384–406. <a href="https://doi.org/10.1214/aos/1079120141">https://doi.org/10.1214/aos/1079120141</a>.</p>
 </div>
 <div id="ref-Luce1959">
 <p>Luce, R. Duncan. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. New York: Wiley.</p>
 </div>
 <div id="ref-Luce1977">
-<p>———. 1977. “The choice axiom after twenty years.” <em>Journal of Mathematical Psychology</em> 15 (3): 215–33. <a href="https://doi.org/10.1016/0022-2496(77)90032-3" class="uri">https://doi.org/10.1016/0022-2496(77)90032-3</a>.</p>
+<p>———. 1977. “The choice axiom after twenty years.” <em>Journal of Mathematical Psychology</em> 15 (3): 215–33. <a href="https://doi.org/10.1016/0022-2496(77)90032-3">https://doi.org/10.1016/0022-2496(77)90032-3</a>.</p>
 </div>
 <div id="ref-Mattei2013">
-<p>Mattei, Nicholas, and Toby Walsh. 2013. “PrefLib: A Library of Preference Data.” In <em>Proceedings of the 3rd International Conference on Algorithmic Decision Theory (Adt 2013)</em>. Lecture Notes in Artificial Intelligence. Springer. <a href="http://preflib.org" class="uri">http://preflib.org</a>.</p>
+<p>Mattei, Nicholas, and Toby Walsh. 2013. “PrefLib: A Library of Preference Data.” In <em>Proceedings of the 3rd International Conference on Algorithmic Decision Theory (Adt 2013)</em>. Lecture Notes in Artificial Intelligence. Springer. <a href="https://preflib.org">https://preflib.org</a>.</p>
 </div>
 <div id="ref-Plackett1975">
-<p>Plackett, Robert L. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. <a href="https://doi.org/10.2307/2346567" class="uri">https://doi.org/10.2307/2346567</a>.</p>
+<p>Plackett, Robert L. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. <a href="https://doi.org/10.2307/2346567">https://doi.org/10.2307/2346567</a>.</p>
 </div>
 <div id="ref-Strobl2011">
-<p>Strobl, Carolin, Florian Wickelmaier, and Achim Zeileis. 2011. “Accounting for Individual Differences in Bradley-Terry Models by Means of Recursive Partitioning.” <em>Journal of Educational and Behavioral Statistics</em> 36 (2). SAGE PublicationsSage CA: Los Angeles, CA: 135—–153. <a href="https://doi.org/10.3102/1076998609359791" class="uri">https://doi.org/10.3102/1076998609359791</a>.</p>
+<p>Strobl, Carolin, Florian Wickelmaier, and Achim Zeileis. 2011. “Accounting for Individual Differences in Bradley-Terry Models by Means of Recursive Partitioning.” <em>Journal of Educational and Behavioral Statistics</em> 36 (2): 135—–153. <a href="https://doi.org/10.3102/1076998609359791">https://doi.org/10.3102/1076998609359791</a>.</p>
 </div>
 <div id="ref-vanEtten2016">
-<p>Van Etten, Jacob, Eskender Beza, Lluís Calderer, Kees van Duijvendijk, Carlo Fadda, Basazen Fantahun, Yosef Gebrehawaryat Kidane, et al. 2016. “First experiences with a novel farmer citizen science approach: crowdsourcing participatory variety selection through on-farm triadic comparisons of technologies (tricot).” <em>Experimental Agriculture</em>, 1–22. <a href="https://doi.org/10.1017/S0014479716000739" class="uri">https://doi.org/10.1017/S0014479716000739</a>.</p>
+<p>Van Etten, Jacob, Eskender Beza, Lluís Calderer, Kees van Duijvendijk, Carlo Fadda, Basazen Fantahun, Yosef Gebrehawaryat Kidane, et al. 2016. “First experiences with a novel farmer citizen science approach: crowdsourcing participatory variety selection through on-farm triadic comparisons of technologies (tricot).” <em>Experimental Agriculture</em>, 1–22. <a href="https://doi.org/10.1017/S0014479716000739">https://doi.org/10.1017/S0014479716000739</a>.</p>
 </div>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#comparison-with-other-packages"><span class="toc-section-number">1.1</span> Comparison with other packages</a></li>
-      </ul>
-</li>
-      <li>
-<a href="#methods"><span class="toc-section-number">2</span> Methods</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#extended-plackett-luce-model"><span class="toc-section-number">2.1</span> Extended Plackett-Luce model</a></li>
-      <li><a href="#inference"><span class="toc-section-number">2.2</span> Inference</a></li>
-      <li><a href="#disconnected-networks"><span class="toc-section-number">2.3</span> Disconnected networks</a></li>
-      </ul>
-</li>
-      <li><a href="#plackett-luce-trees"><span class="toc-section-number">3</span> Plackett-Luce Trees</a></li>
-      <li><a href="#discussion"><span class="toc-section-number">4</span> Discussion</a></li>
-      <li>
-<a href="#appendix"><span class="toc-section-number">5</span> Appendix</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#app:timings"><span class="toc-section-number">5.1</span> Timings</a></li>
-      <li><a href="#app:beans"><span class="toc-section-number">5.2</span> <code>beans</code> data preparation</a></li>
-      </ul>
-</li>
-      <li><a href="#references">References</a></li>
-      </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
+
 
 
       <footer><div class="copyright">
@@ -1321,12 +1360,14 @@ and the outcome in each paired comparison:</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

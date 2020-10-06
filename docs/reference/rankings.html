@@ -8,21 +8,29 @@
 
 <title>Rankings Object — rankings • PlackettLuce</title>
 
+
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -32,11 +40,11 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Rankings Object — rankings" />
 
+<meta property="og:title" content="Rankings Object — rankings" />
 <meta property="og:description" content="Create a &quot;rankings&quot; object from data or convert a matrix of rankings
 or ordered items to a &quot;rankings&quot; object." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -50,9 +58,10 @@ or ordered items to a &quot;rankings&quot; object." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -66,7 +75,7 @@ or ordered items to a &quot;rankings&quot; object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -74,7 +83,7 @@ or ordered items to a &quot;rankings&quot; object." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -97,9 +106,13 @@ or ordered items to a &quot;rankings&quot; object." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/hturner/PlackettLuce/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -107,21 +120,20 @@ or ordered items to a &quot;rankings&quot; object." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Rankings Object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/hturner/PlackettLuce/blob/master/R/rankings.R'><code>R/rankings.R</code></a></small>
     <div class="hidden name"><code>rankings.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>Create a <code>"rankings"</code> object from data or convert a matrix of rankings
 or ordered items to a <code>"rankings"</code> object.</p>
-    
     </div>
 
     <pre class="usage">rankings(data, id, item, rank, aggregate = FALSE, verbose = TRUE, ...)
@@ -129,21 +141,37 @@ or ordered items to a <code>"rankings"</code> object.</p>
 as.rankings(x, ..., verbose = TRUE)
 
 # S3 method for default
-as.rankings(x, input = c("rankings", "orderings"),
-  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, ..., verbose = TRUE)
+as.rankings(
+  x,
+  input = c("rankings", "orderings"),
+  freq = NULL,
+  index = NULL,
+  aggregate = FALSE,
+  items = NULL,
+  labels = NULL,
+  ...,
+  verbose = TRUE
+)
 
 # S3 method for matrix
-as.rankings(x, input = c("rankings", "orderings"),
-  freq = NULL, index = NULL, aggregate = FALSE, items = NULL,
-  labels = NULL, ..., verbose = TRUE)
+as.rankings(
+  x,
+  input = c("rankings", "orderings"),
+  freq = NULL,
+  index = NULL,
+  aggregate = FALSE,
+  items = NULL,
+  labels = NULL,
+  ...,
+  verbose = TRUE
+)
 
 # S3 method for rankings
 [(x, i, j, ..., drop = TRUE, as.rankings = TRUE)
 
 # S3 method for rankings
 format(x, width = 40L, ...)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -185,7 +213,7 @@ to rankings data.</p></td>
       <th>x</th>
       <td><p>for <code>as.rankings</code>, a matrix with one column per item and one
 row per ranking, or an object that can be coerced to such as matrix; for
-<code>[</code> and <code>format</code>, a <code>"rankings"</code> object.</p></td>
+<code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code> and <code>format</code>, a <code>"rankings"</code> object.</p></td>
     </tr>
     <tr>
       <th>input</th>
@@ -221,11 +249,11 @@ the items, corresponding to the sorted unique values of <code>x</code>.</p></td>
     </tr>
     <tr>
       <th>i</th>
-      <td><p>indices specifying rankings to extract, as for <code><a href='https://www.rdocumentation.org/packages/base/topics/Extract'>[</a></code>.</p></td>
+      <td><p>indices specifying rankings to extract, as for <code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code>.</p></td>
     </tr>
     <tr>
       <th>j</th>
-      <td><p>indices specifying items to extract, as for <code><a href='https://www.rdocumentation.org/packages/base/topics/Extract'>[</a></code>.</p></td>
+      <td><p>indices specifying items to extract, as for <code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code>.</p></td>
     </tr>
     <tr>
       <th>drop</th>
@@ -242,19 +270,18 @@ a matrix/vector.</p></td>
 rankings that are too wide will be truncated.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>By default, a <code>"rankings"</code> object, which is a
 matrix of dense rankings with methods for several generics including
-<code><a href='aggregate.html'>aggregate</a></code>, <code>[</code>, <code>format</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind()</a></code> and
-<code><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix()</a></code>.</p>
+<code><a href='aggregate.html'>aggregate</a></code>, <code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code>, <code>format</code>, <code><a href='https://rdrr.io/r/base/cbind.html'>rbind()</a></code> and
+<code><a href='https://rdrr.io/r/base/matrix.html'>as.matrix()</a></code>.</p>
 <p>If the object is created with <code>aggregate = TRUE</code>, or ranking frequencies are
 specified via <code>freq</code>, the rankings are post-processed to create an
 <code>"aggregated_rankings"</code> object.</p>
 <p>If a group index is specified via <code>index</code>, the (possibly aggregated) rankings
 are post-processed to create a <code>"grouped_rankings"</code> object.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Each ranking in the input data will be converted to a dense ranking, which
@@ -271,27 +298,27 @@ causing records to be removed or recoded produce a message if
 <p>For <code>as.rankings</code> with <code>input = "orderings"</code>, unused ranks may be filled with
 zeroes for numeric <code>x</code> or <code>NA</code>. It is only necessary to have as many columns
 as ranks that are used.</p>
-<p>The method for <code>[</code> will return a reduced rankings object by default,
+<p>The method for <code><a href='https://rdrr.io/r/base/Extract.html'>[</a></code> will return a reduced rankings object by default,
 recoding as dense rankings and setting invalid rankings to <code>NA</code> as necessary.
 To extract rows and/or columns of the rankings as a matrix or vector,
 set <code>as.rankings = FALSE</code>, see examples.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># create rankings from data in long form</span>
 
 <span class='co'># example long form data</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>ranking</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>4</span>), <span class='fl'>5</span>, <span class='fl'>5</span>, <span class='fl'>5</span>),
-                <span class='kw'>letter</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>LETTERS</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span>:<span class='fl'>4</span>, <span class='fl'>2</span>:<span class='fl'>5</span>, <span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>)], <span class='fl'>NA</span>,
-                           <span class='no'>LETTERS</span>[<span class='fl'>3</span>:<span class='fl'>5</span>]),
-                <span class='kw'>rank</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>:<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>4</span>), <span class='fl'>3</span>:<span class='fl'>4</span>, <span class='fl'>NA</span>, <span class='fl'>NA</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>ranking <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, each <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>, <span class='fl'>5</span>, <span class='fl'>5</span>, <span class='fl'>5</span><span class='op'>)</span>,
+                letter <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>LETTERS</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, <span class='fl'>2</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>]</span>, <span class='cn'>NA</span>,
+                           <span class='va'>LETTERS</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>]</span><span class='op'>)</span>,
+                rank <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span><span class='op'>:</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>4</span><span class='op'>)</span>, <span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span>, <span class='cn'>NA</span>, <span class='cn'>NA</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># ranking 1 has different rank for same item, but order of items unambiguous</span>
 <span class='co'># all ranks are missing in ranking 2</span>
 <span class='co'># some ranks are missing in ranking 3</span>
 <span class='co'># ranking 4 has inconsistent ranks for two items and a rank with missing item</span>
 <span class='co'># ranking 5 is fine - an example of a tie</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/split'>split</a></span>(<span class='no'>x</span>, <span class='no'>x</span>$<span class='no'>ranking</span>)</div><div class='output co'>#&gt; $`1`
+<span class='fu'><a href='https://rdrr.io/r/base/split.html'>split</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>x</span><span class='op'>$</span><span class='va'>ranking</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $`1`
 #&gt;   ranking letter rank
 #&gt; 1       1      A    4
 #&gt; 2       1      B    3
@@ -326,52 +353,51 @@ set <code>as.rankings = FALSE</code>, see examples.</p>
 #&gt; 19       5      E    3
 #&gt; </div><div class='input'>
 <span class='co'># fix issues when creating rankings object</span>
-<span class='fu'>rankings</span>(<span class='no'>x</span>, <span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>"ranking"</span>, <span class='kw'>item</span> <span class='kw'>=</span> <span class='st'>"letter"</span>, <span class='kw'>rank</span> <span class='kw'>=</span> <span class='st'>"rank"</span>)</div><div class='output co'>#&gt; <span class='message'>Removed records with unknown id or item</span></div><div class='output co'>#&gt; <span class='message'>Duplicated items within rankings: set redundant/inconsistent to `NA`.</span></div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;           1           2           3           4           5 
+<span class='fu'>rankings</span><span class='op'>(</span><span class='va'>x</span>, id <span class='op'>=</span> <span class='st'>"ranking"</span>, item <span class='op'>=</span> <span class='st'>"letter"</span>, rank <span class='op'>=</span> <span class='st'>"rank"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Removed records with unknown id or item</span></div><div class='output co'>#&gt; <span class='message'>Duplicated items within rankings: set redundant/inconsistent to `NA`.</span></div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; <span class='message'>Rankings with only 1 item set to `NA`</span></div><div class='output co'>#&gt;           1           2           3           4           5 
 #&gt;     "B &gt; A"          NA     "B &gt; C"          NA "C = D &gt; E" </div><div class='input'>
 <span class='co'># convert existing matrix of rankings</span>
 
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
               <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>,
               <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>0</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
-              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'>as.rankings</span>(<span class='no'>R</span>)
+              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='fl'>6</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span><span class='op'>)</span>
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'>as.rankings</span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span>
 
 <span class='co'># first three rankings</span>
-<span class='no'>R</span>[<span class='fl'>1</span>:<span class='fl'>3</span>,]</div><div class='output co'>#&gt; [1] "apple &gt; banana"                 "banana &gt; orange &gt; pear &gt; apple"
+<span class='va'>R</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>,<span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] "apple &gt; banana"                 "banana &gt; orange &gt; pear &gt; apple"
 #&gt; [3] "banana = orange = pear &gt; apple"</div><div class='input'>
 <span class='co'># exclude pear from the rankings</span>
-<span class='no'>R</span>[, -<span class='fl'>4</span>]</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; [1] "apple &gt; banana"          "banana &gt; orange &gt; apple"
+<span class='va'>R</span><span class='op'>[</span>, <span class='op'>-</span><span class='fl'>4</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; <span class='message'>Recoded rankings that are not in dense form</span></div><div class='output co'>#&gt; [1] "apple &gt; banana"          "banana &gt; orange &gt; apple"
 #&gt; [3] "banana = orange &gt; apple" "apple &gt; banana &gt; orange"
 #&gt; [5] "banana = orange &gt; apple" "apple &gt; orange"         </div><div class='input'>
 <span class='co'># extract rankings 2 and 3 as numeric matrix</span>
-<span class='no'>R</span>[<span class='fl'>2</span>:<span class='fl'>3</span>, , <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt;      apple banana orange pear
+<span class='va'>R</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>:</span><span class='fl'>3</span>, , as.rankings <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>
+</div><div class='output co'>#&gt;      apple banana orange pear
 #&gt; [1,]     4      1      2    3
 #&gt; [2,]     2      1      1    1</div><div class='input'>
 <span class='co'># same as</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>as.matrix</a></span>(<span class='no'>R</span>)[<span class='fl'>2</span>:<span class='fl'>3</span>,]</div><div class='output co'>#&gt;      apple banana orange pear
+<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>:</span><span class='fl'>3</span>,<span class='op'>]</span>
+</div><div class='output co'>#&gt;      apple banana orange pear
 #&gt; [1,]     4      1      2    3
 #&gt; [2,]     2      1      1    1</div><div class='input'>
 <span class='co'># extract rankings for item 1 as a vector</span>
-<span class='no'>R</span>[,<span class='fl'>1</span>, <span class='kw'>as.rankings</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt; [1] 1 4 2 1 2 1</div><div class='input'>
+<span class='va'>R</span><span class='op'>[</span>,<span class='fl'>1</span>, as.rankings <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] 1 4 2 1 2 1</div><div class='input'>
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -379,13 +405,16 @@ set <code>as.rankings = FALSE</code>, see examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

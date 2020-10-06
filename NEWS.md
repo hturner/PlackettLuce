@@ -1,4 +1,4 @@
-# PlackettLuce 0.3-0
+# PlackettLuce 0.3.0
 
 * Now correctly handles cases where intermediate tie orders are not observed, fixing corresponding tie parameters to zero (#42).
 
@@ -151,7 +151,7 @@ direct maximisation of the likelihood via BFGS or L-BFGS.
 * Add `itempar` method for "PlackettLuce" objects to obtain different 
 parameterizations of the worth parameters.
 * Add `read.soc` function to read Strict Orders - Complete List (.soc) files 
-from http://www.preflib.org.
+from https://www.preflib.org.
 
 ## Changes in behaviour
 

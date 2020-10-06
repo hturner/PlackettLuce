@@ -25,7 +25,7 @@ log scale for inference.
 
 The implementation of the Plackett-Luce model in **PlackettLuce**:
 
-  - Accommodates ties (of any order) in the rankings, e.g. bananas
+  - Accommodates ties (of any order) in the rankings, e.g. bananas
     \(\succ\) {apples, oranges} \(\succ\) pears.
   - Accommodates sub-rankings, e.g. pears \(\succ\) apples, when the
     full set of items is {apples, bananas, oranges, pears}.
@@ -66,17 +66,18 @@ The [Netflix Prize](https://www.netflixprize.com/) was a competition
 devised by Netflix to improve the accuracy of its recommendation system.
 To facilitate this they released ratings about movies from the users of
 the system that have been transformed to preference data and are
-available from [PrefLib](http://www.preflib.org/data/election/netflix/),
-(Bennett and Lanning 2007). Each data set comprises rankings of a set of
-3 or 4 movies selected at random. Here we consider rankings for just one
-set of movies to illustrate the functionality of **PlackettLuce**.
+available from
+[PrefLib](https://www.preflib.org/data/election/netflix/), (Bennett and
+Lanning 2007). Each data set comprises rankings of a set of 3 or 4
+movies selected at random. Here we consider rankings for just one set of
+movies to illustrate the functionality of **PlackettLuce**.
 
 The data can be read in using the `read.soc` function in
 **PlackettLuce**
 
 ``` r
 library(PlackettLuce)
-preflib <- "http://www.preflib.org/data/election/"
+preflib <- "https://www.preflib.org/data/election/"
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000138.soc"))
 head(netflix, 2)
 ```
@@ -93,8 +94,8 @@ order. So for example, 68 users ranked movie 2 first, followed by movie
 
 `PlackettLuce`, the model-fitting function in **PlackettLuce** requires
 that the data are provided in the form of *rankings* rather than
-*orderings*, i.e. the rankings are expressed by giving the rank for each
-item, rather than ordering the items. We can create a `"rankings"`
+*orderings*, i.e.  the rankings are expressed by giving the rank for
+each item, rather than ordering the items. We can create a `"rankings"`
 object from a set of orderings as follows
 
 ``` r

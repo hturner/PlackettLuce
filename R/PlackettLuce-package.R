@@ -33,7 +33,7 @@
 #' further illustration of preparing rankings data for modelling. The
 #' \code{\link{read.soc}} function enables further example data sets of
 #' "Strict Orders - Complete List" format (i.e. complete rankings with no ties)
-#' to be downloaded from \href{http://www.preflib.org/}{PrefLib}.
+#' to be downloaded from \href{https://www.preflib.org/}{PrefLib}.
 #'
 #' A full explanation of the methods with illustrations using the package data
 #' sets is given in the vignette,

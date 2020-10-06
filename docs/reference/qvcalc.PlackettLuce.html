@@ -8,21 +8,29 @@
 
 <title>Quasi Variances for Model Coefficients — qvcalc.PlackettLuce • PlackettLuce</title>
 
+
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -32,12 +40,12 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Quasi Variances for Model Coefficients — qvcalc.PlackettLuce" />
 
+<meta property="og:title" content="Quasi Variances for Model Coefficients — qvcalc.PlackettLuce" />
 <meta property="og:description" content="A method for qvcalc to compute a set of quasi variances (and
 corresponding quasi standard errors) for estimated item parameters from a
 Plackett-Luce model." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -51,9 +59,10 @@ Plackett-Luce model." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -67,7 +76,7 @@ Plackett-Luce model." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -75,7 +84,7 @@ Plackett-Luce model." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -98,9 +107,13 @@ Plackett-Luce model." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/hturner/PlackettLuce/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,27 +121,26 @@ Plackett-Luce model." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Quasi Variances for Model Coefficients</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/hturner/PlackettLuce/blob/master/R/qvcalc.PlackettLuce.R'><code>R/qvcalc.PlackettLuce.R</code></a></small>
     <div class="hidden name"><code>qvcalc.PlackettLuce.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
-    <p>A method for <code><a href='https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></code> to compute a set of quasi variances (and
+    <p>A method for <code><a href='https://davidfirth.github.io/qvcalc/reference/qvcalc.html'>qvcalc</a></code> to compute a set of quasi variances (and
 corresponding quasi standard errors) for estimated item parameters from a
 Plackett-Luce model.</p>
-    
     </div>
 
     <pre class="usage"><span class='co'># S3 method for PlackettLuce</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></span>(<span class='no'>object</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='no'>...</span>)</pre>
-    
+<span class='fu'><a href='https://davidfirth.github.io/qvcalc/reference/qvcalc.html'>qvcalc</a></span><span class='op'>(</span><span class='va'>object</span>, ref <span class='op'>=</span> <span class='fl'>1L</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -148,15 +160,15 @@ parameters is set to zero.</p></td>
       <td><p>additional arguments, currently ignored..</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list of class <code>"qv"</code>, with components</p>
 <dt>covmat</dt><dd><p>The full variance-covariance matrix for the item
 parameters.</p></dd>
-<dt>qvframe</dt><dd><p>A data frame with variables <code>estimate</code>, <code>SE</code>, <code>quasiSE</code> and
-<code>quasiVar</code>, the last two being a quasi standard error and quasi-variance
-for each parameter.</p></dd>
+<dt>qvframe</dt><dd><p>A data frame with variables <code>estimate</code>, <code>SE</code>,
+<code>quasiSE</code> and <code>quasiVar</code>, the last two being a quasi standard
+error and quasi-variance for each parameter.</p></dd>
 <dt>dispersion</dt><dd><p><code>NULL</code> (dispersion is fixed to 1).</p></dd>
 <dt>relerrs</dt><dd><p>Relative errors for approximating the standard errors of all
 simple contrasts.</p></dd>
@@ -165,7 +177,6 @@ simple contrasts.</p></dd>
 <dt>modelcall</dt><dd><p>The call to <code>PlackettLuce</code> to fit the model from which
 the item parameters were estimated.</p></dd>
 
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>For details of the method see Firth (2000), Firth (2003) or Firth and de
@@ -174,13 +185,12 @@ Menezes (2004). Quasi variances generalize and improve the accuracy of
 economical model summary was first suggested by Ridout (1989).</p>
 <p>Ordinarily the quasi variances are positive and so their square roots
 (the quasi standard errors) exist and can be used in plots, etc.</p>
-    
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Easton, D. F, Peto, J. and Babiker, A. G. A. G. (1991) Floating absolute
 risk: an alternative to relative risk in survival and case-control analysis
-avoiding an arbitrary reference group. <em>Statistics in Medicine</em> <b>10</b>,
-1025--1035.</p>
+avoiding an arbitrary reference group. <em>Statistics in Medicine</em>
+<b>10</b>, 1025--1035.</p>
 <p>Firth, D. (2000)  Quasi-variances in Xlisp-Stat and on the web.
 <em>Journal of Statistical Software</em> <b>5.4</b>, 1--13.
 At https://www.jstatsoft.org</p>
@@ -197,51 +207,40 @@ linear models to data from designed experiments. In: <em>Statistical
 Modelling: Proceedings of GLIM89 and the 4th International
 Workshop on Statistical Modelling held in Trento, Italy, July 17--21,
 1989</em> (A. Decarli et al., eds.), pp 262--269. New York: Springer.</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code>worstErrors</code>, <code>plot.qv</code>.</p></div>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Six partial rankings of four objects, 1 is top rank, e.g</span>
 <span class='co'># first ranking: item 1, item 2</span>
 <span class='co'># second ranking: item 2, item 3, item 4, item 1</span>
 <span class='co'># third ranking: items 2, 3, 4 tie for first place, item 1 second</span>
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
               <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>,
               <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>0</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
-              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
+              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='fl'>6</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span><span class='op'>)</span>
 
-<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span>(<span class='no'>R</span>)
-<span class='no'>qv</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/qvcalc/topics/qvcalc'>qvcalc</a></span>(<span class='no'>mod</span>)
-<span class='no'>qv</span></div><div class='output co'>#&gt;           estimate       SE   quasiSE  quasiVar
+<span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span>
+<span class='va'>qv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://davidfirth.github.io/qvcalc/reference/qvcalc.html'>qvcalc</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span>
+<span class='va'>qv</span>
+</div><div class='output co'>#&gt;           estimate       SE   quasiSE  quasiVar
 #&gt; apple   0.00000000 0.000000 0.6655053 0.4428973
 #&gt; banana  0.25287379 1.042049 0.8372194 0.7009362
 #&gt; orange -0.61350684 1.115181 0.8320735 0.6923463
-#&gt; pear   -0.08688475 1.067688 0.8632849 0.7452608</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>qv</span>)</div><div class='img'><img src='qvcalc.PlackettLuce-1.png' alt='' width='700' height='433' /></div></pre>
+#&gt; pear   -0.08688475 1.067688 0.8632849 0.7452608</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>qv</span><span class='op'>)</span>
+</div><div class='img'><img src='qvcalc.PlackettLuce-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#references">References</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -249,13 +248,16 @@ Workshop on Statistical Modelling held in Trento, Italy, July 17--21,
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

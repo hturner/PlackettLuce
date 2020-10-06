@@ -8,21 +8,29 @@
 
 <title>Paired Comparisons of Chocolate Pudding — pudding • PlackettLuce</title>
 
+
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -32,12 +40,12 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Paired Comparisons of Chocolate Pudding — pudding" />
 
+<meta property="og:title" content="Paired Comparisons of Chocolate Pudding — pudding" />
 <meta property="og:description" content="This is an example dataset from Davidson 1970 comprising paired
 comparisons of chocolate pudding, with six brands in total. The responses
 include tied outcomes, i.e. no preference." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -51,9 +59,10 @@ include tied outcomes, i.e. no preference." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -67,7 +76,7 @@ include tied outcomes, i.e. no preference." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -75,7 +84,7 @@ include tied outcomes, i.e. no preference." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -98,9 +107,13 @@ include tied outcomes, i.e. no preference." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/hturner/PlackettLuce/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,29 +121,29 @@ include tied outcomes, i.e. no preference." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Paired Comparisons of Chocolate Pudding</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/hturner/PlackettLuce/blob/master/R/pudding.R'><code>R/pudding.R</code></a></small>
     <div class="hidden name"><code>pudding.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>This is an example dataset from <cite>Davidson 1970</cite> comprising paired
 comparisons of chocolate pudding, with six brands in total. The responses
 include tied outcomes, i.e. no preference.</p>
-    
     </div>
 
-    <pre class="usage"><span class='no'>pudding</span></pre>
-        
+    <pre class="usage"><span class='va'>pudding</span></pre>
+
+
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A data frame with 15 records and 6 variables:</p><dl class='dl-horizontal'>
+    <p>A data frame with 15 records and 6 variables:</p><dl>
 <dt><code>i</code></dt><dd><p>The first brand in the comparison.</p></dd>
 <dt><code>j</code></dt><dd><p>The second brand in the comparison.</p></dd>
 <dt><code>r_ij</code></dt><dd><p>The frequency of paired comparisons of brand i and
@@ -138,58 +151,56 @@ brand j.</p></dd>
 <dt><code>w_ij</code></dt><dd><p>The frequency of preferences for i over j.</p></dd>
 <dt><code>w_ji</code></dt><dd><p>The frequency of preferences for j over i.</p></dd>
 <dt><code>t_ij</code></dt><dd><p>The frequency of no preference between i and j.</p></dd>
+
 </dl>
-    
+
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Davidson, R. R. (1970). On extending the Bradley-Terry model to accommodate
 ties in paired comparison experiments. <em>Journal of the American
 Statistical Association</em>, <b>65</b>, 317--328.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># create orderings for each set of paired comparisons</span>
 
 <span class='co'># wins for brand i and wins for brand j</span>
-<span class='no'>i_wins</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>i</span>, <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>j</span>)
-<span class='no'>j_wins</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>j</span>, <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='no'>pudding</span>$<span class='no'>i</span>)
+<span class='va'>i_wins</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>Winner <span class='op'>=</span> <span class='va'>pudding</span><span class='op'>$</span><span class='va'>i</span>, Loser <span class='op'>=</span> <span class='va'>pudding</span><span class='op'>$</span><span class='va'>j</span><span class='op'>)</span>
+<span class='va'>j_wins</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>Winner <span class='op'>=</span> <span class='va'>pudding</span><span class='op'>$</span><span class='va'>j</span>, Loser <span class='op'>=</span> <span class='va'>pudding</span><span class='op'>$</span><span class='va'>i</span><span class='op'>)</span>
 
 <span class='co'># ties: use an array list (easier with R &gt;= 3.6.0)</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric_version'>getRversion</a></span>() <span class='kw'>&lt;</span> <span class='st'>"3.6.0"</span>){
-  <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>pudding</span>)
-  <span class='no'>ties</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/split'>split</a></span>(<span class='no'>pudding</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"i"</span>, <span class='st'>"j"</span>)], <span class='fl'>1</span>:<span class='no'>n</span>, <span class='no'>n</span>)),
-                     <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>15</span>))
-} <span class='kw'>else</span> {
-  <span class='no'>ties</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>Winner</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/asplit'>asplit</a></span>(<span class='no'>pudding</span>[, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"i"</span>, <span class='st'>"j"</span>)], <span class='fl'>1</span>),
-                     <span class='kw'>Loser</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>15</span>))
-}
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>ties</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt;   Winner Loser
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/numeric_version.html'>getRversion</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>&lt;</span> <span class='st'>"3.6.0"</span><span class='op'>)</span><span class='op'>{</span>
+  <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>pudding</span><span class='op'>)</span>
+  <span class='va'>ties</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>Winner <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/array.html'>array</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/split.html'>split</a></span><span class='op'>(</span><span class='va'>pudding</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"i"</span>, <span class='st'>"j"</span><span class='op'>)</span><span class='op'>]</span>, <span class='fl'>1</span><span class='op'>:</span><span class='va'>n</span><span class='op'>)</span>, <span class='va'>n</span><span class='op'>)</span>,
+                     Loser <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>15</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+  <span class='va'>ties</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>Winner <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/asplit.html'>asplit</a></span><span class='op'>(</span><span class='va'>pudding</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"i"</span>, <span class='st'>"j"</span><span class='op'>)</span><span class='op'>]</span>, <span class='fl'>1</span><span class='op'>)</span>,
+                     Loser <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>15</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ties</span>, <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   Winner Loser
 #&gt; 1   1, 2    NA
 #&gt; 2   1, 3    NA</div><div class='input'>
 <span class='co'># convert to rankings</span>
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='no'>i_wins</span>, <span class='no'>j_wins</span>, <span class='no'>ties</span>),
-                 <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"orderings"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>head</a></span>(<span class='no'>R</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] "1 &gt; 2" "1 &gt; 3"</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/head'>tail</a></span>(<span class='no'>R</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] "4 = 6" "5 = 6"</div><div class='input'>
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>i_wins</span>, <span class='va'>j_wins</span>, <span class='va'>ties</span><span class='op'>)</span>,
+                 input <span class='op'>=</span> <span class='st'>"orderings"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>R</span>, <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "1 &gt; 2" "1 &gt; 3"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>R</span>, <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "4 = 6" "5 = 6"</div><div class='input'>
 <span class='co'># define weights as frequencies of each ranking</span>
-<span class='no'>w</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/unlist'>unlist</a></span>(<span class='no'>pudding</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"w_ij"</span>, <span class='st'>"w_ji"</span>, <span class='st'>"t_ij"</span>)])
+<span class='va'>w</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='op'>(</span><span class='va'>pudding</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"w_ij"</span>, <span class='st'>"w_ji"</span>, <span class='st'>"t_ij"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
 
 <span class='co'># fit Plackett-Luce model: limit iterations to match paper</span>
-<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span>(<span class='no'>R</span>, <span class='kw'>npseudo</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='no'>w</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>7</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Iterations have not converged.</span></div></pre>
+<span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span><span class='op'>(</span><span class='va'>R</span>, npseudo <span class='op'>=</span> <span class='fl'>0</span>, weights <span class='op'>=</span> <span class='va'>w</span>, maxit <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Iterations have not converged.</span></div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      
-      <li><a href="#format">Format</a></li>
-
-      <li><a href="#references">References</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -197,13 +208,16 @@ Statistical Association</em>, <b>65</b>, 317--328.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

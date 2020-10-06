@@ -8,21 +8,29 @@
 
 <title>PlackettLuce Wrapper for Model-based Recursive Partitioning — plfit • PlackettLuce</title>
 
+
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -32,12 +40,12 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="PlackettLuce Wrapper for Model-based Recursive Partitioning — plfit" />
 
+<meta property="og:title" content="PlackettLuce Wrapper for Model-based Recursive Partitioning — plfit" />
 <meta property="og:description" content="This is a wrapper around PlackettLuce as required by
 mob for model-based recursive partitioning. It is
 not intended for general use." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -51,9 +59,10 @@ not intended for general use." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -67,7 +76,7 @@ not intended for general use." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -75,7 +84,7 @@ not intended for general use." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -98,9 +107,13 @@ not intended for general use." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/hturner/PlackettLuce/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,27 +121,35 @@ not intended for general use." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>PlackettLuce Wrapper for Model-based Recursive Partitioning</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/hturner/PlackettLuce/blob/master/R/plfit.R'><code>R/plfit.R</code></a></small>
     <div class="hidden name"><code>plfit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>This is a wrapper around <code>PlackettLuce</code> as required by
-<code><a href='https://www.rdocumentation.org/packages/partykit/topics/mob'>mob</a></code> for model-based recursive partitioning. It is
+<code><a href='https://rdrr.io/pkg/partykit/man/mob.html'>mob</a></code> for model-based recursive partitioning. It is
 not intended for general use.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>plfit</span>(<span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>estfun</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>object</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>plfit</span><span class='op'>(</span>
+  <span class='va'>y</span>,
+  x <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ref <span class='op'>=</span> <span class='fl'>1L</span>,
+  start <span class='op'>=</span> <span class='cn'>NULL</span>,
+  weights <span class='op'>=</span> <span class='cn'>NULL</span>,
+  offset <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>,
+  estfun <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  object <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -151,7 +172,7 @@ parameters is set to zero.</p></td>
       <th>start</th>
       <td><p>starting values for the worth parameters and the tie parameters
 on the raw scale (worth parameters need not be scaled to sum to 1). If
-<code>normal</code> is specified, <code><a href='https://www.rdocumentation.org/packages/base/topics/Log'>exp(normal$mu)</a></code> is used as starting values
+<code>normal</code> is specified, <code><a href='https://rdrr.io/r/base/Log.html'>exp(normal$mu)</a></code> is used as starting values
 for the worth parameters. Coefficients from a previous fit can be passed as
 the result of a call to  <code>coef.PlackettLuce</code>, or the <code>coefficients</code>
 element of a <code>"PlackettLuce"</code> object.</p></td>
@@ -178,7 +199,7 @@ element of a <code>"PlackettLuce"</code> object.</p></td>
       <td><p>logical. If <code>TRUE</code> the fitted model is returned.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a list with elements</p>
@@ -187,42 +208,40 @@ element of a <code>"PlackettLuce"</code> object.</p></td>
 <dt>estfun</dt><dd><p>if <code>estfun</code> the empirical estimating functions.</p></dd>
 <dt>object</dt><dd><p>if <code>object</code> the fitted model.</p></dd>
 
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># rankings</span>
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>0</span>,
               <span class='fl'>4</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>,
               <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>0</span>,
               <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>,
-              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>R</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span>)
-<span class='no'>R</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span>(<span class='no'>R</span>)
+              <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>3</span>, <span class='fl'>2</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='fl'>6</span>, byrow <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"apple"</span>, <span class='st'>"banana"</span>, <span class='st'>"orange"</span>, <span class='st'>"pear"</span><span class='op'>)</span>
+<span class='va'>R</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rankings.html'>as.rankings</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span>
 
 <span class='co'># group rankings into two groups</span>
-<span class='no'>G</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='group.html'>group</a></span>(<span class='no'>R</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>3</span>))
+<span class='va'>G</span> <span class='op'>&lt;-</span> <span class='fu'><a href='group.html'>group</a></span><span class='op'>(</span><span class='va'>R</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># plfit() gives the same results as PlackettLuce()</span>
-<span class='no'>pl</span> <span class='kw'>&lt;-</span> <span class='fu'>plfit</span>(<span class='no'>G</span>)
-<span class='no'>pl</span>$<span class='no'>coefficients</span></div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
-#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div><div class='input'>-<span class='no'>pl</span>$<span class='no'>objfun</span></div><div class='output co'>#&gt; [1] -14.61069</div><div class='input'>
-<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span>(<span class='no'>R</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
-#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/logLik'>logLik</a></span>(<span class='no'>mod</span>)</div><div class='output co'>#&gt; 'log Lik.' -14.61069 (df=5)</div></pre>
+<span class='va'>pl</span> <span class='op'>&lt;-</span> <span class='fu'>plfit</span><span class='op'>(</span><span class='va'>G</span><span class='op'>)</span>
+<span class='va'>pl</span><span class='op'>$</span><span class='va'>coefficients</span>
+</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
+#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div><div class='input'><span class='op'>-</span><span class='va'>pl</span><span class='op'>$</span><span class='va'>objfun</span>
+</div><div class='output co'>#&gt; [1] -14.61069</div><div class='input'>
+<span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='PlackettLuce.html'>PlackettLuce</a></span><span class='op'>(</span><span class='va'>R</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;       apple      banana      orange        pear        tie2        tie3 
+#&gt;  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/stats/logLik.html'>logLik</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 'log Lik.' -14.61069 (df=5)</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -230,13 +249,16 @@ element of a <code>"PlackettLuce"</code> object.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

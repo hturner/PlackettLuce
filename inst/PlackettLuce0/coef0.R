@@ -1,8 +1,10 @@
 #' Extract Coefficient of Plackett Luce Model
 #'
 #' @inheritParams PlackettLuce
-#' @param object an object of class "PlackettLuce" as returned by \code{PlackettLuce}.
-#' @param type the type of coefficients to return: one of \code{"ties"}, \code{"abilities"} or \code{"all"}.
+#' @param object an object of class "PlackettLuce" as returned by
+#' \code{PlackettLuce}.
+#' @param type the type of coefficients to return: one of \code{"ties"},
+#' \code{"abilities"} or \code{"all"}.
 #' @param ... additional arguments, currently ignored.
 #'
 coef.PlackettLuce0 <- function(object, ref = NULL, type = "all", ...){

@@ -24,8 +24,8 @@ and losses between pairs of items.
 \details{
 For a \code{"rankings"} object based on N items, the adjacency matrix is an
 N by N matrix, with element (i, j) being the number of times item i wins over
-item j. For example, in the ranking \\{1\\} > \\{3, 4\\} > \\{2\\}, item 1 wins over
-items 2, 3, and 4, and items 3 and 4 win over item 2.
+item j. For example, in the ranking \\{1\\} > \\{3, 4\\} > \\{2\\},
+item 1 wins over items 2, 3, and 4, and items 3 and 4 win over item 2.
 
 If \code{weights} is specified, the values in the adjacency matrix are the
 weighted counts.

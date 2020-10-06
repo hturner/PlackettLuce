@@ -23,7 +23,8 @@
 #'
 #' @param rankings a matrix of dense rankings, see examples.
 #' @param ref an integer or character string specifying the reference item (for
-#' which log ability will be set to zero). If \code{NULL} the first item is used.
+#' which log ability will be set to zero). If \code{NULL} the first item is
+#' used.
 #' @param network the network of rankings on which to base the model:
 #' \code{"adaptive"} (default: rankings plus pseudodata if network not strongly
 #' connected),
@@ -376,7 +377,7 @@ PlackettLuce0 <- function(rankings, ref = NULL,
     fit
 }
 
-# function to compute expectations of the sufficient statistics of the alphas/deltas
+# compute expectations of the sufficient statistics of the alphas/deltas
 #' @export
 expectation0 <- function(par, alpha, delta, pattern, rep = 1, N = length(alpha),
                          D = length(delta), S = ncol(pattern), trace = FALSE){

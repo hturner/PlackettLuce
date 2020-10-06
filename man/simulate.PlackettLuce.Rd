@@ -43,7 +43,7 @@ Simulate from \code{PlackettLuce} fitted objects
 }
 \details{
 If \code{multinomial} is \code{FALSE} (default) and there are no
-tie parameters in the object (i.e. \code{object$maxTied == 1}),
+tie parameters in the object (i.e. \code{length(object$ties) == 1}),
 then rankings are sampled by ordering exponential random variates
 with rate 1 scaled by the estimated item-worth parameters
 \code{object$coefficients} (see, Diaconis, 1988, Chapter 9D for
@@ -55,7 +55,7 @@ than \code{max_combinations} combinations of items that the sampler
 has to decide from. This is a hard-coded exit to prevent issues
 relating to the creation of massive objects in memory.
 
-If \code{object$maxTied > 1} the user's setting for
+If \code{length(object$ties) > 1} the user's setting for
 \code{multinomial} is ignored and \code{simulate.PlackettLuce} operates as if
 \code{multinomial} is \code{TRUE}.
 }

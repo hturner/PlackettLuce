@@ -4,9 +4,9 @@
 #' graph. The package provides a method for \code{"rankings"} objects.
 #'
 #' For a \code{"rankings"} object an edge is defined for consecutive pairs in
-#' the ranking, with the winner specifying the \sQuote{from} vertex and the loser
-#' specifying the \sQuote{to} vertex. For tied items an edge is defined for
-#' all possible pairs between the winning and the losing group. Pairs are
+#' the ranking, with the winner specifying the \sQuote{from} vertex and the
+#' loser specifying the \sQuote{to} vertex. For tied items an edge is defined
+#' for all possible pairs between the winning and the losing group. Pairs are
 #' ordered by rank combination, i.e. all pairs between items ranked first and
 #' items ranked second, for all rankings, then all pairs between items ranked
 #' second and items ranked third, etc.
