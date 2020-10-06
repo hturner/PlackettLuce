@@ -6,9 +6,11 @@ author:
 - name: Jacob van Etten
   affiliation: Bioversity International, Costa Rica
 - name: David Firth
-  affiliation: Department of Statistics, University of Warwick, UK; and Alan Turing Institute, London, UK
+  affiliation: Department of Statistics, University of Warwick, UK; and Alan Turing
+    Institute, London, UK
 - name: Ioannis Kosmidis
-  affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute, London, UK
+  affiliation: Department of Statistical Science, UCL, UK; and Alan Turing Institute,
+    London, UK
 package: PlackettLuce
 abstract: |
   The **PlackettLuce** package implements a generalization of the model jointly
@@ -29,9 +31,12 @@ vignette: |
   %\VignetteIndexEntry{Introduction to PlackettLuce}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-bibliography: ["plackettluce.bib"]
-biblio-style: "apalike"
-link-citations: true
+bibliography: plackettluce.bib
+biblio-style: apalike
+link-citations: yes
+pkgdown:
+  as_is: yes
+always_allow_html: true
 ---
 
 ```{r output, include = FALSE}
@@ -159,7 +164,7 @@ number of unique rankings is large.
 ```{r soc, eval = eval_all, echo = FALSE}
 library(PlackettLuce)
 # read in example data sets
-preflib <- "http://www.preflib.org/data/election/"
+preflib <- "https://www.preflib.org/data/election/"
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
 tshirt <- read.soc(file.path(preflib, "shirt/ED-00012-00000001.soc"))
 sushi <- read.soc(file.path(preflib, "sushi/ED-00014-00000001.soc"))
