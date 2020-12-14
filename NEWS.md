@@ -1,3 +1,7 @@
+# PlackettLuce 0.3.1
+
+* Fix Preflib URL.
+
 # PlackettLuce 0.3.0
 
 * Now correctly handles cases where intermediate tie orders are not observed, fixing corresponding tie parameters to zero (#42).

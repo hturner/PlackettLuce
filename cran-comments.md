@@ -1,18 +1,16 @@
 ## Comments
 
-This submission fixes the warnings on Windows in the CRAN checks.
+This resubmission fixes the Preflib URL, as requested
 
 ## Test environments
 
-1. (Local) Ubuntu 20.04.1 LTS, R 4.0.2       
-2. (Local) Windows 10, R 4.0.2
-3. (R-hub) Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+1. (Local) Windows 10
+2. (R-hub) Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+3. (R-hub) Ubuntu Linux 16.04 LTS, R-release, GCC
 4. (Win-builder) Windows Server 2008 (64-bit), R-devel
     
 ### Check results
 
-Checks return a note regarding URLs/DOIs. This is a false alarm: all the links redirect to valid pages on jstor.org.
+Checks still return a note regarding URLs/DOIs which are valid links to pages on jstor.org.
 
-## revdepcheck results
-
-The reverse dependencies, ClimMobTools and PLMIX, pass check locally with this version.
+Check 2 returns warning of mis-spelled words which are actually correct.
