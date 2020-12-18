@@ -236,7 +236,8 @@ test_that('pltree works w/ estimated adherence [beans]', {
                       gamma = list(shape = 10, rate = 10))
     expect_known_value(pl_tree,
                        file = test_path("outputs/pltree_adherence_beans.rds"),
-                       version = 2)
+                       version = 2,
+                       check.environment = FALSE)
 })
 
 test_that('pltree fails w/ fixed adherence [beans]', {
