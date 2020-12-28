@@ -16,8 +16,6 @@ library(pkgdown)
 
 # either a) rebuild whole pkgdown site including help files
 build_site(lazy = FALSE)
-file.remove("vignettes/Overview.knit.md")
-file.remove("vignettes/Overview.utf8.md")
 
 # or b) just rebuild part (may need to do to still get tab refs)
 build_articles(lazy = FALSE) #vignette
