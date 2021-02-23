@@ -24,12 +24,11 @@ ADMM_log <- R6::R6Class("ADMM_log",
                             self$M <- nrow(orderings)
                             self$X <- X
                             self$X_ls <- solve(crossprod(X), t(X))
-                            self$X_tilde <- cbind(X, 1)
+                            self$X_tilde <- cbind("(Intercept)" = 1, X)
                             self$orderings <- orderings
                             self$method_pi_tilde_init = method_pi_tilde_init
                         },
-                        fit_log = function(rho, weights = NULL,
-                                           beta = NULL, b = NULL,
+                        fit_log = function(rho, weights = NULL, beta = NULL,
                                            u = NULL, gamma = 1,
                                            epsilon = .Machine$double.eps){
                             # :param rho: penalty parameter
@@ -40,13 +39,14 @@ ADMM_log <- R6::R6Class("ADMM_log",
                             if (is.null(beta)){
                                 params <- init_params(self$X, self$orderings,
                                                       mat_Pij = NULL)
-                                beta <- params$exp_beta_init
-                                # fix b so sum(exp(X %*% beta)) = 1
-                                b_iter <- -log(sum(exp(self$X %*% beta)))
+                                beta <- c("(Intercept)" = 0,
+                                          params$exp_beta_init)
+                                # fix intercept so sum(exp(X %*% beta)) = 1
+                                beta[1] <- -log(sum(exp(self$X_tilde %*% beta)))
                             }
                             start <- Sys.time()
                             ## pi update
-                            x_beta <- self$X_tilde %*% c(beta, b)
+                            x_beta <- self$X_tilde %*% beta
                             weights <- self$ilsrx_log(rho = rho, weights = weights,
                                                       x_beta = x_beta, u = u,
                                                       epsilon = epsilon)
@@ -55,11 +55,10 @@ ADMM_log <- R6::R6Class("ADMM_log",
                             ## beta_b update
                             # beta = spl.lstsq(self.X, np.log(weights) - u)[0]  # uses svd
                             X_ls <- solve(crossprod(self$X_tilde), t(self$X_tilde)) # store in self later
-                            beta_b <- X_ls %*% (log(weights + epsilon) - u)
+                            beta <- X_ls %*% (log(weights + epsilon) - u)
                             end <- Sys.time()
-                            list(weights = weights, beta = beta_b[-(self$p + 1)],
-                                 b = beta_b[self$p + 1], u = u,
-                                 time = (end - start))
+                            list(weights = drop(weights), beta = drop(beta),
+                                 u = drop(u), time = (end - start))
                         },
                         ilsrx_log = function(rho, weights, x_beta, u,
                                              n_iter = 500,
