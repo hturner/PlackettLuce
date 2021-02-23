@@ -20,5 +20,10 @@ res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
 
 test_that("output of print.PlackettLuce is correct", {
     expect_known_output(print(res_PLADMM),
-                        file = test_path("outputs/print_PLADMM.rds"))
+                        file = test_path("outputs/print_PLADMM.txt"))
+})
+
+test_that("output of print.PlackettLuce is correct", {
+    expect_known_output(print(summary(res_PLADMM)),
+                        file = test_path("outputs/print_PLADMM.txt"))
 })

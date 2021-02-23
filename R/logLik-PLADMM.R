@@ -7,6 +7,6 @@ logLik.PLADMM <- function(object, ...){
 }
 
 #' @export
-deviance.PlackettLuce <- function(object, ...){
-    -2L*object$loglik
+deviance.PLADMM <- function(object, ...){
+    -2L*tail(object$loglik, 1)
 }
