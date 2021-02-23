@@ -18,7 +18,7 @@ model_fruits2 <- PlackettLuce(rankings = R[-5,],
 
 test_that("output of print.PlackettLuce is correct", {
     expect_known_output(print(model_fruits1),
-                        file = test_path("outputs/print.rds"))
+                        file = test_path("outputs/print.txt"))
 })
 
 test_that("output of print.coef.PlackettLuce is correct", {

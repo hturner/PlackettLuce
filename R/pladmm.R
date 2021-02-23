@@ -54,6 +54,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    n_iter = 500, # used for main iter, pi update & stationary dist
                    rtol = 1e-4 # used in convergence checks: main iter, init of beta (& pi if QP init used), pi update & stationary dist
                    ){
+    call <- match.call()
     epsilon <- .Machine$double.eps # added to pi avoid logging zero
     # convert dense rankings to orderings as used in original Python functions
     rankings <- as.matrix(as.rankings(rankings))
@@ -124,13 +125,16 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     time_cont <- vapply(seq_along(time),
                         function(ind) sum(time[1:ind]), numeric(1))
 
-    list(# parameters from last iteration
-        coefficients = beta_iter,
-        pi = pi_iter,
-        u = u_iter, tilde_pi = tilde_pi_iter,
-        # stored information from all iterations
-        time = time_cont, diff_pi = diff_pi, diff_beta = diff_beta,
-        prim_feas = prim_feas, dual_feas = dual_feas, obj = obj,
-        # algorithm status
-        iter = iter, conv = conv)
+    fit <- list(call = call,
+                # parameters from last iteration
+                coefficients = beta_iter,
+                pi = pi_iter,
+                u = u_iter, tilde_pi = tilde_pi_iter,
+                # stored information from all iterations
+                time = time_cont, diff_pi = diff_pi, diff_beta = diff_beta,
+                prim_feas = prim_feas, dual_feas = dual_feas, obj = obj,
+                # algorithm status
+                iter = iter, conv = conv)
+    class(fit) <- "PLADMM"
+    fit
 }

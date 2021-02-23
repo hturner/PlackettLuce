@@ -49,7 +49,7 @@ if (require(prefmod)){
   # fit Plackett-Luce model based on covariates
   res_PLADMM <- pladmm(salad, salad_X, rho = 8)
   ## coefficients
-  res_PLADMM$beta
+  coef(res_PLADMM)
   ## worth
   res_PLADMM$pi
   ## worth as predicted by linear function
