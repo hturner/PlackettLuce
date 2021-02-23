@@ -47,24 +47,26 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
     expect_equal(log(res0_PLADMM[["pi"]]),
                  unname(log_worth),
                  tol = coef_tol)
-    ## expect log-worths predicted by linear predictor equal. currently FAILS
-    ## because design matrix constrains first log-worth to zero and
-    ## PLADMM constrains sum of log-worths to one: over-constrained
-    expect_equal(c(salad_X0 %*% res0_PLADMM[["beta"]]),
+    ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
+    expect_equal(c(salad_X0 %*% res0_PLADMM[["beta"]] + res0_PLADMM[["b"]]),
                  unname(as.vector(log(coef(res0_PL, log = FALSE)))),
                  tol = coef_tol)
+    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
+    ## TRUE to lower tolerance
+    expect_equal(res0_PLADMM[["beta"]],
+                 unname(as.vector(coef(res0_PL)[-1])),
+                 tol = 10*coef_tol)
 })
 
 test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
     res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
     ## expect fitted log-worths equal to those predicted by linear predictor
-    ## TRUE to lower tolerance
-    beta <- res_PLADMM[["beta"]]
-    lambda <- as.vector(salad_X %*% matrix(beta))
+    beta_b <- c(res_PLADMM[["beta"]], res_PLADMM[["b"]])
+    lambda <- as.vector(cbind(salad_X, 1) %*% matrix(beta_b))
     expect_equal(log(res_PLADMM[["pi"]]),
                  lambda,
-                 tol = 10*coef_tol)
+                 tol = coef_tol)
     ## rank-ordered logit
     res_RO <- coxph(Surv(ranking, status) ~ acetic + gluconic + strata(chid),
                     data = cbind(salad_long_rankings, status = 1))
@@ -72,14 +74,11 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     lambda <- as.vector(salad_X %*% matrix(beta))
     log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
     ## expect log-worths predicted by linear predictor from PLADMM
-    ## equal to log-worths based on rank-orded logit. currently FAILS
-    ## because design matrix constrains intercept to zero and
-    ## PLADMM constrains sum of log-worths to one: over-constrained
+    ## equal to log-worths based on rank-orded logit.
     expect_equal(log(res_PLADMM[["pi"]]),
                  unname(log_worth),
                  tol = coef_tol)
-    ## expect two approaches to give same coefficients, currently FAILS
-    ## due to over-constraints in PLADMM
+    ## expect two approaches to give same coefficients
     expect_equal(res_PLADMM[["beta"]],
                  unname(coef(res_RO)),
                  tol = coef_tol)
