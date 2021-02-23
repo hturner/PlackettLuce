@@ -75,6 +75,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     ## set intercept so that exp(X*beta_iter) sum to 1
     lambda <- X %*% beta_iter
     beta_iter[1] <- -log(sum(exp(lambda)))
+    tilde_pi_iter <- drop(exp(X %*% beta_iter))
     pi_iter <- inits$pi_init
     u_iter <- inits$u_init
     time <- inits$time_exp_beta_init + inits$time_u_init
@@ -82,7 +83,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     diff_beta <- norm(beta_iter)
     prim_feas <- norm(X %*% beta_iter - log(pi_iter + epsilon))
     dual_feas <- norm(t(X) %*% log(pi_iter + epsilon))
-    obj <- objective(pi_iter, orderings)
+    obj <- objective(tilde_pi_iter, orderings)
     iter <- 0
 
     # iterative updates
@@ -92,7 +93,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
         if (!conv){
             pi_prev <- pi_iter
             beta_prev <- beta_iter
-            tilde_pi_prev <- drop(exp(X %*% beta_iter))
+            tilde_pi_prev <- tilde_pi_iter
 
             res <- log_admm$fit_log(rho = rho, weights = pi_iter,
                                     beta = beta_iter, u = u_iter)
@@ -110,7 +111,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                            norm(X %*% beta_iter - log(pi_iter + epsilon)))
             dual_feas <- c(dual_feas,
                            norm(t(X) %*% (log(pi_prev + epsilon) - log(pi_iter + epsilon))))
-            obj <- c(obj, objective(pi_iter, orderings, epsilon))
+            obj <- c(obj, objective(tilde_pi_iter, orderings, epsilon))
             iter <- iter + 1
             conv <- norm(pi_prev - pi_iter) < rtol * norm(pi_iter) &&
                 norm(tilde_pi_prev - tilde_pi_iter) < rtol * norm(tilde_pi_iter)
@@ -125,6 +126,16 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     time_cont <- vapply(seq_along(time),
                         function(ind) sum(time[1:ind]), numeric(1))
 
+    # for now assume all rankings same length
+    n <- ncol(orderings)
+    M <- nrow(orderings)
+    # frequencies of sets selected from, for sizes 2 to max observed
+    freq <- M*(n - 1)
+    # number of possible selections overall (can only choose 1 from each set)
+    n_opt <-  M*(n*(n + 1)/2 - 1)
+    rank <- ncol(X) - 1 # would complain earlier if X not full rank; -1 due to constraint on pi
+    df.residual <- n_opt - sum(freq) - rank
+
     fit <- list(call = call,
                 # parameters from last iteration
                 coefficients = beta_iter,
@@ -132,7 +143,11 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                 u = u_iter, tilde_pi = tilde_pi_iter,
                 # stored information from all iterations
                 time = time_cont, diff_pi = diff_pi, diff_beta = diff_beta,
-                prim_feas = prim_feas, dual_feas = dual_feas, obj = obj,
+                prim_feas = prim_feas, dual_feas = dual_feas,
+                loglik = obj,
+                # supplementary
+                rank = rank,
+                df.residual = df.residual,
                 # algorithm status
                 iter = iter, conv = conv)
     class(fit) <- "PLADMM"

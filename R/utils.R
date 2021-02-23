@@ -292,11 +292,15 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, r
 
 objective <- function(weights, orderings, epsilon = .Machine$double.eps){
     ll <- 0
+    n <- ncol(orderings)
     # against log(0), add epsilon
     for (r in seq_len(nrow(orderings))){
-        sum_weights <- sum(weights[orderings[r,]])
-        winner <- orderings[r, 1]
-        ll <- ll + log(weights[winner] + epsilon) - log(sum_weights + epsilon)
+        for (i in seq_len(n - 1L)){
+            sum_weights <- sum(weights[orderings[r, i:n]])
+            winner <- orderings[r, i]
+            ll <- ll + log(weights[[winner]] + epsilon) -
+                log(sum_weights + epsilon)
+        }
     }
     ll
 }

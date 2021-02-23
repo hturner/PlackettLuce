@@ -55,6 +55,10 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
     expect_equivalent(coef(res0_PLADMM)[-1],
                       as.vector(coef(res0_PL)[-1]),
                       tol = 10*coef_tol)
+    ## expect log-likelihood equal, PLADMM andPlackettLuce
+    expect_equal(logLik(res0_PLADMM),
+                 logLik(res0_PL),
+                 tol = coef_tol)
 })
 
 test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
@@ -80,4 +84,8 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     expect_equal(coef(res_PLADMM)[-1],
                  beta[-1],
                  tol = coef_tol)
+    ## expect log-likelihood equal (survival returns extra `nobs` attribute)
+    expect_equivalent(logLik(res_PLADMM),
+                      logLik(res_RO),
+                      tol = coef_tol)
 })
