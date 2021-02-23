@@ -47,12 +47,12 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
                  unname(log_worth),
                  tol = coef_tol)
     ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
-    expect_equal(c(salad_X0 %*% res0_PLADMM[["beta"]]),
+    expect_equal(c(salad_X0 %*% coef(res0_PLADMM)),
                  unname(as.vector(log(coef(res0_PL, log = FALSE)))),
                  tol = coef_tol)
     ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
     ## TRUE to lower tolerance
-    expect_equivalent(res0_PLADMM[["beta"]][-1],
+    expect_equivalent(coef(res0_PLADMM)[-1],
                       as.vector(coef(res0_PL)[-1]),
                       tol = 10*coef_tol)
 })
@@ -77,7 +77,7 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
                  unname(log_worth),
                  tol = coef_tol)
     ## expect two approaches to give same coefficients (different intercept)
-    expect_equal(res_PLADMM[["beta"]][-1],
+    expect_equal(coef(res_PLADMM)[-1],
                  beta[-1],
                  tol = coef_tol)
 })

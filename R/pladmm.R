@@ -39,7 +39,7 @@
 #'   # fit Plackett-Luce model based on covariates
 #'   res_PLADMM <- pladmm(salad, salad_X, rho = 8)
 #'   ## coefficients
-#'   res_PLADMM$beta
+#'   coef(res_PLADMM)
 #'   ## worth
 #'   res_PLADMM$pi
 #'   ## worth as predicted by linear function
@@ -101,7 +101,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
             u_iter <- res$u
             time_iter <- res$time
             # scores predicted by beta
-            tilde_pi_iter <- exp(X %*% beta_iter)
+            tilde_pi_iter <- drop(exp(X %*% beta_iter))
             time <- c(time, time_iter)
             diff_pi <- c(diff_pi, norm(pi_prev - pi_iter))
             diff_beta <- c(diff_beta, norm(beta_prev - beta_iter))
@@ -125,11 +125,12 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                         function(ind) sum(time[1:ind]), numeric(1))
 
     list(# parameters from last iteration
-         pi = pi_iter, beta = beta_iter,
-         u = u_iter, tilde_pi = tilde_pi_iter,
-         # stored information from all iterations
-         time = time_cont, diff_pi = diff_pi, diff_beta = diff_beta,
-         prim_feas = prim_feas, dual_feas = dual_feas, obj = obj,
-         # algorithm status
-         iter = iter, conv = conv)
+        coefficients = beta_iter,
+        pi = pi_iter,
+        u = u_iter, tilde_pi = tilde_pi_iter,
+        # stored information from all iterations
+        time = time_cont, diff_pi = diff_pi, diff_beta = diff_beta,
+        prim_feas = prim_feas, dual_feas = dual_feas, obj = obj,
+        # algorithm status
+        iter = iter, conv = conv)
 }
