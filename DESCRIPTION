@@ -1,7 +1,7 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.3.2.9000
+Version: 0.3.3
 Authors@R: c(person("Heather", "Turner",
         email = "ht@heatherturner.net", role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-1256-3375")),
