@@ -1,3 +1,7 @@
+# PlackettLuce 0.3.2.9000
+
+* Add three new variables to the beans data. The planting date, and geographical coordinates.
+
 # PlackettLuce 0.3.2
 
 * Fix test that fails with new behaviour of `all.equal()`.
