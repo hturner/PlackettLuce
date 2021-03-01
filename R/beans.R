@@ -1,6 +1,7 @@
 #' Preferred Bean Varieties in Nicaragua
 #'
-#' This is a subset of data from trials of bean varieties (\emph{Phaseolus vulgaris} L.)
+#' This is a subset of data from trials of bean varieties
+#' (\emph{Phaseolus vulgaris} L.)
 #' in Nicaragua over five growing seasons. Farmers were asked to try three
 #' varieties of bean from a total of ten varieties and to rank them in order of
 #' preference. In addition, for each variety the farmers were asked to compare
@@ -36,14 +37,15 @@
 #'     \item{\code{year}}{The year of planting.}
 #'     \item{\code{maxTN}}{The maximum temperature at night during the
 #'     vegetative cycle (degrees Celsius).}
-#'     \item{\code{lon}}{The geographic coordinate longitude (X axis) for where the plot
-#'     was established.}
-#'     \item{\code{lat}}{The geographic coordinate latitude (Y axis) for where the plot
-#'     was established.}
-#'     \item{\code{planting_date}}{A Date, specifying the start date of planting the trial.}
+#'     \item{\code{lon}}{The geographic coordinate longitude (X axis) for where
+#'     the plot was established.}
+#'     \item{\code{lat}}{The geographic coordinate latitude (Y axis) for where
+#'     the plot was established.}
+#'     \item{\code{planting_date}}{A Date, specifying the start date of
+#'     planting the trial.}
 #' }
-#' @source van Etten et al. (2019) PNAS 116 (10) 4194-4199
-#' \cr\url{https://doi.org/10.1073/pnas.1813720116}
+#' @source van Etten, J. et al. (2019) \emph{PNAS}, \bold{116} (10), 4194--4199,
+#' \url{https://doi.org/10.1073/pnas.1813720116}.
 #' @examples
 #'
 #' # Consider the best and worst rankings. These give the variety the
