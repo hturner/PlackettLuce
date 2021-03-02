@@ -1,6 +1,6 @@
 # PlackettLuce 0.3.2.9000
 
-* Add three new variables to the `beans` data. The planting date, and geographical coordinates.
+* Add three new variables to the `beans` data. The planting date, and geographical coordinates (#41).
 
 # PlackettLuce 0.3.2
 
