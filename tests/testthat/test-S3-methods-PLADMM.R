@@ -18,12 +18,12 @@ features <- data.frame(salad = LETTERS[1:4],
 salad_X <- model.matrix(~ acetic + gluconic, data = features)
 res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
 
-test_that("output of print.PlackettLuce is correct", {
+test_that("output of print.PLADMM is correct", {
     expect_known_output(print(res_PLADMM),
                         file = test_path("outputs/print_PLADMM.txt"))
 })
 
-test_that("output of print.PlackettLuce is correct", {
+test_that("output of print.summary.PLADMM is correct", {
     expect_known_output(print(summary(res_PLADMM)),
-                        file = test_path("outputs/print_PLADMM.txt"))
+                        file = test_path("outputs/print_summary_PLADMM.txt"))
 })

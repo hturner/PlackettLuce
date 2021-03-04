@@ -65,7 +65,7 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
     res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
     ## expect fitted log-worths equal to those predicted by linear predictor
-    lambda <- as.vector(salad_X %*% matrix(res_PLADMM[["beta"]]))
+    lambda <- as.vector(salad_X %*% matrix(coef(res_PLADMM)))
     expect_equal(log(res_PLADMM[["pi"]]),
                  lambda,
                  tol = coef_tol)

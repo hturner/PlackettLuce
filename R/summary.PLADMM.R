@@ -9,9 +9,8 @@ summary.PLADMM <- function(object,
                                            c("Estimate", "Std. Error",
                                              "z value", "Pr(>|z|)")))
     coefficients[,1L] <- coefs
-    # no vcov method yet
-    # se <- sqrt(diag(vcov(object, ref = ref, ...)))
-    # coefficients[names(se), 2L] <- se
+    se <- sqrt(diag(vcov(object, ...)))
+    coefficients[names(se), 2L] <- se
     coefficients[,3L] <- coefficients[,1L]/coefficients[,2L]
     coefficients[,4L] <- 2L * pnorm(-abs(coefficients[, 3L]))
     structure(list(call = object$call,

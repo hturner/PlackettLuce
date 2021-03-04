@@ -30,8 +30,8 @@
 #'   # create data frame of corresponding features
 #'   # (acetic and gluconic acid concentrations in salad dressings)
 #'   features <- data.frame(salad = LETTERS[1:4],
-#'                     acetic = c(0.5, 0.5, 1, 0),
-#'                     gluconic = c(0, 10, 0, 10))
+#'                          acetic = c(0.5, 0.5, 1, 0),
+#'                          gluconic = c(0, 10, 0, 10))
 #'
 #'   # create design matrix with features
 #'   salad_X <- model.matrix(~ acetic + gluconic, data = features)
@@ -43,7 +43,7 @@
 #'   ## worth
 #'   res_PLADMM$pi
 #'   ## worth as predicted by linear function
-#'   drop(exp(salad_X %*% res_PLADMM$beta))
+#'   drop(exp(salad_X %*% coef(res_PLADMM)))
 #'
 #' }
 #'
