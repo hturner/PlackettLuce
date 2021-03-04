@@ -12,3 +12,4 @@
 ^vignettes_tmp_output$
 ^cran-comments.md$
 ^CRAN-RELEASE$
+.*_working.R

@@ -88,4 +88,8 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     expect_equivalent(logLik(res_PLADMM),
                       logLik(res_RO),
                       tol = coef_tol)
+    ## expect vcov equal
+    expect_equal(vcov(res_PLADMM),
+                 vcov(res_RO),
+                 tol = coef_tol)
 })

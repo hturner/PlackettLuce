@@ -146,6 +146,8 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                 prim_feas = prim_feas, dual_feas = dual_feas,
                 loglik = obj,
                 # supplementary
+                x = X,
+                orderings = orderings,
                 rank = rank,
                 df.residual = df.residual,
                 # algorithm status
