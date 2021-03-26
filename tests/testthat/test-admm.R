@@ -13,13 +13,6 @@ M <- matrix(c(1, 2, 0, 0,
 R <- as.rankings(M, "ordering")
 colnames(R) <- c("apple", "banana", "orange", "pear")
 
-## create design matrix for separate worths for each fruit
-dat <- data.frame(fruit = factor(colnames(R), levels = colnames(R)))
-fruit_X <- model.matrix(~ fruit, data = dat)
-## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-partial_PLADMM <- pladmm(R, fruit_X, rho = 1, rtol = 1e-5)
-partial_PL <- PlackettLuce(rankings = R, npseudo = 0)
-
 # analysis of salad data from Critchlow, D. E. & Fligner, M. A. (1991).
 ## salad is a data.frame of rankings for items A B C D
 ## 1 = most tart, 4 = least tart
@@ -30,14 +23,9 @@ salad_rankings <- as.rankings(salad)
 features <- data.frame(salad = LETTERS[1:4],
                        acetic = c(0.5, 0.5, 1, 0),
                        gluconic = c(0, 10, 0, 10))
-## create design matrix to predict worth by acetic and gluconic acid conc
-## intercept not needed as unidentifiable
-## (gives same ranking probabilities regardless of value)
-salad_X <- model.matrix(~ acetic + gluconic, data = features)
 ## convert rankings to long-form (explode rankings)
 salad_long_rankings <-
-    data.frame(salad_X[t(col(salad_rankings)),],
-               item = rep(LETTERS[1:4], nrow(salad_rankings)),
+    data.frame(features[t(col(salad_rankings)),],
                ranking = c(t(salad_rankings)),
                chid = c(t(row(salad_rankings))))
 
@@ -46,9 +34,8 @@ coef_tol <- 1e-4
 test_that("PLADMM works for partial rankings [fruits]", {
     ## create design matrix for separate worths for each fruit
     dat <- data.frame(fruit = factor(colnames(R), levels = colnames(R)))
-    fruit_X <- model.matrix(~ fruit, data = dat)
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-    partial_PLADMM <- pladmm(R, fruit_X, rho = 1, rtol = 1e-5)
+    partial_PLADMM <- pladmm(R, ~ fruit, dat, rho = 1, rtol = 1e-5)
     partial_PL <- PlackettLuce(rankings = R, npseudo = 0)
     ## expect that log-worths are equal, PLADMM and PlackettLuce
     expect_equal(log(partial_PLADMM[["pi"]]),
@@ -69,14 +56,11 @@ test_that("PLADMM works for partial rankings [fruits]", {
 })
 
 test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
-    ## create design matrix for separate worths for each dressing
-    ## intercept not needed as unidentifiable
-    ## (gives same ranking probabilities regardless of value)
-    salad_X0 <- model.matrix(~ salad, data = features)
+    ## model with separate worths for each dressing
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-    res0_PLADMM <- pladmm(salad_rankings, salad_X0, rho = 8)
+    res0_PLADMM <- pladmm(salad_rankings, ~ salad, data = features, rho = 8)
     res0_PL <- PlackettLuce(salad_rankings, npseudo = 0)
-    res0_RO <- coxph(Surv(ranking, status) ~ item + strata(chid),
+    res0_RO <- coxph(Surv(ranking, status) ~ salad + strata(chid),
                      data = cbind(salad_long_rankings, status = 1))
     ## expect that log-worths are equal, PLADMM and PlackettLuce
     expect_equal(log(res0_PLADMM[["pi"]]),
@@ -89,7 +73,7 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
                  unname(log_worth),
                  tol = coef_tol)
     ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
-    expect_equal(c(salad_X0 %*% coef(res0_PLADMM)),
+    expect_equal(c(res0_PLADMM$x %*% coef(res0_PLADMM)),
                  unname(as.vector(log(coef(res0_PL, log = FALSE)))),
                  tol = coef_tol)
     ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
@@ -105,9 +89,10 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
 
 test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-    res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
+    res_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic, data = features,
+                         rho = 8)
     ## expect fitted log-worths equal to those predicted by linear predictor
-    lambda <- c(salad_X %*% matrix(coef(res_PLADMM)))
+    lambda <- c(res_PLADMM$x %*% matrix(coef(res_PLADMM)))
     expect_equal(unname(log(res_PLADMM[["pi"]])),
                  lambda,
                  tol = coef_tol)
@@ -115,7 +100,7 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     res_RO <- coxph(Surv(ranking, status) ~ acetic + gluconic + strata(chid),
                     data = cbind(salad_long_rankings, status = 1))
     beta <- c(0, coef(res_RO))
-    lambda <- as.vector(salad_X %*% matrix(beta))
+    lambda <- as.vector(res_PLADMM$x %*% matrix(beta))
     log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
     ## expect log-worths predicted by linear predictor from PLADMM
     ## equal to log-worths based on rank-orded logit.

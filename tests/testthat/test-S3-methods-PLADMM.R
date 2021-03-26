@@ -12,11 +12,9 @@ salad_rankings <- as.rankings(salad)
 features <- data.frame(salad = LETTERS[1:4],
                        acetic = c(0.5, 0.5, 1, 0),
                        gluconic = c(0, 10, 0, 10))
-## create design matrix to predict worth by acetic and gluconic acid conc
-## intercept not needed as unidentifiable
-## (gives same ranking probabilities regardless of value)
-salad_X <- model.matrix(~ acetic + gluconic, data = features)
-res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
+## model that predicts worth by acetic and gluconic acid conc
+res_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic, data = features,
+                     rho = 8)
 
 test_that("output of print.PLADMM is correct", {
     expect_known_output(print(res_PLADMM),

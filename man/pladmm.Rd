@@ -4,14 +4,15 @@
 \alias{pladmm}
 \title{Fit a Plackett-Luce Model with Linear Predictor for Log-worth}
 \usage{
-pladmm(rankings, X, rho = 1, n_iter = 500, rtol = 1e-04)
+pladmm(rankings, formula, data, rho = 1, n_iter = 500, rtol = 1e-04)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
 coerced by \code{as.rankings}.}
 
-\item{X}{a model matrix specifying the linear model for each item, as
-produced by \code{\link[=model.matrix]{model.matrix()}}.}
+\item{formula}{a \link{formula} specifying the linear model for log-worth.}
+
+\item{data}{a data frame containing the variables in the model.}
 
 \item{rho}{the penalty parameter in the panalized likelihood, see details.}
 
@@ -43,17 +44,16 @@ if (require(prefmod)){
                          acetic = c(0.5, 0.5, 1, 0),
                          gluconic = c(0, 10, 0, 10))
 
-  # create design matrix with features
-  salad_X <- model.matrix(~ acetic + gluconic, data = features)
-
   # fit Plackett-Luce model based on covariates
-  res_PLADMM <- pladmm(salad, salad_X, rho = 8)
+  res_PLADMM <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
   ## coefficients
   coef(res_PLADMM)
   ## worth
   res_PLADMM$pi
   ## worth as predicted by linear function
-  drop(exp(salad_X \%*\% coef(res_PLADMM)))
+  res_PLADMM$tilde_pi
+  ## equivalent to
+  drop(exp(model.matrix(res_PLADMM) \%*\% coef(res_PLADMM)))
 
 }
 

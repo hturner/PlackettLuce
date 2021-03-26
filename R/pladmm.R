@@ -10,8 +10,8 @@
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
-#' @param X a model matrix specifying the linear model for each item, as
-#' produced by [model.matrix()].
+#' @param formula a [formula] specifying the linear model for log-worth.
+#' @param data a data frame containing the variables in the model.
 #' @param rho the penalty parameter in the panalized likelihood, see details.
 #' @param n_iter the maximum number of iterations (also for inner loops).
 #' @param rtol the convergence tolerance (also for inner loops)
@@ -33,23 +33,23 @@
 #'                          acetic = c(0.5, 0.5, 1, 0),
 #'                          gluconic = c(0, 10, 0, 10))
 #'
-#'   # create design matrix with features
-#'   salad_X <- model.matrix(~ acetic + gluconic, data = features)
-#'
 #'   # fit Plackett-Luce model based on covariates
-#'   res_PLADMM <- pladmm(salad, salad_X, rho = 8)
+#'   res_PLADMM <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
 #'   ## coefficients
 #'   coef(res_PLADMM)
 #'   ## worth
 #'   res_PLADMM$pi
 #'   ## worth as predicted by linear function
-#'   drop(exp(salad_X %*% coef(res_PLADMM)))
+#'   res_PLADMM$tilde_pi
+#'   ## equivalent to
+#'   drop(exp(res_PLADMM$x %*% coef(res_PLADMM)))
 #'
 #' }
 #'
 #' @export
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
-                   X, # model matrix
+                   formula, # formula for linear predictor
+                   data,
                    rho = 1, # penalty parameter
                    n_iter = 500, # used for main iter, pi update & stationary dist
                    rtol = 1e-4 # used in convergence checks: main iter, init of beta (& pi if QP init used), pi update & stationary dist
@@ -64,6 +64,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     orderings <- t(apply(rankings, 1, part_order))
     items <- colnames(rankings)
     # check X
+    X <- model.matrix(formula, data)
     if (!"(Intercept)" %in% colnames(X))
         stop("`X` must contain an intercept")
     # pairwise probability of win/loss
@@ -141,7 +142,8 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     df.residual <- n_opt - sum(freq) - rank
 
     # name outputs related to items
-    names(pi_iter) <- names(u_iter) <- names(tilde_pi_iter) <- items
+    names(pi_iter) <- names(u_iter) <- names(tilde_pi_iter) <- rownames(X) <-
+        items
 
     fit <- list(call = call,
                 # parameters from last iteration

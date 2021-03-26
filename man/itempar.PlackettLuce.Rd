@@ -14,7 +14,7 @@
 }
 \arguments{
 \item{object}{a fitted model object as returned by
-\code{\link{PlackettLuce}} or \code{\link{pltree}}.}
+\code{\link{PlackettLuce}},  \code{\link{pladmm}}, or \code{\link{pltree}}.}
 
 \item{ref}{a vector of labels or position indices of item parameters which
 should be used as restriction/for normalization. If \code{NULL}
@@ -42,7 +42,7 @@ An object of class \code{"itempar"}, see
 }
 \description{
 Methods for \code{\link[psychotools]{itempar}} to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+parameters (worth or log-worth) from a Plackett-Luce model or tree.
 In the case of a tree, item parameters are extracted for each terminal node.
 }
 \examples{

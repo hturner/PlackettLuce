@@ -16,23 +16,6 @@ features <- data.frame(salad = LETTERS[1:4],
                        acetic = c(0.5, 0.5, 1, 0),
                        gluconic = c(0, 10, 0, 10))
 
-## create design matrix for separate worths for each dressing
-## intercept not needed as unidentifiable
-## (gives same ranking probabilities regardless of value)
-salad_X0 <- model.matrix(~ salad, data = features)
-
-## create design matrix to predict worth by acetic and gluconic acid conc
-## intercept not needed as unidentifiable
-## (gives same ranking probabilities regardless of value)
-salad_X <- model.matrix(~ acetic + gluconic, data = features)
-
-## convert rankings to long-form (explode rankings)
-salad_long_rankings <-
-    data.frame(salad_X[t(col(salad_rankings)),],
-               item = rep(LETTERS[1:4], nrow(salad_rankings)),
-               ranking = c(t(salad_rankings)),
-               chid = c(t(row(salad_rankings))))
-
 ## salad pairs (treat 3rd and 4th as unranked)
 salad_pairs <- as.matrix(salad)
 salad_pairs[salad_pairs %in% c(3, 4)] <- 0
@@ -43,7 +26,8 @@ coef_tol <- 1e-4
 test_that("PLADMM itempar works for standard PL [salad]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
     ## reduce rtol a little so vcov more accurate
-    res0_PLADMM <- pladmm(salad_rankings, salad_X0, rho = 8, rtol = 1e-5)
+    res0_PLADMM <- pladmm(salad_rankings, ~ salad, data = features, rho = 8,
+                          rtol = 1e-5)
     res0_PL <- PlackettLuce(salad_rankings, npseudo = 0)
     expect_ok <- function(itemparPLADMM, itemparPL, tol){
         attr(itemparPL, "model") <- "PLADMM"
@@ -78,7 +62,8 @@ test_that("PLADMM itempar works for standard PL [salad]", {
 test_that("PLADMM itempar works for standard PL [salad pairs]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
     ## reduce rtol a little so vcov more accurate
-    res0_PLADMM <- pladmm(salad_pairs, salad_X0, rho = 1, rtol = 1e-6)
+    res0_PLADMM <- pladmm(salad_pairs, ~ salad, data = features, rho = 1,
+                          rtol = 1e-6)
     res0_PL <- PlackettLuce(salad_pairs, npseudo = 0)
     expect_ok <- function(itemparPLADMM, itemparPL, tol){
         attr(itemparPL, "model") <- "PLADMM"
@@ -127,21 +112,22 @@ test_that("PLADMM itempar works for standard PL [salad pairs]", {
                  coef_tol)
 })
 
-
-
 test_that("PLADMM itempar works for PL with covariates [salad pairs]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-    res_PLADMM <- pladmm(salad_pairs, salad_X, rho = 2)
+    res_PLADMM <- pladmm(salad_pairs, ~ acetic + gluconic, data = features,
+                         rho = 2)
     winner <- apply(salad_pairs == 1, 1, which)
     loser <- apply(salad_pairs == 2, 1, which)
     lev <- colnames(salad_pairs)
     contests <- data.frame(winner = factor(lev[winner], levels = lev),
                            loser = factor(lev[loser]), levels = lev)
-    res_BTm <- BTm(outcome = rep(1, nrow(salad_pairs)),
-                   winner, loser,
-                   ~ acetic[..] + gluconic[..],
-                   family = binomial,
-                   data = list(contests = contests, predictors = salad_X))
+    ## warns that no random effect in predictor
+    res_BTm <- suppressWarnings(BTm(outcome = rep(1, nrow(salad_pairs)),
+                                    winner, loser,
+                                    ~ acetic[..] + gluconic[..],
+                                    family = binomial,
+                                    data = list(contests = contests,
+                                                predictors = features)))
     # expect log-worth the same up to constant
     ability <- c(BTabilities(res_BTm)[, "ability"])
     expect_equal(c(itempar(res_PLADMM, ref = 1, log = TRUE)),
@@ -149,6 +135,7 @@ test_that("PLADMM itempar works for PL with covariates [salad pairs]", {
                  coef_tol)
     # expect s.e. of contrasts of log-worth to be the same
     # get full vcov for BT abilities
+    salad_X <- res_PLADMM$x
     V <- salad_X[,-1] %*% vcov(res_BTm) %*% t(salad_X[,-1])
     expect_equal(unname(diag(sqrt(V))),
                  unname(c(BTabilities(res_BTm)[, "s.e."])),

@@ -132,7 +132,7 @@ itempar.pltree <- function (object, ...){
 itempar.PLADMM <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
                            log = FALSE, ...){
     # log worths s.t. worths sum to 1 as given by linear predictor
-    coefs <- log(object$tilde_pi)
+    coefs <- drop(object$x %*% object$coefficients)
     object_names <- names(coefs)
     n <- length(coefs)
     id <- seq_len(n)
@@ -163,7 +163,8 @@ itempar.PLADMM <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
     # define vcov
     if (vcov){
         # get vcov for log worths (X %*% beta)
-        V0 <- object$x[, -1] %*% vcov(object) %*% t(object$x[,-1])
+        V0 <- object$x[, -1, drop = FALSE] %*% vcov(object) %*%
+            t(object$x[, -1, drop = FALSE])
         if (log) {
             # vcov of contrasts
             V <- D %*% V0 %*% t(D)
@@ -189,7 +190,7 @@ itempar.PLADMM <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
         alias <- ref[1L]
         names(alias) <- names(coefs)[ref[1L]]
         coefs <- coefs[-alias]
-        if (vcov) V <- V[-alias, -alias]
+        if (vcov) V <- V[-alias, -alias, drop = FALSE]
     }
     structure(coefs, class = "itempar", model = "PLADMM",
               ref = ref, alias = alias, vcov = if (vcov) V)
