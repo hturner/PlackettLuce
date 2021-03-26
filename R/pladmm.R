@@ -57,8 +57,12 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     call <- match.call()
     epsilon <- .Machine$double.eps # added to pi avoid logging zero
     # convert dense rankings to orderings as used in original Python functions
+    # (allow for partial rankings)
     rankings <- as.matrix(as.rankings(rankings))
-    orderings <- t(apply(rankings, 1, order))
+    rankings[rankings == 0] <- NA
+    part_order <- function(x) c(order(x, na.last = NA), numeric(sum(is.na(x))))
+    orderings <- t(apply(rankings, 1, part_order))
+    items <- colnames(rankings)
     # check X
     if (!"(Intercept)" %in% colnames(X))
         stop("`X` must contain an intercept")
@@ -135,6 +139,9 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     n_opt <-  M*(n*(n + 1)/2 - 1)
     rank <- ncol(X) - 1 # would complain earlier if X not full rank; -1 due to constraint on pi
     df.residual <- n_opt - sum(freq) - rank
+
+    # name outputs related to items
+    names(pi_iter) <- names(u_iter) <- names(tilde_pi_iter) <- items
 
     fit <- list(call = call,
                 # parameters from last iteration

@@ -3,11 +3,14 @@
 \name{itempar.PlackettLuce}
 \alias{itempar.PlackettLuce}
 \alias{itempar.pltree}
+\alias{itempar.PLADMM}
 \title{Extract Item Parameters of Plackett-Luce Models}
 \usage{
 \method{itempar}{PlackettLuce}(object, ref = NULL, alias = TRUE, vcov = TRUE, log = FALSE, ...)
 
 \method{itempar}{pltree}(object, ...)
+
+\method{itempar}{PLADMM}(object, ref = NULL, alias = TRUE, vcov = TRUE, log = FALSE, ...)
 }
 \arguments{
 \item{object}{a fitted model object as returned by

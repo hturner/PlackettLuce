@@ -295,7 +295,8 @@ objective <- function(weights, orderings, epsilon = .Machine$double.eps){
     n <- ncol(orderings)
     # against log(0), add epsilon
     for (r in seq_len(nrow(orderings))){
-        for (i in seq_len(n - 1L)){
+        nitem <- sum(orderings[r,] != 0)
+        for (i in seq_len(nitem)){
             sum_weights <- sum(weights[orderings[r, i:n]])
             winner <- orderings[r, i]
             ll <- ll + log(weights[[winner]] + epsilon) -

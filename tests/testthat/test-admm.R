@@ -3,6 +3,23 @@ context("implementation [ADMM]")
 library(prefmod) # salad data
 library(survival) # coxph for rank-ordered logit
 
+## artificial example in ?PlackettLuce
+M <- matrix(c(1, 2, 0, 0,
+              3, 1, 4, 0,
+              1, 4, 0, 0,
+              2, 1, 4, 3,
+              2, 3, 4, 0,
+              1, 2, 3, 0), nrow = 6, byrow = TRUE)
+R <- as.rankings(M, "ordering")
+colnames(R) <- c("apple", "banana", "orange", "pear")
+
+## create design matrix for separate worths for each fruit
+dat <- data.frame(fruit = factor(colnames(R), levels = colnames(R)))
+fruit_X <- model.matrix(~ fruit, data = dat)
+## setting rho ~ 10% log-lik gives good results (not extensively tested!)
+partial_PLADMM <- pladmm(R, fruit_X, rho = 1, rtol = 1e-5)
+partial_PL <- PlackettLuce(rankings = R, npseudo = 0)
+
 # analysis of salad data from Critchlow, D. E. & Fligner, M. A. (1991).
 ## salad is a data.frame of rankings for items A B C D
 ## 1 = most tart, 4 = least tart
@@ -26,6 +43,31 @@ salad_long_rankings <-
 
 coef_tol <- 1e-4
 
+test_that("PLADMM works for partial rankings [fruits]", {
+    ## create design matrix for separate worths for each fruit
+    dat <- data.frame(fruit = factor(colnames(R), levels = colnames(R)))
+    fruit_X <- model.matrix(~ fruit, data = dat)
+    ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
+    partial_PLADMM <- pladmm(R, fruit_X, rho = 1, rtol = 1e-5)
+    partial_PL <- PlackettLuce(rankings = R, npseudo = 0)
+    ## expect that log-worths are equal, PLADMM and PlackettLuce
+    expect_equal(log(partial_PLADMM[["pi"]]),
+                 c(log(coef(partial_PL, log = FALSE))),
+                 tol = coef_tol)
+    ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
+    expect_equal(log(partial_PLADMM[["tilde_pi"]]),
+                 c(log(coef(partial_PL, log = FALSE))),
+                 tol = coef_tol)
+    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
+    expect_equivalent(coef(partial_PLADMM)[-1],
+                      as.vector(coef(partial_PL)[-1]),
+                      tol = coef_tol)
+    ## expect log-likelihood equal, PLADMM andPlackettLuce
+    expect_equal(logLik(partial_PLADMM),
+                 logLik(partial_PL),
+                 tol = coef_tol)
+})
+
 test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
     ## create design matrix for separate worths for each dressing
     ## intercept not needed as unidentifiable
@@ -38,12 +80,12 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
                      data = cbind(salad_long_rankings, status = 1))
     ## expect that log-worths are equal, PLADMM and PlackettLuce
     expect_equal(log(res0_PLADMM[["pi"]]),
-                 unname(as.vector(log(coef(res0_PL, log = FALSE)))),
+                 c(log(coef(res0_PL, log = FALSE))),
                  tol = coef_tol)
     ## expect that log-worths are equal, PLADMM and rank-ordered logit
     lambda <- c(itemA = 0, coef(res0_RO))
     log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
-    expect_equal(log(res0_PLADMM[["pi"]]),
+    expect_equal(unname(log(res0_PLADMM[["pi"]])),
                  unname(log_worth),
                  tol = coef_tol)
     ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
@@ -65,8 +107,8 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
     res_PLADMM <- pladmm(salad_rankings, salad_X, rho = 8)
     ## expect fitted log-worths equal to those predicted by linear predictor
-    lambda <- as.vector(salad_X %*% matrix(coef(res_PLADMM)))
-    expect_equal(log(res_PLADMM[["pi"]]),
+    lambda <- c(salad_X %*% matrix(coef(res_PLADMM)))
+    expect_equal(unname(log(res_PLADMM[["pi"]])),
                  lambda,
                  tol = coef_tol)
     ## rank-ordered logit
@@ -77,8 +119,8 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
     log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
     ## expect log-worths predicted by linear predictor from PLADMM
     ## equal to log-worths based on rank-orded logit.
-    expect_equal(log(res_PLADMM[["pi"]]),
-                 unname(log_worth),
+    expect_equal(unname(log(res_PLADMM[["pi"]])),
+                 log_worth,
                  tol = coef_tol)
     ## expect two approaches to give same coefficients (different intercept)
     expect_equal(coef(res_PLADMM)[-1],

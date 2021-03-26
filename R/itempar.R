@@ -1,11 +1,11 @@
 #' Extract Item Parameters of Plackett-Luce Models
 #'
 #' Methods for \code{\link[psychotools]{itempar}} to extract the item
-#' parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+#' parameters (worth or log-worth) from a Plackett-Luce model or tree.
 #' In the case of a tree, item parameters are extracted for each terminal node.
 #'
 #' @param object a fitted model object as returned by
-#' \code{\link{PlackettLuce}} or \code{\link{pltree}}.
+#' \code{\link{PlackettLuce}},  \code{\link{pladmm}}, or \code{\link{pltree}}.
 #' @param ref  a vector of labels or position indices of item parameters which
 #' should be used as restriction/for normalization. If \code{NULL}
 #' (the default), all items are used with a zero sum (\code{log = TRUE}) or
@@ -60,8 +60,8 @@ itempar.PlackettLuce <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
     } else if (is.matrix(ref)) {
         stop("Handling of contrast matrices in argument 'ref' currently not ",
              "implemented for itempar.PlackettLuce().")
-    } else stop("Argument 'ref' is misspecified (see ?itempar for possible ",
-                "values).")
+    } else stop("Argument 'ref' is misspecified (see ?itempar.PlackettLuce ",
+                "for possible values).")
     ref <- match(ref, id)
     # define parameters
     if (log){
@@ -124,4 +124,73 @@ itempar.pltree <- function (object, ...){
         return(matrix(res, nrow = 1L, dimnames = list("1", names(res))))
     }
     res
+}
+
+#' @rdname itempar.PlackettLuce
+#' @method itempar PLADMM
+#' @export
+itempar.PLADMM <- function(object, ref = NULL, alias = TRUE, vcov = TRUE,
+                           log = FALSE, ...){
+    # log worths s.t. worths sum to 1 as given by linear predictor
+    coefs <- log(object$tilde_pi)
+    object_names <- names(coefs)
+    n <- length(coefs)
+    id <- seq_len(n)
+    # set reference to one or more indices
+    if (is.null(ref)) {
+        ref <- id
+    } else if (is.vector(ref)){
+        if (any(ref %in% object_names)) ref <- match(ref, object_names)
+        if (!all(ref %in% id))
+            stop("Could not match 'ref' to item names")
+    } else if (is.matrix(ref)) {
+        stop("Handling of contrast matrices in argument 'ref' currently not ",
+             "implemented for itempar.PLADMM().")
+    } else stop("Argument 'ref' is misspecified (see ?itempar.PLADMM ",
+                "for possible values).")
+    # define parameters
+    if (log){
+        # based on contrasts
+        D <- diag(n)
+        D[, ref] <- D[, ref] - 1L/length(ref)
+        coefs <- structure(drop(D %*% coefs), names = object_names)
+    } else {
+        # constrained so sum of ref = 1
+        alpha <- exp(coefs)
+        denom <- sum(alpha[ref])
+        coefs <- alpha/denom
+    }
+    # define vcov
+    if (vcov){
+        # get vcov for log worths (X %*% beta)
+        V0 <- object$x[, -1] %*% vcov(object) %*% t(object$x[,-1])
+        if (log) {
+            # vcov of contrasts
+            V <- D %*% V0 %*% t(D)
+        } else {
+            # vcov of exp(coefs)
+            V <- diag(alpha) %*% V0 %*% diag(alpha)
+            # partial derivatives of scaled exp(coefs) wrt exp(coefs)
+            D <- array(dim = dim(V))
+            nonref <- setdiff(seq_along(id), ref)
+            if (length(nonref)){
+                D[, nonref] <- 0
+                D[cbind(nonref, nonref)] <- 1L/denom
+            }
+            D[, ref] <- -alpha/denom^2
+            D[cbind(ref, ref)] <- 1L/denom + D[cbind(ref, ref)]
+            # vcov of scaled exp coefs
+            V <- D %*% V %*% t(D)
+        }
+        dimnames(V) <- list(object_names, object_names)
+    }
+    # remove aliased parameter if required
+    if (!alias) {
+        alias <- ref[1L]
+        names(alias) <- names(coefs)[ref[1L]]
+        coefs <- coefs[-alias]
+        if (vcov) V <- V[-alias, -alias]
+    }
+    structure(coefs, class = "itempar", model = "PLADMM",
+              ref = ref, alias = alias, vcov = if (vcov) V)
 }
