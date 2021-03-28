@@ -46,6 +46,7 @@
 #'
 #' }
 #'
+#' @importFrom stats model.matrix
 #' @export
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
@@ -71,10 +72,12 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     mat_Pij <- est_Pij(nrow(X), orderings)
 
     # initialization of parameters
-    inits <-  init_params(X[,-1], orderings, mat_Pij, method_beta_b_init = "QP")
+    inits <-  init_params(X[,-1, drop = FALSE], orderings, mat_Pij,
+                          method_beta_b_init = "QP")
 
     # quantities to update in iterations
-    log_admm <- ADMM_log$new(orderings, X[,-1], method_pi_tilde_init = "prev")
+    log_admm <- ADMM_log$new(orderings, X[,-1, drop = FALSE],
+                             method_pi_tilde_init = "prev")
     conv <- FALSE
     beta_iter <- c("(Intercept)" = 0, inits$exp_beta_init)
     ## set intercept so that exp(X*beta_iter) sum to 1

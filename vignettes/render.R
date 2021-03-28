@@ -1,13 +1,14 @@
 # render vignette - result is in vignettes_tmp_output
-rmarkdown::render("vignettes/Overview.Rmd", output_dir = "vignettes_tmp_output",
+rmd <- "vignettes/PLADMM.Rmd"
+rmarkdown::render(rmd, output_dir = "vignettes_tmp_output",
                   clean = FALSE)
 
-rmarkdown::render("vignettes/Overview.Rmd", "bookdown::html_document2",
+rmarkdown::render(rmd, "bookdown::html_document2",
                   output_dir = "vignettes_tmp_output",
                   clean = FALSE)
 
 ## ! LaTeX Error: Environment cslreferences undefined.
-rmarkdown::render("vignettes/Overview.Rmd", "BiocStyle::pdf_document",
+rmarkdown::render(rmd, "BiocStyle::pdf_document",
                   output_dir = "vignettes_tmp_output",
                   clean = FALSE)
 

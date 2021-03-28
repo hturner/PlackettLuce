@@ -1,5 +1,6 @@
 context("implementation [ADMM]")
 
+library(BradleyTerry2)
 library(prefmod) # salad data
 
 # analysis of salad data from Critchlow, D. E. & Fligner, M. A. (1991).
@@ -91,6 +92,16 @@ test_that("PLADMM predict works for PL with covariates [salad pairs]", {
     se <- c(BTabilities(res_BTm)[, "s.e."])
     expect_equal(predict(res_PLADMM, se.fit = TRUE)$se.fit,
                  se,
+                 coef_tol)
+    # expect predicted item worth correct for new data
+    pred1 <- predict(res_PLADMM, type = "itempar", ref = 2:3, se.fit = TRUE)
+    pred2 <- predict(res_PLADMM, type = "itempar", newdata = features[2:3,],
+                     se.fit = TRUE)
+    expect_equal(unname(pred1$fit[2:3]),
+                 unname(pred2$fit),
+                 coef_tol)
+    expect_equal(unname(pred1$se.fit[2:3]),
+                 unname(pred2$se.fit),
                  coef_tol)
 })
 

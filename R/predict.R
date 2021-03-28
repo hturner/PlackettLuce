@@ -1,12 +1,14 @@
 #' @method predict PLADMM
+#' @importFrom stats as.formula model.matrix
 #' @export
 predict.PLADMM <- function(object, newdata = NULL,
                            type = c("lp", "itempar"),
                            se.fit = FALSE,
                            ...){ #na.action?
     type <- match.arg(type)
-    # if newdata, create new x matrix
+    # if newdata, create new X matrix
     if (!is.null(newdata)){
+        object$vcov <- vcov(object) # vcov based on original X matrix
         # allow for missing factor levels (avoid terms etc for now)
         X <- matrix(0, nrow = nrow(newdata), ncol = ncol(object$x),
                     dimnames = list(seq(nrow(newdata)), colnames(object$x)))
@@ -31,6 +33,7 @@ predict.PLADMM <- function(object, newdata = NULL,
 }
 
 #' @method fitted PLADMM
+#' @importFrom stats predict
 #' @export
 fitted.PLADMM <- function(object, ...){
     predict(object)

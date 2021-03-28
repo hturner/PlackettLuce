@@ -53,7 +53,7 @@ if (require(prefmod)){
   ## worth as predicted by linear function
   res_PLADMM$tilde_pi
   ## equivalent to
-  drop(exp(model.matrix(res_PLADMM) \%*\% coef(res_PLADMM)))
+  drop(exp(res_PLADMM$x \%*\% coef(res_PLADMM)))
 
 }
 

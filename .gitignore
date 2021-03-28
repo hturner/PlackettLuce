@@ -24,7 +24,7 @@ vignettes/*.pdf
 vignettes/*.log
 vignettes/*.tex
 inst/doc/*.Rmd
-vignettes_tmp_output/Overview_files/
+vignettes_tmp_output/*
 
 # cache copied over by pkgdown
 docs/articles/*_cache/*
