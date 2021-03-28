@@ -1,0 +1,6 @@
+Call: pladmm(rankings = salad_rankings, formula = ~acetic + gluconic, 
+    data = features, rho = 8)
+
+Coefficients:
+(Intercept)       acetic     gluconic  
+    -4.8410       3.2743       0.2739  

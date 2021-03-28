@@ -1,0 +1,228 @@
+---
+title: "Plackett-Luce Models with Item Covariates"
+author:
+- name: Heather Turner
+  affiliation: Department of Statistics, University of Warwick, UK
+package: PlackettLuce
+vignette: |
+  %\VignetteIndexEntry{Plackett-Luce Models with Item Covariates}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: plackettluce.bib
+biblio-style: apalike
+link-citations: yes  
+pkgdown:
+  as_is: yes
+always_allow_html: true
+---
+
+```{r output, include = FALSE}
+output <- if (requireNamespace("BiocStyle", quietly = TRUE)) {
+  BiocStyle::html_document
+} else if (requireNamespace("bookdown", quietly = TRUE)) {
+  bookdown::html_document2
+} else html_document
+```
+
+---
+output: output
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+# if render using rmarkdown, use output format to decide table format
+table.format <- opts_knit$get("rmarkdown.pandoc.to")
+if (!identical(table.format, "latex")) table.format <- "html"
+opts_knit$set(knitr.table.format = table.format)
+opts_chunk$set(message = FALSE)
+```
+
+# Introduction
+
+The main model-fitting function in the **PlackettLuce** package, `PlackettLuce`, 
+directly models the worth of items with a separate parameter estimate for 
+each item (see [Introduction to PlackettLuce](Overview.html)). This vignette 
+introduces a new function, `pladmm`, that models the log-worth of 
+items by a linear function of item covariates. This functionality is under 
+development and provided for experimental use - the user interface is likely 
+to change in upcoming versions of PlackettLuce.
+
+`pladmm` supports partial rankings, but otherwise has limited functionality 
+compared to `PlackettLuce`. In particular, ties, pseudo-rankings, prior 
+information on log-worths, and ranker adherence parameters are not supported. 
+
+# Plackett-Luce model with item covariates
+
+The standard Plackett-Luce model specifies the probability of a ranking of $J$ 
+items, ${i_1 \succ \ldots \succ i_J}$, is given by
+
+$$\prod_{j=1}^J \frac{\alpha_{i_j}}{\sum_{i \in A_j} \alpha_i}$$
+
+where $\alpha_{i_j}$ represents the **worth** of item $i_j$ and $A_j$ is the 
+set of alternatives $\{i_j, i_{j + 1}, \ldots, i_J\}$ from which item $i_j$ is 
+chosen. 
+
+`pladmm` models the log-worth as a linear function of item covariates:
+
+$$\log \alpha_i = \beta_0 + \beta_1x_{i1} + \ldots + \beta_px_{ip}$$
+
+where $\beta_0$ is fixed by the constraint that $\sum_i \alpha_i = 1$. The 
+parameters are estimated using an Alternating Directions Method of Multipliers 
+(ADMM) algorithm proposed by [@Yildiz2020], hence the name `pladmm`.
+
+ADMM alternates between estimating the worths $\alpha_i$ and the linear 
+coefficients $\beta_k$, encapsulating them in a quadratic penalty on the 
+likelihood:
+
+$$L(\boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{u}) = \mathcal{L}(\mathcal{D}|\boldsymbol{\alpha}) + \frac{\rho}{2}||\boldsymbol{X}\boldsymbol{\beta} - \log \boldsymbol{\alpha} + \boldsymbol{u}||^2_2 - \frac{\rho}{2}||\boldsymbol{u}||^2_2$$
+where $\boldsymbol{u}$ is a dual variable that imposes the equality constraints 
+(so that $\log \boldsymbol{\alpha}$ converges to 
+$\boldsymbol{X}\boldsymbol{\beta}$).
+
+# Salad Data
+
+We shall illustrate the use of `pladmm` with a classic data set presented by 
+[@Critchlow1991] that is available as the `salad` data set in the 
+**prefmod** package. The data are 32 full rankings of 4 salad dressings 
+(A, B, C, D) by tartness, with 1 being the least tart and 4 being the most 
+tart, according to the ranker.
+
+```{r}
+library(prefmod)
+head(salad, 4)
+```
+
+The salad dressings were made with known quantities of acetic acid and gluconic 
+acid, as specified in the following data frame:
+
+```{r}
+features <- data.frame(salad = LETTERS[1:4],
+                       acetic = c(0.5, 0.5, 1, 0),
+                       gluconic = c(0, 10, 0, 10))
+```
+
+## Standard Plackett-Luce model
+
+We begin by using `pladmm` to fit a standard Plackett-Luce model, with a 
+separate parameter for each salad dressing. The first three arguments are the 
+rankings (a matrix or `rankings` object), a formula specifying the model for 
+the log-worth (must include an intercept) and a data frame of item features 
+containing variables in the model formula. `rho` is the penalty parameter 
+determining the strength of penalty on the log-likelihood. As a rule of thumb,
+`rho` should be ~10% of the fitted log-likelihood.
+
+```{r}
+library(PlackettLuce)
+standardPL <- pladmm(salad, ~ salad, data = features, rho = 8)
+summary(standardPL)
+```
+In this case, the intercept represents the log-worth of salad dressing A, which 
+is fixed by the constraint that the worths sum to 1. 
+
+```{r}
+sum(exp(standardPL$x %*% coef(standardPL)))
+```
+The remaining coefficients are the difference in log-worth between each salad 
+dressing and salad dressing A. We can compare this to the results from 
+`PlackettLuce`, which sets the log-worth of salad dressing A to zero:
+
+```{r}
+standardPL_PlackettLuce <- PlackettLuce(salad, npseudo = 0)
+summary(standardPL_PlackettLuce)
+```
+The differences in log-worth are the same to ~3 decimal places. We can improve 
+the accuracy of `pladmm` by reducing `rtol` (by default 1e-4):
+
+```{r}
+standardPL <- pladmm(salad, ~ salad, data = features, rho = 8, rtol = 1e-6)
+summary(standardPL)
+```
+
+The `itempar` function can be used to obtain the worth estimates, e.g. 
+
+```{r}
+itempar(standardPL)
+```
+## Plackett-Luce model with item covariates
+
+To model the log-worth by item covariates, we simply update the model formula:
+
+```{r}
+regressionPL <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
+summary(regressionPL)
+```
+The model uses one less degree of freedom, but there is only a slight increase 
+in the deviance:
+
+```{r}
+deviance(regressionPL) - deviance(standardPL)
+```
+So it is sufficient to model the log-worth by the concentration of acetic and 
+gluconic acids.
+
+An advantage of modelling log-worth by covariates is that we can predict the 
+log-worth for new items. For example, suppose we have salad dressings with the 
+following features:
+
+```{r}
+features2 <- data.frame(salad = LETTERS[5:6],
+                        acetic = c(0.5, 0),
+                        gluconic = c(5, 5))
+```
+
+the predicted log-worth is given by
+
+```{r}
+predict(regressionPL, features2)
+```
+Note that the names in `features2$salad` are unused as `salad` was not a 
+variable in the model. The predicted log-worths have the same location as the 
+original fitted values
+
+```{r}
+fitted(regressionPL)
+```
+i.e. they are contrasts with the log-worth of salad dressing A. If we want 
+to express the predictions as a new set of constrained item parameters, we 
+can specify `type = "itempar"` (vs the default `type = "lp"` for 
+linear predictor). The 
+parameterization can then be specified by passing arguments on to `itempar()`, 
+e.g. the following will compute the predicted worths constrained to sum to 1:
+
+```{r}
+predict(regressionPL, features2, type = "itempar", log  = FALSE, ref = NULL)
+```
+Standard errors can optionally be returned, by specifying `se.fit = TRUE`
+
+```{r}
+predict(regressionPL, features2, type = "itempar", log  = FALSE, ref = NULL,
+        se.fit = TRUE)
+```
+
+# Cautionary notes
+
+The PLADMM algorithm should in theory converge to the maximum likelihood 
+estimates for the parameters. However, the algorithm may not behave well if the 
+rankings are very sparse or if the penalty parameter `rho` is not set to a 
+suitable value. Currently, `pladmm` does not provide checks/warnings to assist 
+the user the validate the result. It is recommended that the standard 
+Plackett-Luce model is fitted initially to give a reference of the expected 
+log-likelihood and item parameters - `pladmm` should give broadly similar 
+results. 
+
+`pladmm` also returns two estimates of the worths. The first set are the direct 
+estimates from the last iteration of ADMM:
+
+```{r}
+regressionPL$pi
+```
+The second set are the estimates given by the estimates of $\boldsymbol{\beta}$ 
+from the last iteration:
+
+```{r}
+regressionPL$tilde_pi
+```
+These two sets of estimates should be approximately the same (but being 
+approximately the same does not guarantee the solution is the global optimum).
+
+# References

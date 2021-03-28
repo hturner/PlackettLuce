@@ -3,15 +3,18 @@
 \name{itempar.PlackettLuce}
 \alias{itempar.PlackettLuce}
 \alias{itempar.pltree}
+\alias{itempar.PLADMM}
 \title{Extract Item Parameters of Plackett-Luce Models}
 \usage{
 \method{itempar}{PlackettLuce}(object, ref = NULL, alias = TRUE, vcov = TRUE, log = FALSE, ...)
 
 \method{itempar}{pltree}(object, ...)
+
+\method{itempar}{PLADMM}(object, ref = NULL, alias = TRUE, vcov = TRUE, log = FALSE, ...)
 }
 \arguments{
 \item{object}{a fitted model object as returned by
-\code{\link{PlackettLuce}} or \code{\link{pltree}}.}
+\code{\link{PlackettLuce}},  \code{\link{pladmm}}, or \code{\link{pltree}}.}
 
 \item{ref}{a vector of labels or position indices of item parameters which
 should be used as restriction/for normalization. If \code{NULL}
@@ -39,7 +42,7 @@ An object of class \code{"itempar"}, see
 }
 \description{
 Methods for \code{\link[psychotools]{itempar}} to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+parameters (worth or log-worth) from a Plackett-Luce model or tree.
 In the case of a tree, item parameters are extracted for each terminal node.
 }
 \examples{

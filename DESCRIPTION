@@ -1,7 +1,7 @@
 Package: PlackettLuce
 Type: Package
 Title: Plackett-Luce Models for Rankings
-Version: 0.3.2.9000
+Version: 0.3.3
 Authors@R: c(person("Heather", "Turner",
         email = "ht@heatherturner.net", role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-1256-3375")),
@@ -31,11 +31,11 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: Matrix, igraph, methods, partykit, psychotools,
-    psychotree, RSpectra, qvcalc, sandwich, stats
+Imports: CVXR, Matrix, igraph, methods, partykit, psychotools,
+    psychotree, R6, RSpectra, qvcalc, sandwich, stats
 Suggests: BiocStyle, BayesMallows, BradleyTerry2,
     PLMIX, ROlogit, StatRank, bookdown, covr, hyper2, kableExtra, knitr,
-    lbfgs, gnm, pmr, rmarkdown, testthat
+    lbfgs, gnm, pmr, prefmod, rmarkdown, survival, testthat
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
