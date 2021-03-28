@@ -1,6 +1,7 @@
 # PlackettLuce 0.3.3
 
 * New `pladmm` function to fit the Plackett-Luce model with log-worth modelled by item covariates.
+* Add three new variables to the `beans` data. The planting date, and geographical coordinates (#41).
 
 # PlackettLuce 0.3.2
 
