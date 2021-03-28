@@ -1,3 +1,7 @@
+# PlackettLuce 0.3.3
+
+* New `pladmm` function to fit the Plackett-Luce model with log-worth modelled by item covariates.
+
 # PlackettLuce 0.3.2
 
 * Fix test that fails with new behaviour of `all.equal()`.
