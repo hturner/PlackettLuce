@@ -8,16 +8,46 @@
 #' (each ranking completely ranks a subset of the items), but ties are not
 #' supported.
 #'
+#' The log-worth is modelled as a linear function of item covariates:
+#' \deqn{\log \alpha_i = \beta_0 + \beta_1 x_{i1} + \ldots + \beta_p x_{ip}}{
+#' log \alpha_i = \beta_0 + \beta_1 x_{i1} + ... + \beta_p x_{ip}
+#' }
+#' where \eqn{\beta_0} is fixed by the constraint that
+#' \eqn{\sum_i \alpha_i = 1}.
+#'
+#' The parameters are estimated using an Alternating Directions Method of
+#' Multipliers (ADMM) algorithm proposed by Yildiz (2020). ADMM alternates
+#' between estimating the worths \eqn{\alpha_i} and the linear
+#' coefficients \eqn{\beta_k}, encapsulating them in a quadratic penalty on the
+#' likelihood:
+#' \deqn{L(\boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{u}) =
+#' \mathcal{L}(\mathcal{D}|\boldsymbol{\alpha}) +
+#' \frac{\rho}{2}||\boldsymbol{X}\boldsymbol{\beta} -
+#' \log \boldsymbol{\alpha} + \boldsymbol{u}||^2_2 -
+#' \frac{\rho}{2}||\boldsymbol{u}||^2_2}{
+#' L(\beta, \alpha, u) = L(D|\alpha) + \rho/2 ||X\beta - log \alpha + u||^2_2 -
+#' \rho/2 ||u||^2_2
+#' }
+#' where \eqn{\boldsymbol{u}}{u} is a dual variable that imposes the equality
+#' constraints (so that \eqn{\log \boldsymbol{\alpha}}{log \alpha} converges to
+#' \eqn{\boldsymbol{X}\boldsymbol{\beta}}{X \beta}).
+#'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
 #' coerced by \code{as.rankings}.
 #' @param formula a [formula] specifying the linear model for log-worth.
 #' @param data a data frame containing the variables in the model.
-#' @param rho the penalty parameter in the panalized likelihood, see details.
+#' @param rho the penalty parameter in the penalized likelihood, see details.
 #' @param n_iter the maximum number of iterations (also for inner loops).
 #' @param rtol the convergence tolerance (also for inner loops)
 #'
 #' @note This is a prototype function and the user interface is planned to
 #' change in upcoming versions of PlackettLuce.
+#'
+#' @references
+#' Yildiz, I., Dy, J., Erdogmus, D., Kalpathy-Cramer, J., Ostmo, S.,
+#' Campbell, J. P., Chiang, M. F. and Ioannidis, S. (2020) Fast and Accurate
+#' Ranking Regression In Proceedings of the Twenty Third International
+#' Conference on Artificial Intelligence and Statistics, \bold{108}, 77–-88.
 #'
 #' @examples
 #'
@@ -52,8 +82,10 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
                    data,
                    rho = 1, # penalty parameter
-                   n_iter = 500, # used for main iter, pi update & stationary dist
-                   rtol = 1e-4 # used in convergence checks: main iter, init of beta (& pi if QP init used), pi update & stationary dist
+                   n_iter = 500, # main iter, pi update & stationary dist
+                   # used in convergence checks: main iter, init of beta (
+                   # & pi if QP init used), pi update & stationary dist
+                   rtol = 1e-4
                    ){
     call <- match.call()
     epsilon <- .Machine$double.eps # added to pi avoid logging zero
@@ -118,7 +150,8 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
             prim_feas <- c(prim_feas,
                            norm(X %*% beta_iter - log(pi_iter + epsilon)))
             dual_feas <- c(dual_feas,
-                           norm(t(X) %*% (log(pi_prev + epsilon) - log(pi_iter + epsilon))))
+                           norm(t(X) %*% (log(pi_prev + epsilon) -
+                                              log(pi_iter + epsilon))))
             obj <- c(obj, objective(tilde_pi_iter, orderings, epsilon))
             iter <- iter + 1
             conv <- norm(pi_prev - pi_iter) < rtol * norm(pi_iter) &&
@@ -141,7 +174,8 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     freq <- M*(n - 1)
     # number of possible selections overall (can only choose 1 from each set)
     n_opt <-  M*(n*(n + 1)/2 - 1)
-    rank <- ncol(X) - 1 # would complain earlier if X not full rank; -1 due to constraint on pi
+    # would complain earlier if X not full rank; -1 due to constraint on pi
+    rank <- ncol(X) - 1
     df.residual <- n_opt - sum(freq) - rank
 
     # name outputs related to items

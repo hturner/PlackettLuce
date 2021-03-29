@@ -45,7 +45,7 @@
 #'     planting the trial.}
 #' }
 #' @source van Etten, J. et al. (2019) \emph{PNAS}, \bold{116} (10), 4194--4199,
-#' \url{https://doi.org/10.1073/pnas.1813720116}.
+#' \doi{10.1073/pnas.1813720116}.
 #' @examples
 #'
 #' # Consider the best and worst rankings. These give the variety the

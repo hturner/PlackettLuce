@@ -64,7 +64,7 @@ chosen.
 
 `pladmm` models the log-worth as a linear function of item covariates:
 
-$$\log \alpha_i = \beta_0 + \beta_1x_{i1} + \ldots + \beta_px_{ip}$$
+$$\log \alpha_i = \beta_0 + \beta_1 x_{i1} + \ldots + \beta_p x_{ip}$$
 
 where $\beta_0$ is fixed by the constraint that $\sum_i \alpha_i = 1$. The 
 parameters are estimated using an Alternating Directions Method of Multipliers 

@@ -14,7 +14,7 @@ coerced by \code{as.rankings}.}
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{rho}{the penalty parameter in the panalized likelihood, see details.}
+\item{rho}{the penalty parameter in the penalized likelihood, see details.}
 
 \item{n_iter}{the maximum number of iterations (also for inner loops).}
 
@@ -25,6 +25,31 @@ Fit a Plackett-Luce model where the log-worth is predicted by a linear
 function of covariates. The rankings may be partial
 (each ranking completely ranks a subset of the items), but ties are not
 supported.
+}
+\details{
+The log-worth is modelled as a linear function of item covariates:
+\deqn{\log \alpha_i = \beta_0 + \beta_1 x_{i1} + \ldots + \beta_p x_{ip}}{
+log \alpha_i = \beta_0 + \beta_1 x_{i1} + ... + \beta_p x_{ip}
+}
+where \eqn{\beta_0} is fixed by the constraint that
+\eqn{\sum_i \alpha_i = 1}.
+
+The parameters are estimated using an Alternating Directions Method of
+Multipliers (ADMM) algorithm proposed by Yildiz (2020). ADMM alternates
+between estimating the worths \eqn{\alpha_i} and the linear
+coefficients \eqn{\beta_k}, encapsulating them in a quadratic penalty on the
+likelihood:
+\deqn{L(\boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{u}) =
+\mathcal{L}(\mathcal{D}|\boldsymbol{\alpha}) +
+\frac{\rho}{2}||\boldsymbol{X}\boldsymbol{\beta} -
+\log \boldsymbol{\alpha} + \boldsymbol{u}||^2_2 -
+\frac{\rho}{2}||\boldsymbol{u}||^2_2}{
+L(\beta, \alpha, u) = L(D|\alpha) + \rho/2 ||X\beta - log \alpha + u||^2_2 -
+\rho/2 ||u||^2_2
+}
+where \eqn{\boldsymbol{u}}{u} is a dual variable that imposes the equality
+constraints (so that \eqn{\log \boldsymbol{\alpha}}{log \alpha} converges to
+\eqn{\boldsymbol{X}\boldsymbol{\beta}}{X \beta}).
 }
 \note{
 This is a prototype function and the user interface is planned to
@@ -57,4 +82,10 @@ if (require(prefmod)){
 
 }
 
+}
+\references{
+Yildiz, I., Dy, J., Erdogmus, D., Kalpathy-Cramer, J., Ostmo, S.,
+Campbell, J. P., Chiang, M. F. and Ioannidis, S. (2020) Fast and Accurate
+Ranking Regression In Proceedings of the Twenty Third International
+Conference on Artificial Intelligence and Statistics, \bold{108}, 77–-88.
 }

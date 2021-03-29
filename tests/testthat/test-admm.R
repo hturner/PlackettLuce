@@ -41,11 +41,13 @@ test_that("PLADMM works for partial rankings [fruits]", {
     expect_equal(log(partial_PLADMM[["pi"]]),
                  c(log(coef(partial_PL, log = FALSE))),
                  tol = coef_tol)
-    ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
+    ## expect log-worths predicted by linear predictor equal,
+    ## PLADMM and PlackettLuce
     expect_equal(log(partial_PLADMM[["tilde_pi"]]),
                  c(log(coef(partial_PL, log = FALSE))),
                  tol = coef_tol)
-    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
+    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth
+    ## from PlackettLuce
     expect_equivalent(coef(partial_PLADMM)[-1],
                       as.vector(coef(partial_PL)[-1]),
                       tol = coef_tol)
@@ -68,15 +70,17 @@ test_that("PLADMM worth estimates match PlackettLuce and rologit [salad]", {
                  tol = coef_tol)
     ## expect that log-worths are equal, PLADMM and rank-ordered logit
     lambda <- c(itemA = 0, coef(res0_RO))
-    log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
+    log_worth <- log(exp(lambda)/sum(exp(lambda))) # normalized to sum to 1
     expect_equal(unname(log(res0_PLADMM[["pi"]])),
                  unname(log_worth),
                  tol = coef_tol)
-    ## expect log-worths predicted by linear predictor equal, PLADMM and PlackettLuce
+    ## expect log-worths predicted by linear predictor equal,
+    ## PLADMM and PlackettLuce
     expect_equal(c(res0_PLADMM$x %*% coef(res0_PLADMM)),
                  unname(as.vector(log(coef(res0_PL, log = FALSE)))),
                  tol = coef_tol)
-    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth from PlackettLuce
+    ## expect beta coef from PLADMM equal non-zero (differences in) log-worth
+    ## from PlackettLuce
     ## TRUE to lower tolerance
     expect_equivalent(coef(res0_PLADMM)[-1],
                       as.vector(coef(res0_PL)[-1]),
@@ -101,7 +105,7 @@ test_that("PLADMM worth estimates match rank ordered logit model [salad]", {
                     data = cbind(salad_long_rankings, status = 1))
     beta <- c(0, coef(res_RO))
     lambda <- as.vector(res_PLADMM$x %*% matrix(beta))
-    log_worth <- log(exp(lambda)/sum(exp(lambda))) # log of worths normalized to sum to 1
+    log_worth <- log(exp(lambda)/sum(exp(lambda))) # normalized to sum to 1
     ## expect log-worths predicted by linear predictor from PLADMM
     ## equal to log-worths based on rank-orded logit.
     expect_equal(unname(log(res_PLADMM[["pi"]])),

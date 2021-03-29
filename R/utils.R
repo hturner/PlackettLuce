@@ -11,7 +11,8 @@ init_params <- function(X, orderings,  mat_Pij, method_beta_b_init = "QP",
     # param orderings: (c_l, A_l): 1...M
     # param X: n*p, feature matrix
     # param mat_Pij = est_Pij(n, orderings)
-    # Q = sum for all pairs (i, j): [(P_ij x_j - P_ji x_i); (P_ij - P_ji)][(P_ij x_j - P_ji x_i); (P_ij - P_ji)]^T
+    # Q = sum for all pairs (i, j):
+    # [(P_ij x_j - P_ji x_i); (P_ij - P_ji)][(P_ij x_j - P_ji x_i); (P_ij - P_ji)]^T
     n <- dim(X)[1]
     if (method_beta_b_init == 'LS'){
         beta_b <- init_beta_b_ls(X = X, orderings = orderings, rtol = rtol)
@@ -50,7 +51,8 @@ init_beta_b_ls <- function(X, orderings, rtol = 1e-4){
     # param X: n*p, feature matrix
     # param rtol: convergence tolerance
     # return: beta, b, time
-    ## beta is initialized to minimize least squares on the labels, not the scores: (y_ij-(x_i-x_j)^T beta)^2
+    ## beta is initialized to minimize least squares on the labels,
+    ## not the scores: (y_ij-(x_i-x_j)^T beta)^2
     sum_cross_corr <- 0
     sum_auto_corr <- 0
     m <- nrow(orderings)
@@ -59,7 +61,7 @@ init_beta_b_ls <- function(X, orderings, rtol = 1e-4){
         for (i in seq_len(n)){
             winner <- orderings[r, i]
             for (loser in orderings[r, -seq_len(i)]){
-                X_ij = X[winner, ] - X[loser, ]
+                X_ij <- X[winner, ] - X[loser, ]
                 sum_cross_corr <- sum_cross_corr + X_ij
                 sum_auto_corr <- sum_auto_corr + outer(X_ij, X_ij)
             }
@@ -83,7 +85,8 @@ init_beta_b_convex_QP <- function(X, orderings, mat_Pij, rtol = 1e-4){
     # :param X: n*p, feature matrix
     # :param mat_Pij = est_Pij(n, orderings)
     # param: rtol: convergence tolerance
-    # min._{beta,b} {beta,b}^T Q {beta,b}, s.t. Xbeta + b >=0 and sum(Xbeta + b)=1
+    # min._{beta,b} {beta,b}^T Q {beta,b}, s.t.
+    # Xbeta + b >=0 and sum(Xbeta + b)=1
     # :return: beta, b, time
     p <- ncol(X) + 1
     # Define variables
@@ -119,7 +122,8 @@ est_sum_dij_dijT <- function(X, orderings, mat_Pij = NULL){
     # :param orderings: (c_l, A_l): 1...M
     # :param X: n*p, feature matrix
     # :param mat_Pij = est_Pij(n, orderings)
-    # :return: sum for all pairs (i, j): [(P_ij x_j - P_ji x_i); (P_ij - P_ji)][(P_ij x_j - P_ji x_i); (P_ij - P_ji)]^T
+    # :return: sum for all pairs (i, j):
+    # [(P_ij x_j - P_ji x_i); (P_ij - P_ji)][(P_ij x_j - P_ji x_i); (P_ij - P_ji)]^T
     n <- nrow(X)
     p <- ncol(X)
     if (is.null(mat_Pij)){
@@ -144,10 +148,10 @@ est_Pij <- function(n, orderings){
     # p: number of features
     # :param orderings: (c_l, A_l): 1...M
     # :param X: n*p, feature matrix
-    # :return: for each pair (i, j), empirical estimate of the probability of i beating j
-    # Python original uses list of lists sparse matrix for constructing then converts to
-    # compressed sparse column matrix - will only be sparse for large number of items,
-    # use dense for now
+    # :return: for each pair (i, j), empirical estimate of Prob(i beats j)
+    # Python original uses list of lists sparse matrix for constructing then
+    # converts to compressed sparse column matrix - will only be sparse for
+    # large number of items, use dense for now
     Pij <- array(0, dim = c(n, n))
     m <- nrow(orderings)
     p <- ncol(orderings) # assume orderings of same length
@@ -166,8 +170,8 @@ est_Pij <- function(n, orderings){
         for (j in i:n){
             summation <- copy_Pij[i, j] + copy_Pij[j, i]
             if (summation > 0){
-                Pij[i, j] = Pij[i, j]/summation
-                Pij[j, i] = Pij[j, i]/summation
+                Pij[i, j] <- Pij[i, j]/summation
+                Pij[j, i] <- Pij[j, i]/summation
             }
         }
     }
@@ -221,15 +225,19 @@ softmax <- function(a){
 }
 
 #' @importFrom Matrix lu
-statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, rtol = 1e-4){
-    # Compute the stationary distribution of a Markov chain, described by its infinitesimal generator matrix.
-    # Computing the stationary distribution can be done with one of the following methods:
-    # - `kernel`: directly computes the left null space (co-kernel) the generator
-    # matrix using its LU-decomposition. Alternatively: ns = spl.null_space(generator.T)
+statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500,
+                     rtol = 1e-4){
+    # Compute the stationary distribution of a Markov chain,
+    # described by its infinitesimal generator matrix.
+    # Computing the stationary distribution can be done with one of the
+    # following methods:
+    # - `kernel`: directly computes the left null space (co-kernel) the
+    # generator matrix using its LU-decomposition. Alternatively:
+    # ns = spl.null_space(generator.T)
     # - `eigenval`: finds the leading left eigenvector of an equivalent
-    #   discrete-time MC using `scipy.sparse.linalg.eigs`.
+    # discrete-time MC using `scipy.sparse.linalg.eigs`.
     # - `power`: finds the leading left eigenvector of an equivalent
-    #   discrete-time MC using power iterations. v_init is the initial eigenvector.
+    # discrete-time MC using power iterations. v_init is the initial eigenvector
     n <- nrow(generator)
     if (method == "kernel"){
         # `lu` contains U on the upper triangle, including the diagonal.
@@ -245,9 +253,11 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, r
         return(res/sum(res))
     }
     if (method == "eigenval"){
-        # Arnoldi iteration has cubic convergence rate, but does not guarantee positive eigenvector
+        # Arnoldi iteration has cubic convergence rate, but does not guarantee
+        # positive eigenvector
         # mat = generator+eye is row stochastic, i.e. rows add up to 1.
-        # Multiply by eps to make sure each entry is at least -1. Sum by 1 to make sure that each row sum is exactly 1.
+        # Multiply by eps to make sure each entry is at least -1. Sum by 1 to
+        # make sure that each row sum is exactly 1.
         eps <- 1.0 / max(abs(generator))
         mat <- diag(n) + eps*generator
         A <- t(mat)
@@ -256,7 +266,8 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, r
         return (res / sum(res))
     }
     if (method == "power"){
-        # Power iteration has linear convergence rate and slow for lambda2~lambda1.
+        # Power iteration has linear convergence rate and slow for
+        # lambda2~lambda1.
         # But guarantees positive eigenvector, if started accordingly.
         if (is.null(v_init)){
             v <- runif(n)
@@ -264,7 +275,8 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, r
             v <- v_init
         }
         # mat = generator+eye is row stochastic, i.e. rows add up to 1.
-        # Multiply by eps to make sure each entry is at least -1. Sum by 1 to make sure that each row sum is exactly 1.
+        # Multiply by eps to make sure each entry is at least -1.
+        # Sum by 1 to make sure that each row sum is exactly 1.
         eps <- 1L / max(abs(generator))
         mat <- diag(n) + eps * generator
         A <- t(mat)
@@ -279,7 +291,8 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500, r
             r <- Av - v*lamda
             normr <- norm(r)
             if (normr < rtol*normAest){
-                #print('Power iteration converged in ' + str(ind_iter) + ' iterations.')
+                #print('Power iteration converged in ' +
+                #       str(ind_iter) + ' iterations.')
                 break
             }
         }
