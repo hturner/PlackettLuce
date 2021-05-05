@@ -1,6 +1,6 @@
 # PlackettLuce (development version)
 
-* Avoid computing variance-covariance matrix in `predict.PLADMM(vcov = FALSE)` and `AIC` when new data specified.
+* Avoid computing variance-covariance matrix in `predict.PLADMM(vcov = FALSE)` and `AIC` when new data specified (partial fix to #50).
 
 # PlackettLuce 0.4.0
 
