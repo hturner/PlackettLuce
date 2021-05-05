@@ -134,7 +134,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
                                          newdata = newdata,
                                          type = "node")
     # set up to refit models based on newdata
-    cf <- itempar(object)
+    cf <- coef(object, log = FALSE)
     if (is.null(dim(cf))) cf <- t(as.matrix(cf))
     nodes <- partykit::nodeids(object, terminal = TRUE)
     dots <- object$info$dots
