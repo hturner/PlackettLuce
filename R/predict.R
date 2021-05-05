@@ -8,7 +8,7 @@ predict.PLADMM <- function(object, newdata = NULL,
     type <- match.arg(type)
     # if newdata, create new X matrix
     if (!is.null(newdata)){
-        object$vcov <- vcov(object) # vcov based on original X matrix
+        if (se.fit) object$vcov <- vcov(object) # vcov based on original X matrix
         # allow for missing factor levels (avoid terms etc for now)
         X <- matrix(0, nrow = nrow(newdata), ncol = ncol(object$x),
                     dimnames = list(seq(nrow(newdata)), colnames(object$x)))
