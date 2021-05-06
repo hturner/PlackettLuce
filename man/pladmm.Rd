@@ -4,7 +4,15 @@
 \alias{pladmm}
 \title{Fit a Plackett-Luce Model with Linear Predictor for Log-worth}
 \usage{
-pladmm(rankings, formula, data, rho = 1, n_iter = 500, rtol = 1e-04)
+pladmm(
+  rankings,
+  formula,
+  data,
+  contrasts = NULL,
+  rho = 1,
+  n_iter = 500,
+  rtol = 1e-04
+)
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
@@ -13,6 +21,9 @@ coerced by \code{as.rankings}.}
 \item{formula}{a \link{formula} specifying the linear model for log-worth.}
 
 \item{data}{a data frame containing the variables in the model.}
+
+\item{contrasts}{an optional list specifying contrasts for the factors in
+\code{formula}. See the \code{contrasts.arg} of \code{\link[=model.matrix]{model.matrix()}}.}
 
 \item{rho}{the penalty parameter in the penalized likelihood, see details.}
 

@@ -36,6 +36,8 @@
 #' coerced by \code{as.rankings}.
 #' @param formula a [formula] specifying the linear model for log-worth.
 #' @param data a data frame containing the variables in the model.
+#' @param contrasts an optional list specifying contrasts for the factors in
+#' `formula`. See the `contrasts.arg` of [model.matrix()].
 #' @param rho the penalty parameter in the penalized likelihood, see details.
 #' @param n_iter the maximum number of iterations (also for inner loops).
 #' @param rtol the convergence tolerance (also for inner loops)
@@ -81,6 +83,7 @@
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
                    data,
+                   contrasts = NULL,
                    rho = 1, # penalty parameter
                    n_iter = 500, # main iter, pi update & stationary dist
                    # used in convergence checks: main iter, init of beta (
@@ -96,10 +99,20 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     part_order <- function(x) c(order(x, na.last = NA), numeric(sum(is.na(x))))
     orderings <- t(apply(rankings, 1, part_order))
     items <- colnames(rankings)
-    # check X
-    X <- model.matrix(formula, data)
-    if (!"(Intercept)" %in% colnames(X))
-        stop("`X` must contain an intercept")
+    # create model frame: can use data from environment of formula
+    model_data <- model.frame(formula, data = data,
+                              drop.unused.levels = TRUE)
+    if (length(items) != nrow(model_data))
+        stop("length of variables in `formula` ",
+             "does not match the number of items")
+    # create model terms - must have intercept
+    model_terms <- terms(formula, data = data)
+    if (!attr(model_terms, "intercept"))
+        stop("`formula` must contain an intercept")
+    # create model matrix
+    X <- model.matrix(model_terms, data = model_data,
+                      contrasts.arg = contrasts)
+
     # pairwise probability of win/loss
     mat_Pij <- est_Pij(nrow(X), orderings)
 
@@ -193,6 +206,9 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                 loglik = obj,
                 # supplementary
                 x = X,
+                terms = model_terms,
+                xlevels = .getXlevels(model_terms, model_data),
+                contrasts = contrasts,
                 orderings = orderings,
                 rank = rank,
                 df.residual = df.residual,

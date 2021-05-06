@@ -9,12 +9,11 @@ predict.PLADMM <- function(object, newdata = NULL,
     # if newdata, create new X matrix
     if (!is.null(newdata)){
         if (se.fit) object$vcov <- vcov(object) # vcov based on original X matrix
-        # allow for missing factor levels (avoid terms etc for now)
-        X <- matrix(0, nrow = nrow(newdata), ncol = ncol(object$x),
-                    dimnames = list(seq(nrow(newdata)), colnames(object$x)))
-        X1 <- model.matrix(as.formula(object$call$formula), newdata)
-        X[, colnames(X1)] <- X1
-        object$x <- X
+        # create new model matrix
+        model_data <- model.frame(terms(object), newdata, #na.action?
+                                   xlev = object$xlevels)
+        object$x <- model.matrix(terms(object), model_data,
+                                 contrasts.arg = object$contrasts)
     }
     # if itempar return constrained item parameters
     if (type == "itempar"){

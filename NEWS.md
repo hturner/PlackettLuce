@@ -1,5 +1,6 @@
 # PlackettLuce (development version)
 
+* Improved handling of model formula in `pladmm()`, including possibility to specify contrasts for any factors in the formula.
 * Avoid computing variance-covariance matrix in `predict.PLADMM(vcov = FALSE)` and `AIC` when new data specified (partial fix to #50).
 
 # PlackettLuce 0.4.0
