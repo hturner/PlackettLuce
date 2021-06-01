@@ -31,7 +31,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: CVXR, Matrix, igraph, methods, partykit, psychotools,
+Imports: CVXR, Matrix, igraph, matrixStats, methods, partykit, psychotools,
     psychotree, R6, RSpectra, qvcalc, sandwich, stats
 Suggests: BiocStyle, BayesMallows, BradleyTerry2,
     PLMIX, ROlogit, StatRank, bookdown, covr, hyper2, kableExtra, knitr,
