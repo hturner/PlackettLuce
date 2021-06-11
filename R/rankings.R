@@ -193,6 +193,13 @@ as.rankings.default <- function(x,
 
 #' @rdname rankings
 #' @export
+as.rankings.grouped_rankings <- function(x, ...,
+                                         verbose = TRUE){
+    attr(x, "rankings")
+}
+
+#' @rdname rankings
+#' @export
 as.rankings.matrix <- function(x,
                                input = c("rankings", "orderings"),
                                freq = NULL,

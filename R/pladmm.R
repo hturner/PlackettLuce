@@ -36,6 +36,7 @@
 #' coerced by \code{as.rankings}.
 #' @param formula a [formula] specifying the linear model for log-worth.
 #' @param data a data frame containing the variables in the model.
+#' @param start starting values for the coefficients.
 #' @param contrasts an optional list specifying contrasts for the factors in
 #' `formula`. See the `contrasts.arg` of [model.matrix()].
 #' @param rho the penalty parameter in the penalized likelihood, see details.
@@ -82,7 +83,8 @@
 #' @export
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
-                   data,
+                   data = NULL,
+                   start = NULL, # starting values for the beta coefficients
                    contrasts = NULL,
                    rho = 1, # penalty parameter
                    n_iter = 500, # main iter, pi update & stationary dist
@@ -105,13 +107,14 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     if (length(items) != nrow(model_data))
         stop("length of variables in `formula` ",
              "does not match the number of items")
-    # create model terms - must have intercept
+    # create model terms and model matrix
     model_terms <- terms(formula, data = data)
-    if (!attr(model_terms, "intercept"))
-        stop("`formula` must contain an intercept")
-    # create model matrix
     X <- model.matrix(model_terms, data = model_data,
                       contrasts.arg = contrasts)
+    # check model contains an intercept
+    # (don't use terms as intercept may be included in matrix term)
+    if (!all(X[,1] == 1L))
+        stop("`formula` must contain an intercept")
 
     # pairwise probability of win/loss
     mat_Pij <- est_Pij(nrow(X), orderings)
@@ -124,7 +127,9 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     log_admm <- ADMM_log$new(orderings, X[,-1, drop = FALSE],
                              method_pi_tilde_init = "prev")
     conv <- FALSE
-    beta_iter <- c("(Intercept)" = 0, inits$exp_beta_init)
+    if (is.null(start)) {
+        beta_iter <- c("(Intercept)" = 0, inits$exp_beta_init)
+    } else beta_iter <- start
     ## set intercept so that exp(X*beta_iter) sum to 1
     lambda <- X %*% beta_iter
     beta_iter[1] <- -log(sum(exp(lambda)))

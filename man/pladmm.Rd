@@ -7,7 +7,8 @@
 pladmm(
   rankings,
   formula,
-  data,
+  data = NULL,
+  start = NULL,
   contrasts = NULL,
   rho = 1,
   n_iter = 500,
@@ -21,6 +22,8 @@ coerced by \code{as.rankings}.}
 \item{formula}{a \link{formula} specifying the linear model for log-worth.}
 
 \item{data}{a data frame containing the variables in the model.}
+
+\item{start}{starting values for the coefficients.}
 
 \item{contrasts}{an optional list specifying contrasts for the factors in
 \code{formula}. See the \code{contrasts.arg} of \code{\link[=model.matrix]{model.matrix()}}.}

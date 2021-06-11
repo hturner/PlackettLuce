@@ -4,6 +4,7 @@
 \alias{rankings}
 \alias{as.rankings}
 \alias{as.rankings.default}
+\alias{as.rankings.grouped_rankings}
 \alias{as.rankings.matrix}
 \alias{[.rankings}
 \alias{format.rankings}
@@ -24,6 +25,8 @@ as.rankings(x, ..., verbose = TRUE)
   ...,
   verbose = TRUE
 )
+
+\method{as.rankings}{grouped_rankings}(x, ..., verbose = TRUE)
 
 \method{as.rankings}{matrix}(
   x,
