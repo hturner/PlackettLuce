@@ -1,5 +1,5 @@
 #' @method predict PLADMM
-#' @importFrom stats as.formula model.matrix
+#' @importFrom stats as.formula model.matrix terms
 #' @export
 predict.PLADMM <- function(object, newdata = NULL,
                            type = c("lp", "itempar"),

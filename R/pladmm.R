@@ -143,6 +143,7 @@ convert_to_orderings <- function(rankings){
               items = colnames(rankings))
 }
 
+#' @importFrom stats .getXlevels terms
 model_spec <- function(formula, data,
                        contrasts, items){
     # create model frame: can use data from environment of formula

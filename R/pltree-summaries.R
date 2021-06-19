@@ -109,6 +109,7 @@ coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
 
 #' @rdname pltree-summaries
 #' @method vcov pltree
+#' @export
 vcov.pltree <- function (object, node = nodeids(object, terminal = TRUE), ...){
     nodeapply(object, ids = node,
               FUN = function(n) vcov(info_node(n)$object, ...))
