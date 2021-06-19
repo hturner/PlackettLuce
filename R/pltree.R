@@ -22,20 +22,27 @@
 #' panel-generating function. The See Also
 #' section gives details of separately documented methods.
 #'
-#' @param formula a symbolic description of the model to be fitted, of the form
+#' @param formula A symbolic description of the model to be fitted, of the form
 #' \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
 #' \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as
 #'  partitioning variables.
-#' @param data an optional data frame containing the variables in the model.
-#' @param subset A specification of the rows to be used, passed to
-#' \code{\link{model.frame}}.
-#' @param na.action how NAs are treated, applied to the underlying rankings and
-#' then passed to \code{\link{model.frame}}.
+#' @param data An optional data object containing the variables in the model.
+#' Either a data frame of variables in `formula` or a list of length 2 giving
+#' data frames for variables in `formula` and in `worth`.
+#' @param worth A optional formula specifying a linear model for log-worth.
+#' If `NULL`, worth is estimated separately for each item with
+#' [`PlackettLuce()`]. Otherwise, the model in each node of the tree id fitted
+#' with [`pladmm()`].
+#' @param subset A specification of the rows to be used for variables in
+#' `formula`, passed to \code{\link{model.frame}}.
+#' @param na.action how NAs are treated for variables in `formula`, applied
+#' to the underlying rankings and then passed to \code{\link{model.frame}}.
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
 #' covariances in the parameter stability tests, see \code{\link{mob}}.
 #' @param ref an integer or character string specifying the reference item (for
 #' which log ability will be set to zero). If NULL the first item is used.
-#' @param ... additional arguments, passed to \code{\link{PlackettLuce}}.
+#' @param ... additional arguments, passed to \code{\link{PlackettLuce}}
+#' of [`pladmm()`].
 #' @return An object of class \code{"pltree"} inheriting from \code{"bttree"}
 #' and \code{"modelparty"}.
 #' @seealso
@@ -81,12 +88,17 @@
 #' }
 #' @importFrom partykit mob_control
 #' @export
-pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
-    m <- match.call(expand.dots = TRUE)
+pltree <- function (formula, data, worth, subset, na.action, cluster,
+                    ref = NULL, ...){
+    pltree_call <- match.call(expand.dots = TRUE)
     # handle model frame here to preserve attributes after na.action
-    mf_args <- names(m) %in% c("formula", "data", "subset", "cluster")
-    mf <- m[c(1L, which(mf_args))]
+    mf_args <- names(pltree_call) %in% c("formula", "data", "subset", "cluster")
+    mf <- pltree_call[c(1L, which(mf_args))]
     mf$na.action <- "na.pass"
+    if (!missing(worth)){
+        # for now assume in order
+        mf$data <- data[[1L]]
+    }
     mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
     if (missing(na.action)) na.action <- getOption("na.action")
@@ -95,17 +107,31 @@ pltree <- function (formula, data, subset, na.action, cluster, ref = NULL, ...){
     if (attr(attr(mf, "terms"), "response")){
         mf[[1L]] <- na.omit(mf[[1L]])
     } else stop("`formula` must specify a response (grouped rankings)")
-    control_args <- names(m) %in% names(formals(mob_control))
-    control <- do.call("mob_control", as.list(m)[control_args])
-    keep <-!names(m) %in% c("subset", "na.action", "cluster",
+    # now set up for mob/fitting function
+    control_args <- names(pltree_call) %in% names(formals(mob_control))
+    control <- do.call("mob_control", as.list(pltree_call)[control_args])
+    keep <-!names(pltree_call) %in% c("subset", "na.action", "cluster",
                             names(formals(mob_control)))
-    m <- m[keep]
-    m$data <- quote(mf)
-    m$control <- control
-    m$fit <- as.name("plfit")
-    m[[1L]] <- quote(partykit::mob)
-    rval <- eval(m, list(mf = mf), parent.frame())
-    rval$info$call <- m
+    mob_call <- pltree_call[keep]
+    mob_call$data <- quote(mf)
+    mob_call$control <- control
+    if (!missing(worth)){
+        # convert grouped rankings to grouped orderings
+        ord <- convert_to_orderings(attr(mf[[1L]], "rankings"))
+        attr(mf[[1L]], "rankings")[] <- ord[]
+
+        # define model matrix for linear predictor
+        spec <- model_spec(formula = worth, data = data[[2L]],
+                           contrasts = pltree_call[["contrasts"]],
+                           items = attr(ord, "items"))
+        mob_call$worth <- spec$x
+        mob_call$fit <- as.name("pladmm_mob_fit")
+    } else{
+        mob_call$fit <- as.name("plfit")
+    }
+    mob_call[[1L]] <- quote(partykit::mob)
+    rval <- eval(mob_call, list(mf = mf), parent.frame())
+    rval$info$call <- mob_call
     rval$info$call$data <- substitute(data)
     # replace data with mf (loses na.action attribute)
     rval$data <- mf

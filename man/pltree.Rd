@@ -4,21 +4,28 @@
 \alias{pltree}
 \title{Plackett-Luce Trees}
 \usage{
-pltree(formula, data, subset, na.action, cluster, ref = NULL, ...)
+pltree(formula, data, worth, subset, na.action, cluster, ref = NULL, ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted, of the form
+\item{formula}{A symbolic description of the model to be fitted, of the form
 \code{y ~ x1 + ... + xn} where \code{y} should be an object of class
 \code{\link{grouped_rankings}} and \code{x1}, \dots, \code{xn} are used as
 partitioning variables.}
 
-\item{data}{an optional data frame containing the variables in the model.}
+\item{data}{An optional data object containing the variables in the model.
+Either a data frame of variables in \code{formula} or a list of length 2 giving
+data frames for variables in \code{formula} and in \code{worth}.}
 
-\item{subset}{A specification of the rows to be used, passed to
-\code{\link{model.frame}}.}
+\item{worth}{A optional formula specifying a linear model for log-worth.
+If \code{NULL}, worth is estimated separately for each item with
+\code{\link[=PlackettLuce]{PlackettLuce()}}. Otherwise, the model in each node of the tree id fitted
+with \code{\link[=pladmm]{pladmm()}}.}
 
-\item{na.action}{how NAs are treated, applied to the underlying rankings and
-then passed to \code{\link{model.frame}}.}
+\item{subset}{A specification of the rows to be used for variables in
+\code{formula}, passed to \code{\link{model.frame}}.}
+
+\item{na.action}{how NAs are treated for variables in \code{formula}, applied
+to the underlying rankings and then passed to \code{\link{model.frame}}.}
 
 \item{cluster}{an optional vector of cluster IDs to be employed for clustered
 covariances in the parameter stability tests, see \code{\link{mob}}.}
@@ -26,7 +33,8 @@ covariances in the parameter stability tests, see \code{\link{mob}}.}
 \item{ref}{an integer or character string specifying the reference item (for
 which log ability will be set to zero). If NULL the first item is used.}
 
-\item{...}{additional arguments, passed to \code{\link{PlackettLuce}}.}
+\item{...}{additional arguments, passed to \code{\link{PlackettLuce}}
+of \code{\link[=pladmm]{pladmm()}}.}
 }
 \value{
 An object of class \code{"pltree"} inheriting from \code{"bttree"}

@@ -1,5 +1,6 @@
 # PlackettLuce (development version)
 
+* Extend `pltree` to allow option of modelling log-worth with a linear predictor (via `pladmm()`).
 * Improved handling of model formula in `pladmm()`, including possibility to specify contrasts for any factors in the formula.
 * Avoid computing variance-covariance matrix in `predict.PLADMM(vcov = FALSE)` and `AIC` when new data specified (partial fix to #50).
 
