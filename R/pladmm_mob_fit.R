@@ -51,11 +51,11 @@ estfun.PLADMM <- function(x, ...) {
     n_item <- nrow(X)
     revorder <- x$orderings[, rev(seq_len(n_item))]
     # set item 0 to Inf so that returns NA when used as index
-    revorder[revorder == 0] <- Inf
+    revorder[revorder == 0] <- n_item + 1
 
     # get item worth for items in reverse order
     n_rankings <- nrow(revorder)
-    A <- matrix(alpha[c(revorder)], nrow = n_rankings)
+    A <- matrix(c(alpha, 0)[c(revorder)], nrow = n_rankings)
     # get derivative wrt to each estimable coef
     n_coef <- length(x$coefficients)
     res <- matrix(nrow = n_rankings, ncol = n_coef,
