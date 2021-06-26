@@ -1,5 +1,7 @@
 context("implementation [pladmm_mob_fit and pladmmtree]")
 
+coef_tol <- 1e-4
+
 test_that('pladmm_mob_fit works [salad]',  {
     # convert salad to rankings object
     salad_rankings <- as.rankings(salad)
@@ -48,23 +50,27 @@ test_that('pltree works with worth formula, 1 node [salad]',  {
 
 # TODO: predict method
 
-# need proper test here: redo pltree or bttree so have something to
-# test against
-test_that('pltree works with worth formula, 2 node [salad]',  {
-    # convert salad to rankings object
-    salad_rankings <- as.rankings(salad)
+if (require(psychotree) & require(sandwich)){
+    test_that("pltree with worth formula and bttree agree [Topmodel2007]", {
+        # works, but currently very slow
+        skip_on_cran()
+        data("Topmodel2007", package = "psychotree")
+        preference <- Topmodel2007$preference
 
-    # create a grouped rankings with 2 arbitrary groups
-    G <- group(salad_rankings, rep(1:8, nrow(salad_rankings)/8))
+        G <- as.grouped_rankings(preference)
+        models <- colnames(attr(G, "rankings"))
+        models <- factor(models, levels = models)
+        pl_tree <- pltree(G ~ ., worth = ~ models,
+                          data = list(Topmodel2007[, -1],
+                                      data.frame(features = models)),
+                          minsize = 30, rho = 1)
+        itempar(pl_tree)
 
-    # create some random covariates
-    set.seed(1)
-    zvar <- data.frame(z1 = rnorm(length(G)),
-                       z2 = rpois(length(G), lambda = 2))
+        bt_tree <- bttree(preference ~ ., data = Topmodel2007,
+                          minsize = 5, ref = "Anja")
+        expect_equal(itempar(pl_tree),
+                     itempar(bt_tree),
+                     tol = coef_tol)
 
-    # set high alpha to force two nodes
-    mod1 <- pltree(G ~ .,
-                   worth = ~ acetic + gluconic,
-                   data = list(zvar, features),
-                   rho = 1, minsize = 4, alpha = 0.8)
-})
+    })
+}

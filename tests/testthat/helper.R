@@ -6,6 +6,7 @@ library(survival) # coxph for rank-ordered logit
 ## analysis of salad data from Critchlow, D. E. & Fligner, M. A. (1991).
 ## salad is a data.frame of rankings for items A B C D
 ## 1 = most tart, 4 = least tart
+data(salad)
 
 ## create data frame of corresponding features
 ## (acetic and gluconic acid concentrations in salad dressings)
