@@ -104,7 +104,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     # model fit
     fit <- pladmm_fit(orderings = orderings, X = spec$x,
                       start = start,
-                      rho = rho, n_iter = n_iter,
+                      rho = rho, maxit = n_iter,
                       rtol = rtol)
 
     # rank
@@ -172,7 +172,7 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
                        X, # model.matrix for linear predictor of worth
                        start = NULL, # starting values for the beta coefficients
                        rho = 1, # penalty parameter
-                       n_iter = 500, # main iter, pi update & stationary dist
+                       maxit = 500, # main iter, pi update & stationary dist
                        # used in convergence checks: main iter, init of beta (
                        # & pi if QP init used), pi update & stationary dist
                        rtol = 1e-4){
@@ -190,10 +190,10 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
         init <- init_exp_beta(X[,-1, drop = FALSE], orderings, mat_Pij)
         ## beta coef
         beta_iter <- c("(Intercept)" = 0, init$exp_beta_init)
+        ## set intercept so that exp(X*beta_iter) sum to 1
+        lambda <- X %*% beta_iter
+        beta_iter[1] <- -log(sum(exp(lambda)))
     } else beta_iter <- start
-    ## set intercept so that exp(X*beta_iter) sum to 1
-    lambda <- X %*% beta_iter
-    beta_iter[1] <- -log(sum(exp(lambda)))
     tilde_pi_iter <- drop(exp(X %*% beta_iter))
 
     # set statistics for optimisation/monitoring
@@ -209,7 +209,7 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
     log_admm <- ADMM_log$new(orderings, X[,-1, drop = FALSE],
                              method_pi_tilde_init = "prev")
     conv <- FALSE
-    for (iter in seq_len(n_iter)){
+    for (iter in seq_len(maxit)){
         # log_admm update
         if (!conv){
             pi_prev <- pi_iter

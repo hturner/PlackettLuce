@@ -132,7 +132,18 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
     f <- formula(object)
     environment(f) <- parent.frame()
     newdata <- model.frame(f, data = newdata, ...)
-    # predict node for each grouped rankingnodeids(tm_tree, terminal = TRUE)
+    if (!is.null(object$info$dots$worth)){
+        # convert grouped rankings to grouped orderings
+        ord <- convert_to_orderings(attr(newdata[[1L]], "rankings"))
+        attr(newdata[[1L]], "rankings")[] <- ord[]
+
+        # define model matrix for linear predictor
+        #spec <- model_spec(formula = worth, data = data[[2L]],
+        #                   contrasts = pltree_call[["contrasts"]],
+        #                   items = attr(ord, "items"))
+        #mob_call$worth <- spec$x
+    }
+    # predict node for each grouped ranking
     node <- partykit::predict.modelparty(object,
                                          newdata = newdata,
                                          type = "node")
@@ -151,7 +162,7 @@ AIC.pltree <- function(object, newdata = NULL, ...) {
         id <- node == nodes[i]
         if (sum(id)) {
             fit <- suppressWarnings(
-                do.call("plfit",
+                do.call(object$info$fit,
                         c(list(y = G[id,],
                                start = cf[i,],
                                weights = w[id],
@@ -188,11 +199,11 @@ predict.pltree <- function(object, newdata = NULL,
                        t(as.matrix(itempar(obj, ...)))
                    },
                    rank = function(obj, ...) {
-                       t(as.matrix(rank(-obj$coefficients)))
+                       t(as.matrix(rank(-itempar(obj, ...))))
                    },
                    best = function(obj, ...) {
-                       nm <- names(obj$coefficients)
-                       nm[which.max(obj$coefficients)]
+                       nm <- names(itempar(obj, ...))
+                       nm[which.max(itempar(obj, ...))]
                    })
     out <- partykit::predict.modelparty(object, newdata = newdata,
                                         type = pred, ...)

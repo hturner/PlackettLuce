@@ -48,29 +48,104 @@ test_that('pltree works with worth formula, 1 node [salad]',  {
     expect_equal(AIC(mod1), AIC(mod2))
 })
 
-# TODO: predict method
-
 if (require(psychotree) & require(sandwich)){
+    # pltree + PLADMM works, but currently very slow
+    data("Topmodel2007", package = "psychotree")
+    preference <- Topmodel2007$preference
+
+    G <- as.grouped_rankings(preference)
+    models <- colnames(attr(G, "rankings"))
+    models <- factor(models, levels = models)
+    pl_tree <- pltree(G ~ ., worth = ~ models,
+                      data = list(Topmodel2007[, -1],
+                                  data.frame(features = models)),
+                      minsize = 30, rho = 1)
+    bt_tree <- bttree(preference ~ ., data = Topmodel2007,
+                      minsize = 5, ref = "Anja")
+
     test_that("pltree with worth formula and bttree agree [Topmodel2007]", {
-        # works, but currently very slow
-        skip_on_cran()
-        data("Topmodel2007", package = "psychotree")
-        preference <- Topmodel2007$preference
-
-        G <- as.grouped_rankings(preference)
-        models <- colnames(attr(G, "rankings"))
-        models <- factor(models, levels = models)
-        pl_tree <- pltree(G ~ ., worth = ~ models,
-                          data = list(Topmodel2007[, -1],
-                                      data.frame(features = models)),
-                          minsize = 30, rho = 1)
-        itempar(pl_tree)
-
-        bt_tree <- bttree(preference ~ ., data = Topmodel2007,
-                          minsize = 5, ref = "Anja")
         expect_equal(itempar(pl_tree),
                      itempar(bt_tree),
                      tol = coef_tol)
 
     })
+
+    # predict pltree
+    newdata <- Topmodel2007[1:3,]
+    test_that('predict.pltree works for type = "itempar" [Topmodel2007]',
+              {
+                  # probabilities
+                  expect_equal(itempar(bt_tree)[
+                      as.character(predict(bt_tree, type = "node")),],
+                      predict(pl_tree, type = "itempar"),
+                      check.attributes = FALSE, tol = coef_tol)
+                  expect_equal(itempar(bt_tree)[
+                      as.character(predict(bt_tree, newdata = newdata,
+                                           type = "node")),],
+                      predict(pl_tree,  newdata = newdata, type = "itempar"),
+                      check.attributes = FALSE, tol = coef_tol)
+                  # log-abilities - okay to lower tol
+                  expect_equal(itempar(bt_tree, log = TRUE)[
+                      as.character(predict(bt_tree, type = "node")),],
+                      predict(pl_tree, type = "itempar", log = TRUE),
+                      check.attributes = FALSE, tol = coef_tol*10)
+                  expect_equal(itempar(bt_tree, log = TRUE)[
+                      as.character(predict(bt_tree, newdata = newdata,
+                                           type = "node")),],
+                      predict(pl_tree, newdata = newdata, type = "itempar",
+                              log = TRUE),
+                      check.attributes = FALSE, tol = coef_tol*10)
+              })
+    test_that('predict.pltree works for type = "rank" [Topmodel2007]',
+              {
+                  rank <- t(apply(-itempar(bt_tree), 1, rank))
+                  expect_equal(rank[
+                      as.character(predict(bt_tree, newdata = newdata,
+                                           type = "node")),],
+                      predict(pl_tree, newdata = newdata, type = "rank"),
+                      check.attributes = FALSE, tol = coef_tol)
+                  expect_equal(rank[
+                      as.character(predict(bt_tree, newdata = newdata,
+                                           type = "node")),],
+                      predict(pl_tree, newdata = newdata, type = "rank"),
+                      check.attributes = FALSE, tol = coef_tol)
+              })
+    test_that('predict.pltree works for type = "best" [Topmodel2007]',
+              {
+                  expect_equal(names(predict(bt_tree, type = "best")),
+                               names(predict(pl_tree, type = "best")))
+                  expect_equal(as.character(predict(bt_tree, type = "best")),
+                               as.character(predict(pl_tree, type = "best")))
+                  expect_equal(names(predict(bt_tree, newdata = newdata,
+                                             type = "best")),
+                               names(predict(pl_tree,  newdata = newdata,
+                                             type = "best")))
+                  expect_equal(as.character(predict(bt_tree, newdata = newdata,
+                                                    type = "best")),
+                               as.character(predict(pl_tree,  newdata = newdata,
+                                                    type = "best")))
+              })
+    test_that('predict.pltree works for type = "node" [Topmodel2007]',
+              {
+                  tmp <- predict(pl_tree, type = "node")
+                  mode(tmp) <- "numeric"
+                  expect_equal(predict(bt_tree, type = "node"), tmp)
+                  tmp <- predict(pl_tree,  newdata = newdata, type = "node")
+                  mode(tmp) <- "numeric"
+                  expect_equal(predict(bt_tree, newdata = newdata,
+                                       type = "node"), tmp)
+              })
+    test_that('AIC.pltree works [Topmodel2007]',
+              {
+                  Topmodel2007$G <- G
+                  aic1 <- AIC(pl_tree)
+                  aic2 <- AIC(pl_tree, newdata = Topmodel2007)
+                  expect_equal(aic1, aic2)
+
+                  node <- predict(pl_tree, type = "node")
+                  aic1 <- AIC(pl_tree, newdata = Topmodel2007[node == "3", -1])
+                  aic2 <- -2*as.numeric(logLik(pl_tree[[3]])) +
+                      2*attr(logLik(pl_tree), "df")
+                  expect_equal(aic1, aic2)
+              })
 }
