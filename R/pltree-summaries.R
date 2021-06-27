@@ -121,22 +121,19 @@ vcov.pltree <- function (object, node = nodeids(object, terminal = TRUE), ...){
 #' @method AIC pltree
 #' @importFrom stats formula logLik model.frame model.response model.weights
 #' @export
-AIC.pltree <- function(object, newdata = NULL, ...) {
+AIC.pltree <- function(object, newdata = NULL, na.action, ...) {
     if (is.null(newdata)) {
         return(NextMethod(object, ...))
     }
     # create model.frame from newdata
-    response <- as.character(formula(object)[[2L]])
+    tree_formula <- formula(object)
+    environment(tree_formula) <- parent.frame()
+    newdata <- pltree.model.frame(tree_formula, newdata, na.action, ...,
+                                  worth = !is.null(object$info$dots$worth))
+    response <- as.character(tree_formula[[2L]])
     if (!response %in% colnames(newdata))
         stop("`newdata` must include response")
-    f <- formula(object)
-    environment(f) <- parent.frame()
-    newdata <- model.frame(f, data = newdata, ...)
     if (!is.null(object$info$dots$worth)){
-        # convert grouped rankings to grouped orderings
-        ord <- convert_to_orderings(attr(newdata[[1L]], "rankings"))
-        attr(newdata[[1L]], "rankings")[] <- ord[]
-
         # define model matrix for linear predictor
         #spec <- model_spec(formula = worth, data = data[[2L]],
         #                   contrasts = pltree_call[["contrasts"]],
@@ -183,20 +180,34 @@ predict.pltree <- function(object, newdata = NULL,
                            type = c("itempar", "rank", "best", "node"),
                            ...) {
     type <- match.arg(type)
+    has_worth <- !is.null(object$info$dots$worth)
+    if (is.null(newdata)) {
+        pltree_data <- model.frame(object)
+        worth_data <- NULL # (not needed to compute itempar)
+        na.action <- attr(pltree_data, "na.action")
+    } else {
+        # create model.frame from newdata for use by predict.modelparty
+        tree_formula <- formula(object)
+        environment(tree_formula) <- parent.frame()
+        pltree_data <- pltree.model.frame(tree_formula, data = newdata, ...,
+                                          worth = has_worth)
+        response <- as.character(tree_formula[[2L]])
+        if (!response %in% colnames(pltree_data))
+            stop("`newdata` must include response")
+        # get newdata for use by predict.PLADMM
+        worth_data <- newdata[[2]]
+    }
     if (type == "node"){
         res <- partykit::predict.modelparty(object,
-                                            newdata = newdata,
+                                            newdata = pltree_data,
                                             type = "node")
         return(structure(as.character(res),
                          names = as.character(seq_along(res))))
     }
-    if (is.null(newdata)) {
-        newdata <- model.frame(object)
-        na.action <- attr(newdata, "na.action")
-    } else na.action <- NULL
     pred <- switch(type,
                    itempar = function(obj, ...) {
-                       t(as.matrix(itempar(obj, ...)))
+                       t(as.matrix(predict.PLADMM(obj, newdata = worth_data,
+                                                  type = "itempar")))
                    },
                    rank = function(obj, ...) {
                        t(as.matrix(rank(-itempar(obj, ...))))
@@ -205,7 +216,7 @@ predict.pltree <- function(object, newdata = NULL,
                        nm <- names(itempar(obj, ...))
                        nm[which.max(itempar(obj, ...))]
                    })
-    out <- partykit::predict.modelparty(object, newdata = newdata,
+    out <- partykit::predict.modelparty(object, newdata = pltree_data,
                                         type = pred, ...)
     if (is.null(na.action) | !inherits(na.action, "exclude")) return(out)
     n_miss <- length(na.action)

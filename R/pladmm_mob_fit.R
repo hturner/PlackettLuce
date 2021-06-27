@@ -13,11 +13,14 @@ pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
 
     orderings <- as.matrix(as.rankings(y))
     res <- pladmm_fit(orderings,
-                      X = worth, start = start, ...)
+                      X = worth$x, start = start, ...)
 
     if (object){
         # return dummy PLADMM object so works with methods e.g. vcov, AIC
-        res$x <- worth
+        res$x <- worth$x
+        res$terms <- worth$terms
+        res$xlevels <- worth$xlevels
+        res$contrasts <- worth$contrasts
         res$orderings <- orderings
         res$rank <- ncol(worth) - 1
         class(res) <- "PLADMM"

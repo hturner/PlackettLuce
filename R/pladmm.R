@@ -126,7 +126,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
              x = spec$x,
              terms = spec$terms,
              xlevels = spec$xlevels,
-             contrasts = contrasts,
+             contrasts = spec$contrasts,
              orderings = orderings,
              rank = rank,
              df.residual = df.residual))
@@ -165,7 +165,8 @@ model_spec <- function(formula, data,
         stop("`formula` must contain an intercept")
 
     list(x = X, terms = model_terms,
-         xlevels = .getXlevels(model_terms, model_data))
+         xlevels = .getXlevels(model_terms, model_data),
+         contrasts = contrasts)
 }
 
 pladmm_fit <- function(orderings, # low-level fit uses orderings

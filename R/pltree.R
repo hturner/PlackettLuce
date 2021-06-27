@@ -33,10 +33,8 @@
 #' If `NULL`, worth is estimated separately for each item with
 #' [`PlackettLuce()`]. Otherwise, the model in each node of the tree id fitted
 #' with [`pladmm()`].
-#' @param subset A specification of the rows to be used for variables in
-#' `formula`, passed to \code{\link{model.frame}}.
 #' @param na.action how NAs are treated for variables in `formula`, applied
-#' to the underlying rankings and then passed to \code{\link{model.frame}}.
+#' to the underlying rankings.
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
 #' covariances in the parameter stability tests, see \code{\link{mob}}.
 #' @param ref an integer or character string specifying the reference item (for
@@ -88,55 +86,38 @@
 #' }
 #' @importFrom partykit mob_control
 #' @export
-pltree <- function (formula, data, worth, subset, na.action, cluster,
+pltree <- function (formula, data, worth, na.action, cluster,
                     ref = NULL, ...){
     pltree_call <- match.call(expand.dots = TRUE)
     # handle model frame here to preserve attributes after na.action
-    mf_args <- names(pltree_call) %in% c("formula", "data", "subset", "cluster")
-    mf <- pltree_call[c(1L, which(mf_args))]
-    mf$na.action <- "na.pass"
-    if (!missing(worth)){
-        # for now assume in order
-        mf$data <- data[[1L]]
-    }
-    mf[[1L]] <- quote(stats::model.frame)
-    mf <- eval(mf, parent.frame())
+    # and convert rankings to orderings when using PLADMM
     if (missing(na.action)) na.action <- getOption("na.action")
-    mf <- match.fun(na.action)(mf)
-    # also need to handle NAs in partially NA grouped rankings
-    if (attr(attr(mf, "terms"), "response")){
-        mf[[1L]] <- na.omit(mf[[1L]])
-    } else stop("`formula` must specify a response (grouped rankings)")
+    pltree_data <- pltree.model.frame(formula, data, na.action, ...,
+                                      worth = !missing(worth))
     # now set up for mob/fitting function
     control_args <- names(pltree_call) %in% names(formals(mob_control))
     control <- do.call("mob_control", as.list(pltree_call)[control_args])
-    keep <-!names(pltree_call) %in% c("subset", "na.action", "cluster",
-                            names(formals(mob_control)))
+    keep <-!names(pltree_call) %in% c("subset", "na.action",
+                                      names(formals(mob_control)))
     mob_call <- pltree_call[keep]
     mob_call$data <- quote(mf)
     mob_call$control <- control
     if (!missing(worth)){
-        # convert grouped rankings to grouped orderings
-        ord <- convert_to_orderings(attr(mf[[1L]], "rankings"))
-        attr(mf[[1L]], "rankings")[] <- ord[]
-
-        # define model matrix for linear predictor
-        spec <- model_spec(formula = worth, data = data[[2L]],
-                           contrasts = pltree_call[["contrasts"]],
-                           items = attr(ord, "items"))
-        mob_call$worth <- spec$x
+        # define model spec for linear predictor (model.matrix, terms, ...)
+        items <- colnames(attr(pltree_data[[1]], "rankings"))
+        mob_call$worth <- model_spec(formula = worth, data = data[[2L]],
+                                     contrasts = pltree_call[["contrasts"]],
+                                     items = items)
         mob_call$fit <- as.name("pladmm_mob_fit")
     } else{
         mob_call$fit <- as.name("plfit")
     }
     mob_call[[1L]] <- quote(partykit::mob)
-    rval <- eval(mob_call, list(mf = mf), parent.frame())
+    rval <- eval(mob_call, list(mf = pltree_data), parent.frame())
     rval$info$call <- mob_call
     rval$info$call$data <- substitute(data)
-    # replace data with mf (loses na.action attribute)
-    rval$data <- mf
     # add in na.action
-    rval$na.action <- attr(mf, "na.action")
+    rval$na.action <- attr(pltree_data, "na.action")
     class(rval) <- c("pltree", "bttree", class(rval))
     return(rval)
 }
@@ -164,21 +145,46 @@ model.frame.pltree <- function(formula, ...){
     mf <- formula$data
     if (NROW(mf) > 0L)
         return(mf)
+    # else tree fitted with `model = FALSE` passed to mob_control, so
     mf <- formula$info$call
     # get args from call to start
-    mf_args <- names(mf) %in% c("formula", "data", "subset", "na.action")
+    mf_args <- names(mf) %in% c("formula", "data", "na.action")
     mf <- mf[c(1L, which(mf_args))]
     # replace with those from current call if specified
     m <- match.call(expand.dots = TRUE)
     mf_args <- !(names(m) %in% "formula")
     mf[names(mf_args)] <- m[mf_args]
-    # save and temporarily replace na.action
-    na.action <- mf$na.action
-    mf$na.action <- "na.pass"
-    mf[[1L]] <- quote(stats::model.frame)
-    if (is.null(env <- environment(formula$info$terms)))
-        env <- parent.frame()
-    mf <- eval(mf, env)
-    if (is.null(na.action)) na.action <- getOption("na.action")
+    # use pltree.model.frame to handle NAs and replace rankings with
+    # orderings when using PLADMM
+    mf[[1]] <- "pltree.model.frame"
+    mf$worth <- !is.null(formula$info$dots$worth)
+    eval(mf)
+}
+
+pltree.model.frame <- function(formula, data,
+                               na.action = getOption("na.action"), ...,
+                               worth = FALSE){
+    # pass NAs initially
+    mf_call <- match.call(expand.dots = TRUE)
+    mf_call[[1]] <- as.name("model.frame")
+    mf_args <- names(mf_call) %in% names(formals(model.frame.default))
+    mf_call <- mf_call[c(1L, which(mf_args))]
+    mf_call$na.action <- "na.pass"
+    if (worth){
+        # use group-level data (for now assume in order)
+        mf_call$data <- data[[1L]]
+    }
+    mf <- eval(mf_call, parent.frame())
+    # now handle NAs
     mf <- match.fun(na.action)(mf)
+    # also need to handle NAs in partially NA grouped rankings
+    if (attr(attr(mf, "terms"), "response")){
+        mf[[1L]] <- na.omit(mf[[1L]])
+    } else stop("`formula` must specify a response (grouped rankings)")
+    if (worth){
+        # convert grouped rankings to grouped orderings
+        ord <- convert_to_orderings(attr(mf[[1L]], "rankings"))
+        attr(mf[[1L]], "rankings")[] <- ord[]
+    }
+    mf
 }

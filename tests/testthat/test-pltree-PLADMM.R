@@ -149,3 +149,56 @@ if (require(psychotree) & require(sandwich)){
                   expect_equal(aic1, aic2)
               })
 }
+
+
+test_that('pltree works with worth formula, 2 node [salad]', {
+    # use rankings just of 3 salads to begin with
+    salad_rankings <- as.rankings(salad[, -4])
+
+    # create a grouped rankings object with 2 arbitrary groups
+    G <- group(salad_rankings, rep(1:8, nrow(salad_rankings)/8))
+
+    # create some random covariates
+    set.seed(1)
+    zvar <- data.frame(z1 = rnorm(length(G)),
+                       z2 = rpois(length(G), lambda = 2))
+
+    # set high alpha to force two nodes
+    mod1 <- pltree(G ~ .,
+                   worth = ~acetic + gluconic,
+                   data = list(zvar, features[1:3,]),
+                   rho = 1, minsize = 4, alpha = 0.8)
+
+    # predictions with "new" data
+    # - two rankings by judge 1 in node 3 (z2 > 2)
+    # - two rankings of 4 salads by a new judge in node 2 (z2 <= 2)
+    salad_rankings_new <- as.rankings(rbind(cbind(salad[2:3, -4], D = 0),
+                                            salad[5:6,]))
+    G_new <- group(salad_rankings_new, c(1, 1, 2, 2))
+    zvar_new <- rbind(zvar[1,],
+                      data.frame(z1 = 0,
+                                 z2 = 1))
+    newdata <- list(cbind(data.frame(G = G_new),
+                          zvar_new),
+                    features)
+
+    test_that('predict.pltree works for type = "node" [salad]',
+              {
+                  expect_equal(predict(mod1, newdata = newdata, type = "node"),
+                               c("1" = "3", "2" = "2"))
+              })
+    test_that('predict.pltree works for type = "itempar" [salad]',
+              {
+                  # worth
+                  pred <- predict(mod1,  newdata = newdata, type = "itempar")
+                  node <- predict(mod1, newdata = newdata, type = "node")
+                  X <- model.matrix(~ acetic + gluconic, data = features)
+                  alpha <- exp(coef(mod1) %*% t(X))
+                  expect_equal(pred,
+                               (alpha/rowSums(alpha))[node,],
+                               check.attributes = FALSE)
+                  # log-abilities
+                  # ...
+              })
+})
+
