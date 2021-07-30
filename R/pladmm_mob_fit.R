@@ -22,7 +22,7 @@ pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
         res$xlevels <- worth$xlevels
         res$contrasts <- worth$contrasts
         res$orderings <- orderings
-        res$rank <- ncol(worth) - 1
+        res$rank <- ncol(worth$x) - 1
         class(res) <- "PLADMM"
     }
     if (estfun) {

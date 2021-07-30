@@ -75,11 +75,6 @@ if (require(psychotree) & require(sandwich)){
                                            type = "node")),],
                       predict(pl_tree, newdata = newdata, type = "rank"),
                       check.attributes = FALSE)
-                  expect_equal(rank[
-                      as.character(predict(bt_tree, newdata = newdata,
-                                           type = "node")),],
-                      predict(pl_tree, newdata = newdata, type = "rank"),
-                      check.attributes = FALSE)
               })
     test_that('predict.pltree works for type = "best" [Topmodel2007]',
               {

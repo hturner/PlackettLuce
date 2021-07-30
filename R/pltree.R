@@ -92,8 +92,11 @@ pltree <- function (formula, data, worth, na.action, cluster,
     # handle model frame here to preserve attributes after na.action
     # and convert rankings to orderings when using PLADMM
     if (missing(na.action)) na.action <- getOption("na.action")
-    pltree_data <- pltree.model.frame(formula, data, na.action, ...,
-                                      worth = !missing(worth))
+    mf_args <- names(pltree_call) %in% names(formals(model.frame.default))
+    pltree_data <- do.call("pltree.model.frame",
+                           c(as.list(pltree_call)[mf_args],
+                             worth = !missing(worth)),
+                           envir = parent.frame())
     # now set up for mob/fitting function
     control_args <- names(pltree_call) %in% names(formals(mob_control))
     control <- do.call("mob_control", as.list(pltree_call)[control_args])
@@ -148,7 +151,7 @@ model.frame.pltree <- function(formula, ...){
     # else tree fitted with `model = FALSE` passed to mob_control, so
     mf <- formula$info$call
     # get args from call to start
-    mf_args <- names(mf) %in% c("formula", "data", "na.action")
+    mf_args <- names(mf) %in% names(formals(model.frame.default))
     mf <- mf[c(1L, which(mf_args))]
     # replace with those from current call if specified
     m <- match.call(expand.dots = TRUE)
@@ -161,30 +164,30 @@ model.frame.pltree <- function(formula, ...){
     eval(mf)
 }
 
+# dots should only be valid args for model.frame!
 pltree.model.frame <- function(formula, data,
                                na.action = getOption("na.action"), ...,
                                worth = FALSE){
     # pass NAs initially
-    mf_call <- match.call(expand.dots = TRUE)
-    mf_call[[1]] <- as.name("model.frame")
-    mf_args <- names(mf_call) %in% names(formals(model.frame.default))
-    mf_call <- mf_call[c(1L, which(mf_args))]
-    mf_call$na.action <- "na.pass"
     if (worth){
+        if (inherits(data, "data.frame"))
+            stop("`data` should be a list of two data frames")
         # use group-level data (for now assume in order)
-        mf_call$data <- data[[1L]]
+        data <- data[[1L]]
     }
-    mf <- eval(mf_call, parent.frame())
+    mf <- model.frame(formula = formula, data = data, na.action = "na.pass",
+                      ...)
+
     # now handle NAs
     mf <- match.fun(na.action)(mf)
     # also need to handle NAs in partially NA grouped rankings
     if (attr(attr(mf, "terms"), "response")){
         mf[[1L]] <- na.omit(mf[[1L]])
-    } else stop("`formula` must specify a response (grouped rankings)")
-    if (worth){
-        # convert grouped rankings to grouped orderings
-        ord <- convert_to_orderings(attr(mf[[1L]], "rankings"))
-        attr(mf[[1L]], "rankings")[] <- ord[]
+        if (worth){
+            # convert grouped rankings to grouped orderings
+            ord <- convert_to_orderings(attr(mf[[1L]], "rankings"))
+            attr(mf[[1L]], "rankings")[] <- ord[]
+        }
     }
     mf
 }

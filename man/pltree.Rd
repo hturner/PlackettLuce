@@ -4,7 +4,7 @@
 \alias{pltree}
 \title{Plackett-Luce Trees}
 \usage{
-pltree(formula, data, worth, subset, na.action, cluster, ref = NULL, ...)
+pltree(formula, data, worth, na.action, cluster, ref = NULL, ...)
 }
 \arguments{
 \item{formula}{A symbolic description of the model to be fitted, of the form
@@ -21,11 +21,8 @@ If \code{NULL}, worth is estimated separately for each item with
 \code{\link[=PlackettLuce]{PlackettLuce()}}. Otherwise, the model in each node of the tree id fitted
 with \code{\link[=pladmm]{pladmm()}}.}
 
-\item{subset}{A specification of the rows to be used for variables in
-\code{formula}, passed to \code{\link{model.frame}}.}
-
 \item{na.action}{how NAs are treated for variables in \code{formula}, applied
-to the underlying rankings and then passed to \code{\link{model.frame}}.}
+to the underlying rankings.}
 
 \item{cluster}{an optional vector of cluster IDs to be employed for clustered
 covariances in the parameter stability tests, see \code{\link{mob}}.}
