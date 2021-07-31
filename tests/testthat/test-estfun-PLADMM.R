@@ -1,11 +1,9 @@
 context("implementation [estfun ADMM]")
 
-library(prefmod) # salad data
-library(survival)
-
 coef_tol <- 1e-4
 
-if (requireNamespace("prefmod", quietly = TRUE)) {
+if (requireNamespace("prefmod", quietly = TRUE) &
+    require("survival")) {
     test_that("PLADMM estfun matches PlackettLuce [salad]", {
         ## model with separate worths for each dressing
         ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
