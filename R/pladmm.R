@@ -263,5 +263,8 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
         prim_feas = prim_feas, dual_feas = dual_feas,
         loglik = obj,
         # algorithm status
-        iter = iter, conv = conv)
+        iter = iter, conv = conv,
+        # control parameters
+        rho = rho, maxit = maxit, rtol = rtol
+        )
 }
