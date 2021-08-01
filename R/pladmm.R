@@ -36,6 +36,7 @@
 #' coerced by \code{as.rankings}.
 #' @param formula a [formula] specifying the linear model for log-worth.
 #' @param data a data frame containing the variables in the model.
+#' @param weights weights for the rankings.
 #' @param start starting values for the coefficients.
 #' @param contrasts an optional list specifying contrasts for the factors in
 #' `formula`. See the `contrasts.arg` of [model.matrix()].
@@ -84,6 +85,7 @@
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
                    data = NULL,
+                   weights = NULL, # weights for rankings
                    start = NULL, # starting values for the beta coefficients
                    contrasts = NULL,
                    rho = 1, # penalty parameter
@@ -96,6 +98,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
 
     # convert dense rankings to orderings as used in original Python functions
     orderings <- convert_to_orderings(rankings)
+    if (is.null(weights)) weights <- rep.int(1L, nrow(orderings))
 
     # model spec (model matrix and terms)
     spec <- model_spec(formula = formula, data = data,
@@ -103,7 +106,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
 
     # model fit
     fit <- pladmm_fit(orderings = orderings, X = spec$x,
-                      start = start,
+                      weights = weights, start = start,
                       rho = rho, maxit = n_iter,
                       rtol = rtol)
 
@@ -112,7 +115,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     rank <- ncol(spec$x) - 1
     # df.residual (for now assume all rankings same length)
     n <- ncol(orderings)
-    M <- nrow(orderings)
+    M <- sum(weights)
     # frequencies of sets selected from, for sizes 2 to max observed
     freq <- M*(n - 1)
     # number of possible selections overall (can only choose 1 from each set)
@@ -128,6 +131,7 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
              xlevels = spec$xlevels,
              contrasts = spec$contrasts,
              orderings = orderings,
+             weights = weights,
              rank = rank,
              df.residual = df.residual))
     class(fit) <- "PLADMM"
@@ -171,6 +175,7 @@ model_spec <- function(formula, data,
 
 pladmm_fit <- function(orderings, # low-level fit uses orderings
                        X, # model.matrix for linear predictor of worth
+                       weights, # weights for orderings
                        start = NULL, # starting values for the beta coefficients
                        rho = 1, # penalty parameter
                        maxit = 500, # main iter, pi update & stationary dist
@@ -187,8 +192,8 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
     u_iter <- numeric(n)
     if (is.null(start)) {
         ## pairwise probability of win/loss
-        mat_Pij <- est_Pij(n, orderings)
-        init <- init_exp_beta(X[,-1, drop = FALSE], orderings, mat_Pij)
+        mat_Pij <- est_Pij(n, orderings, weights)
+        init <- init_exp_beta(X[,-1, drop = FALSE], mat_Pij)
         ## beta coef
         beta_iter <- c("(Intercept)" = 0, init$exp_beta_init)
         ## set intercept so that exp(X*beta_iter) sum to 1
@@ -202,12 +207,12 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
     diff_beta <- norm(beta_iter)
     prim_feas <- norm(X %*% beta_iter - log(pi_iter + epsilon))
     dual_feas <- norm(t(X) %*% log(pi_iter + epsilon))
-    obj <- objective(tilde_pi_iter, orderings)
+    obj <- objective(tilde_pi_iter, orderings, weights, epsilon)
 
     # iterative updates
     iter <- 0
     time <- numeric(0)
-    log_admm <- ADMM_log$new(orderings, X[,-1, drop = FALSE],
+    log_admm <- ADMM_log$new(orderings, X[,-1, drop = FALSE], weights,
                              method_pi_tilde_init = "prev")
     conv <- FALSE
     for (iter in seq_len(maxit)){
@@ -217,9 +222,9 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
             beta_prev <- beta_iter
             tilde_pi_prev <- tilde_pi_iter
 
-            res <- log_admm$fit_log(rho = rho, weights = pi_iter,
+            res <- log_admm$fit_log(rho = rho, pi = pi_iter,
                                     beta = beta_iter, u = u_iter)
-            pi_iter <- res$weights
+            pi_iter <- res$pi
             beta_iter <- res$beta
             b_iter <- res$b
             u_iter <- res$u
@@ -234,7 +239,7 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
             dual_feas <- c(dual_feas,
                            norm(t(X) %*% (log(pi_prev + epsilon) -
                                               log(pi_iter + epsilon))))
-            obj <- c(obj, objective(tilde_pi_iter, orderings, epsilon))
+            obj <- c(obj, objective(tilde_pi_iter, orderings, weights, epsilon))
             iter <- iter + 1
             conv <- norm(pi_prev - pi_iter) < rtol * norm(pi_iter) &&
                 norm(tilde_pi_prev - tilde_pi_iter) < rtol * norm(tilde_pi_iter)

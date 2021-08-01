@@ -143,24 +143,21 @@ est_sum_dij_dijT <- function(X, orderings, mat_Pij = NULL){
     sum_dij_dijT
 }
 
-est_Pij <- function(n, orderings){
+est_Pij <- function(n, orderings, weights){
     # n: number of items
-    # p: number of features
     # :param orderings: (c_l, A_l): 1...M
-    # :param X: n*p, feature matrix
     # :return: for each pair (i, j), empirical estimate of Prob(i beats j)
     # Python original uses list of lists sparse matrix for constructing then
     # converts to compressed sparse column matrix - will only be sparse for
     # large number of items, use dense for now
     Pij <- array(0, dim = c(n, n))
     m <- nrow(orderings)
-    p <- ncol(orderings) # assume orderings of same length
     # count pairwise wins in each choice
     for (r in seq_len(m)){
         for (i in seq_len(n)){
             winner <- orderings[r, i]
             for (loser in orderings[r, -seq_len(i)]){
-                Pij[winner, loser] <-  Pij[winner, loser] + 1
+                Pij[winner, loser] <-  Pij[winner, loser] + weights[r]
             }
         }
     }
@@ -178,22 +175,15 @@ est_Pij <- function(n, orderings){
     Pij
 }
 
-init_exp_beta <- function(X, orderings, mat_Pij = NULL){
+init_exp_beta <- function(X, mat_Pij){
     # least squares initialization for beta in exponential parametrization
     # (alternative: exp_beta_init = np.ones((p,), dtype=float) * epsilon)
-    # n: number of items
-    # p: number of features
-    # :param orderings: (c_l, A_l): 1...M
     # :param X: n*p, feature matrix
     # :param mat_Pij = est_Pij(n, orderings)
     # :return: exp_beta, time
-    n <- nrow(X)
-    if (is.null(mat_Pij)){
-        mat_Pij <- est_Pij(n, orderings)
-    }
     sum_auto_corr <- 0
     sum_cross_corr <- 0
-    items <- ncol(orderings)
+    items <- nrow(X)
     for (i in seq_len(items)){
         for (j in seq_len(items)){
             if (i != j){
@@ -303,17 +293,17 @@ statdist <- function(generator, method = "power", v_init = NULL, n_iter = 500,
     }
 }
 
-objective <- function(weights, orderings, epsilon = .Machine$double.eps){
+objective <- function(pi, orderings, weights, epsilon = .Machine$double.eps){
     ll <- 0
     n <- ncol(orderings)
     # against log(0), add epsilon
     for (r in seq_len(nrow(orderings))){
         nitem <- sum(orderings[r,] != 0)
         for (i in seq_len(nitem)){
-            sum_weights <- sum(weights[orderings[r, i:n]])
+            sum_pi <- sum(pi[orderings[r, i:n]])
             winner <- orderings[r, i]
-            ll <- ll + log(weights[[winner]] + epsilon) -
-                log(sum_weights + epsilon)
+            ll <- ll + weights[r]*log(pi[[winner]] + epsilon) -
+                weights[r]*log(sum_pi + epsilon)
         }
     }
     ll

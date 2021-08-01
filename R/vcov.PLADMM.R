@@ -3,6 +3,7 @@ vcov.PLADMM <- function(object, ...) {
   if ("vcov" %in% names(object)) return(object$vcov)
   alpha <- object$tilde_pi # exp(X %*% beta) including intercept
   nrankings <- nrow(object$orderings)
+  weights <- object$weights
   # ignore intercept as fixed by sum to 1 constraint
   beta <- coef(object)[-1]
   ncoef <- length(beta)
@@ -16,9 +17,10 @@ vcov.PLADMM <- function(object, ...) {
       items <- object$orderings[r, i:nitems]
       a <- sum(alpha[items])
       xa <- colSums(Xalpha[items, , drop = FALSE])
-      H <- H + tcrossprod(xa)/a^2 -
-        crossprod(object$x[items, -1, drop = FALSE],
-                  Xalpha[items, , drop = FALSE])/a
+      H <- H + weights[r] * (
+        tcrossprod(xa)/a^2 -
+          crossprod(object$x[items, -1, drop = FALSE],
+                    Xalpha[items, , drop = FALSE])/a)
     }
   }
   # vcov = inverse of Fisher information = inverse of negative Hessian

@@ -8,12 +8,14 @@ pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
         warning("unused argument(s): ",
                 paste(c("x"[x], "offset"[offset]), collapse = ","))
     dots <- list(...)
-    if (!is.null(weights))
-        warning("`weights` not yet implemented")
 
     orderings <- as.matrix(as.rankings(y))
-    res <- pladmm_fit(orderings,
-                      X = worth$x, start = start, ...)
+    if (is.null(weights)) {
+        weights <- rep.int(1L, nrow(orderings))
+    } else weights <- weights[attr(y, "index")]
+
+    res <- pladmm_fit(orderings, X = worth$x,
+                      weights = weights, start = start, ...)
 
     if (object){
         # return dummy PLADMM object so works with methods e.g. vcov, AIC
@@ -22,6 +24,7 @@ pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
         res$xlevels <- worth$xlevels
         res$contrasts <- worth$contrasts
         res$orderings <- orderings
+        res$weights <- weights
         res$rank <- ncol(worth$x) - 1
         class(res) <- "PLADMM"
     }
@@ -30,6 +33,7 @@ pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
             # add in extra required info as would be in PLADMM object
             res$x <- worth
             res$orderings <- orderings
+            res$weights <- weights
         }
         percomp <- estfun.PLADMM(res)
         estfun <- rowsum(as.matrix(percomp), attr(y, "index"))
@@ -50,7 +54,7 @@ estfun.PLADMM <- function(x, ...) {
     alpha <- x$tilde_pi
     # get design matrix (first derivatives wrt coef)
     X <- x$x
-    # get reverse orderings
+    # get reverse orderings and weights
     n_item <- nrow(X)
     revorder <- x$orderings[, rev(seq_len(n_item))]
     # set item 0 to Inf so that returns NA when used as index
@@ -71,6 +75,6 @@ estfun.PLADMM <- function(x, ...) {
         p2 <- rowSums(rowCumsums(Xj*A)/rowCumsums(A), na.rm = TRUE)
         res[,j] <- p1 - p2
     }
-    res[,-1]
+    x$weights * res[,-1]
 }
 

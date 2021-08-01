@@ -22,9 +22,6 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
     })
 
     test_that('pltree works with worth formula, 1 node [salad]',  {
-        # convert salad to rankings object
-        salad_rankings <- as.rankings(salad)
-
         # create a grouped rankings with 2 arbitrary groups
         G <- group(salad_rankings, rep(1:2, nrow(salad_rankings)/2))
 
@@ -40,6 +37,33 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
                        rho = 8)
         mod2 <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
 
+        expect_equal(coef(mod1), coef(mod2))
+        expect_equal(as.vector(itempar(mod1)), as.vector(itempar(mod2)))
+        expect_equal(vcov(mod1)$`1`, vcov(mod2))
+        expect_equal(AIC(mod1), AIC(mod2))
+    })
+
+    test_that('pltree works with worth formula & weights, 1 node [salad]',  {
+        # create a grouped rankings with 2 arbitrary groups
+        G <- group(salad_rankings, rep(1:2, nrow(salad_rankings)/2))
+
+        # create some random covariates
+        # (expect 1 node as min node size is 10, so seed doesn't matter!)
+        zvar <- data.frame(z1 = rnorm(length(G)),
+                           z2 = rpois(length(G), lambda = 2))
+
+        # make up some group weights
+        w <- c(0.2, 0.6)
+
+        # pltree gives equivalent results to pladmm()
+        mod1 <- pltree(G ~ .,
+                       worth = ~ acetic + gluconic,
+                       data = list(zvar, features),
+                       weights = w,
+                       rho = 1)
+        mod2 <- pladmm(salad, ~ acetic + gluconic, data = features,
+                       weights = rep(w, nrow(salad_rankings)/2),
+                       rho = 1)
         expect_equal(coef(mod1), coef(mod2))
         expect_equal(as.vector(itempar(mod1)), as.vector(itempar(mod2)))
         expect_equal(vcov(mod1)$`1`, vcov(mod2))

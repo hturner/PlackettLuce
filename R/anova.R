@@ -11,7 +11,7 @@ anova.PLADMM <- function(object, ...) {
     }
     # null model
     nitem <- ncol(object$orderings)
-    dev <- -2*objective(rep(1/nitem, nitem), object$orderings)
+    dev <- -2*objective(rep(1/nitem, nitem), object$orderings, object$weights)
     df <- object$df.residual + object$rank
     # sequential models
     term_list <- attr(terms(object), "term.labels")
@@ -20,6 +20,7 @@ anova.PLADMM <- function(object, ...) {
     for (i in seq_len(nterms)) {
         fit <- pladmm_fit(orderings = object$orderings,
                           X = object$x[, term_assign <= i, drop = FALSE],
+                          weights = object$weights,
                           start = object$coefficients[term_assign <= i],
                           rho = object$rho, maxit = object$maxit,
                           rtol = object$rtol)
