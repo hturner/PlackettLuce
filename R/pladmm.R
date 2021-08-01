@@ -113,14 +113,13 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
     # rank
     # (would complain earlier if X not full rank; -1 due to constraint on pi)
     rank <- ncol(spec$x) - 1
-    # df.residual (for now assume all rankings same length)
-    n <- ncol(orderings)
-    M <- sum(weights)
+    # df.residual
+    n <- rowSums(orderings != 0)
     # frequencies of sets selected from, for sizes 2 to max observed
-    freq <- M*(n - 1)
+    freq <- weights*(n - 1)
     # number of possible selections overall (can only choose 1 from each set)
-    n_opt <-  M*(n*(n + 1)/2 - 1)
-    df.residual <- n_opt - sum(freq) - rank
+    n_opt <-  weights*(n*(n + 1)/2 - 1)
+    df.residual <- sum(n_opt) - sum(freq) - rank
 
     fit <- c(# results from pladmm_fit
         fit,

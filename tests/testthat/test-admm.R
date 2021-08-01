@@ -32,9 +32,13 @@ test_that("PLADMM works for partial rankings [fruits]", {
     expect_equivalent(coef(partial_PLADMM)[-1],
                       as.vector(coef(partial_PL)[-1]),
                       tol = coef_tol)
-    ## expect log-likelihood equal, PLADMM andPlackettLuce
+    ## expect log-likelihood equal, PLADMM and PlackettLuce
     expect_equal(logLik(partial_PLADMM),
                  logLik(partial_PL),
+                 tol = coef_tol)
+    ## expect residual df equal, PLADMM and PlackettLuce
+    expect_equal(df.residual(partial_PLADMM),
+                 df.residual(partial_PL),
                  tol = coef_tol)
 })
 
@@ -128,7 +132,6 @@ test_that("PLADMM works with weights [salad]", {
     expect_equivalent(rowsum(estfun(res0_PLADMM), rep(seq_along(wt), wt)),
                       estfun(res1_PLADMM))
     expect_equal(colSums(estfun(res0_PLADMM)), colSums(estfun(res1_PLADMM)))
-    expect_equal(estfun(res0_PLADMM), estfun(res1_PLADMM)) ##
     expect_equal(fitted(res0_PLADMM), fitted(res1_PLADMM))
     expect_equal(itempar(res0_PLADMM), itempar(res1_PLADMM))
     expect_equal(logLik(res0_PLADMM), logLik(res1_PLADMM))
