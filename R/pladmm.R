@@ -192,7 +192,7 @@ pladmm_fit <- function(orderings, # low-level fit uses orderings
     if (is.null(start)) {
         ## pairwise probability of win/loss
         mat_Pij <- est_Pij(n, orderings, weights)
-        init <- init_exp_beta(X[,-1, drop = FALSE], mat_Pij)
+        init <- init_exp_beta(X[,-1, drop = FALSE], weights, mat_Pij)
         ## beta coef
         beta_iter <- c("(Intercept)" = 0, init$exp_beta_init)
         ## set intercept so that exp(X*beta_iter) sum to 1

@@ -175,7 +175,7 @@ est_Pij <- function(n, orderings, weights){
     Pij
 }
 
-init_exp_beta <- function(X, mat_Pij){
+init_exp_beta <- function(X, weights, mat_Pij){
     # least squares initialization for beta in exponential parametrization
     # (alternative: exp_beta_init = np.ones((p,), dtype=float) * epsilon)
     # :param X: n*p, feature matrix
@@ -194,9 +194,9 @@ init_exp_beta <- function(X, mat_Pij){
                 } else if (mat_Pij[i, j] == 0 && mat_Pij[j, i] == 0){
                     s_ij <- 1
                 } else if (mat_Pij[i, j] == 0 && mat_Pij[j, i] > 0){
-                    s_ij <- 1/nrow(orderings)
+                    s_ij <- 1/sum(weights)
                 } else if (mat_Pij[i, j] > 0 && mat_Pij[j, i] == 0){
-                    s_ij <- nrow(orderings)
+                    s_ij <- sum(weights)
                 }
                 sum_cross_corr <- sum_cross_corr + log(s_ij) * X_ij
             }
