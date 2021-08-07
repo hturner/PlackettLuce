@@ -119,20 +119,22 @@ vcov.pltree <- function (object, node = nodeids(object, terminal = TRUE), ...){
 
 #' @rdname pltree-summaries
 #' @method AIC pltree
-#' @importFrom stats formula logLik model.frame model.response model.weights
+#' @importFrom stats formula logLik model.response model.weights
 #' @export
-AIC.pltree <- function(object, newdata = NULL, na.action, ...) {
+AIC.pltree <- function(object, newdata = NULL, ...) {
     if (is.null(newdata)) {
         return(NextMethod(object, ...))
     }
     has_worth <- !is.null(object$info$dots$worth)
     # create model.frame from newdata for use by predict.modelparty
-    tree_formula <- formula(object)
-    environment(tree_formula) <- parent.frame()
-    pltree_data <- pltree.model.frame(tree_formula, data = newdata, ...,
-                                      worth = has_worth)
+    pltree_data <- do.call("pltree.model.frame",
+                           c(list(formula = formula(object),
+                                  data = newdata),
+                             list(...),
+                             worth = has_worth,
+                             envir = parent.frame()))
     # need response for AIC as based on log-likehood of data given model
-    response <- as.character(tree_formula[[2L]])
+    response <- as.character(formula(object)[[2L]])
     if (!response %in% colnames(pltree_data))
         stop("`newdata` must include response")
     # predict node for each grouped ranking
@@ -194,14 +196,15 @@ predict.pltree <- function(object, newdata = NULL,
             worth_data <- newdata[[2]]
         } else worth_data <- NULL
         # create model.frame from newdata for use by predict.modelparty
-        tree_formula <- formula(object)[-2L] # drop response
+        # - drop response from formula as predicting response
         predict_call <- match.call(expand.dots = TRUE)
-        mf_args <- names(predict_call) %in% names(formals(model.frame.default))
+        mf_args <- names(predict_call) %in% c("subset", "weights", "na.action")
         pltree_data <- do.call("pltree.model.frame",
-                               c(tree_formula, list(data = newdata),
+                               c(list(formula = formula(object)[-2L],
+                                      data = newdata),
                                  as.list(predict_call)[mf_args],
-                                 worth = has_worth),
-                               envir = parent.frame())
+                                 worth = has_worth,
+                                 envir = parent.frame()))
     }
     if (type == "node"){
         res <- partykit::predict.modelparty(object,

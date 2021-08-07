@@ -12,7 +12,7 @@
 
 \method{vcov}{pltree}(object, node = nodeids(object, terminal = TRUE), ...)
 
-\method{AIC}{pltree}(object, newdata = NULL, na.action, ...)
+\method{AIC}{pltree}(object, newdata = NULL, ...)
 
 \method{predict}{pltree}(
   object,

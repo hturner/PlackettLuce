@@ -91,12 +91,12 @@ pltree <- function (formula, data, worth, na.action, cluster,
     pltree_call <- match.call(expand.dots = TRUE)
     # handle model frame here to preserve attributes after na.action
     # and convert rankings to orderings when using PLADMM
-    if (missing(na.action)) na.action <- getOption("na.action")
-    mf_args <- names(pltree_call) %in% names(formals(model.frame.default))
+    mf_args <- names(pltree_call) %in%
+        c("formula", "data", "subset", "weights", "na.action")
     pltree_data <- do.call("pltree.model.frame",
                            c(as.list(pltree_call)[mf_args],
-                             worth = !missing(worth)),
-                           envir = parent.frame())
+                             worth = !missing(worth),
+                             envir = parent.frame()))
     # now set up for mob/fitting function
     control_args <- names(pltree_call) %in% names(formals(mob_control))
     control <- do.call("mob_control", as.list(pltree_call)[control_args])
@@ -151,7 +151,8 @@ model.frame.pltree <- function(formula, ...){
     # else tree fitted with `model = FALSE` passed to mob_control, so
     mf <- formula$info$call
     # get args from call to start
-    mf_args <- names(mf) %in% names(formals(model.frame.default))
+    mf_args <- names(mf) %in%
+        c("formula", "data", "subset", "weights", "na.action")
     mf <- mf[c(1L, which(mf_args))]
     # replace with those from current call if specified
     m <- match.call(expand.dots = TRUE)
@@ -161,22 +162,29 @@ model.frame.pltree <- function(formula, ...){
     # orderings when using PLADMM
     mf[[1]] <- "pltree.model.frame"
     mf$worth <- !is.null(formula$info$dots$worth)
+    mf$envir <- parent.frame()
     eval(mf)
 }
 
-# dots should only be valid args for model.frame!
-pltree.model.frame <- function(formula, data,
-                               na.action = getOption("na.action"), ...,
-                               worth = FALSE){
+#' @importFrom stats model.frame
+pltree.model.frame <- function(formula, data, subset = NULL, weights = NULL,
+                               na.action = getOption("na.action"),
+                               worth = FALSE, envir = NULL){
+    # evaluate model frame arguments where expect to find data
+    expr <- match.call()
+    expr[c("worth", "envir")] <- NULL
+    expr[[1]] <- as.name("list")
+    mf_args <- eval(expr, envir = envir)
     # pass NAs initially
+    mf_args$na.action <- "na.pass"
+    # get data corresponding to grouped rankings
     if (worth){
-        if (inherits(data, "data.frame"))
+        if (inherits(mf_args$data, "data.frame"))
             stop("`data` should be a list of two data frames")
         # use group-level data (for now assume in order)
-        data <- data[[1L]]
+        mf_args$data <- mf_args$data[[1L]]
     }
-    mf <- model.frame(formula = formula, data = data, na.action = "na.pass",
-                      ...)
+    mf <- do.call("model.frame", mf_args)
 
     # now handle NAs
     mf <- match.fun(na.action)(mf)
