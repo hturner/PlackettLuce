@@ -152,10 +152,10 @@ regressionPL <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
 summary(regressionPL)
 ```
 The model uses one less degree of freedom, but there is only a slight increase 
-in the deviance:
+in the deviance, that is not significant:
 
 ```{r}
-deviance(regressionPL) - deviance(standardPL)
+anova(standardPL, regressionPL)
 ```
 So it is sufficient to model the log-worth by the concentration of acetic and 
 gluconic acids.
@@ -198,6 +198,62 @@ Standard errors can optionally be returned, by specifying `se.fit = TRUE`
 predict(regressionPL, features2, type = "itempar", log  = FALSE, ref = NULL,
         se.fit = TRUE)
 ```
+
+## Plackett-Luce tree with item covariates
+
+The Plackett-Luce model with item covariates can also be used in model-based 
+partitioning. To illustrate, we shall simulate some covariate data for the 
+judges than ranked the four salads, based on their ranking of salad A
+
+```{r}
+set.seed(1)
+judge_features <- data.frame(varC = rpois(nrow(salad), lambda = salad$C^2))
+```
+
+This simulates the scenario where some characteristic of the judge affects how 
+they rank salad A, so we expect the item worth to depend on this variable.
+
+Now we group the rankings by judge in preparation to fit a Plackett-Luce tree:
+
+```{r}
+grouped_salad <- group(as.rankings(salad), 1:nrow(salad))
+```
+
+We specify the Plackett-Luce tree to partition the grouped rankings by any of 
+the judge features (`grouped_salad ~ .`), with the log-worth of the salads 
+modelled by a linear function of the acetic and gluconic acid concentrations 
+(`~acetic + gluconic`). The corresponding variables are found in `data`, which 
+should be a list of two data frames, the first containing the group covariates 
+and the second containing the item covariates. We set a minimum group size of 
+10 and reduce the `rho` parameter accordingly.
+
+```{r}
+mod1 <- pltree(grouped_salad ~ .,
+               worth = ~acetic + gluconic,
+               data = list(judge_features, features),
+               rho = 2, minsize = 10)
+plot(mod1)
+```
+
+The result is a tree with two nodes; both groups prefer salad B, but the first 
+group (varC ≤ 7) places salad C in second place, while the second group 
+(varC > 7) prefer salad D. 
+This is as we might expect, since we simulated the judge covariate varC to correlate 
+with the ranking of C, so a higher value of this variable correlates to a lower 
+preference for C. We can see the difference in the coefficients of the item 
+features:
+
+```{r}
+mod1
+```
+
+From the first group to the second group, the coefficient for acetic acid 
+concentration reduces from 4.3 to 2.7. Since the acetic acid concentration for 
+salad C is 1, with 0 gluconic acid, this reduces the worth of salad C in the 
+second group. At the same time, the coefficient for gluconic acid 
+concentration increases 0.28 to 0.34 between the first and second groups. Since
+the gluconic acid concentration for salad D is 1, with 0 acetic acid, this 
+increases the worth of salad D in the second group. 
 
 # Cautionary notes
 
