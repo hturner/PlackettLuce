@@ -8,6 +8,7 @@ pladmm(
   rankings,
   formula,
   data = NULL,
+  weights = freq(rankings),
   start = NULL,
   contrasts = NULL,
   rho = 1,
@@ -17,11 +18,14 @@ pladmm(
 }
 \arguments{
 \item{rankings}{a \code{"\link{rankings}"} object, or an object that can be
-coerced by \code{as.rankings}.}
+coerced by \code{as.rankings}. An \code{\link[=aggregate]{"aggregated_rankings"}}
+object can be used to specify rankings and weights simultaneously.}
 
 \item{formula}{a \link{formula} specifying the linear model for log-worth.}
 
 \item{data}{a data frame containing the variables in the model.}
+
+\item{weights}{weights for the rankings.}
 
 \item{start}{starting values for the coefficients.}
 

@@ -33,7 +33,8 @@
 #' \eqn{\boldsymbol{X}\boldsymbol{\beta}}{X \beta}).
 #'
 #' @param rankings a \code{"\link{rankings}"} object, or an object that can be
-#' coerced by \code{as.rankings}.
+#' coerced by \code{as.rankings}. An [`"aggregated_rankings"`][aggregate()]
+#' object can be used to specify rankings and weights simultaneously.
 #' @param formula a [formula] specifying the linear model for log-worth.
 #' @param data a data frame containing the variables in the model.
 #' @param weights weights for the rankings.
@@ -85,7 +86,7 @@
 pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    formula, # formula for linear predictor
                    data = NULL,
-                   weights = NULL, # weights for rankings
+                   weights = freq(rankings), # weights for rankings
                    start = NULL, # starting values for the beta coefficients
                    contrasts = NULL,
                    rho = 1, # penalty parameter
@@ -95,6 +96,11 @@ pladmm <- function(rankings, # rankings object as used in PlackettLuce
                    rtol = 1e-4
                    ){
     call <- match.call()
+
+    if (inherits(rankings, "aggregated_rankings")){
+        force(weights)
+        rankings <- as.rankings(rankings$ranking)
+    }
 
     # convert dense rankings to orderings as used in original Python functions
     orderings <- convert_to_orderings(rankings)
