@@ -175,6 +175,7 @@ AIC.pltree <- function(object, newdata = NULL, na.action, ...) {
 
 #' @rdname pltree-summaries
 #' @method predict pltree
+#' @importFrom stats model.frame
 #' @export
 predict.pltree <- function(object, newdata = NULL,
                            type = c("itempar", "rank", "best", "node"),

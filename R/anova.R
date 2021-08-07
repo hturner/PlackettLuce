@@ -1,3 +1,4 @@
+#' @importFrom stats pchisq
 #' @method anova PLADMM
 #' @export
 anova.PLADMM <- function(object, ...) {
