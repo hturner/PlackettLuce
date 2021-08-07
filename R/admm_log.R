@@ -1,6 +1,7 @@
 # R port of ADMM_log class from admm_log.py as here:
 # https://github.com/neu-spiral/FastAndAccurateRankingRegressionFunctions
 
+#' @importFrom R6 R6Class
 ADMM_log <- R6::R6Class("ADMM_log",
                         public = list(
                             n = NA,
