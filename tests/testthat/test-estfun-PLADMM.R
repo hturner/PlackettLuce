@@ -18,9 +18,10 @@ if (requireNamespace("prefmod", quietly = TRUE) &
 
     test_that("PLADMM estfun matches rank ordered logit model [salad]", {
         ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-        res_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic, data = features,
-                             rho = 8, rtol = 1e-5)
-        res_RO <- coxph(Surv(ranking, status) ~ acetic + gluconic + strata(chid),
+        res_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic,
+                             data = features, rho = 8, rtol = 1e-5)
+        res_RO <- coxph(Surv(ranking, status) ~
+                            acetic + gluconic + strata(chid),
                         data = cbind(salad_long_rankings, status = 1))
         ## expect that estfun results are equal
         expect_equivalent(estfun(res_PLADMM),

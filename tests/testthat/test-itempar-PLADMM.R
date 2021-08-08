@@ -29,7 +29,8 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
         expect_ok(itempar(res0_PLADMM, ref = 1, log = TRUE),
                   itempar(res0_PL, ref = 1, log = TRUE),
                   tol = coef_tol)
-        ## expect that itempar equal, log worth s.t. sum first two log worths = zero
+        ## expect that itempar equal,
+        ## log worth s.t. sum first two log worths = zero
         expect_ok(itempar(res0_PLADMM, ref = 1:2, log = TRUE),
                   itempar(res0_PL, ref = 1:2, log = TRUE),
                   tol = coef_tol)
@@ -65,7 +66,8 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
         expect_ok(itempar(res0_PLADMM, ref = 1, log = TRUE),
                   itempar(res0_PL, ref = 1, log = TRUE),
                   tol = coef_tol)
-        ## expect that itempar equal, log worth s.t. sum first two log worths = zero
+        ## expect that itempar equal,
+        ## log worth s.t. sum first two log worths = zero
         expect_ok(itempar(res0_PLADMM, ref = 1:2, log = TRUE),
                   itempar(res0_PL, ref = 1:2, log = TRUE),
                   tol = coef_tol)

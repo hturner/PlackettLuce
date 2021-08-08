@@ -30,15 +30,16 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                 self$X_tilde <- cbind("(Intercept)" = 1, X)
                                 self$orderings <- orderings
                                 self$weights <- weights
-                                self$method_pi_tilde_init <- method_pi_tilde_init
+                                self$method_pi_tilde_init <-
+                                    method_pi_tilde_init
                             },
                             fit_log = function(rho, pi, beta, u, gamma = 1,
                                                epsilon = .Machine$double.eps){
                                 # :param rho: penalty parameter
-                                # :param beta: parameter vector at each iter, px1
+                                # :param beta: parameter vector, px1
                                 # :param pi: scores at each iteration, nx1
-                                # :param u: scaled dual variable at each iter, nx1
-                                # :param gamma: scaling on the dual variable update
+                                # :param u: scaled dual variable, nx1
+                                # :param gamma: scaling on dual variable update
                                 start <- Sys.time()
                                 ## pi update
                                 x_beta <- self$X_tilde %*% beta
@@ -62,8 +63,9 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                                  n_iter = 500,
                                                  rtol = 1e-4,
                                                  epsilon = .Machine$double.eps){
-                                # modified spectral ranking algorithm for partial
-                                # ranking data. Remove inner loop for top-1 ranking.
+                                # modified spectral ranking algorithm for
+                                # partial ranking data. Remove inner loop for
+                                # top-1 ranking.
                                 # n: number of items
                                 # rho: penalty parameter
                                 # sigmas = rho * (log(pi) - Xbeta - u)/pi
@@ -85,7 +87,8 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                         (pi + epsilon)
                                     pi_sigmas <- pi * sigmas
                                     #######################
-                                    # print('Log ADMM 0-mean', np.sum(pi_sigmas))
+                                    # print('Log ADMM 0-mean',
+                                    #       np.sum(pi_sigmas))
                                     # indices of states for which sigmas < 0
                                     ind_minus <- which(sigmas < 0)
                                     # indices of states for which sigmas >= 0

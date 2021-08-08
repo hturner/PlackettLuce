@@ -66,7 +66,7 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
         expect_equal(c(res0_PLADMM$x %*% coef(res0_PLADMM)),
                      unname(as.vector(log(coef(res0_PL, log = FALSE)))),
                      tol = coef_tol)
-        ## expect beta coef from PLADMM equal non-zero (differences in) log-worth
+        ## expect coef from PLADMM equal non-zero (differences in) log-worth
         ## from PlackettLuce
         ## TRUE to lower tolerance
         expect_equivalent(coef(res0_PLADMM)[-1],
@@ -83,7 +83,7 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
             ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
             res_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic,
                                  data = features, rho = 8)
-            ## expect fitted log-worths equal to those predicted by linear predictor
+            ## expect log-worths equal to those predicted by linear predictor
             lambda <- c(res_PLADMM$x %*% matrix(coef(res_PLADMM)))
             expect_equal(unname(log(res_PLADMM[["pi"]])),
                          lambda,
@@ -94,17 +94,19 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
                             data = cbind(salad_long_rankings, status = 1))
             beta <- c(0, coef(res_RO))
             lambda <- as.vector(res_PLADMM$x %*% matrix(beta))
-            log_worth <- log(exp(lambda)/sum(exp(lambda))) # normalized to sum to 1
+            log_worth <- log(exp(lambda)/sum(exp(lambda))) # norm to sum to 1
             ## expect log-worths predicted by linear predictor from PLADMM
             ## equal to log-worths based on rank-orded logit.
             expect_equal(unname(log(res_PLADMM[["pi"]])),
                          log_worth,
                          tol = coef_tol)
-            ## expect two approaches to give same coefficients (different intercept)
+            ## expect two approaches to give same coefficients
+            ## (different intercept)
             expect_equal(coef(res_PLADMM)[-1],
                          beta[-1],
                          tol = coef_tol)
-            ## expect log-likelihood equal (survival returns extra `nobs` attribute)
+            ## expect log-likelihood equal
+            ## (survival returns extra `nobs` attribute)
             expect_equivalent(logLik(res_PLADMM),
                               logLik(res_RO),
                               tol = coef_tol)

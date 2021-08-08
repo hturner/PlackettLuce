@@ -217,7 +217,8 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
 
         test_that('predict.pltree works for type = "node" [salad]',
                   {
-                      expect_equal(predict(mod1, newdata = newdata, type = "node"),
+                      expect_equal(predict(mod1, newdata = newdata,
+                                           type = "node"),
                                    c("1" = "3", "2" = "2"))
                   })
 
@@ -236,13 +237,15 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
                       pred <- predict(mod1, newdata = newdata, type = "itempar",
                                       log = TRUE)
                       expect_equal(pred,
-                                   log(alpha)[node,] - rowMeans(log(alpha)[node,]),
+                                   log(alpha)[node,] -
+                                       rowMeans(log(alpha)[node,]),
                                    check.attributes = FALSE)
                   })
 
         test_that('predict.pltree works for type = "rank" [salad]',
                   {
-                      expect_equal(predict(mod1, newdata = newdata, type = "rank"),
+                      expect_equal(predict(mod1, newdata = newdata,
+                                           type = "rank"),
                                    t(apply(-alpha[node,], 1, rank)),
                                    check.attributes = FALSE)
                   })
@@ -251,8 +254,10 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
                   {
                       expect_equal(predict(mod1, type = "best"),
                                    structure(rep("B", length(G)), names = 1:8))
-                      expect_equal(predict(mod1, newdata = newdata, type = "best"),
-                                   structure(rep("2", length(G_new)), names = 1:2))
+                      expect_equal(predict(mod1, newdata = newdata,
+                                           type = "best"),
+                                   structure(rep("2", length(G_new)),
+                                             names = 1:2))
                   })
 
         test_that('AIC.pltree works [salad]',

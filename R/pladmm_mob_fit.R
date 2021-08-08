@@ -1,5 +1,6 @@
 pladmm_mob_fit <- function (y, worth, x = NULL, start = NULL, weights = NULL,
-                            offset = NULL, ..., estfun = FALSE, object = FALSE) {
+                            offset = NULL, ..., estfun = FALSE,
+                            object = FALSE) {
     # do not use `x` as in partykit::mob as this assumes x covariates
     # are partitioned along with response and partitioning variables
     x <- !(is.null(x) || NCOL(x) == 0L)
