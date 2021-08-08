@@ -164,7 +164,7 @@ number of unique rankings is large.
 ```{r soc, eval = eval_all, echo = FALSE}
 library(PlackettLuce)
 # read in example data sets
-preflib <- "https://www.preflib.org/data/election/"
+preflib <- "https://www.preflib.org/static/data/ED/"
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
 tshirt <- read.soc(file.path(preflib, "shirt/ED-00012-00000001.soc"))
 sushi <- read.soc(file.path(preflib, "sushi/ED-00014-00000001.soc"))

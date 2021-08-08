@@ -25,11 +25,11 @@ log scale for inference.
 
 The implementation of the Plackett-Luce model in **PlackettLuce**:
 
-  - Accommodates ties (of any order) in the rankings, e.g. bananas
-    \(\succ\) {apples, oranges} \(\succ\) pears.
-  - Accommodates sub-rankings, e.g. pears \(\succ\) apples, when the
-    full set of items is {apples, bananas, oranges, pears}.
-  - Handles disconnected or weakly connected networks implied by the
+-   Accommodates ties (of any order) in the rankings, e.g. bananas ≻
+    {apples, oranges} ≻ pears.
+-   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of
+    items is {apples, bananas, oranges, pears}.
+-   Handles disconnected or weakly connected networks implied by the
     rankings, e.g. where one item always loses as in figure below. This
     is achieved by adding pseudo-rankings with a hypothetical or ghost
     item.
@@ -38,9 +38,9 @@ The implementation of the Plackett-Luce model in **PlackettLuce**:
 
 In addition the package provides methods for
 
-  - Obtaining quasi-standard errors, that don’t depend on the
+-   Obtaining quasi-standard errors, that don’t depend on the
     constraints applied to the worth parameters for identifiability.
-  - Fitting Plackett-Luce trees, i.e. a tree that partitions the
+-   Fitting Plackett-Luce trees, i.e. a tree that partitions the
     rankings by covariate values, such as consumer attributes or racing
     conditions, identifying subgroups with different sets of worth
     parameters for the items.
@@ -66,18 +66,17 @@ The [Netflix Prize](https://www.netflixprize.com/) was a competition
 devised by Netflix to improve the accuracy of its recommendation system.
 To facilitate this they released ratings about movies from the users of
 the system that have been transformed to preference data and are
-available from
-[PrefLib](https://www.preflib.org/data/election/netflix/), (Bennett and
-Lanning 2007). Each data set comprises rankings of a set of 3 or 4
-movies selected at random. Here we consider rankings for just one set of
-movies to illustrate the functionality of **PlackettLuce**.
+available from [PrefLib](https://www.preflib.org/data/ED/00004/),
+(Bennett and Lanning 2007). Each data set comprises rankings of a set of
+3 or 4 movies selected at random. Here we consider rankings for just one
+set of movies to illustrate the functionality of **PlackettLuce**.
 
 The data can be read in using the `read.soc` function in
 **PlackettLuce**
 
 ``` r
 library(PlackettLuce)
-preflib <- "https://www.preflib.org/data/election/"
+preflib <- "https://www.preflib.org/static/data/ED/"
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000138.soc"))
 head(netflix, 2)
 ```
@@ -226,26 +225,28 @@ By participating in this project you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-Bennett2007">
+<div id="ref-Bennett2007" class="csl-entry">
 
-Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In *Proceedings
-of the KDD Cup Workshop 2007*, 3–6. ACM.
+Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In *<span
+class="nocase">Proceedings of the KDD Cup Workshop 2007</span>*, 3–6.
+ACM.
 
 </div>
 
-<div id="ref-Luce1959">
+<div id="ref-Luce1959" class="csl-entry">
 
 Luce, R. Duncan. 1959. *Individual Choice Behavior: A Theoretical
 Analysis*. New York: Wiley.
 
 </div>
 
-<div id="ref-Plackett1975">
+<div id="ref-Plackett1975" class="csl-entry">
 
-Plackett, Robert L. 1975. “The Analysis of Permutations.” *Appl.
-Statist* 24 (2): 193–202. <https://doi.org/10.2307/2346567>.
+Plackett, Robert L. 1975. “<span class="nocase">The Analysis of
+Permutations</span>.” *Appl. Statist* 24 (2): 193–202.
+<https://doi.org/10.2307/2346567>.
 
 </div>
 

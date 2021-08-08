@@ -77,7 +77,7 @@ data sets require a citation for re-use.
 
 \dontrun{
 # url for preflib data in the "Election Data" category
-preflib <- "https://www.preflib.org/data/election/"
+preflib <- "https://www.preflib.org/static/data/ED/"
 
 # strict complete orderings of four films on Netflix
 netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
