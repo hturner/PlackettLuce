@@ -1,4 +1,4 @@
-# PlackettLuce (development version)
+# PlackettLuce 0.4.1
 
 ## New features
 
@@ -11,6 +11,7 @@
 
 * Avoid computing variance-covariance matrix in `predict.PLADMM(vcov = FALSE)` and `AIC` when new data specified (partial fix to #50).
 * Correct residual df for PLADMM models based on partial rankings (previously assumed all rankings had equal number of items).
+* Update URL for Preflib data sets.
 
 # PlackettLuce 0.4.0
 
