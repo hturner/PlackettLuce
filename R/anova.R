@@ -5,7 +5,7 @@ anova.PLADMM <- function(object, ...) {
     dots <- list(...)
     if (length(dots)){
         object <- c(list(object), dots)
-        all_pladmm <- all(sapply(object, inherits, "PLADMM"))
+        all_pladmm <- all(vapply(object, inherits, logical(1), "PLADMM"))
         if (!all_pladmm)
             stop("all arguments to `anova.PLADMM` should PLADMM models")
         return(anova.PLADMMlist(object))
@@ -46,12 +46,12 @@ anova.PLADMM <- function(object, ...) {
 
 anova.PLADMMlist <- function(object) {
     # check validity
-    n <- sapply(object, function(x) nrow(x$orderings))
+    n <- vapply(object, function(x) nrow(x$orderings), numeric(1))
     if (any(n != n[1]))
         stop("the number of orderings is not the same for all models")
     # anova table
-    dev <- sapply(object, deviance)
-    df <- sapply(object, df.residual)
+    dev <- vapply(object, deviance, numeric(1))
+    df <- sapply(object, df.residual, numeric(1))
     res <- data.frame(`Resid. Df` = df,
                       `Resid. Dev` = dev,
                       Df = c(NA, diff(df)),
