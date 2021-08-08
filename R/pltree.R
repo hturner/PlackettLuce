@@ -111,7 +111,7 @@ pltree <- function (formula, data, worth, na.action, cluster,
         mob_call$worth <- model_spec(formula = worth, data = data[[2L]],
                                      contrasts = pltree_call[["contrasts"]],
                                      items = items)
-        mob_call$fit <- as.name("pladmm_mob_fit")
+        mob_call$fit <- pladmm_mob_fit
     } else{
         mob_call$fit <- as.name("plfit")
     }

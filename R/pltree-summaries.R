@@ -63,8 +63,8 @@ NULL
 #' @importFrom partykit info_node nodeids
 #' @export
 coef.pltree <- function (object, node = NULL, drop = TRUE, ...) {
-    fit_fn <- as.character(object$info$call$fit)
-    if (fit_fn != "plfit") return(NextMethod())
+    if (!inherits(info_node(object[[1]]$node)$object, "PlackettLuce"))
+        return(NextMethod())
     if (is.null(node)){
         ids <- nodeids(object, terminal = TRUE)
     } else ids <- node
