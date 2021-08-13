@@ -37,18 +37,12 @@ link-citations: yes
 pkgdown:
   as_is: yes
 always_allow_html: true
----
-
-```{r output, include = FALSE}
-output <- if (requireNamespace("BiocStyle", quietly = TRUE)) {
-  BiocStyle::html_document
-} else if (requireNamespace("bookdown", quietly = TRUE)) {
-  bookdown::html_document2
-} else html_document
-```
-
----
-output: output
+output: function(){
+    if (requireNamespace('BiocStyle', quietly = TRUE)) {
+        BiocStyle::html_document }
+    else if (requireNamespace('bookdown', quietly = TRUE)) {
+        bookdown::html_document2 }
+    else rmarkdown::html_document }()
 ---
 
 ```{r setup, include = FALSE}
@@ -815,9 +809,9 @@ tree
 
 ```{r save-tree, echo = FALSE}
 if (eval_all){
-    saveRDS(tree, "pltree.rds", version = 2)
-} else {
-    tree <- readRDS("pltree.rds")
+    png("pltree.png", width = 11, height = 5, units = "in", res = 72)
+    plot(tree, names = FALSE, abbreviate = 2, ylines = 2)
+    dev.off()
 }
 ```
 
@@ -831,8 +825,11 @@ local variety was most preferred, closely followed by INTA Sequia (8). Finally
 in regions where the maximum night-time temperature was high, INTA Sequia (8)
 was most preferred, closely followed by BRT 103-182 (2) and INTA Centro Sur
 (3). A plot method is provided to visualise the tree:
-```{r plot-pltree, fig.wide = TRUE, fig.cap = "Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79."}
-plot(tree, names = FALSE, abbreviate = 2)
+```{r plot-pltree-code, eval = FALSE}
+plot(tree, names = FALSE, abbreviate = 2, ylines = 2)
+```
+```{r plot-pltree, fig.wide = TRUE, fig.cap = "Worth parameters for the ten trial varieties and the local variety for each node in the Plackett-Luce tree. Varieties are 1: ALS 0532-6, 2: BRT 103-182, 3: INTA Centro Sur, 4: INTA Ferroso, 5: INTA Matagalpa, 6: INTA Precoz, 7: INTA Rojo, 8: INTA Sequia, 9: Local, 10: PM2 Don Rey, 11: SJC 730-79.", fig.width = 11, fig.height = 5, out.width = "\\textwidth", echo = FALSE}
+include_graphics("pltree.png")
 ```
 
 # Discussion

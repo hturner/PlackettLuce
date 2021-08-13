@@ -14,18 +14,12 @@ link-citations: yes
 pkgdown:
   as_is: yes
 always_allow_html: true
----
-
-```{r output, include = FALSE}
-output <- if (requireNamespace("BiocStyle", quietly = TRUE)) {
-  BiocStyle::html_document
-} else if (requireNamespace("bookdown", quietly = TRUE)) {
-  bookdown::html_document2
-} else html_document
-```
-
----
-output: output
+output: function(){
+    if (requireNamespace('BiocStyle', quietly = TRUE)) {
+        BiocStyle::html_document }
+    else if (requireNamespace('bookdown', quietly = TRUE)) {
+        bookdown::html_document2 }
+    else rmarkdown::html_document }()
 ---
 
 ```{r setup, include = FALSE}
@@ -228,11 +222,11 @@ and the second containing the item covariates. We set a minimum group size of
 10 and reduce the `rho` parameter accordingly.
 
 ```{r}
-mod1 <- pltree(grouped_salad ~ .,
+tree <- pltree(grouped_salad ~ .,
                worth = ~acetic + gluconic,
                data = list(judge_features, features),
                rho = 2, minsize = 10)
-plot(mod1)
+plot(tree, ylines = 2)
 ```
 
 The result is a tree with two nodes; both groups prefer salad B, but the first 
@@ -244,7 +238,7 @@ preference for C. We can see the difference in the coefficients of the item
 features:
 
 ```{r}
-mod1
+tree
 ```
 
 From the first group to the second group, the coefficient for acetic acid 

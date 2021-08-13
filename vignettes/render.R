@@ -1,5 +1,5 @@
 # render vignette - result is in vignettes_tmp_output
-rmd <- "vignettes/PLADMM.Rmd"
+rmd <- "vignettes/Overview.Rmd"
 rmarkdown::render(rmd, output_dir = "vignettes_tmp_output",
                   clean = FALSE)
 
