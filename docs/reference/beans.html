@@ -42,11 +42,13 @@
   
 
 <meta property="og:title" content="Preferred Bean Varieties in Nicaragua — beans" />
-<meta property="og:description" content="This is a subset of data from trials of bean varieties in Nicaragua over five
-growing seasons. Farmers were asked to try three varieties of bean from a
-total of ten varieties and to rank them in order of preference. In addition,
-for each variety the farmers were asked to compare each trial variety to the
-local variety and state whether they considered it to be better or worse." />
+<meta property="og:description" content="This is a subset of data from trials of bean varieties
+(Phaseolus vulgaris L.)
+in Nicaragua over five growing seasons. Farmers were asked to try three
+varieties of bean from a total of ten varieties and to rank them in order of
+preference. In addition, for each variety the farmers were asked to compare
+each trial variety to the local variety and state whether they considered it
+to be better or worse." />
 
 
 
@@ -78,7 +80,7 @@ local variety and state whether they considered it to be better or worse." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -100,6 +102,9 @@ local variety and state whether they considered it to be better or worse." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
     <li>
       <a href="../articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
@@ -135,11 +140,13 @@ local variety and state whether they considered it to be better or worse." />
     </div>
 
     <div class="ref-description">
-    <p>This is a subset of data from trials of bean varieties in Nicaragua over five
-growing seasons. Farmers were asked to try three varieties of bean from a
-total of ten varieties and to rank them in order of preference. In addition,
-for each variety the farmers were asked to compare each trial variety to the
-local variety and state whether they considered it to be better or worse.</p>
+    <p>This is a subset of data from trials of bean varieties
+(<em>Phaseolus vulgaris</em> L.)
+in Nicaragua over five growing seasons. Farmers were asked to try three
+varieties of bean from a total of ten varieties and to rank them in order of
+preference. In addition, for each variety the farmers were asked to compare
+each trial variety to the local variety and state whether they considered it
+to be better or worse.</p>
     </div>
 
     <pre class="usage"><span class='va'>beans</span></pre>
@@ -147,7 +154,7 @@ local variety and state whether they considered it to be better or worse.</p>
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>A data frame with 842 records and 11 variables:</p><dl>
+    <p>A data frame with 842 records and 14 variables:</p><dl>
 <dt><code>variety_a</code></dt><dd><p>The name of variety A in the comparison.</p></dd>
 <dt><code>variety_b</code></dt><dd><p>The name of variety B in the comparison.</p></dd>
 <dt><code>variety_c</code></dt><dd><p>The name of variety C in the comparison.</p></dd>
@@ -166,13 +173,20 @@ variety ("Worse" or "Better").</p></dd>
 <dt><code>year</code></dt><dd><p>The year of planting.</p></dd>
 <dt><code>maxTN</code></dt><dd><p>The maximum temperature at night during the
 vegetative cycle (degrees Celsius).</p></dd>
+<dt><code>lon</code></dt><dd><p>The geographic coordinate longitude (X axis) for where
+the plot was established.</p></dd>
+<dt><code>lat</code></dt><dd><p>The geographic coordinate latitude (Y axis) for where
+the plot was established.</p></dd>
+<dt><code>planting_date</code></dt><dd><p>A Date, specifying the start date of
+planting the trial.</p></dd>
 
 </dl>
 
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p>The data were provided by Bioversity International, a CGIAR research
-centre <a href='https://www.bioversityinternational.org'>https://www.bioversityinternational.org</a>.</p>
+    <p>van Etten, J. et al. (2019) <em>PNAS</em>, <b>116</b> (10), 4194--4199,
+doi: <a href='https://doi.org/10.1073/pnas.1813720116'>10.1073/pnas.1813720116</a>
+.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>There are three crop seasons in Central America:</p><dl>

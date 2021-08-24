@@ -20,6 +20,7 @@ reference:
 - title: Model Fitting
   contents:
   - PlackettLuce
+  - pladmm
   - pltree
 - title: Model Summary
   contents:

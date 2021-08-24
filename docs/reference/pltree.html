@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -96,6 +96,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
     <li>
       <a href="../articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
@@ -134,31 +137,35 @@
     <p>Recursive partitioning based on Plackett-Luce models.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pltree</span><span class='op'>(</span><span class='va'>formula</span>, <span class='va'>data</span>, <span class='va'>subset</span>, <span class='va'>na.action</span>, <span class='va'>cluster</span>, ref <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pltree</span><span class='op'>(</span><span class='va'>formula</span>, <span class='va'>data</span>, <span class='va'>worth</span>, <span class='va'>na.action</span>, <span class='va'>cluster</span>, ref <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>formula</th>
-      <td><p>a symbolic description of the model to be fitted, of the form
+      <td><p>A symbolic description of the model to be fitted, of the form
 <code>y ~ x1 + ... + xn</code> where <code>y</code> should be an object of class
 <code><a href='PlackettLuce-deprecated.html'>grouped_rankings</a></code> and <code>x1</code>, ..., <code>xn</code> are used as
 partitioning variables.</p></td>
     </tr>
     <tr>
       <th>data</th>
-      <td><p>an optional data frame containing the variables in the model.</p></td>
+      <td><p>An optional data object containing the variables in the model.
+Either a data frame of variables in <code>formula</code> or a list of length 2 giving
+data frames for variables in <code>formula</code> and in <code>worth</code>.</p></td>
     </tr>
     <tr>
-      <th>subset</th>
-      <td><p>A specification of the rows to be used, passed to
-<code><a href='https://rdrr.io/r/stats/model.frame.html'>model.frame</a></code>.</p></td>
+      <th>worth</th>
+      <td><p>A optional formula specifying a linear model for log-worth.
+If <code>NULL</code>, worth is estimated separately for each item with
+<code><a href='PlackettLuce.html'>PlackettLuce()</a></code>. Otherwise, the model in each node of the tree id fitted
+with <code><a href='pladmm.html'>pladmm()</a></code>.</p></td>
     </tr>
     <tr>
       <th>na.action</th>
-      <td><p>how NAs are treated, applied to the underlying rankings and
-then passed to <code><a href='https://rdrr.io/r/stats/model.frame.html'>model.frame</a></code>.</p></td>
+      <td><p>how NAs are treated for variables in <code>formula</code>, applied
+to the underlying rankings.</p></td>
     </tr>
     <tr>
       <th>cluster</th>
@@ -172,7 +179,8 @@ which log ability will be set to zero). If NULL the first item is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments, passed to <code><a href='PlackettLuce.html'>PlackettLuce</a></code>.</p></td>
+      <td><p>additional arguments, passed to <code><a href='PlackettLuce.html'>PlackettLuce</a></code>
+of <code><a href='pladmm.html'>pladmm()</a></code>.</p></td>
     </tr>
     </table>
 
@@ -246,7 +254,7 @@ choices based on the full tree.</p></div>
 #&gt; 2   male  21 yes yes yes</div><div class='img'><img src='pltree-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='pltree-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;     Barbara       Anni       Hana      Fiona       Mandy       Anja
 #&gt; 3 0.3252815  0.2193055 1.03734300 -0.1785927 -0.39080852 -1.0125288
 #&gt; 5 0.1106734 -0.2392155 0.51830152  0.3662483 -0.42801793 -0.3279899
-#&gt; 6 0.5715647  0.3486194 0.06927133  0.2590188 -0.87250735 -0.3759669
+#&gt; 6 0.5715647  0.3486194 0.06927133  0.2590188 -0.87250734 -0.3759669
 #&gt; 7 0.5343475 -1.0000476 0.01067104  0.0575107  0.08093274  0.3165856</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

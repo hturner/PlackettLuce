@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -68,6 +68,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
+    <li>
       <a href="articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
   </ul>
@@ -107,8 +110,8 @@
 <p>The output of the model is an estimated <strong>worth</strong> for each item that appears in the rankings. The parameters are generally presented on the log scale for inference.</p>
 <p>The implementation of the Plackett-Luce model in <strong>PlackettLuce</strong>:</p>
 <ul>
-<li>Accommodates ties (of any order) in the rankings, e.g. bananas <span class="math inline">≻</span> {apples, oranges} <span class="math inline">≻</span> pears.</li>
-<li>Accommodates sub-rankings, e.g. pears <span class="math inline">≻</span> apples, when the full set of items is {apples, bananas, oranges, pears}.</li>
+<li>Accommodates ties (of any order) in the rankings, e.g. bananas ≻ {apples, oranges} ≻ pears.</li>
+<li>Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of items is {apples, bananas, oranges, pears}.</li>
 <li>Handles disconnected or weakly connected networks implied by the rankings, e.g. where one item always loses as in figure below. This is achieved by adding pseudo-rankings with a hypothetical or ghost item.</li>
 </ul>
 <p><img src="reference/figures/always-loses-1.png"><!-- --></p>
@@ -132,70 +135,70 @@
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<p>The <a href="https://www.netflixprize.com/">Netflix Prize</a> was a competition devised by Netflix to improve the accuracy of its recommendation system. To facilitate this they released ratings about movies from the users of the system that have been transformed to preference data and are available from <a href="https://www.preflib.org/data/election/netflix/">PrefLib</a>, (Bennett and Lanning 2007). Each data set comprises rankings of a set of 3 or 4 movies selected at random. Here we consider rankings for just one set of movies to illustrate the functionality of <strong>PlackettLuce</strong>.</p>
+<p>The <a href="https://www.netflixprize.com/">Netflix Prize</a> was a competition devised by Netflix to improve the accuracy of its recommendation system. To facilitate this they released ratings about movies from the users of the system that have been transformed to preference data and are available from <a href="https://www.preflib.org/data/ED/00004/">PrefLib</a>, (Bennett and Lanning 2007). Each data set comprises rankings of a set of 3 or 4 movies selected at random. Here we consider rankings for just one set of movies to illustrate the functionality of <strong>PlackettLuce</strong>.</p>
 <p>The data can be read in using the <code>read.soc</code> function in <strong>PlackettLuce</strong></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://hturner.github.io/PlackettLuce/">PlackettLuce</a></span><span class="op">)</span>
-<span class="va">preflib</span> <span class="op">&lt;-</span> <span class="st">"https://www.preflib.org/data/election/"</span>
+<span class="va">preflib</span> <span class="op">&lt;-</span> <span class="st">"https://www.preflib.org/static/data/ED/"</span>
 <span class="va">netflix</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/preflib.html">read.soc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">preflib</span>, <span class="st">"netflix/ED-00004-00000138.soc"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">netflix</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">##   Freq Rank 1 Rank 2 Rank 3 Rank 4</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="co">## 1   68      2      1      4      3</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co">## 2   53      1      2      4      3</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">##   Freq Rank 1 Rank 2 Rank 3 Rank 4</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   68      2      1      4      3</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   53      1      2      4      3</span></span></code></pre></div>
 <p>Each row corresponds to a unique ordering of the four movies in this data set. The number of Netflix users that assigned that ordering is given in the first column, followed by the four movies in preference order. So for example, 68 users ranked movie 2 first, followed by movie 1, then movie 4 and finally movie 3.</p>
 <p><code>PlackettLuce</code>, the model-fitting function in <strong>PlackettLuce</strong> requires that the data are provided in the form of <em>rankings</em> rather than <em>orderings</em>, i.e.  the rankings are expressed by giving the rank for each item, rather than ordering the items. We can create a <code>"rankings"</code> object from a set of orderings as follows</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rankings.html">as.rankings</a></span><span class="op">(</span><span class="va">netflix</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span>, input <span class="op">=</span> <span class="st">"orderings"</span>,
                  items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">netflix</span>, <span class="st">"items"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">R</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, as.rankings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">##   Mean Girls Beverly Hills Cop The Mummy Returns Mission: Impossible II</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="co">## 1          2                 1                 4                      3</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="co">## 2          1                 2                 4                      3</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co">## 3          2                 1                 3                      4</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">##   Mean Girls Beverly Hills Cop The Mummy Returns Mission: Impossible II</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="do">## 1          2                 1                 4                      3</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 2          1                 2                 4                      3</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 3          2                 1                 3                      4</span></span></code></pre></div>
 <p>Note that <code>read.soc</code> saved the names of the movies in the <code>"items"</code> attribute of <code>netflix</code>, so we have used these to label the items. Subsetting the rankings object <code>R</code> with <code>as.rankings = FALSE</code>, returns the underlying matrix of rankings corresponding to the subset. So for example, in the first ranking the second movie (Beverly Hills Cop) is ranked number 1, followed by the first movie (Mean Girls) with rank 2, followed by the fourth movie (Mission: Impossible II) and finally the third movie (The Mummy Returns), giving the same ordering as in the original data.</p>
 <p>Various methods are provided for <code>"rankings"</code> objects, in particular if we subset the rankings without <code>as.rankings = FALSE</code>, the result is again a <code>"rankings"</code> object and the corresponding print method is used:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">R</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">##                                          1 </span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="co">## "Beverly Hills Cop &gt; Mean Girls &gt; Mis ..." </span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="co">##                                          2 </span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="co">## "Mean Girls &gt; Beverly Hills Cop &gt; Mis ..." </span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="co">##                                          3 </span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">## "Beverly Hills Cop &gt; Mean Girls &gt; The ..."</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">##                                          1 </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="do">## "Beverly Hills Cop &gt; Mean Girls &gt; Mis ..." </span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                                          2 </span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="do">## "Mean Girls &gt; Beverly Hills Cop &gt; Mis ..." </span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="do">##                                          3 </span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="do">## "Beverly Hills Cop &gt; Mean Girls &gt; The ..."</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">R</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, width <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">##                                                              1 </span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="co">## "Beverly Hills Cop &gt; Mean Girls &gt; Mission: Impossible II  ..." </span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="co">##                                                              2 </span></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="co">## "Mean Girls &gt; Beverly Hills Cop &gt; Mission: Impossible II  ..." </span></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="co">##                                                              3 </span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="co">## "Beverly Hills Cop &gt; Mean Girls &gt; The Mummy Returns &gt; Mis ..."</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                              1 </span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="do">## "Beverly Hills Cop &gt; Mean Girls &gt; Mission: Impossible II  ..." </span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                              2 </span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">## "Mean Girls &gt; Beverly Hills Cop &gt; Mission: Impossible II  ..." </span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                              3 </span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="do">## "Beverly Hills Cop &gt; Mean Girls &gt; The Mummy Returns &gt; Mis ..."</span></span></code></pre></div>
 <p>The rankings can now be passed to <code>PlackettLuce</code> to fit the Plackett-Luce model. The counts of each ranking provided in the downloaded data are used as weights when fitting the model.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span>, weights <span class="op">=</span> <span class="va">netflix</span><span class="op">$</span><span class="va">Freq</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span>, log <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">##             Mean Girls      Beverly Hills Cop      The Mummy Returns </span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="co">##              0.2306285              0.4510655              0.1684719 </span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="co">## Mission: Impossible II </span></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="co">##              0.1498342</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">##             Mean Girls      Beverly Hills Cop      The Mummy Returns </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="do">##              0.2306285              0.4510655              0.1684719 </span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Mission: Impossible II </span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="do">##              0.1498342</span></span></code></pre></div>
 <p>Calling <code>coef</code> with <code>log = FALSE</code> gives the worth parameters, constrained to sum to one. These parameters represent the probability that each movie is ranked first.</p>
 <p>For inference these parameters are converted to the log scale, by default setting the first parameter to zero so that the standard errors are estimable:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## Call: PlackettLuce(rankings = R, weights = netflix$Freq)</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="co">## </span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="co">## Coefficients:</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="co">##                        Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="co">## Mean Girls              0.00000         NA      NA       NA    </span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">## Beverly Hills Cop       0.67080    0.07472   8.978  &lt; 2e-16 ***</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="co">## The Mummy Returns      -0.31404    0.07593  -4.136 3.53e-05 ***</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="co">## Mission: Impossible II -0.43128    0.07489  -5.759 8.47e-09 ***</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="co">## ---</span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="co">## </span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="co">## Residual deviance:  3493.5 on 3525 degrees of freedom</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## AIC:  3499.5 </span></span>
-<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## Number of iterations: 7</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: PlackettLuce(rankings = R, weights = netflix$Freq)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="do">##                        Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean Girls              0.00000         NA      NA       NA    </span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Beverly Hills Cop       0.67080    0.07472   8.978  &lt; 2e-16 ***</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## The Mummy Returns      -0.31404    0.07593  -4.136 3.53e-05 ***</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Mission: Impossible II -0.43128    0.07489  -5.759 8.47e-09 ***</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual deviance:  3493.5 on 3525 degrees of freedom</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="do">## AIC:  3499.5 </span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of iterations: 7</span></span></code></pre></div>
 <p>In this way, Mean Girls is treated as the reference movie, the positive parameter for Beverly Hills Cop shows this was more popular among the users, while the negative parameters for the other two movies show these were less popular.</p>
 <p>Comparisons between different pairs of movies can be made visually by plotting the log-worth parameters with comparison intervals based on quasi standard errors.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -208,7 +211,7 @@
 <h2 class="hasAnchor">
 <a href="#going-further" class="anchor"></a>Going Further</h2>
 <p>The core functionality of <strong>PlackettLuce</strong> is illustrated in the package vignette, along with details of the model used in the package and a comparison to other packages. The vignette can be found on the <a href="https://hturner.github.io/PlackettLuce/">package website</a> or from within R once the package has been installed, e.g. via</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">vignette</span>(<span class="st">"Overview"</span>, <span class="dt">package =</span> <span class="st">"PlackettLuce"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">"Overview"</span>, <span class="at">package =</span> <span class="st">"PlackettLuce"</span>)</span></code></pre></div>
 </div>
 <div id="code-of-conduct" class="section level2">
 <h2 class="hasAnchor">
@@ -218,15 +221,15 @@
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references">
-<div id="ref-Bennett2007">
-<p>Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In <em>Proceedings of the KDD Cup Workshop 2007</em>, 3–6. ACM.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bennett2007" class="csl-entry">
+Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In <em><span class="nocase">Proceedings of the KDD Cup Workshop 2007</span></em>, 3–6. ACM.
 </div>
-<div id="ref-Luce1959">
-<p>Luce, R. Duncan. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. New York: Wiley.</p>
+<div id="ref-Luce1959" class="csl-entry">
+Luce, R. Duncan. 1959. <em>Individual Choice Behavior: A Theoretical Analysis</em>. New York: Wiley.
 </div>
-<div id="ref-Plackett1975">
-<p>Plackett, Robert L. 1975. “The Analysis of Permutations.” <em>Appl. Statist</em> 24 (2): 193–202. <a href="https://doi.org/10.2307/2346567" class="uri">https://doi.org/10.2307/2346567</a>.</p>
+<div id="ref-Plackett1975" class="csl-entry">
+Plackett, Robert L. 1975. “<span class="nocase">The Analysis of Permutations</span>.” <em>Appl. Statist</em> 24 (2): 193–202. <a href="https://doi.org/10.2307/2346567" class="uri">https://doi.org/10.2307/2346567</a>.
 </div>
 </div>
 </div>

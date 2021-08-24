@@ -76,7 +76,7 @@ election data as defined by
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -98,6 +98,9 @@ election data as defined by
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
     <li>
       <a href="../articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
@@ -220,7 +223,7 @@ In <em>Proceedings of the 31st AAAI Conference on Artificial Intelligence</em>.<
 
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># url for preflib data in the "Election Data" category</span>
-<span class='va'>preflib</span> <span class='op'>&lt;-</span> <span class='st'>"https://www.preflib.org/data/election/"</span>
+<span class='va'>preflib</span> <span class='op'>&lt;-</span> <span class='st'>"https://www.preflib.org/static/data/ED/"</span>
 
 <span class='co'># strict complete orderings of four films on Netflix</span>
 <span class='va'>netflix</span> <span class='op'>&lt;-</span> <span class='fu'>read.soc</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>preflib</span>, <span class='st'>"netflix/ED-00004-00000101.soc"</span><span class='op'>)</span><span class='op'>)</span>

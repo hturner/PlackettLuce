@@ -43,7 +43,7 @@
 
 <meta property="og:title" content="Extract Item Parameters of Plackett-Luce Models — itempar.PlackettLuce" />
 <meta property="og:description" content="Methods for itempar to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+parameters (worth or log-worth) from a Plackett-Luce model or tree.
 In the case of a tree, item parameters are extracted for each terminal node." />
 
 
@@ -76,7 +76,7 @@ In the case of a tree, item parameters are extracted for each terminal node." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -98,6 +98,9 @@ In the case of a tree, item parameters are extracted for each terminal node." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
     <li>
       <a href="../articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
@@ -134,7 +137,7 @@ In the case of a tree, item parameters are extracted for each terminal node." />
 
     <div class="ref-description">
     <p>Methods for <code><a href='https://rdrr.io/pkg/psychotools/man/itempar.html'>itempar</a></code> to extract the item
-parameters (abilities or log-abilities) from a Plackett-Luce model or tree.
+parameters (worth or log-worth) from a Plackett-Luce model or tree.
 In the case of a tree, item parameters are extracted for each terminal node.</p>
     </div>
 
@@ -142,7 +145,10 @@ In the case of a tree, item parameters are extracted for each terminal node.</p>
 <span class='fu'><a href='https://rdrr.io/pkg/psychotools/man/itempar.html'>itempar</a></span><span class='op'>(</span><span class='va'>object</span>, ref <span class='op'>=</span> <span class='cn'>NULL</span>, alias <span class='op'>=</span> <span class='cn'>TRUE</span>, vcov <span class='op'>=</span> <span class='cn'>TRUE</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pltree</span>
-<span class='fu'><a href='https://rdrr.io/pkg/psychotools/man/itempar.html'>itempar</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+<span class='fu'><a href='https://rdrr.io/pkg/psychotools/man/itempar.html'>itempar</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for PLADMM</span>
+<span class='fu'><a href='https://rdrr.io/pkg/psychotools/man/itempar.html'>itempar</a></span><span class='op'>(</span><span class='va'>object</span>, ref <span class='op'>=</span> <span class='cn'>NULL</span>, alias <span class='op'>=</span> <span class='cn'>TRUE</span>, vcov <span class='op'>=</span> <span class='cn'>TRUE</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,7 +156,7 @@ In the case of a tree, item parameters are extracted for each terminal node.</p>
     <tr>
       <th>object</th>
       <td><p>a fitted model object as returned by
-<code><a href='PlackettLuce.html'>PlackettLuce</a></code> or <code><a href='pltree.html'>pltree</a></code>.</p></td>
+<code><a href='PlackettLuce.html'>PlackettLuce</a></code>,  <code><a href='pladmm.html'>pladmm</a></code>, or <code><a href='pltree.html'>pltree</a></code>.</p></td>
     </tr>
     <tr>
       <th>ref</th>

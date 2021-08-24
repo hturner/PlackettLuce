@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlackettLuce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -95,6 +95,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/PLADMM.html">Plackett-Luce Models with Item Covariates</a>
+    </li>
     <li>
       <a href="../articles/Overview.html">Introduction to PlackettLuce</a>
     </li>
@@ -128,12 +131,45 @@
       <small>Source: <a href='https://github.com/hturner/PlackettLuce/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="plackettluce-032" class="section level1">
-<h1 class="page-header" data-toc-text="0.3.2">
-<a href="#plackettluce-032" class="anchor"></a>PlackettLuce 0.3.2<small> Unreleased </small>
+    <div id="plackettluce-041" class="section level1">
+<h1 class="page-header" data-toc-text="0.4.1">
+<a href="#plackettluce-041" class="anchor"></a>PlackettLuce 0.4.1<small> 2021-08-16 </small>
+</h1>
+<div id="new-features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>New features</h2>
+<ul>
+<li>Extend <code>pltree</code> to allow option of modelling log-worth with a linear predictor (via <code><a href="../reference/pladmm.html">pladmm()</a></code>).</li>
+<li>Improved handling of model formula in <code><a href="../reference/pladmm.html">pladmm()</a></code>, including possibility to specify contrasts for any factors in the formula.</li>
+<li>Add anova method for PLADMM models.</li>
+<li>Add <code>weights</code> argument to <code><a href="../reference/pladmm.html">pladmm()</a></code>, allowing aggregated rankings to be modelled, optionally using an <code>aggregate_rankings</code> object to specify rankings and weights together.</li>
+</ul>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug fixes</h2>
+<ul>
+<li>Avoid computing variance-covariance matrix in <code>predict.PLADMM(vcov = FALSE)</code> and <code>AIC</code> when new data specified (partial fix to <a href='https://github.com/hturner/PlackettLuce/issues/50'>#50</a>).</li>
+<li>Correct residual df for PLADMM models based on partial rankings (previously assumed all rankings had equal number of items).</li>
+<li>Update URL for Preflib data sets.</li>
+</ul>
+</div>
+</div>
+    <div id="plackettluce-040" class="section level1">
+<h1 class="page-header" data-toc-text="0.4.0">
+<a href="#plackettluce-040" class="anchor"></a>PlackettLuce 0.4.0<small> 2021-03-29 </small>
 </h1>
 <ul>
-<li>Fix test that fails with new behaviour of all.equal.</li>
+<li>New <code>pladmm</code> function to fit the Plackett-Luce model with log-worth modelled by item covariates.</li>
+<li>Add three new variables to the <code>beans</code> data. The planting date, and geographical coordinates (<a href='https://github.com/kauedesousa'>@kauedesousa</a>, <a href='https://github.com/hturner/PlackettLuce/issues/41'>#41</a>).</li>
+</ul>
+</div>
+    <div id="plackettluce-032" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.2">
+<a href="#plackettluce-032" class="anchor"></a>PlackettLuce 0.3.2<small> 2021-01-04 </small>
+</h1>
+<ul>
+<li>Fix test that fails with new behaviour of <code><a href="https://rdrr.io/r/base/all.equal.html">all.equal()</a></code>.</li>
 <li>Update citation to use Computational Statistics paper (<a href='https://github.com/hturner/PlackettLuce/issues/44'>#44</a>).</li>
 </ul>
 </div>
@@ -187,9 +223,9 @@
 <h1 class="page-header" data-toc-text="0.2-7">
 <a href="#plackettluce-02-7" class="anchor"></a>PlackettLuce 0.2-7<small> Unreleased </small>
 </h1>
-<div id="new-features" class="section level2">
+<div id="new-features-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>New Features</h2>
+<a href="#new-features-1" class="anchor"></a>New Features</h2>
 <ul>
 <li>New <code>"aggregated_rankings"</code> object to store aggregated rankings with the corresponding frequencies. Objects of class <code>"rankings"</code> can be aggregated via the <code>aggregate</code> method; alternatively <code><a href="../reference/rankings.html">rankings()</a></code> and <code><a href="../reference/rankings.html">as.rankings()</a></code> will create an <code>"aggregated_rankings"</code> object when <code>aggregate = TRUE</code>. <code><a href="../reference/rankings.html">as.rankings()</a></code> also handles pre-aggregated data, accepting frequencies via the <code>freq</code> argument.</li>
 <li>New <code><a href="../reference/aggregate.html">freq()</a></code> function to extract frequencies from aggregated rankings.</li>
@@ -248,9 +284,9 @@
 <h1 class="page-header" data-toc-text="0.2-4">
 <a href="#plackettluce-02-4" class="anchor"></a>PlackettLuce 0.2-4<small> Unreleased </small>
 </h1>
-<div id="new-features-1" class="section level2">
+<div id="new-features-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-1" class="anchor"></a>New Features</h2>
+<a href="#new-features-2" class="anchor"></a>New Features</h2>
 <ul>
 <li>
 <code><a href="../reference/PlackettLuce.html">PlackettLuce()</a></code> now supports MAP estimation with a multivariate normal prior on log-worths and/or a gamma prior on ranker adherence.</li>
@@ -267,9 +303,9 @@
 <code><a href="../reference/itempar.PlackettLuce.html">itempar.PlackettLuce()</a></code> now always returns a matrix, even for a single node tree.</li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>Bug Fixes</h2>
+<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes</h2>
 <ul>
 <li>
 <code><a href="../reference/pltree.html">pltree()</a></code> or <code><a href="../reference/PlackettLuce.html">PlackettLuce()</a></code> with grouped rankings now work correctly with weights.</li>
@@ -295,9 +331,9 @@
 <code>fitted</code> always returns <code>n</code> which is now weighted count of rankings (previously only returned unweighted count with argument <code>aggregate = TRUE</code>).</li>
 </ul>
 </div>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
+<a href="#bug-fixes-2" class="anchor"></a>Bug fixes</h2>
 <ul>
 <li>Correct vcov for weighted rankings of more than two items.</li>
 <li>Enable <code>AIC.pltree</code> to work on <code>"pltree"</code> object with one node.</li>
@@ -308,17 +344,17 @@
 <h1 class="page-header" data-toc-text="0.2-2">
 <a href="#plackettluce-02-2" class="anchor"></a>PlackettLuce 0.2-2<small> 2018-02-19 </small>
 </h1>
-<div id="new-features-2" class="section level2">
+<div id="new-features-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-2" class="anchor"></a>New features</h2>
+<a href="#new-features-3" class="anchor"></a>New features</h2>
 <ul>
 <li>Add <code>AIC.pltree</code> to enable computation of AIC on new observations (e.g. data held out in cross-validation).</li>
 <li>Add <code>fitted.pltree</code> to return combined fitted probabilities for each choice within each ranking, for each node in a Plackett-Luce tree.</li>
 </ul>
 </div>
-<div id="bug-fixes-2" class="section level2">
+<div id="bug-fixes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-2" class="anchor"></a>Bug fixes</h2>
+<a href="#bug-fixes-3" class="anchor"></a>Bug fixes</h2>
 <ul>
 <li>
 <code>vcov.PlackettLuce</code> now works for models with non-integer weights (fixes <a href='https://github.com/hturner/PlackettLuce/issues/25'>#25</a>).</li>
@@ -336,9 +372,9 @@
 <h1 class="page-header" data-toc-text="0.2-1">
 <a href="#plackettluce-02-1" class="anchor"></a>PlackettLuce 0.2-1<small> 2017-12-07 </small>
 </h1>
-<div id="new-features-3" class="section level2">
+<div id="new-features-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-3" class="anchor"></a>New features</h2>
+<a href="#new-features-4" class="anchor"></a>New features</h2>
 <ul>
 <li>Add <strong>pkgdown</strong> site.</li>
 <li>Add content to README (fixes <a href='https://github.com/hturner/PlackettLuce/issues/5'>#5</a>).</li>
@@ -362,9 +398,9 @@
 <li>Steffensen acceleration only applied in iterations where it will increase the log-likelihood (still only attempted once iterations have reached a solution that is “close enough” as specified by <code>steffensen</code> argument).</li>
 </ul>
 </div>
-<div id="bug-fixes-3" class="section level2">
+<div id="bug-fixes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-3" class="anchor"></a>Bug fixes</h2>
+<a href="#bug-fixes-4" class="anchor"></a>Bug fixes</h2>
 <ul>
 <li>
 <code><a href="../reference/pltree-summaries.html">coef.pltree()</a></code> now respects <code>log = TRUE</code> argument (fixes <a href='https://github.com/hturner/PlackettLuce/issues/19'>#19</a>).</li>
@@ -378,9 +414,9 @@
 <h1 class="page-header" data-toc-text="0.2-0">
 <a href="#plackettluce-02-0" class="anchor"></a>PlackettLuce 0.2-0<small> Unreleased </small>
 </h1>
-<div id="new-features-4" class="section level2">
+<div id="new-features-5" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-4" class="anchor"></a>New Features</h2>
+<a href="#new-features-5" class="anchor"></a>New Features</h2>
 <ul>
 <li>Add vignette.</li>
 <li>Add data sets <code>pudding</code>, <code>nascar</code> and <code>beans</code>.</li>
@@ -398,7 +434,7 @@
 <h2 class="hasAnchor">
 <a href="#changes-in-behaviour-4" class="anchor"></a>Changes in behaviour</h2>
 <p>Old behaviour should be reproducible with arguments</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>npseudo =<span class="st"> </span><span class="dv">0</span>, steffensen =<span class="st"> </span><span class="dv">0</span>, start =<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span><span class="op">/</span>N, N), <span class="kw">rep</span>(<span class="fl">0.1</span>, D))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>npseudo <span class="ot">=</span> <span class="dv">0</span>, steffensen <span class="ot">=</span> <span class="dv">0</span>, start <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span>N, N), <span class="fu">rep</span>(<span class="fl">0.1</span>, D))</span></code></pre></div>
 <p>where <code>N</code> is number of items and <code>D</code> is maximum order of ties.</p>
 <ul>
 <li>Implement pseudo-data approach - now used by default.</li>
