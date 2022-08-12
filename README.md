@@ -1,9 +1,8 @@
 
 # PlackettLuce
 
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/hturner/PlackettLuce?branch=master&svg=true)](https://ci.appveyor.com/project/hturner/PlackettLuce)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
+[![R-CMD-check](https://github.com/hturner/PlackettLuce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hturner/PlackettLuce/actions/workflows/R-CMD-check.yaml)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/hturner/PlackettLuce/master.svg)](https://codecov.io/github/hturner/PlackettLuce?branch=master)
 
@@ -23,10 +22,10 @@ log scale for inference.
 
 The implementation of the Plackett-Luce model in **PlackettLuce**:
 
--   Accommodates ties (of any order) in the rankings, e.g. bananas ≻
-    {apples, oranges} ≻ pears.
--   Accommodates sub-rankings, e.g. pears ≻ apples, when the full set of
-    items is {apples, bananas, oranges, pears}.
+-   Accommodates ties (of any order) in the rankings, e.g. bananas
+    $\succ$ {apples, oranges} $\succ$ pears.
+-   Accommodates sub-rankings, e.g. pears $\succ$ apples, when the full
+    set of items is {apples, bananas, oranges, pears}.
 -   Handles disconnected or weakly connected networks implied by the
     rankings, e.g. where one item always loses as in figure below. This
     is achieved by adding pseudo-rankings with a hypothetical or ghost

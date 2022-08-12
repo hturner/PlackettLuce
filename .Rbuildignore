@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^appveyor\.yml$
 ^codecov\.yml$
 ^docs$
 ^pkgdown$
