@@ -75,7 +75,7 @@ devtools::install_github("hturner/PlackettLuce")
 
 ## Usage
 
-The [Netflix Prize](https://www.netflixprize.com/) was a competition devised by 
+The [Netflix Prize](https://en.wikipedia.org/wiki/Netflix_Prize) was a competition devised by 
 Netflix to improve the accuracy of its recommendation system. To facilitate 
 this they released ratings about movies from the users of the system that have 
 been transformed to preference data and are available from 

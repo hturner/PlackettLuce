@@ -59,14 +59,15 @@ devtools::install_github("hturner/PlackettLuce")
 
 ## Usage
 
-The [Netflix Prize](https://www.netflixprize.com/) was a competition
-devised by Netflix to improve the accuracy of its recommendation system.
-To facilitate this they released ratings about movies from the users of
-the system that have been transformed to preference data and are
-available from [PrefLib](https://www.preflib.org/data/ED/00004/),
-(Bennett and Lanning 2007). Each data set comprises rankings of a set of
-3 or 4 movies selected at random. Here we consider rankings for just one
-set of movies to illustrate the functionality of **PlackettLuce**.
+The [Netflix Prize](https://en.wikipedia.org/wiki/Netflix_Prize) was a
+competition devised by Netflix to improve the accuracy of its
+recommendation system. To facilitate this they released ratings about
+movies from the users of the system that have been transformed to
+preference data and are available from
+[PrefLib](https://www.preflib.org/data/ED/00004/), (Bennett and Lanning
+2007). Each data set comprises rankings of a set of 3 or 4 movies
+selected at random. Here we consider rankings for just one set of movies
+to illustrate the functionality of **PlackettLuce**.
 
 The data can be read in using the `read.soc` function in
 **PlackettLuce**
