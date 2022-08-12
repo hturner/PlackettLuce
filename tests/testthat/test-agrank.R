@@ -1,5 +1,3 @@
-context("implementation [MAP in PlackettLuce]")
-
 # Get reference agRank implementation
 source(system.file(file.path("Reference_Implementations", "sgdPL.R"),
                    package = "PlackettLuce"))

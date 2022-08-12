@@ -1,5 +1,3 @@
-context("implementation [log-likelihood and coefficients]")
-
 ## Get the legacy implementation
 source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
                     full.names = TRUE)
@@ -86,12 +84,12 @@ if (require(gnm) & require(BradleyTerry2)){
     })
     test_that("logLik matches gnm, BTm [fake paired comparisons]", {
         ## log-likelihood
-        expect_equal(logLik(mod1), logLik(mod3), check.attributes = FALSE,
+        expect_equal(logLik(mod1), logLik(mod3), ignore_attr = TRUE,
                      tolerance = 1e-12)
         expect_equal(attr(logLik(mod3), "df"),
                      attr(logLik_poisson.gnm(mod2), "df"))
         expect_equal(logLik(mod3), logLik_poisson.gnm(mod2),
-                     check.attributes = FALSE,tolerance = 1e-12)
+                     ignore_attr = TRUE, tolerance = 1e-12)
     })
     ## fit null model via glm
     mod5 <- glm(y ~ -1 + z, family = poisson, data = dat)
@@ -127,7 +125,7 @@ if (require(BradleyTerry2)){
                      tolerance = coef_tol)
     })
     test_that("log-likelihood matches BTm [icehockey]", {
-        expect_equal(logLik(mod_BT), logLik(mod_PL), check.attributes = FALSE,
+        expect_equal(logLik(mod_BT), logLik(mod_PL), ignore_attr = TRUE,
                      tolerance = loglik_tol)
         expect_equal(attr(logLik(mod_BT), "df"), attr(logLik(mod_PL), "df"))
     })
@@ -161,7 +159,7 @@ if (require(gnm)){
     test_that("logLik matches gnm [fake partial rankings no ties]",
               {
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
-                               check.attributes = FALSE, tolerance = loglik_tol)
+                               ignore_attr = TRUE, tolerance = loglik_tol)
               })
 }
 
@@ -189,12 +187,12 @@ if (require(StatRank)){
         expect_equal(unname(coef(mod1))[-1], unname(coef(mod2))[-1],
                      tolerance = coef_tol)
         expect_equal(unname(c(coef(mod1))), lambda, tolerance = coef_tol,
-                     check.attributes = FALSE)
+                     ignore_attr = TRUE)
     })
     test_that("logLik matches gnm [nascar]",
               {
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
-                               check.attributes = FALSE, tolerance = loglik_tol)
+                               ignore_attr = TRUE, tolerance = loglik_tol)
               })
 }
 

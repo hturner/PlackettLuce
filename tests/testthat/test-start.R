@@ -1,5 +1,3 @@
-context("implementation [start argument in PlackettLuce]")
-
 coef_tol <- 1e-06
 loglik_tol <- 1e-07
 
@@ -28,7 +26,8 @@ test_that("starting at solution returns same solution [npseudo = 0]",
 
               # in this case const will change as starting values not rescaled
               expect_equal(mod4$iter, 0)
-              expect_equivalent(coef(mod), coef(mod4), tol = coef_tol)
+              expect_equal(coef(mod), coef(mod4), tolerance = coef_tol,
+                           ignore_attr = TRUE)
           })
 
 mod <- PlackettLuce(R, npseudo = 0.5)
@@ -52,11 +51,13 @@ test_that("starting at solution returns same solution [npseudo = 0.5]",
               # in this case generic start for hypothetical item
               # => will iterate a little, to equivalent answer
               expect_gt(mod4$iter, 0)
-              expect_equivalent(coef(mod), coef(mod4), tol = coef_tol)
+              expect_equal(coef(mod), coef(mod4), tolerance = coef_tol,
+                           ignore_attr = TRUE)
 
               # here prevent further iterations so fix at starting val
               expect_equal(mod5$iter, 0)
-              expect_equivalent(coef(mod), coef(mod5))
+              expect_equal(coef(mod), coef(mod5),
+                           ignore_attr = TRUE)
           })
 
 if (require(psychotree) & require(sandwich)){

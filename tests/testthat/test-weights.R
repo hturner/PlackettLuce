@@ -1,5 +1,3 @@
-context("implementation [weight argument in PlackettLuce]")
-
 coef_tol <- 1e-06
 loglik_tol <- 1e-07
 
@@ -56,10 +54,10 @@ if (require(gnm)){
                                as.vector(parameters(mod2)),
                                tolerance = coef_tol)
                   expect_equal(logLik(mod1), logLik_poisson.gnm(mod2),
-                               check.attributes = FALSE, tolerance = loglik_tol)
+                               ignore_attr = TRUE, tolerance = loglik_tol)
                   expect_equal(as.vector(vcov(mod1)),
-                               as.vector(vcov(mod2)))
-
+                               as.vector(vcov(mod2)),
+                               tolerance = loglik_tol)
               })
 }
 
@@ -117,9 +115,9 @@ if (require(psychotree)){
     test_that("weights work for pltree [Topmodel2007]",
               {
                   expect_equal(as.vector(coef(tm_tree)), as.vector(coef(mod4)),
-                               check.attributes = FALSE, tolerance = coef_tol)
+                               ignore_attr = TRUE, tolerance = coef_tol)
                   expect_equal(logLik(tm_tree), logLik(mod4),
-                               check.attributes = FALSE,
+                               ignore_attr = TRUE,
                                tolerance = loglik_tol)
               })
 }

@@ -1,5 +1,3 @@
-context("implementation [variance-covariance]")
-
 # Get alternative implementation based on optimHess
 source(system.file(file.path("Reference_Implementations", "vcov_hessian.R"),
                    package = "PlackettLuce"))
@@ -32,7 +30,7 @@ if (require("gnm")) {
                            iterMax = 0, verbose = FALSE)
         # should be the same to low tolerance for same coefficients
         expect_equal(vcov(noprior), unclass(vcov(noprior_gnm)),
-                     check.attributes = FALSE, tol = 1e-11)
+                     ignore_attr = TRUE, tolerance = 1e-11)
         # fixed adherence
         a <- seq(0.75, 1.25, length.out = nrow(R))
         noprior <- PlackettLuce(rankings = R, npseudo = 0, method = "BFGS",
@@ -48,7 +46,7 @@ if (require("gnm")) {
                 iterMax = 0, verbose = FALSE))
         # should be the same to low tolerance for same coefficients
         expect_equal(vcov(noprior), unclass(vcov(noprior_gnm)),
-                     check.attributes = FALSE, tol = 1e-11)
+                     ignore_attr = TRUE, tolerance = 1e-11)
     })
 }
 
@@ -71,7 +69,7 @@ test_that("vcov.PlackettLuce matches vcov_hessian [normal prior]", {
                                              maxit = 0))
     # should be the same to medium tolerance since some effect of prior on vcov
     expect_equal(vcov(normal_prior), vcov(noprior),
-                 check.attributes = FALSE, tol = 1e-6)
+                 ignore_attr = TRUE, tolerance = 1e-6)
     # informative prior
     prior <- list(mu = c(-0.05, -0.05, -2, -3),
                   Sigma = matrix(c(1, 0.5, 0.1, -0.5,
@@ -82,13 +80,13 @@ test_that("vcov.PlackettLuce matches vcov_hessian [normal prior]", {
     # should be the same to medium tolerance since expectation of hessian is
     # equal to hessian for GLM, but optimHess gives numerical approximation
     expect_equal(vcov(normal_prior), vcov_hessian(normal_prior),
-                 check.attributes = FALSE, tol = 1e-7)
+                 ignore_attr = TRUE, tolerance = 1e-6)
     # more data
     normal_prior <- PlackettLuce(rankings = R, npseudo = 0, normal = prior,
                                  weights = rep(50, nrow(R)))
     # should be equal to lower tolerance with more data
     expect_equal(vcov(normal_prior), vcov_hessian(normal_prior),
-                 check.attributes = FALSE, tol = 1e-8)
+                 ignore_attr = TRUE, tolerance = 1e-7)
 })
 
 test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
@@ -97,11 +95,11 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
     # expectation of hessian is not equal to hessian for GNM, so vcov_hessian
     # only gives an approximation - not that close for small sample
     expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 0.1)
+                 ignore_attr = TRUE, tolerance = 0.1)
     # should be equal to low tolerance if base on observed Fisher Info though
     expect_equal(vcov(gamma_prior, type = "observed"),
                  vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-6)
+                 ignore_attr = TRUE, tolerance = 1e-6)
     # more data - N.B. this assumes each ranker gives exactly same ranking,
     # not likely in practice just checking statistical property here
     # (vcov_hessian slow with large number of adherence par, not practical to
@@ -111,10 +109,10 @@ test_that("vcov.PlackettLuce approximated by vcov_hessian [gamma prior]", {
                                 gamma = list(shape = 100, rate = 100))
     # closer with moderate number of samples
     expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-3)
+                 ignore_attr = TRUE, tolerance = 1e-2)
     expect_equal(vcov(gamma_prior, type = "observed"),
                  vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-6)
+                 ignore_attr = TRUE, tolerance = 1e-6)
 })
 
 test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
@@ -131,21 +129,21 @@ test_that("vcov.PlackettLuce works, grouped rankings [normal + gamma prior]", {
                                 gamma = list(shape = 100, rate = 100))
     # small sample so vcov based on expected info not that close to observed
     expect_equal(vcov(both_priors), vcov_hessian(both_priors),
-                 check.attributes = FALSE, tol = 1e-2)
+                 ignore_attr = TRUE, tolerance = 1e-2)
     # but that based on observed info equals numerical hessian to medium tol
     expect_equal(vcov(both_priors, type = "observed"),
                  vcov_hessian(both_priors),
-                 check.attributes = FALSE, tol = 1e-6)
+                 ignore_attr = TRUE, tolerance = 1e-6)
     # gamma prior only (different method for Info inversion)
     gamma_prior <- PlackettLuce(rankings = G, npseudo = 0, method = "BFGS",
                                 gamma = list(shape = 100, rate = 100))
     # small sample so vcov based on expected info not that close to observed
     expect_equal(vcov(gamma_prior), vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-1)
+                 ignore_attr = TRUE, tolerance = 1e-1)
     # but that based on observed info equals numerical hessian to medium tol
     expect_equal(vcov(gamma_prior, type = "observed"),
                  vcov_hessian(gamma_prior),
-                 check.attributes = FALSE, tol = 1e-6)
+                 ignore_attr = TRUE, tolerance = 1e-6)
 })
 
 test_that("vcov.PlackettLuce works w/ different ref [pudding]", {
@@ -175,17 +173,17 @@ test_that("vcov.PlackettLuce works w/ different ref [pudding]", {
     D <- diag(nrow(V))
     D[1:6, 2] <- D[1:6, 2] - 1
     expect_equal(vcov(mod, ref = 2), D %*% V %*% t(D),
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
 
     # mean of multiple items
     D <- diag(nrow(V))
     D[1:6, 2:3] <- D[1:6, 2:3] - 1/2
     expect_equal(vcov(mod, ref = 2:3), D %*% V %*% t(D),
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
 
     # mean of all items
     D <- diag(nrow(V))
     D[1:6, 1:6] <- D[1:6, 1:6] - 1/6
     expect_equal(vcov(mod, ref = NULL), D %*% V %*% t(D),
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
 })

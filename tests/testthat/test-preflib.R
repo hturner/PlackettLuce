@@ -1,38 +1,32 @@
-context("preflib data formats")
-
 test_that("can handle .soc files", {
     netflix <- read.soc(system.file("extdata", "netflix.soc",
                                     package = "PlackettLuce"))
-    expect_known_value(netflix, file = test_path("outputs/soc.rds"))
+    expect_snapshot_value(netflix, style = "json2")
     netflix_rankings <- as.aggregated_rankings(netflix)
-    expect_known_value(netflix_rankings,
-                        file = test_path("outputs/soc_rankings.rds"))
+    expect_snapshot_value(netflix_rankings, style = "json2")
 })
 
 test_that("can handle .soi files", {
     f1 <- read.soi(system.file("extdata", "f1.soi", package = "PlackettLuce"))
-    expect_known_value(f1, file = test_path("outputs/soi.rds"))
+    expect_snapshot_value(f1, style = "json2")
     f1_rankings <- as.aggregated_rankings(f1)
-    expect_known_value(f1_rankings,
-                        file = test_path("outputs/soi_rankings.rds"))
+    expect_snapshot_value(f1_rankings, style = "json2")
 })
 
 test_that("can handle .toc files", {
     skaters <- read.toc(system.file("extdata", "skaters.toc",
                                     package = "PlackettLuce"))
-    expect_known_value(skaters, file = test_path("outputs/toc.rds"))
+    expect_snapshot_value(skaters, style = "json2")
     skaters_rankings <- as.aggregated_rankings(skaters)
-    expect_known_value(skaters_rankings,
-                        file = test_path("outputs/toc_rankings.rds"))
+    expect_snapshot_value(skaters_rankings, style = "json2")
 })
 
 test_that("can handle .toi files", {
     qualities <- read.toi(system.file("extdata", "education_qualities.toi",
                                       package = "PlackettLuce"))
-    expect_known_value(qualities, file = test_path("outputs/toi.rds"))
+    expect_snapshot_value(qualities, style = "json2")
     qualities_rankings <- as.aggregated_rankings(qualities)
-    expect_known_value(qualities_rankings,
-                       file = test_path("outputs/toi_rankings.rds"))
+    expect_snapshot_value(qualities_rankings, style = "json2")
 })
 
 test_that("reading non-existant Preflib file gives error", {

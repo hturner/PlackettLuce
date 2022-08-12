@@ -1,5 +1,3 @@
-context("rankings")
-
 # ungrouped rankings (5 rankings, 4 items)
 R <- as.rankings(matrix(c(1, 2, 0, 0,
                           0, 2, 1, 0,

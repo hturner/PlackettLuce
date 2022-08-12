@@ -1,5 +1,3 @@
-context("implementation [estfun ADMM]")
-
 coef_tol <- 1e-4
 
 if (requireNamespace("prefmod", quietly = TRUE) &
@@ -11,9 +9,8 @@ if (requireNamespace("prefmod", quietly = TRUE) &
                               rtol = 1e-5)
         res0_PL <- PlackettLuce(salad_rankings, npseudo = 0)
         ## expect that estfun results are equal
-        expect_equivalent(estfun(res0_PLADMM),
-                          estfun(res0_PL),
-                          tol = coef_tol)
+        expect_equal(estfun(res0_PLADMM), estfun(res0_PL),
+                     tolerance = coef_tol, ignore_attr = TRUE)
     })
 
     test_that("PLADMM estfun matches rank ordered logit model [salad]", {
@@ -24,8 +21,8 @@ if (requireNamespace("prefmod", quietly = TRUE) &
                             acetic + gluconic + strata(chid),
                         data = cbind(salad_long_rankings, status = 1))
         ## expect that estfun results are equal
-        expect_equivalent(estfun(res_PLADMM),
-                          rowsum(estfun(res_RO), salad_long_rankings$chid),
-                          tol = coef_tol)
+        expect_equal(estfun(res_PLADMM),
+                     rowsum(estfun(res_RO), salad_long_rankings$chid),
+                     tolerance = coef_tol, ignore_attr = TRUE)
     })
 }

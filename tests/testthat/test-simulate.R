@@ -1,5 +1,3 @@
-context("implementation [simulate.PlackettLuce]")
-
 ## Get the legacy implementation
 source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
                     full.names = TRUE)
@@ -49,7 +47,8 @@ if (require("Matrix")){
     result_biases0 <- sim(mod0)
 
     test_that("simulation results are consistent to first version", {
-        expect_equivalent(result_biases, result_biases0, tolerance = 1e-06)
+        expect_equal(result_biases, result_biases0, tolerance = 1e-06,
+                     ignore_attr = TRUE)
     })
 }
 

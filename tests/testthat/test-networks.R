@@ -1,5 +1,3 @@
-context("Ranking networks")
-
 # item 1 always wins; item 4 always loses
 X <- matrix(c(1, 2, 3, 4,
               1, 3, 2, 4), nr = 2, byrow = TRUE)

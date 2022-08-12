@@ -1,5 +1,3 @@
-context("implementation [ADMM]")
-
 coef_tol <- 1e-4
 
 if (requireNamespace("prefmod", quietly = TRUE)) {
@@ -11,7 +9,7 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
         res0_PL <- PlackettLuce(salad_rankings, npseudo = 0)
         expect_ok <- function(itemparPLADMM, itemparPL, tol){
             attr(itemparPL, "model") <- "PLADMM"
-            expect_equal(itemparPL, itemparPLADMM, tol = tol)
+            expect_equal(itemparPL, itemparPLADMM, tolerance = tol)
         }
         ## expect that itempar equal, default settings (ref = NULL, log = FALSE)
         expect_ok(itempar(res0_PLADMM),
@@ -48,7 +46,7 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
         res0_PL <- PlackettLuce(salad_pairs, npseudo = 0)
         expect_ok <- function(itemparPLADMM, itemparPL, tol){
             attr(itemparPL, "model") <- "PLADMM"
-            expect_equal(itemparPL, itemparPLADMM, tol = tol)
+            expect_equal(itemparPL, itemparPLADMM, tolerance = tol)
         }
         ## expect that itempar equal, default settings (ref = NULL, log = FALSE)
         expect_ok(itempar(res0_PLADMM),
@@ -87,13 +85,13 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
             # expect log-worth the same (first log worth set to zero)
             expect_equal(c(itempar(res0_PLADMM, ref = 1, log = TRUE)),
                          c(BTabilities(res0_BTm)[, "ability"]),
-                         coef_tol)
+                         tolerance = coef_tol)
             # expect s.e. of log-worth the same
             expect_equal(sqrt(diag(attr(itempar(res0_PLADMM, ref = 1,
                                                 log = TRUE),
                                         "vcov"))),
                          c(BTabilities(res0_BTm)[, "s.e."]),
-                         coef_tol)
+                         tolerance = coef_tol)
         }
     })
 
@@ -118,14 +116,14 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
             ability <- c(BTabilities(res_BTm)[, "ability"])
             expect_equal(c(itempar(res_PLADMM, ref = 1, log = TRUE)),
                          ability - ability[1],
-                         coef_tol)
+                         tolerance = coef_tol)
             # expect s.e. of contrasts of log-worth to be the same
             # get full vcov for BT abilities
             salad_X <- res_PLADMM$x
             V <- salad_X[,-1] %*% vcov(res_BTm) %*% t(salad_X[,-1])
             expect_equal(unname(diag(sqrt(V))),
                          unname(c(BTabilities(res_BTm)[, "s.e."])),
-                         coef_tol)
+                         tolerance = coef_tol)
             # hence get vcov of contrast
             D <- diag(nrow(salad_X))
             D[,1] <- D[,1] - 1
@@ -135,20 +133,20 @@ if (requireNamespace("prefmod", quietly = TRUE)) {
                                                        log = TRUE),
                                                "vcov")))),
                          unname(sqrt(diag(V2))),
-                         coef_tol)
+                         tolerance = coef_tol)
             # expect fitted probability of ranking first to be the same
             pi <- itempar(res_PLADMM)
             alpha <- exp(BTabilities(res_BTm)[, "ability"])
             pi2 <- alpha/sum(alpha)
             expect_equal(pi2,
                          c(pi),
-                         coef_tol)
+                         tolerance = coef_tol)
             # derivatives of exp(a_i)/sum_j(exp(a_j))
             D <- -outer(pi2, pi2)
             diag(D) <- diag(D) + pi2
             expect_equal(sqrt(diag(D %*% V %*% t(D))),
                          sqrt(diag(attr(pi, "vcov"))),
-                         coef_tol)
+                         tolerance = coef_tol)
         })
     }
 }

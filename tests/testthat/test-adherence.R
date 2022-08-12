@@ -1,5 +1,3 @@
-context("implementation [adherence in PlackettLuce]")
-
 # Get reference agRank implementation
 source(system.file(file.path("Reference_Implementations", "sgdPL.R"),
                    package = "PlackettLuce"))
@@ -80,21 +78,19 @@ test_that('estimated adherence works for grouped_rankings [fake triples]', {
     # BFGS always does another iteration to check converegence,
     # iterative scaling has different check so would also iterate a little more
     expect_equal(coef(mod1), coef(mod3), tolerance = 1e-4,
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
     expect_equal(coef(mod2), coef(mod4), tolerance = 1e-4,
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
     expect_equal(logLik(mod1), logLik(mod3), tolerance = 1e-8,
-               check.attributes = FALSE)
+               ignore_attr = TRUE)
     expect_equal(logLik(mod2), logLik(mod4), tolerance = 1e-8,
-                 check.attributes = FALSE)
+                 ignore_attr = TRUE)
 })
 
 test_that('estimated adherence works w/ npseudo != 0 [fake triples]', {
     mod1 <- PlackettLuce(rankings = R,
                          gamma = list(shape = 100, rate = 100))
-    expect_known_value(mod1,
-                       file = test_path("outputs/pl_adherence_pseudo.rds"),
-                       version = 2)
+    expect_snapshot_value(mod1, style = "json2")
 })
 
 test_that('default prior for adherence works [fake triples]', {

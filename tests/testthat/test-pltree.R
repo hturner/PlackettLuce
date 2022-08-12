@@ -1,5 +1,3 @@
-context("implementation [plfit and pltree]")
-
 coef_tol <- 1e-06
 loglik_tol <- 1e-07
 
@@ -28,7 +26,8 @@ if (require(psychotree) & require(sandwich)){
                   w1 <- worth(btmod, log = FALSE, ref = 1)
                   w2 <- worth(plmod$object, log = FALSE, ref = 1)
                   expect_equal(coef(w1), coef(w2))
-                  expect_equal(attr(w1, "vcov"), attr(w2, "vcov"), 1e-6)
+                  expect_equal(attr(w1, "vcov"), attr(w2, "vcov"),
+                               tolerance = coef_tol)
               })
     # pltree vs bttree
     bt_tree <- bttree(preference ~ ., data = Topmodel2007, minsize = 5,
@@ -49,23 +48,23 @@ if (require(psychotree) & require(sandwich)){
                   expect_equal(itempar(bt_tree)[
                       as.character(predict(bt_tree, type = "node")),],
                       predict(pl_tree, type = "itempar"),
-                      check.attributes = FALSE)
+                      ignore_attr = TRUE)
                   expect_equal(itempar(bt_tree)[
                       as.character(predict(bt_tree, newdata = newdata,
                                            type = "node")),],
                       predict(pl_tree,  newdata = newdata, type = "itempar"),
-                      check.attributes = FALSE)
+                      ignore_attr = TRUE)
                   # log-abilities
                   expect_equal(itempar(bt_tree, log = TRUE)[
                       as.character(predict(bt_tree, type = "node")),],
                       predict(pl_tree, type = "itempar", log = TRUE),
-                      check.attributes = FALSE)
+                      ignore_attr = TRUE)
                   expect_equal(itempar(bt_tree, log = TRUE)[
                       as.character(predict(bt_tree, newdata = newdata,
                                            type = "node")),],
                       predict(pl_tree, newdata = newdata, type = "itempar",
                               log = TRUE),
-                      check.attributes = FALSE)
+                      ignore_attr = TRUE)
               })
     test_that('predict.pltree works for type = "rank" [Topmodel2007]',
               {
@@ -74,7 +73,7 @@ if (require(psychotree) & require(sandwich)){
                       as.character(predict(bt_tree, newdata = newdata,
                                            type = "node")),],
                       predict(pl_tree, newdata = newdata, type = "rank"),
-                      check.attributes = FALSE)
+                      ignore_attr = TRUE)
               })
     test_that('predict.pltree works for type = "best" [Topmodel2007]',
               {
@@ -168,12 +167,6 @@ test_that('grouped_rankings work w/ weights [beans]', {
     expect_equal(mod1[nm], mod2[nm])
 })
 
-# maybe use vdiffr in future
-test_that('plot.pltree works w/ weights [beans]',
-          {
-              expect_null(plot(pl_tree))
-          })
-
 test_that('itempar.pltree works w/ weights [beans]',
           {
               # same results with newdata as original data
@@ -184,8 +177,9 @@ test_that('itempar.pltree works w/ weights [beans]',
               itempar1 <- unique(pred2)
               itempar2 <- itempar(pl_tree)
               # make sure nodes ordered the same way around
-              expect_equivalent(itempar1[order(itempar1[,1]),],
-                                itempar2[order(itempar2[,1]),])
+              expect_equal(itempar1[order(itempar1[,1]),],
+                           itempar2[order(itempar2[,1]),],
+                           ignore_attr = TRUE)
           })
 
 test_that('AIC.pltree works w/ weights [beans]',
@@ -214,7 +208,7 @@ test_that('itempar.pltree works w/ single node [beans]',  {
 
     itempar1 <- unique(pred2)
     itempar2 <- itempar(pl_tree1)
-    expect_equivalent(itempar1, itempar2)
+    expect_equal(itempar1, itempar2, ignore_attr = TRUE)
 })
 
 test_that('AIC.pltree works w/ single node [beans]',
@@ -229,10 +223,7 @@ test_that('pltree works w/ estimated adherence [beans]', {
     pl_tree <- pltree(G ~ season,
                       data = beans, alpha = 0.05,
                       gamma = list(shape = 10, rate = 10))
-    expect_known_value(pl_tree,
-                       file = test_path("outputs/pltree_adherence_beans.rds"),
-                       version = 2,
-                       check.environment = FALSE)
+    expect_snapshot_output(print(pl_tree))
 })
 
 test_that('pltree fails w/ fixed adherence [beans]', {

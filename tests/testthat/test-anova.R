@@ -1,5 +1,3 @@
-context("implementation [anova ADMM]")
-
 coef_tol <- 1e-4
 
 if (requireNamespace("prefmod", quietly = TRUE) &
@@ -21,20 +19,20 @@ if (requireNamespace("prefmod", quietly = TRUE) &
         anova2 <- anova(res0_RO, res1_RO) # tables log-likelihood vs deviance
         expect_equal(anova1$Deviance, #difference in residual deviance
                      anova2$Chisq, #Chi-squared statistic
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         expect_equal(anova1$Df, anova2$Df)
         expect_equal(anova1$`Pr(>Chi)`, #difference in residual deviance
                      anova2$`Pr(>|Chi|)`, #Chi-squared statistic
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         ## expect that anova equivalent for single model
         anova1 <- anova(res0_PLADMM)
         anova2 <- anova(res0_RO) # tables log-likelihood vs deviance
         expect_equal(anova1$Deviance, #difference in residual deviance
                      anova2$Chisq, #Chi-squared statistic
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         expect_equal(anova1$Df, anova2$Df)
         expect_equal(anova1$`Pr(>Chi)`, #difference in residual deviance
                      anova2$`Pr(>|Chi|)`, #Chi-squared statistic
-                     tol = coef_tol)
+                     tolerance = coef_tol)
     })
 }

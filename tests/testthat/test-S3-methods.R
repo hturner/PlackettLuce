@@ -1,5 +1,3 @@
-context("PlackettLuce methods")
-
 ## Simple example with few coefficients
 R <- matrix(c(1, 2, 0,
               3, 1, 2,
@@ -17,30 +15,24 @@ model_fruits2 <- PlackettLuce(rankings = R[-5,],
                               weights = c(1, 1, 2, 1, 1))
 
 test_that("output of print.PlackettLuce is correct", {
-    expect_known_output(print(model_fruits1),
-                        file = test_path("outputs/print.txt"))
+    expect_snapshot_output(print(model_fruits1))
 })
 
 test_that("output of print.coef.PlackettLuce is correct", {
-    expect_known_output(print(coef(model_fruits1)),
-                        file = test_path("outputs/print.coef.rds"))
+    expect_snapshot_output(print(coef(model_fruits1)))
 })
 
 test_that("output of print.summary.PlackettLuce is correct", {
-    expect_known_output(print(summary(model_fruits1)),
-                        file = test_path("outputs/print.summary.rds"))
+    expect_snapshot_output(print(summary(model_fruits1)))
 })
 
 test_that("output of fitted.PlackettLuce is correct", {
-    expect_known_value(fitted(model_fruits1),
-                       file = test_path("outputs/fitted.rds"),
-                       version = 2, tol = tol)
-    expect_known_value(fitted(model_fruits1, aggregate = FALSE),
-                       file = test_path("outputs/fitted_individual.rds"),
-                       version = 2, tol = tol)
-    expect_known_value(fitted(model_fruits1, free = FALSE),
-                       file = test_path("outputs/fitted_all.rds"),
-                       version = 2, tol = tol)
+    expect_snapshot_value(fitted(model_fruits1),
+                          tolerance = tol, style = "json2")
+    expect_snapshot_value(fitted(model_fruits1, aggregate = FALSE),
+                          tolerance = tol, style = "json2")
+    expect_snapshot_value(fitted(model_fruits1, free = FALSE),
+                          tolerance = tol, style = "json2")
 })
 
 test_that("output of fitted.PlackettLuce is correct [weights]", {
@@ -48,7 +40,8 @@ test_that("output of fitted.PlackettLuce is correct [weights]", {
     expect_equal(fitted(model_fruits1, aggregate = TRUE)[-3],
                  fitted(model_fruits2, aggregate = TRUE)[-3])
     # non-aggregated for weighted same as aggregate for unweighted
-    expect_equivalent(fitted(model_fruits1, aggregate = TRUE)[-3],
-                      fitted(model_fruits2, aggregate = FALSE)[-3])
+    expect_equal(fitted(model_fruits1, aggregate = TRUE)[-3],
+                 fitted(model_fruits2, aggregate = FALSE)[-3],
+                 ignore_attr = TRUE)
 })
 

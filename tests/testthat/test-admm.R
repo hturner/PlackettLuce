@@ -1,5 +1,3 @@
-context("implementation [ADMM]")
-
 ## artificial example in ?PlackettLuce
 M <- matrix(c(1, 2, 0, 0,
               3, 1, 4, 0,
@@ -21,25 +19,25 @@ test_that("PLADMM works for partial rankings [fruits]", {
     ## expect that log-worths are equal, PLADMM and PlackettLuce
     expect_equal(log(partial_PLADMM[["pi"]]),
                  c(log(coef(partial_PL, log = FALSE))),
-                 tol = coef_tol)
+                 tolerance = coef_tol)
     ## expect log-worths predicted by linear predictor equal,
     ## PLADMM and PlackettLuce
     expect_equal(log(partial_PLADMM[["tilde_pi"]]),
                  c(log(coef(partial_PL, log = FALSE))),
-                 tol = coef_tol)
+                 tolerance = coef_tol)
     ## expect beta coef from PLADMM equal non-zero (differences in) log-worth
     ## from PlackettLuce
-    expect_equivalent(coef(partial_PLADMM)[-1],
-                      as.vector(coef(partial_PL)[-1]),
-                      tol = coef_tol)
+    expect_equal(coef(partial_PLADMM)[-1],
+                 as.vector(coef(partial_PL)[-1]),
+                 tolerance = coef_tol, ignore_attr = TRUE)
     ## expect log-likelihood equal, PLADMM and PlackettLuce
     expect_equal(logLik(partial_PLADMM),
                  logLik(partial_PL),
-                 tol = coef_tol)
+                 tolerance = coef_tol)
     ## expect residual df equal, PLADMM and PlackettLuce
     expect_equal(df.residual(partial_PLADMM),
                  df.residual(partial_PL),
-                 tol = coef_tol)
+                 tolerance = coef_tol)
 })
 
 if (requireNamespace("prefmod", quietly = TRUE) &&
@@ -54,28 +52,28 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
         ## expect that log-worths are equal, PLADMM and PlackettLuce
         expect_equal(log(res0_PLADMM[["pi"]]),
                      c(log(coef(res0_PL, log = FALSE))),
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         ## expect that log-worths are equal, PLADMM and rank-ordered logit
         lambda <- c(itemA = 0, coef(res0_RO))
         log_worth <- log(exp(lambda)/sum(exp(lambda))) # normalized to sum to 1
         expect_equal(unname(log(res0_PLADMM[["pi"]])),
                      unname(log_worth),
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         ## expect log-worths predicted by linear predictor equal,
         ## PLADMM and PlackettLuce
         expect_equal(c(res0_PLADMM$x %*% coef(res0_PLADMM)),
                      unname(as.vector(log(coef(res0_PL, log = FALSE)))),
-                     tol = coef_tol)
+                     tolerance = coef_tol)
         ## expect coef from PLADMM equal non-zero (differences in) log-worth
         ## from PlackettLuce
         ## TRUE to lower tolerance
-        expect_equivalent(coef(res0_PLADMM)[-1],
-                          as.vector(coef(res0_PL)[-1]),
-                          tol = 10*coef_tol)
+        expect_equal(coef(res0_PLADMM)[-1],
+                     as.vector(coef(res0_PL)[-1]),
+                     tolerance = 10*coef_tol, ignore_attr = TRUE)
         ## expect log-likelihood equal, PLADMM andPlackettLuce
         expect_equal(logLik(res0_PLADMM),
                      logLik(res0_PL),
-                     tol = coef_tol)
+                     tolerance = coef_tol)
     })
 
     if (require("survival", quietly = TRUE)){
@@ -87,7 +85,7 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
             lambda <- c(res_PLADMM$x %*% matrix(coef(res_PLADMM)))
             expect_equal(unname(log(res_PLADMM[["pi"]])),
                          lambda,
-                         tol = coef_tol)
+                         tolerance = coef_tol)
             ## rank-ordered logit
             res_RO <- coxph(Surv(ranking, status) ~ acetic + gluconic +
                                 strata(chid),
@@ -99,21 +97,21 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
             ## equal to log-worths based on rank-orded logit.
             expect_equal(unname(log(res_PLADMM[["pi"]])),
                          log_worth,
-                         tol = coef_tol)
+                         tolerance = coef_tol)
             ## expect two approaches to give same coefficients
             ## (different intercept)
             expect_equal(coef(res_PLADMM)[-1],
                          beta[-1],
-                         tol = coef_tol)
+                         tolerance = coef_tol)
             ## expect log-likelihood equal
             ## (survival returns extra `nobs` attribute)
-            expect_equivalent(logLik(res_PLADMM),
-                              logLik(res_RO),
-                              tol = coef_tol)
+            expect_equal(logLik(res_PLADMM),
+                         logLik(res_RO),
+                         tolerance = coef_tol, ignore_attr = TRUE)
             ## expect vcov equal
             expect_equal(vcov(res_PLADMM),
                          vcov(res_RO),
-                         tol = coef_tol)
+                         tolerance = coef_tol)
         })
     }
 }
@@ -131,8 +129,8 @@ test_that("PLADMM works with weights [salad]", {
     expect_equal(anova(res0_PLADMM), anova(res1_PLADMM))
     expect_equal(deviance(res0_PLADMM), deviance(res1_PLADMM))
     wt <- salad_agg_rankings$freq
-    expect_equivalent(rowsum(estfun(res0_PLADMM), rep(seq_along(wt), wt)),
-                      estfun(res1_PLADMM))
+    expect_equal(rowsum(estfun(res0_PLADMM), rep(seq_along(wt), wt)),
+                 estfun(res1_PLADMM), ignore_attr = TRUE)
     expect_equal(colSums(estfun(res0_PLADMM)), colSums(estfun(res1_PLADMM)))
     expect_equal(fitted(res0_PLADMM), fitted(res1_PLADMM))
     expect_equal(itempar(res0_PLADMM), itempar(res1_PLADMM))

@@ -1,5 +1,3 @@
-context("implementation [estfun in PlackettLuce]")
-
 ## The artificial example in ?PlackettLuce
 R <- matrix(c(1, 2, 0, 0,
               4, 1, 2, 3,
@@ -8,6 +6,8 @@ R <- matrix(c(1, 2, 0, 0,
               2, 1, 1, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
+
+tol <- 1e-7
 
 test_that("estfun matches agRank, fixed adherence [fake triple comparisons]", {
     m <- ncol(R)
@@ -58,5 +58,6 @@ test_that("estfun matches agRank, fixed adherence [fake triple comparisons]", {
     score <- score_common(par = par, N = m,
                           mu = NULL, Kinv = NULL, A = A, B = B, fit = fit)*par
 
-    expect_equal(colSums(estfun(mod_PL, ref = NULL)), score)
+    expect_equal(colSums(estfun(mod_PL, ref = NULL)), score,
+                 tolerance = tol)
 })

@@ -1,0 +1,26 @@
+# output of print.PLADMM is correct
+
+    Call: pladmm(rankings = salad_rankings, formula = ~acetic + gluconic, 
+        data = features, rho = 8)
+    
+    Coefficients:
+    (Intercept)       acetic     gluconic  
+        -4.8410       3.2743       0.2739  
+
+# output of print.summary.PLADMM is correct
+
+    Call: pladmm(rankings = salad_rankings, formula = ~acetic + gluconic, 
+        data = features, rho = 8)
+    
+    Coefficients:
+                Estimate Std. Error z value Pr(>|z|)    
+    (Intercept) -4.84097         NA      NA       NA    
+    acetic       3.27431    0.57650   5.680 1.35e-08 ***
+    gluconic     0.27392    0.04505   6.081 1.20e-09 ***
+    ---
+    Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    
+    Residual deviance:  152.9 on 190 degrees of freedom
+    AIC:  156.9 
+    Number of iterations: 14
+

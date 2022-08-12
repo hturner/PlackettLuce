@@ -1,5 +1,3 @@
-context("aggregated_rankings")
-
 R <- matrix(c(1, 2, 0,
               1, 2, 0,
               1, 2, 0,

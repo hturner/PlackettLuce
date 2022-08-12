@@ -1,5 +1,3 @@
-context("implementation [ties]")
-
 coef_tol <- 1e-06
 loglik_tol <- 1e-12
 
@@ -79,7 +77,7 @@ if (require("gnm")){
                      as.vector(coef(model2)[-1]), tolerance = coef_tol)
         ## loglik
         expect_equal(logLik(model1), logLik_poisson.gnm(model2),
-                     check.attributes = FALSE, tolerance = 1e-12)
+                     ignore_attr = TRUE, tolerance = 1e-12)
         expect_equal(attr(logLik(model1), "df"),
                      attr(logLik_poisson.gnm(model2), "df"))
 
@@ -95,15 +93,15 @@ if (require("gnm")){
                      as.vector(coef(model2)[-1]), tolerance = coef_tol)
         ## loglik
         expect_equal(logLik(model1), logLik_poisson.gnm(model2),
-                     check.attributes = FALSE, tolerance = 1e-12)
+                     ignore_attr = TRUE, tolerance = 1e-12)
         expect_equal(attr(logLik(model1), "df"),
                      attr(logLik_poisson.gnm(model2), "df"))
         ## fitted values
         expect_equal(fitted(model1)$fitted, fitted(model2)[dat$y == 1],
-                     check.attributes = FALSE, tolerance = coef_tol)
+                     ignore_attr = TRUE, tolerance = coef_tol)
         ## vcov
         expect_equal(vcov(model1), unclass(vcov(model2)),
-                     check.attributes = FALSE, tolerance = coef_tol)
+                     ignore_attr = TRUE, tolerance = coef_tol)
         ## estfun
         par <- model1$coefficients
         fit <- expectation(c("alpha", "delta"), par[1:N], c(1.0, par[-(1:N)]),

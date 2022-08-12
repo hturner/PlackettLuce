@@ -1,5 +1,3 @@
-context("implementation [algorithms]")
-
 ## Using the artificial example in ?PlackettLuce
 R <- matrix(c(1, 2, 0, 0,
               4, 1, 2, 3,
@@ -22,7 +20,7 @@ test_that("BFGS gives same log-likelihood as iterative scaling", {
 
 test_that("BFGS gives same coef as iterative scaling", {
     expect_equal(coef(model_fruits1), coef(model_fruits2),
-                 tolerance = tol, check.attributes = FALSE)
+                 tolerance = tol, ignore_attr = TRUE)
 })
 
 if (require(lbfgs)){
@@ -36,6 +34,6 @@ if (require(lbfgs)){
 
     test_that("L-BFGS gives same coef as iterative scaling", {
         expect_equal(coef(model_fruits1), coef(model_fruits3),
-                     tolerance = tol, check.attributes = FALSE)
+                     tolerance = tol, ignore_attr = TRUE)
     })
 }

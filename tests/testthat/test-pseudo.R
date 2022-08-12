@@ -1,5 +1,3 @@
-context("implementation [pseudo-data]")
-
 ## Get the legacy implementation
 source_files <- dir(system.file("PlackettLuce0", package = "PlackettLuce"),
                     full.names = TRUE)
@@ -74,7 +72,7 @@ if (require(gnm) & require(sandwich)){
                   keep <- !dat$z %in% seq_len(2*N)
                   expect_equal(unname(colSums(estfun(model3))),
                                unname(colSums(estfun(model4)[keep, - N])),
-                               tolerance = loglik_tol)
+                               tolerance = loglik_tol*10)
                   # rank
                   expect_equal(model3$rank,
                                model4$rank - nlevels(dat$z) - 1)
@@ -91,8 +89,8 @@ model5 <- PlackettLuce(rankings = G, npseudo = 0.5, method = "BFGS",
 test_that("pseudo data works with BFGS [weakly connected network]",
           {
               # coef
-              expect_equivalent(coef(model3), coef(model5),
-                                tolerance = coef_tol)
+              expect_equal(coef(model3), coef(model5),
+                           tolerance = coef_tol, ignore_attr = TRUE)
               # log-likelihood
               expect_equal(logLik(model3), logLik(model5),
                            tolerance = loglik_tol)
@@ -103,8 +101,8 @@ model6 <- PlackettLuce(rankings = G, npseudo = 0.5, method = "BFGS",
 test_that("pseudo data works with L-BFGS [weakly connected network]",
           {
               # coef
-              expect_equivalent(coef(model3), coef(model6),
-                                tolerance = coef_tol)
+              expect_equal(coef(model3), coef(model6),
+                           tolerance = coef_tol, ignore_attr = TRUE)
               # log-likelihood
               expect_equal(logLik(model3), logLik(model6),
                            tolerance = loglik_tol)
