@@ -21,7 +21,7 @@ if (requireNamespace("prefmod", quietly = TRUE) &
                      anova2$Chisq, #Chi-squared statistic
                      tolerance = coef_tol)
         expect_equal(anova1$Df, anova2$Df)
-        id <- grep("Chi[^a-z])", names(anova2)) # name changed in survival 3.4.0
+        id <- grep("Pr?(>|Chi|)", names(anova2)) # name changed in survival 3.4.0
         expect_equal(anova1$`Pr(>Chi)`, #difference in residual deviance
                      anova2[, id], #Chi-squared statistic
                      tolerance = coef_tol)
