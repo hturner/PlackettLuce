@@ -24,7 +24,7 @@ if (requireNamespace("prefmod", quietly = TRUE) &
                      tol = coef_tol)
         expect_equal(anova1$Df, anova2$Df)
         expect_equal(anova1$`Pr(>Chi)`, #difference in residual deviance
-                     anova2$`P(>|Chi|)`, #Chi-squared statistic
+                     anova2$`Pr(>|Chi|)`, #Chi-squared statistic
                      tol = coef_tol)
         ## expect that anova equivalent for single model
         anova1 <- anova(res0_PLADMM)
