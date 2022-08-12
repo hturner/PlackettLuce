@@ -1,3 +1,5 @@
+template:
+  bootstrap: 5
 reference:
 - title: Data sets/importing data
   contents:
@@ -32,3 +34,6 @@ reference:
 - title: Other
   contents:
   - simulate.PlackettLuce
+- title: Internal
+  contents:
+  - PlackettLuce-package
