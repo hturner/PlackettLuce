@@ -1,3 +1,7 @@
+# PlackettLuce 0.4.2
+
+* Fix test broken by survival update.
+
 # PlackettLuce 0.4.1
 
 ## New features
