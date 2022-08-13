@@ -146,26 +146,26 @@ Statistics</em>. Institute of Mathematical Statistics Lecture Notes
 <span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="PlackettLuce.html">PlackettLuce</a></span><span class="op">(</span><span class="va">R</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">mod</span>, <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            sim_1                          sim_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 banana &gt; apple                 apple &gt; banana</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 banana &gt; apple &gt; pear &gt; orange banana = orange = pear &gt; apple</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 orange &gt; apple &gt; banana &gt; pear banana &gt; orange = pear &gt; apple</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        apple = banana &gt; orange        apple &gt; banana &gt; orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        banana &gt; apple &gt; orange        apple = banana &gt; orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          pear &gt; apple &gt; orange          pear &gt; apple &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 apple &gt; banana                 apple &gt; banana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 banana &gt; orange &gt; apple &gt; pear banana = orange = pear &gt; apple</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 banana &gt; apple &gt; pear &gt; orange banana &gt; apple &gt; pear &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        banana &gt; orange &gt; apple        apple &gt; banana &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        orange &gt; banana &gt; apple        apple &gt; banana &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          apple = orange = pear          pear &gt; apple &gt; orange</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            sim_3                          sim_4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 banana &gt; apple                 banana &gt; apple</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 apple = pear &gt; orange &gt; banana orange &gt; pear &gt; banana &gt; apple</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 apple &gt; orange &gt; banana &gt; pear apple &gt; banana &gt; pear &gt; orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        apple = banana = orange        apple = banana = orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        apple &gt; banana &gt; orange        banana &gt; apple &gt; orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          apple = orange = pear          pear &gt; orange &gt; apple</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 apple &gt; banana                 apple &gt; banana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 apple &gt; pear &gt; orange &gt; banana banana &gt; pear &gt; apple &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 apple = banana = pear &gt; orange banana &gt; orange &gt; pear &gt; apple</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        banana &gt; apple &gt; orange        apple = banana = orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        apple &gt; orange &gt; banana        apple &gt; banana &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          pear &gt; apple &gt; orange          apple = orange = pear</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            sim_5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 apple &gt; banana</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 apple = banana = pear &gt; orange</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 banana &gt; apple = orange = pear</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        apple = orange &gt; banana</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        orange &gt; banana &gt; apple</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          apple = orange &gt; pear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 banana &gt; apple</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 apple &gt; banana &gt; orange &gt; pear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 orange &gt; pear &gt; apple &gt; banana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        banana &gt; orange &gt; apple</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        apple &gt; banana &gt; orange</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          apple &gt; pear &gt; orange</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">mod</span>, <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">112</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">mod</span>, <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">112</span><span class="op">)</span></span></span>
