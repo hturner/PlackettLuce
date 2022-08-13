@@ -12,3 +12,4 @@
 ^CRAN-RELEASE$
 .*_working.R
 ^\.github$
+^CRAN-SUBMISSION$
