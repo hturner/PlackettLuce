@@ -1,6 +1,9 @@
 # Get alternative implementation based on optimHess
 source(system.file(file.path("Reference_Implementations", "vcov_hessian.R"),
                    package = "PlackettLuce"))
+# Mult masked by loading psychotree (-> partykit -> mvtnorm)
+# needs update in gnm to fix, quick hack here to ensure correct Mult used
+Mult <- gnm::Mult
 
 ## The artificial example in ?PlackettLuce
 R <- matrix(c(1, 2, 0, 0,
