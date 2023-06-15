@@ -191,10 +191,3 @@ as.aggregated_rankings.preflib <- function(x, ...){
                        input = "orderings", items = attr(x, "items")), dots))
     } else stop("`x` is not a valid \"preflib\" object")
 }
-
-#' @method as.rankings preflib
-#' @export
-as.rankings.preflib <- function(x, ...){
-    stop("\"preflib\" objects hold aggregated rankings: ",
-         "use as.aggregated_rankings() instead.")
-}
