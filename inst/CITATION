@@ -1,12 +1,13 @@
-citHeader("To cite PlackettLuce in publications use:")
+## R package reference generated from DESCRIPTION metadata
+citation(auto = meta)
 
-citEntry(entry = "Article",
+## PlackettLuce article
+bibentry(bibtype = "Article",
   title        = "Modelling Rankings in {R}: The {PlackettLuce} Package",
-  author       = personList(
-                   as.person("Heather L. Turner"),
-                   as.person("Jacob van Etten"),
-                   as.person("David Firth"),
-                   as.person("Ioannis Kosmidis")),
+  author       = c(person(c("Heather", "L."),  "Turner"),
+                   person("Jacob", c("van", "Etten")),
+                   person("David", "Firth"),
+                   person("Ioannis", "Kosmidis")),
   journal      = "Computational Statistics",
   year         = "2020",
   volume       = "35",
@@ -18,7 +19,7 @@ citEntry(entry = "Article",
   paste("Turner, H.L., van Etten, J., Firth, D. and Kosmidis, I. (2020).",
         "Modelling Rankings in R: The PlackettLuce Package.",
         "Computational Statistics, 35, 1027-1057.",
-        "URL https://doi.org/10.1007/s00180-020-00959-3.")
+        "URL https://doi.org/10.1007/s00180-020-00959-3."),
 )
 
 
