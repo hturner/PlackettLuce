@@ -11,7 +11,7 @@ knitr::opts_chunk$set(fig.path = "man/figures/")
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/PlackettLuce)](https://cran.r-project.org/package=PlackettLuce)
 [![R-CMD-check](https://github.com/hturner/PlackettLuce/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hturner/PlackettLuce/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://img.shields.io/codecov/c/github/hturner/PlackettLuce/master.svg)](https://codecov.io/github/hturner/PlackettLuce?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/hturner/PlackettLuce/branch/main/graph/badge.svg)](https://app.codecov.io/gh/hturner/PlackettLuce?branch=main)
 
 Package website: https://hturner.github.io/PlackettLuce/.
 
