@@ -32,7 +32,7 @@ automatically.}
 \value{
 A data frame of class \code{"preflib"} with first column \code{Freq},
 giving the frequency of the ranking in that row, and remaining columns
-\code{Rank 1}, \ldots, \code{Rank p} giving the items ranked from first to
+\code{Rank 1}, \ldots, \code{Rank r} giving the items ranked from first to
 last place in that ranking. Ties are represented by vector elements in list
 columns. The data frame has an attribute \code{"items"} giving the labels
 corresponding to each item number.
@@ -62,43 +62,47 @@ data frame, storing the item names as an attribute. The
 by the item names.
 
 A Preflib file may be corrupt, in the sense that the ordered items do not
-match the named items. In this case, the file can be read is as a data
+match the named items. In this case, the file can be read in as a data
 frame (with a warning) using the corresponding \verb{read.*} function, but
 \code{as.aggregated_rankings} will throw an error.
 }
 \note{
 The Netflix and cities datasets used in the examples are from
-Caragiannis et al (2017) and Bennet and Lanning (2007) respectively. These
+Bennet and Lanning (2007) and Caragiannis et al (2017) respectively. These
 data sets require a citation for re-use.
 }
 \examples{
 
-# can take a little while depending on speed of internet connection
-
-\dontrun{
-# url for preflib data in the "Election Data" category
-preflib <- "https://www.preflib.org/static/data/ED/"
-
 # strict complete orderings of four films on Netflix
-netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
+netflix <- read.soc(system.file("extdata", "netflix.soc",
+                                package = "PlackettLuce"))
 head(netflix)
 attr(netflix, "items")
 
-head(as.rankings(netflix))
+head(as.aggregated_rankings(netflix))
 
 # strict incomplete orderings of 6 random cities from 36 in total
-cities <- read.soi(file.path(preflib, "cities/ED-00034-00000001.soi"))
-
-# strict incomplete orderings of drivers in the 1961 F1 races
-# 8 races with 17 to 34 drivers in each
-f1 <- read.soi(file.path(preflib, "f1/ED-00010-00000001.soi"))
+cities <- read.soi(system.file("extdata", "cities.soi",
+                                package = "PlackettLuce"))
 
 # complete orderings with ties of 30 skaters
-skaters <- read.toc(file.path(preflib, "skate/ED-00006-00000001.toc"))
+skaters <- read.toc(system.file("extdata", "skaters.toc",
+                                package = "PlackettLuce"))
 
-# incomplete orderings with ties of 10 sushi items from 100 total
-# orderings were derived from numeric ratings
-sushi <- read.toi(file.path(preflib, "sushi/ED-00014-00000003.toi"))
+# incomplete orderings with ties: most important qualities for success
+# from 20 in total
+qualities <- read.toi(system.file("extdata", "education_qualities.toi",
+                      package = "PlackettLuce"))
+
+# alternatively read from a url
+# - can take a little while depending on speed of internet connection
+
+\dontrun{
+# incomplete orderings with ties: most important qualities for success
+# from 20 in total
+preflib <- "https://www.preflib.org/static/data/"
+qualities2 <- read.toi(file.path(preflib, "education/00032-00000007.toi"))
+all.equal(qualities, qualities2)
 }
 }
 \references{

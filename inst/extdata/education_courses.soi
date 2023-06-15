@@ -1,0 +1,37 @@
+# edited to remove choices with ALTERNATIVE NAME 9: Elective topics
+# FILE NAME: 00032-00000005.soi
+# TITLE: Professors: Least Important Courses
+# DESCRIPTION:
+# DATA TYPE: soi
+# MODIFICATION TYPE: original
+# RELATES TO:
+# RELATED FILES:
+# PUBLICATION DATE: 2017-04-13
+# MODIFICATION DATE: 2022-09-16
+# NUMBER ALTERNATIVES: 13
+# NUMBER VOTERS: 14
+# NUMBER UNIQUE ORDERS: 13
+# ALTERNATIVE NAME 1: Physics
+# ALTERNATIVE NAME 2: Financial Economic Management
+# ALTERNATIVE NAME 3: Databases (Advanced topics)
+# ALTERNATIVE NAME 4: Operations Research
+# ALTERNATIVE NAME 5: Computer Architecture
+# ALTERNATIVE NAME 6: Linear Algebra
+# ALTERNATIVE NAME 7: Introduction to Artificial Intelligence
+# ALTERNATIVE NAME 8: Simulation
+# ALTERNATIVE NAME 9: Elective topics
+# ALTERNATIVE NAME 10: Foundations of Computing
+# ALTERNATIVE NAME 11: Professional Seminar
+# ALTERNATIVE NAME 12: Software Engineering 3
+# ALTERNATIVE NAME 13: Organizational Management
+2: 1,2
+1: 3,2,13
+1: 1,8,2
+1: 2,8,4
+1: 4,3,5
+1: 1,5,10
+1: 4,3,6
+1: 7,11,4
+1: 1,3,10
+1: 7,12,6
+1: 1,5

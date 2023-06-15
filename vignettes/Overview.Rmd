@@ -158,10 +158,10 @@ number of unique rankings is large.
 ```{r soc, eval = eval_all, echo = FALSE}
 library(PlackettLuce)
 # read in example data sets
-preflib <- "https://www.preflib.org/static/data/ED/"
-netflix <- read.soc(file.path(preflib, "netflix/ED-00004-00000101.soc"))
-tshirt <- read.soc(file.path(preflib, "shirt/ED-00012-00000001.soc"))
-sushi <- read.soc(file.path(preflib, "sushi/ED-00014-00000001.soc"))
+preflib <- "https://www.preflib.org/static/data/"
+netflix <- read.soc(file.path(preflib, "netflix/00004-00000101.soc"))
+tshirt <- read.soc(file.path(preflib, "shirt/00012-00000001.soc"))
+sushi <- read.soc(file.path(preflib, "sushi/00014-00000001.soc"))
 ```
 ```{r wrappers, eval = eval_all, echo = FALSE}
 pl <- function(dat, ...){
@@ -244,7 +244,7 @@ if (eval_all){
 }
 ```
 
-(ref:features) Features of example data sets from PrefLib [@Mattei2013]. The Netflix data are from [@Bennett2007].
+(ref:features) Features of example data sets from PrefLib [@Mattei2013]. The Netflix data are from [@Bennett2007] and the Sushi data were introduced in [@Kamishima2004].
 
 ```{r data-features, echo = FALSE}
 features <- cbind(c(1256, 30, 5000),

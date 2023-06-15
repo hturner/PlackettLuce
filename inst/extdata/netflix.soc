@@ -1,30 +1,40 @@
-4
-1,The Wedding Planner
-2,Entrapment
-3,Lost in Translation
-4,The Exorcist
-1256,1256,24
-228,4,3,2,1
-220,3,4,2,1
-169,4,2,1,3
-98,4,2,3,1
-78,4,1,2,3
-64,4,3,1,2
-63,2,4,1,3
-62,3,4,1,2
-47,2,1,4,3
-41,1,2,4,3
-28,3,2,4,1
-26,1,4,2,3
-23,2,1,3,4
-20,3,2,1,4
-16,4,1,3,2
-15,1,2,3,4
-14,2,4,3,1
-14,3,1,2,4
-10,3,1,4,2
-9,2,3,1,4
-4,2,3,4,1
-4,1,4,3,2
-2,1,3,2,4
-1,1,3,4,2
+# FILE NAME: 00004-00000138.soc
+# TITLE: Netflix Prize Data
+# DESCRIPTION:
+# DATA TYPE: soc
+# MODIFICATION TYPE: induced
+# RELATES TO:
+# RELATED FILES:
+# PUBLICATION DATE: 2013-08-17
+# MODIFICATION DATE: 2022-09-16
+# NUMBER ALTERNATIVES: 4
+# NUMBER VOTERS: 588
+# NUMBER UNIQUE ORDERS: 24
+# ALTERNATIVE NAME 1: Mean Girls
+# ALTERNATIVE NAME 2: Beverly Hills Cop
+# ALTERNATIVE NAME 3: The Mummy Returns
+# ALTERNATIVE NAME 4: Mission: Impossible II
+68: 2,1,4,3
+53: 1,2,4,3
+49: 2,1,3,4
+44: 1,2,3,4
+39: 2,4,1,3
+37: 3,2,1,4
+37: 2,3,1,4
+36: 2,3,4,1
+31: 3,2,4,1
+29: 2,4,3,1
+22: 1,3,2,4
+19: 3,1,2,4
+17: 3,4,2,1
+17: 4,2,3,1
+16: 4,2,1,3
+14: 1,4,2,3
+10: 1,3,4,2
+10: 4,1,2,3
+9: 4,3,1,2
+8: 3,4,1,2
+8: 1,4,3,2
+7: 3,1,4,2
+7: 4,3,2,1
+1: 4,1,3,2

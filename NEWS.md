@@ -1,3 +1,8 @@
+# PlackettLuce 0.4.3
+
+* Update functions to Preflib Election Data Files (`read.soc` etc) to handle updated Preflib file formats.
+* Update Preflib URLs
+
 # PlackettLuce 0.4.2
 
 * Fix test broken by survival update.

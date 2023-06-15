@@ -36,7 +36,7 @@ Imports: CVXR, Matrix, igraph, matrixStats, methods, partykit, psychotools,
 Suggests: BiocStyle, BayesMallows, BradleyTerry2,
     PLMIX, ROlogit, StatRank, bookdown, covr, hyper2, kableExtra, knitr,
     lbfgs, gnm, pmr, prefmod, rmarkdown, survival, testthat
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Language: en-GB

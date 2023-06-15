@@ -240,12 +240,12 @@ as.rankings.matrix <- function(x,
                stop("Coded items with no name:\n",
                     paste(unnamed[seq(min(n, 10L))], ", ..."[n > 10L],
                           collapse = ", "))
-            } else code <- seq_along(items)
+            } else items <- items[code]
         } else {
             unnamed <- setdiff(code, items)
             n <- length(unnamed)
             if (n) {
-                warning("Some items not in `items:\n",
+                warning("Some items not in `items`:\n",
                         paste(unnamed[seq(min(n, 10L))], ", ..."[n > 10L],
                               collapse = ", "),
                         "\nUsing observed unique items.")
