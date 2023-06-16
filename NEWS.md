@@ -1,7 +1,7 @@
 # PlackettLuce 0.4.3
 
-* Update functions to Preflib Election Data Files (`read.soc` etc) to handle updated Preflib file formats.
-* Update Preflib URLs
+* Update functions to read Preflib Election Data Files (`read.soc` etc) so that they work for updated Preflib file formats.
+* Update Preflib URLs.
 
 # PlackettLuce 0.4.2
 
