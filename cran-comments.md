@@ -1,18 +1,13 @@
 ## Comments
 
-This submission fixes the issue in the CRAN checks (broken test due to update in survival package).
+This submission fixes the issue in the CRAN checks (broken test due to update in mvtnorm package).
 
 ## Test environments
 
-1. (Local) Ubuntu 20.04.2 LTS, R 4.2.1
-2. (Win-builder) Windows Server 2008 (64-bit), R-devel (2022-08-11 r82712 ucrt)
-3. (GitHub Actions) MacOS Big Sur R 4.2.1, Windows Server 2022 R 4.2.1, Ubuntu 20.04 with R-devel (2022-08-07 r82694), R 4.2.1 and R 4.1.3
+1. (Local) Ubuntu 22.04.2 LTS, R 4.3.0
+2. (Win-builder) Windows Server 2022, R-devel (2023-06-15 r84547 ucrt)
+3. (GitHub Actions) MacOS 12.6.5 R 4.3.0, Windows Server 2022 R 4.3.0, Ubuntu 22.04.2 with R-devel (2023-06-07 r84523), R 4.3.0 and R 4.2.3
 
 ### Check results
 
-Local and Wind builder checks return a note regarding URLs/DOIs. This is a false alarm, I have checked all links manually
- - https://doi.org/10.1214/aos/1079120141 -> projecteuclid.org
- - https://doi.org/10.2307/2346567 -> jstor.org
- - https://doi.org/10.2307/2348134 -> jstor.org
- - https://doi.org/10.3102/1076998609359791 -> journals.sagepub.com
- - https://www.preflib.org/ - this one passes check intermittently, loads okay manually
+No errors, warnings or notes.

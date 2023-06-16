@@ -42,5 +42,5 @@ docs/articles/*_cache/*
 .Rproj.user
 
 # Reverse dependency check files
-revdep/*
+revdep**
 docs

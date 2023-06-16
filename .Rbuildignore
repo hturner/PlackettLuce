@@ -3,13 +3,12 @@
 ^codecov\.yml$
 ^docs$
 ^pkgdown$
-^revdep$
+^revdep
 ^CONDUCT\.md$
 ^README.Rmd
 ^readme.bib
 ^vignettes_tmp_output$
 ^cran-comments.md$
 ^CRAN-RELEASE$
-.*_working.R
 ^\.github$
 ^CRAN-SUBMISSION$
