@@ -51,7 +51,7 @@ anova.PLADMMlist <- function(object) {
         stop("the number of orderings is not the same for all models")
     # anova table
     dev <- vapply(object, deviance, numeric(1))
-    df <- sapply(object, df.residual, numeric(1))
+    df <- vapply(object, df.residual, numeric(1))
     res <- data.frame(`Resid. Df` = df,
                       `Resid. Dev` = dev,
                       Df = c(NA, diff(df)),
