@@ -45,3 +45,34 @@ A full explanation of the methods with illustrations using the package data
 sets is given in the vignette,
 \code{vignette("Overview", package = "PlackettLuce")}.
 }
+\references{
+Turner, H.L., van Etten, J., Firth, D. and Kosmidis, I. (2020)
+Modelling Rankings in R: The PlackettLuce Package.
+\emph{Computational Statistics}, \strong{35}, 1027--1057.
+\url{https://doi.org/10.1007/s00180-020-00959-3}.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://hturner.github.io/PlackettLuce/}
+  \item \url{https://github.com/hturner/PlackettLuce}
+  \item Report bugs at \url{https://github.com/hturner/PlackettLuce/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Heather Turner \email{ht@heatherturner.net} (\href{https://orcid.org/0000-0002-1256-3375}{ORCID})
+
+Authors:
+\itemize{
+  \item Ioannis Kosmidis (\href{https://orcid.org/0000-0003-1556-0302}{ORCID})
+  \item David Firth (\href{https://orcid.org/0000-0003-0302-2312}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Jacob van Etten (\href{https://orcid.org/0000-0001-7554-2558}{ORCID}) [contributor]
+}
+
+}
+\keyword{internal}

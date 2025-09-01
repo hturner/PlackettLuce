@@ -38,6 +38,11 @@
 #' A full explanation of the methods with illustrations using the package data
 #' sets is given in the vignette,
 #' \code{vignette("Overview", package = "PlackettLuce")}.
-#' @docType package
-#' @name PlackettLuce-package
-NULL
+#' @references
+#' Turner, H.L., van Etten, J., Firth, D. and Kosmidis, I. (2020)
+#' Modelling Rankings in R: The PlackettLuce Package.
+#' _Computational Statistics_, **35**, 1027--1057.
+#' <https://doi.org/10.1007/s00180-020-00959-3>.
+#' @keywords internal
+#'
+"_PACKAGE"
