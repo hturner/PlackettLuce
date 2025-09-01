@@ -116,23 +116,25 @@ if (requireNamespace("prefmod", quietly = TRUE) &&
     }
 }
 
-test_that("PLADMM works with weights [salad]", {
-    salad_agg_rankings <- aggregate.rankings(salad_rankings)
-    ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
-    res0_PLADMM <- pladmm(salad_rankings, ~ salad, data = features, rho = 8)
-    res1_PLADMM <- pladmm(salad_agg_rankings$ranking, ~ salad, data = features,
-                          weights = salad_agg_rankings$freq, rho = 8)
-    keep <- setdiff(names(res0_PLADMM),
-                    c("call", "time", "orderings", "weights"))
-    expect_equal(res0_PLADMM[keep], res1_PLADMM[keep])
-    expect_equal(vcov(res0_PLADMM), vcov(res1_PLADMM))
-    expect_equal(anova(res0_PLADMM), anova(res1_PLADMM))
-    expect_equal(deviance(res0_PLADMM), deviance(res1_PLADMM))
-    wt <- salad_agg_rankings$freq
-    expect_equal(rowsum(estfun(res0_PLADMM), rep(seq_along(wt), wt)),
-                 estfun(res1_PLADMM), ignore_attr = TRUE)
-    expect_equal(colSums(estfun(res0_PLADMM)), colSums(estfun(res1_PLADMM)))
-    expect_equal(fitted(res0_PLADMM), fitted(res1_PLADMM))
-    expect_equal(itempar(res0_PLADMM), itempar(res1_PLADMM))
-    expect_equal(logLik(res0_PLADMM), logLik(res1_PLADMM))
-})
+if (requireNamespace("prefmod", quietly = TRUE)) {
+    test_that("PLADMM works with weights [salad]", {
+        salad_agg_rankings <- aggregate.rankings(salad_rankings)
+        ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
+        res0_PLADMM <- pladmm(salad_rankings, ~ salad, data = features, rho = 8)
+        res1_PLADMM <- pladmm(salad_agg_rankings$ranking, ~ salad, data = features,
+                              weights = salad_agg_rankings$freq, rho = 8)
+        keep <- setdiff(names(res0_PLADMM),
+                        c("call", "time", "orderings", "weights"))
+        expect_equal(res0_PLADMM[keep], res1_PLADMM[keep])
+        expect_equal(vcov(res0_PLADMM), vcov(res1_PLADMM))
+        expect_equal(anova(res0_PLADMM), anova(res1_PLADMM))
+        expect_equal(deviance(res0_PLADMM), deviance(res1_PLADMM))
+        wt <- salad_agg_rankings$freq
+        expect_equal(rowsum(estfun(res0_PLADMM), rep(seq_along(wt), wt)),
+                     estfun(res1_PLADMM), ignore_attr = TRUE)
+        expect_equal(colSums(estfun(res0_PLADMM)), colSums(estfun(res1_PLADMM)))
+        expect_equal(fitted(res0_PLADMM), fitted(res1_PLADMM))
+        expect_equal(itempar(res0_PLADMM), itempar(res1_PLADMM))
+        expect_equal(logLik(res0_PLADMM), logLik(res1_PLADMM))
+    })
+}

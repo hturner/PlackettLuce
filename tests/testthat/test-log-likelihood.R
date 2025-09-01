@@ -34,6 +34,7 @@ R <- matrix(c(1, 2, 0, 0,
               1, 0, 3, 2), nrow = 6, byrow = TRUE)
 colnames(R) <- c("apple", "banana", "orange", "pear")
 R <- as.rankings(R)
+# packages required here for PlackettLuce0: all are imported by PlackettLuce
 if (require("Matrix") & requireNamespace("igraph") &
     requireNamespace("RSpectra")) {
     model0 <- PlackettLuce0(rankings = R)
@@ -69,7 +70,7 @@ M <- matrix(c(1, 2,
 R <- as.rankings(M, "ordering")
 mod1 <- PlackettLuce(R, npseudo = 0)
 dat <- poisson_rankings(R, aggregate = FALSE, as.data.frame = TRUE)
-if (require(gnm) & require(BradleyTerry2)){
+if (require(gnm, quietly = TRUE) & require(BradleyTerry2, quietly = TRUE)){
     ## fit loglinear model
     mod2 <- gnm(y ~ -1 + X, family = poisson, eliminate = z, data = dat,
                 constrain = 1)
@@ -105,7 +106,7 @@ if (require(gnm) & require(BradleyTerry2)){
 
 
 ## Icehockey data
-if (require(BradleyTerry2)){
+if (require(BradleyTerry2, quietly = TRUE)){
     ## loglinear model with BTm
     icehockey2 <- subset(icehockey, result != 0.5) #remove ties
     mod_BT <- BTm(outcome = result,
@@ -165,7 +166,7 @@ if (require(gnm)){
 
 
 ## Nascar example from Hunter
-if (require(StatRank)){
+if (require(StatRank, quietly = TRUE)){
     ## 36 races. Partial rankings of length (42 or 43), ranking 83 drivers in
     ## 1st to 83rd place (puts zero for 43rd or 44th to last place). No ties.
     data(Data.Nascar)

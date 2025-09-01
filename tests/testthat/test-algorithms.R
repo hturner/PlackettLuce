@@ -23,7 +23,7 @@ test_that("BFGS gives same coef as iterative scaling", {
                  tolerance = tol, ignore_attr = TRUE)
 })
 
-if (require(lbfgs)){
+if (require(lbfgs, quietly = TRUE)){
     model_fruits3 <- PlackettLuce(rankings = R, method = "L-BFGS",
                                   gtol = 0.2)
 

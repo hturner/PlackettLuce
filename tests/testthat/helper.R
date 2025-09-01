@@ -1,6 +1,6 @@
 # salad data --------------------------------------------------------------
 
-if (require("prefmod")) {
+if (require("prefmod", quietly = TRUE)) {
 
     ## analysis of salad data from Critchlow, D. E. & Fligner, M. A. (1991).
     ## salad is a data.frame of rankings for items A B C D
