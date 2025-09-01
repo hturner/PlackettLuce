@@ -44,6 +44,9 @@ anova.PLADMM <- function(object, ...) {
 
 }
 
+#' @importFrom stats pchisq
+#' @method anova PLADMMlist
+#' @export
 anova.PLADMMlist <- function(object) {
     # check validity
     n <- vapply(object, function(x) nrow(x$orderings), numeric(1))
