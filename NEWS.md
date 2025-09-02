@@ -1,3 +1,8 @@
+# PlackettLuce 0.4.4
+
+* Fix minor typesetting issues in the docs
+* Make tests (and hence R CMD check) pass without suggested packages
+
 # PlackettLuce 0.4.3
 
 * Update functions to read Preflib Election Data Files (`read.soc` etc) so that they work for updated Preflib file formats.
