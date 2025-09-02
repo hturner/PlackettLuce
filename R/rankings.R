@@ -6,7 +6,7 @@
 #' Each ranking in the input data will be converted to a dense ranking, which
 #' rank items from 1 (first place) to \eqn{n_r} (last place). Items not ranked
 #' should have a rank of 0 or `NA`. Tied items are given the same rank with no
-#' rank skipped. For example {1, 0, 2, 1}, ranks the first and fourth items in
+#' rank skipped. For example \{1, 0, 2, 1\}, ranks the first and fourth items in
 #' first place and the third item in second place; the second item is unranked.
 #'
 #' Records in `data` with missing `id` or `item` are dropped. Duplicated items
