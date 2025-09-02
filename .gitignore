@@ -44,3 +44,5 @@ docs/articles/*_cache/*
 # Reverse dependency check files
 revdep**
 docs
+/doc/
+/Meta/

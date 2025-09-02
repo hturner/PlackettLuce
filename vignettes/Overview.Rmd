@@ -47,6 +47,10 @@ output: function(){
 
 ```{r setup, include = FALSE}
 library(knitr)
+knitr::knit_hooks$set(crop = function(before, options, envir) {
+    # disable cropping even if magick package installed
+    if (!before) return()
+})
 eval_all <- FALSE # evaluate all timings and pltree?
 extra <- requireNamespace("kableExtra")
 # if render using rmarkdown, use output format to decide table format
@@ -158,10 +162,16 @@ number of unique rankings is large.
 ```{r soc, eval = eval_all, echo = FALSE}
 library(PlackettLuce)
 # read in example data sets
-preflib <- "https://www.preflib.org/static/data/"
-netflix <- read.soc(file.path(preflib, "netflix/00004-00000101.soc"))
-tshirt <- read.soc(file.path(preflib, "shirt/00012-00000001.soc"))
-sushi <- read.soc(file.path(preflib, "sushi/00014-00000001.soc"))
+# - originally from https://PrefLib.org, also distributed in PlackettLuce package
+# netflix: 00004-00000138.soc
+netflix <- read.soc(system.file("extdata", "netflix.soc",
+                                package = "PlackettLuce"))
+# tshirt: 00012-00000001.soc
+tshirt <- read.soc(system.file("extdata", "shirt.soc",
+                               package = "PlackettLuce"))
+# sushi: 00014-00000001.soc   
+sushi <- read.soc(system.file("extdata", "sushi.soc",
+                              package = "PlackettLuce"))
 ```
 ```{r wrappers, eval = eval_all, echo = FALSE}
 pl <- function(dat, ...){
@@ -173,14 +183,15 @@ pl <- function(dat, ...){
 hyper2 <- function(dat, ...){
     requireNamespace("hyper2")
     # create likelihood object based on ordered items and counts
-    H <- hyper2::hyper2(pnames = paste0("p", seq_len(ncol(dat) - 1)))
+    pnames <- paste0("p", seq_len(ncol(dat) - 1))
+    H <- hyper2::hyper2(pnames = pnames)
     for (i in seq_len(nrow(dat))){
-        x <-  dat[i, -1][dat[i, -1] > 0]
-        H <- H + hyper2::order_likelihood(x, times = dat[i, 1])
+        x <-  pnames[dat[i, -1][dat[i, -1] > 0]]
+        H <- H + hyper2::race(x)*dat[i, 1]
     }
     # find parameters to maximise likelihood
     p <- hyper2::maxp(H)
-    structure(p, loglik = hyper2::loglik(H, p[-length(p)]))
+    structure(p, loglik = hyper2::loglik(p = p[-length(p)], H = H))
 }
 plmix <- function(dat, ...){
     requireNamespace("PLMIX")
