@@ -29,7 +29,7 @@
 #' \item{coef.indices}{\code{NULL} (not required for this method).}
 #' \item{modelcall}{The call to \code{PlackettLuce} to fit the model from which
 #' the item parameters were estimated.}
-#' @seealso \code{\link{worstErrors}}, \code{\link{plot.qv}}.
+#' @seealso \code{\link[qvcalc]{worstErrors}}, \code{\link[qvcalc]{plot.qv}}.
 #' @references
 #' Easton, D. F, Peto, J. and Babiker, A. G. A. G. (1991) Floating absolute
 #' risk: an alternative to relative risk in survival and case-control analysis

@@ -36,7 +36,7 @@
 #' @param na.action how NAs are treated for variables in `formula`, applied
 #' to the underlying rankings.
 #' @param cluster an optional vector of cluster IDs to be employed for clustered
-#' covariances in the parameter stability tests, see \code{\link{mob}}.
+#' covariances in the parameter stability tests, see \code{\link[partykit]{mob}}.
 #' @param ref an integer or character string specifying the reference item (for
 #' which log ability will be set to zero). If NULL the first item is used.
 #' @param ... additional arguments, passed to \code{\link{PlackettLuce}}

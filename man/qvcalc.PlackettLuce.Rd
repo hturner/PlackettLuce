@@ -91,5 +91,5 @@ Workshop on Statistical Modelling held in Trento, Italy, July 17--21,
 1989} (A. Decarli et al., eds.), pp 262--269. New York: Springer.
 }
 \seealso{
-\code{\link{worstErrors}}, \code{\link{plot.qv}}.
+\code{\link[qvcalc]{worstErrors}}, \code{\link[qvcalc]{plot.qv}}.
 }

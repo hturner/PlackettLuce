@@ -25,7 +25,7 @@ with \code{\link[=pladmm]{pladmm()}}.}
 to the underlying rankings.}
 
 \item{cluster}{an optional vector of cluster IDs to be employed for clustered
-covariances in the parameter stability tests, see \code{\link{mob}}.}
+covariances in the parameter stability tests, see \code{\link[partykit]{mob}}.}
 
 \item{ref}{an integer or character string specifying the reference item (for
 which log ability will be set to zero). If NULL the first item is used.}
