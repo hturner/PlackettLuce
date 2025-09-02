@@ -49,7 +49,7 @@ sets is given in the vignette,
 Turner, H.L., van Etten, J., Firth, D. and Kosmidis, I. (2020)
 Modelling Rankings in R: The PlackettLuce Package.
 \emph{Computational Statistics}, \strong{35}, 1027--1057.
-\url{https://doi.org/10.1007/s00180-020-00959-3}.
+\doi{10.1007/s00180-020-00959-3}.
 }
 \seealso{
 Useful links:
