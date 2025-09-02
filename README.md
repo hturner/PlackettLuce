@@ -73,8 +73,8 @@ The data can be read in using the `read.soc` function in
 
 ``` r
 library(PlackettLuce)
-preflib <- "https://www.preflib.org/static/data/"
-netflix <- read.soc(file.path(preflib, "netflix/00004-00000138.soc"))
+preflib <- "https://raw.githubusercontent.com/PrefLib/PrefLib-Data/main/datasets"
+netflix <- read.soc(file.path(preflib, "00004%20-%20netflix/00004-00000138.soc"))
 head(netflix, 2)
 ```
 
@@ -222,7 +222,8 @@ By participating in this project you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-Bennett2007" class="csl-entry">
 

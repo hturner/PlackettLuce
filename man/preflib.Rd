@@ -100,8 +100,8 @@ qualities <- read.toi(system.file("extdata", "education_qualities.toi",
 \dontrun{
 # incomplete orderings with ties: most important qualities for success
 # from 20 in total
-preflib <- "https://www.preflib.org/static/data/"
-qualities2 <- read.toi(file.path(preflib, "education/00032-00000007.toi"))
+preflib <- "https://raw.githubusercontent.com/PrefLib/PrefLib-Data/main/datasets"
+qualities2 <- read.toi(file.path(preflib, "00032\%20-\%20education/00032-00000007.toi"))
 all.equal(qualities, qualities2)
 }
 }
