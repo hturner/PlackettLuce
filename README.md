@@ -222,14 +222,13 @@ By participating in this project you agree to abide by its terms.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-Bennett2007" class="csl-entry">
 
-Bennett, J., and S. Lanning. 2007. “The Netflix Prize.” In
+Bennett, J., and S. Lanning. 2007. “The Netflix Prize.”
 *<span class="nocase">Proceedings of the KDD Cup Workshop 2007</span>*,
-3–6. ACM.
+August, 3–6.
 
 </div>
 
