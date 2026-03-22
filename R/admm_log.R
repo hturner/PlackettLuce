@@ -77,7 +77,8 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                         (pi + epsilon)
                                     pi <-
                                         self$init_ilsr_feat_convex_QP(pi,
-                                                                      sigmas)
+                                                                      sigmas,
+                                                                      rtol)
                                 }
                                 ilsr_conv <- FALSE
                                 iter <- 0
@@ -140,7 +141,8 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                 pi
                             },
                             init_ilsr_feat_convex_QP = function(pi_prev,
-                                                                sigmas){
+                                                                sigmas,
+                                                                rtol){
                                 # sigmas is the additional term compared to ILSR
                                 # min._{pi} ||pi-pi_{t-1}||^2, s.t. pi >=0 and
                                 # sum(pi)=1 and sum(pi*sigma)=0
@@ -161,6 +163,6 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                                 constraints = constraints)
                                 # splitting conic solver
                                 res <- psolve(prob, solver = "SCS")
-                                res$getValue(pi)
+                                value(pi)
                             }
                         ))

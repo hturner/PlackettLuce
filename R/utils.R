@@ -77,7 +77,7 @@ init_beta_b_ls <- function(X, orderings, rtol = 1e-4){
          time_beta_b_init = time_beta_b_init)
 }
 
-#' @importFrom CVXR Variable Minimize Problem quad_form psolve
+#' @importFrom CVXR Variable Minimize Problem quad_form psolve value
 init_beta_b_convex_QP <- function(X, orderings, mat_Pij, rtol = 1e-4){
     # n: number of items
     # p: number of features
@@ -102,7 +102,7 @@ init_beta_b_convex_QP <- function(X, orderings, mat_Pij, rtol = 1e-4){
     prob <- Problem(objective, constraints = constraints)
     res <- psolve(prob, solver = "SCS") # splitting conic solver
     time_beta_b_init <- Sys.time() - start_beta_b
-    if (is.null(res$value)) {# or res$status != "optimal" ?
+    if (!is.finite(res)) {
         constraints <- list(X %*% params[-p] + params[p] >= rtol)
         # If cannot be solved, reduce the accuracy requirement
         start_beta_b <- Sys.time()
@@ -111,7 +111,7 @@ init_beta_b_convex_QP <- function(X, orderings, mat_Pij, rtol = 1e-4){
         res <- psolve(prob, solver = "SCS", eps = 1e-2)
         time_beta_b_init <- Sys.time() - start_beta_b
     }
-    params <- res$getValue(params)
+    params <- value(params)
     list(beta_init = params[-p], b_init = params[p],
          time_beta_b_init = time_beta_b_init)
 }
