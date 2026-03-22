@@ -20,7 +20,7 @@ brand j.}
 pudding
 }
 \description{
-This is an example dataset from \cite{Davidson 1970} comprising paired
+This is an example dataset from \cite{Davidson (1970)} comprising paired
 comparisons of chocolate pudding, with six brands in total. The responses
 include tied outcomes, i.e. no preference.
 }

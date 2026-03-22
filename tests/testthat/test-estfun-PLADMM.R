@@ -1,7 +1,6 @@
 coef_tol <- 1e-4
 
-if (requireNamespace("prefmod", quietly = TRUE) &
-    require("survival")) {
+if (require("survival")) {
     test_that("PLADMM estfun matches PlackettLuce [salad]", {
         ## model with separate worths for each dressing
         ## setting rho ~ 10% log-lik gives good results (not extensively tested!)

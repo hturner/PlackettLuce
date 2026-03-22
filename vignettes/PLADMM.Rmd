@@ -76,13 +76,13 @@ $\boldsymbol{X}\boldsymbol{\beta}$).
 # Salad Data
 
 We shall illustrate the use of `pladmm` with a classic data set presented by 
-[@Critchlow1991] that is available as the `salad` data set in the 
-**prefmod** package. The data are 32 full rankings of 4 salad dressings 
-(A, B, C, D) by tartness, with 1 being the least tart and 4 being the most 
+[@Critchlow1991] that is provided as the `salad` data set in **PlackettLuce**. 
+The data are 32 full rankings of 4 salad dressings 
+(A, B, C, D) by tartness, with 1 being the most tart and 4 being the least 
 tart, according to the ranker.
 
 ```{r}
-library(prefmod)
+library(PlackettLuce)
 head(salad, 4)
 ```
 
@@ -106,7 +106,6 @@ determining the strength of penalty on the log-likelihood. As a rule of thumb,
 `rho` should be ~10% of the fitted log-likelihood.
 
 ```{r}
-library(PlackettLuce)
 standardPL <- pladmm(salad, ~ salad, data = features, rho = 8)
 summary(standardPL)
 ```
@@ -197,7 +196,7 @@ predict(regressionPL, features2, type = "itempar", log  = FALSE, ref = NULL,
 
 The Plackett-Luce model with item covariates can also be used in model-based 
 partitioning. To illustrate, we shall simulate some covariate data for the 
-judges than ranked the four salads, based on their ranking of salad A
+judges that ranked the four salads, based on their ranking of salad C
 
 ```{r}
 set.seed(1)
@@ -205,7 +204,7 @@ judge_features <- data.frame(varC = rpois(nrow(salad), lambda = salad$C^2))
 ```
 
 This simulates the scenario where some characteristic of the judge affects how 
-they rank salad A, so we expect the item worth to depend on this variable.
+they rank salad C, so we expect the item worth to depend on this variable.
 
 Now we group the rankings by judge in preparation to fit a Plackett-Luce tree:
 

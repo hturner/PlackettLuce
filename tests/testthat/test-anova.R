@@ -1,7 +1,6 @@
 coef_tol <- 1e-4
 
-if (requireNamespace("prefmod", quietly = TRUE) &
-    require("survival")) {
+if (require("survival")) {
     test_that("PLADMM anova matches rank ordered logit model [salad]", {
         ## setting rho ~ 10% log-lik gives good results (not extensively tested!)
         res0_PLADMM <- pladmm(salad_rankings, ~ acetic + gluconic,

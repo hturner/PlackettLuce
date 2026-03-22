@@ -56,30 +56,26 @@
 #'
 #' @examples
 #'
-#' if (require(prefmod)){
-#'   data(salad)
-#'   # data.frame of rankings for salad dressings A B C D
-#'   # 1 = most tart, 4 = least tart
-#'   salad[1:3,]
+#' # data.frame of rankings for salad dressings A B C D
+#' # 1 = most tart, 4 = least tart
+#' salad[1:3,]
 #'
-#'   # create data frame of corresponding features
-#'   # (acetic and gluconic acid concentrations in salad dressings)
-#'   features <- data.frame(salad = LETTERS[1:4],
-#'                          acetic = c(0.5, 0.5, 1, 0),
-#'                          gluconic = c(0, 10, 0, 10))
+#' # create data frame of corresponding features
+#' # (acetic and gluconic acid concentrations in salad dressings)
+#' features <- data.frame(salad = LETTERS[1:4],
+#'                        acetic = c(0.5, 0.5, 1, 0),
+#'                        gluconic = c(0, 10, 0, 10))
 #'
-#'   # fit Plackett-Luce model based on covariates
-#'   res_PLADMM <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
-#'   ## coefficients
-#'   coef(res_PLADMM)
-#'   ## worth
-#'   res_PLADMM$pi
-#'   ## worth as predicted by linear function
-#'   res_PLADMM$tilde_pi
-#'   ## equivalent to
-#'   drop(exp(res_PLADMM$x %*% coef(res_PLADMM)))
-#'
-#' }
+#' # fit Plackett-Luce model based on covariates
+#' res_PLADMM <- pladmm(salad, ~ acetic + gluconic, data = features, rho = 8)
+#' ## coefficients
+#' coef(res_PLADMM)
+#' ## worth
+#' res_PLADMM$pi
+#' ## worth as predicted by linear function
+#' res_PLADMM$tilde_pi
+#' ## equivalent to
+#' drop(exp(res_PLADMM$x %*% coef(res_PLADMM)))
 #'
 #' @importFrom stats model.matrix
 #' @export
