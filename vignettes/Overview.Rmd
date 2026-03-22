@@ -52,7 +52,7 @@ knitr::knit_hooks$set(crop = function(before, options, envir) {
     if (!before) return()
 })
 eval_all <- FALSE # evaluate all timings and pltree?
-extra <- requireNamespace("kableExtra")
+extra <- requireNamespace("kableExtra", quietly = TRUE)
 # if render using rmarkdown, use output format to decide table format
 table.format <- opts_knit$get("rmarkdown.pandoc.to")
 if (!identical(table.format, "latex")) table.format <- "html"
@@ -338,7 +338,7 @@ res <- data.frame(Rankings = 36,
                   check.names = FALSE, row.names = NULL)
 kab <- kable(res, booktabs = TRUE, align = rep("r", 5),
       caption = "(ref:nascar)") 
-if (requireNamespace("kableExtra")){
+if (extra){
     kab <- kableExtra::kable_styling(kab)
     kableExtra::add_header_above(kab, c("Features of NASCAR data" = 3, 
                                         "Time elapsed (s)" = 2))
@@ -374,7 +374,7 @@ tab <- data.frame(Feature = c("Inference", "Disconnected networks",
                   PLMIX = c("Bayesian", "Yes", "No", "No", "Mixtures"))
 kab <- kable(tab, booktabs = TRUE,
       caption = "Features of packages for fitting the Plackett-Luce model.")
-if (requireNamespace("kableExtra")){
+if (extra){
     kableExtra::kable_styling(kab)
 } else kab
 ```
