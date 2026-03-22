@@ -1,3 +1,9 @@
+# PlackettLuce 0.4.5
+
+* Replace defunct CVXR::solve with CVXR::psolve
+* Enable Overview vignette to build without kableExtra package
+* Add salad data to remove prefmod dependency
+
 # PlackettLuce 0.4.4
 
 * Fix minor typesetting issues in the docs
