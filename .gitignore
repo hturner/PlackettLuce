@@ -46,3 +46,6 @@ revdep**
 docs
 /doc/
 /Meta/
+
+# Other
+**/.DS_Store
