@@ -160,7 +160,7 @@ ADMM_log <- R6::R6Class("ADMM_log",
                                 prob <- Problem(objective,
                                                 constraints = constraints)
                                 # splitting conic solver
-                                res <- solve(prob, solver = "SCS")
+                                res <- psolve(prob, solver = "SCS")
                                 res$getValue(pi)
                             }
                         ))
