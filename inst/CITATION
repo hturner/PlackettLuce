@@ -1,5 +1,5 @@
 ## R package reference generated from DESCRIPTION metadata
-if (is.null(meta$Date)) meta$Date <- format(Sys.Date(), "%Y")
+if (is.null(meta$Date)) meta$Date <- as.character(Sys.Date())
 citation(auto = meta)
 
 ## PlackettLuce article
