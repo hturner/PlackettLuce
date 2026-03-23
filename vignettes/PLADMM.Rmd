@@ -14,12 +14,10 @@ link-citations: yes
 pkgdown:
   as_is: yes
 always_allow_html: true
-output: function(){
-    if (requireNamespace('BiocStyle', quietly = TRUE)) {
-        BiocStyle::html_document }
-    else if (requireNamespace('bookdown', quietly = TRUE)) {
-        bookdown::html_document2 }
-    else rmarkdown::html_document }()
+output: function(...){
+    if (requireNamespace('bookdown', quietly = TRUE)) {
+        bookdown::html_document2(..., math_method = "mathml") }
+    else rmarkdown::html_document(...) }
 ---
 
 ```{r setup, include = FALSE}

@@ -34,7 +34,7 @@ Depends:
     R (>= 3.5)
 Imports: CVXR, igraph, Matrix, matrixStats, methods, partykit, psychotools,
     psychotree, R6, RSpectra, qvcalc, sandwich, stats
-Suggests: BiocStyle, BayesMallows, BradleyTerry2,
+Suggests: BayesMallows, BradleyTerry2,
     PLMIX, ROlogit, StatRank, bookdown, covr, hyper2, kableExtra, knitr,
     lbfgs, gnm, pmr, rmarkdown, survival, testthat
 RoxygenNote: 7.3.3
