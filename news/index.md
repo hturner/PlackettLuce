@@ -3,6 +3,7 @@
 ## PlackettLuce 0.4.5
 
 - Replace defunct CVXR::solve with CVXR::psolve
+- Use bookdown vs BiocStyle for vignettes
 - Enable Overview vignette to build without kableExtra package
 - Add salad data to remove prefmod dependency
 
