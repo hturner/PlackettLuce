@@ -1,5 +1,7 @@
+url: https://hturner.github.io/PlackettLuce/
 template:
   bootstrap: 5
+  math-rendering: mathjax
 reference:
 - title: Data sets/importing data
   contents:

@@ -39,9 +39,18 @@ pkgdown:
 always_allow_html: true
 output: function(...){
     if (requireNamespace('bookdown', quietly = TRUE)) {
-        bookdown::html_document2(..., math_method = "mathml") }
+        bookdown::html_document2(...,
+            number_sections = TRUE, global_numbering = TRUE) }
     else rmarkdown::html_document(...) }
 ---
+
+[comment1]: # (need to pass arguments to output format to avoid Error in haystack[haystack$similar > 0, ] : 
+  incorrect number of dimensions.)
+[comment2]: # (pkgdown uses MathML but need Mathjax for equation numbering: https://github.com/r-lib/pkgdown/issues/2739)
+[comment3]: # (use global numbering for simple table numbering: https://stackoverflow.com/a/68734661)
+[comment4]: # (can't edit table style on pkgdown: https://github.com/r-lib/pkgdown/issues/1544)
+[comment5]: # (use kableExtra::kbl to avoid double Table labels: github.com/haozhu233/kableExtra/issues/831)
+
 
 ```{r setup, include = FALSE}
 library(knitr)
@@ -51,6 +60,7 @@ knitr::knit_hooks$set(crop = function(before, options, envir) {
 })
 eval_all <- FALSE # evaluate all timings and pltree?
 extra <- requireNamespace("kableExtra", quietly = TRUE)
+if (extra) kable <- kableExtra::kbl
 # if render using rmarkdown, use output format to decide table format
 table.format <- opts_knit$get("rmarkdown.pandoc.to")
 if (!identical(table.format, "latex")) table.format <- "html"

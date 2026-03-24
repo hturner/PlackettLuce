@@ -16,7 +16,8 @@ pkgdown:
 always_allow_html: true
 output: function(...){
     if (requireNamespace('bookdown', quietly = TRUE)) {
-        bookdown::html_document2(..., math_method = "mathml") }
+        bookdown::html_document2(...,
+            number_sections = TRUE, global_numbering = TRUE) }
     else rmarkdown::html_document(...) }
 ---
 
