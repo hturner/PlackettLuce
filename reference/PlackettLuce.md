@@ -1,0 +1,463 @@
+# Fit a Plackett-Luce Model
+
+Fit a Plackett-Luce model to a set of rankings. The rankings may be
+partial (each ranking completely ranks a subset of the items) and
+include ties of arbitrary order.
+
+## Usage
+
+``` r
+PlackettLuce(
+  rankings,
+  npseudo = 0.5,
+  normal = NULL,
+  gamma = NULL,
+  adherence = NULL,
+  weights = freq(rankings),
+  na.action = getOption("na.action"),
+  start = NULL,
+  method = c("iterative scaling", "BFGS", "L-BFGS"),
+  epsilon = 1e-07,
+  steffensen = 0.1,
+  maxit = c(500, 10),
+  trace = FALSE,
+  verbose = TRUE,
+  ...
+)
+```
+
+## Arguments
+
+- rankings:
+
+  a
+  `"`[`rankings`](https://hturner.github.io/PlackettLuce/reference/rankings.md)`"`
+  object, or an object that can be coerced by `as.rankings`. An
+  [`"aggregated_rankings"`](https://hturner.github.io/PlackettLuce/reference/aggregate.md)
+  object can be used to specify rankings and weights simultaneously. A
+  `"`[`grouped_rankings`](https://hturner.github.io/PlackettLuce/reference/PlackettLuce-deprecated.md)`"`
+  object should be used when estimating adherence for rankers with
+  multiple rankings per ranker.
+
+- npseudo:
+
+  when using pseudodata: the number of wins and losses to add between
+  each object and a hypothetical reference object.
+
+- normal:
+
+  a optional list with elements named `mu` and `Sigma` specifying the
+  mean and covariance matrix of a multivariate normal prior on the *log*
+  worths.
+
+- gamma:
+
+  a optional list with elements named `shape` and `rate` specifying
+  parameters of a gamma prior on adherence parameters for each ranker
+  (use `grouped_rankings` to group multiple rankings by ranker). The
+  short-cut `TRUE` may be used to specify a Gamma(10, 10) prior. If
+  `NULL` (or `FALSE`), adherence is fixed to `adherence` for all
+  rankers.
+
+- adherence:
+
+  an optional vector of adherence values for each ranker. If missing,
+  adherence is fixed to 1 for all rankers. If `gamma` is not `NULL`,
+  this specifies the starting values for the adherence.
+
+- weights:
+
+  an optional vector of weights for each ranking.
+
+- na.action:
+
+  a function to handle any missing rankings, see
+  [`na.omit()`](https://rdrr.io/r/stats/na.fail.html).
+
+- start:
+
+  starting values for the worth parameters and the tie parameters on the
+  raw scale (worth parameters need not be scaled to sum to 1). If
+  `normal` is specified, `exp(normal$mu)` is used as starting values for
+  the worth parameters. Coefficients from a previous fit can be passed
+  as the result of a call to `coef.PlackettLuce`, or the `coefficients`
+  element of a `"PlackettLuce"` object.
+
+- method:
+
+  the method to be used for fitting: `"iterative scaling"` (iterative
+  scaling to sequentially update the parameter values), `"BFGS"` (the
+  BFGS optimisation algorithm through the
+  [`optim`](https://rdrr.io/r/stats/optim.html) interface), `"L-BFGS"`
+  (the limited-memory BFGS optimisation algorithm as implemented in the
+  [`lbfgs`](https://rdrr.io/pkg/lbfgs/man/lbfgs.html) package).
+  Iterative scaling is used by default, unless a prior is specified by
+  `normal` or `gamma`, in which case the default is `"BFGS"`.
+
+- epsilon:
+
+  the maximum absolute difference between the observed and expected
+  sufficient statistics for the ability parameters at convergence.
+
+- steffensen:
+
+  a threshold defined as for `epsilon` after which to apply Steffensen
+  acceleration to the iterative scaling updates.
+
+- maxit:
+
+  a vector specifying the maximum number of iterations. If `gamma` is
+  `NULL`, only the first element is used and specifies the maximum
+  number of iterations of the algorithm specified by `method`. If
+  `gamma` is not `NULL`, a second element may be supplied to specify the
+  maximum number of iterations of an alternating algorithm, where the
+  adherence parameters are updated alternately with the other
+  parameters. The default is to use 10 outer iterations.
+
+- trace:
+
+  logical, if `TRUE` show trace of iterations.
+
+- verbose:
+
+  logical, if `TRUE` show messages from validity checks on the rankings.
+
+- ...:
+
+  additional arguments passed to `optim` or `lbfgs`. In particular the
+  convergence tolerance may be adjusted using e.g.
+  `control = list(reltol = 1e-10)`.
+
+## Value
+
+An object of class `"PlackettLuce"`, which is a list containing the
+following elements:
+
+- call:
+
+  The matched call.
+
+- coefficients:
+
+  The model coefficients.
+
+- loglik:
+
+  The maximized log-likelihood.
+
+- null.loglik:
+
+  The maximized log-likelihood for the null model (all alternatives
+  including ties have equal probability).
+
+- df.residual:
+
+  The residual degrees of freedom.
+
+- df.null:
+
+  The residual degrees of freedom for the null model.
+
+- rank:
+
+  The rank of the model.
+
+- logposterior:
+
+  If a prior was specified, the maximised log posterior.
+
+- gamma:
+
+  If a gamma prior was specified, the list of parameters.
+
+- normal:
+
+  If a normal prior was specified, the list of parameters.
+
+- iter:
+
+  The number of iterations run.
+
+- rankings:
+
+  The rankings passed to `rankings`, converted to a `"rankings"` object
+  if necessary.
+
+- weights:
+
+  The weights applied to each ranking in the fitting.
+
+- adherence:
+
+  The fixed or estimated adherence per ranker.
+
+- ranker:
+
+  The ranker index mapping rankings to rankers (the `"index"` attribute
+  of `rankings` if specified as a `"grouped_rankings"` object.)
+
+- ties:
+
+  The observed tie orders corresponding to the estimated tie parameters.
+
+- conv:
+
+  The convergence code: 0 for successful convergence; 1 if reached
+  `maxit` (outer) iterations without convergence; 2 if Steffensen
+  acceleration cause log-likelihood to increase; negative number if
+  L-BFGS algorithm failed for other reason.
+
+## Note
+
+As the maximum tie order increases, the number of possible choices for
+each rank increases rapidly, particularly when the total number of items
+is high. This means that the model will be slower to fit with higher
+\\D\\. In addition, due to the current implementation of the
+[`vcov()`](https://rdrr.io/r/stats/vcov.html) method, computation of the
+standard errors (as by
+[`summary()`](https://rdrr.io/r/base/summary.html)) can take almost as
+long as the model fit and may even become infeasible due to memory
+limits. As a rule of thumb, for \> 10 items and \> 1000 rankings, we
+recommend `PlackettLuce()` for ties up to order 4. For higher order
+ties, a rank-ordered logit model, see
+[`ROlogit::rologit()`](https://rdrr.io/pkg/ROlogit/man/rologit.html) or
+generalized Mallows Model as in
+[`BayesMallows::compute_mallows()`](https://ocbe-uio.github.io/BayesMallows/reference/compute_mallows.html)
+may be more suitable, as they do not model tied events explicitly.
+
+## Model definition
+
+A single ranking is given by \$\$R = \\C_1, C_2, \ldots, C_J\\\$\$ where
+the items in set \\C_1\\ are ranked higher than (better than) the items
+in \\C_2\\, and so on. If there are multiple objects in set \\C_j\\
+these items are tied in the ranking.
+
+For a set if items \\S\\, let \$\$f(S) = \delta\_{\|S\|} \left(\prod\_{i
+\in S} \alpha_i \right)^\frac{1}{\|S\|}\$\$ where \\\|S\|\\ is the
+cardinality (size) of the set, \\\delta_n\\ is a parameter related to
+the prevalence of ties of order \\n\\ (with \\\delta_1 \equiv 1\\), and
+\\\alpha_i\\ is a parameter representing the worth of item \\i\\. Then
+under an extension of the Plackett-Luce model allowing ties up to order
+\\D\\, the probability of the ranking \\R\\ is given by \$\$\prod\_{j =
+1}^J \frac{f(C_j)}{ \sum\_{k = 1}^{\min(D_j, D)} \sum\_{S \in {A_j
+\choose k}} f(S)}\$\$ where \\D_j\\ is the cardinality of \\A_j\\, the
+set of alternatives from which \\C_j\\ is chosen, and \\A_j \choose k\\
+is all the possible choices of \\k\\ items from \\A_j\\. The value of
+\\D\\ can be set to the maximum number of tied items observed in the
+data, so that \\\delta_n = 0\\ for \\n \> D\\.
+
+When the worth parameters are constrained to sum to one, they represent
+the probability that the corresponding item comes first in a ranking of
+all items, given that first place is not tied.
+
+The 2-way tie prevalence parameter \\\delta_2\\ is related to the
+probability that two items *of equal worth* tie for first place, given
+that the first place is not a 3-way or higher tie. Specifically, that
+probability is \\\delta_2/(2 + \delta_2)\\.
+
+The 3-way and higher tie-prevalence parameters are similarly
+interpretable, in terms of tie probabilities among equal-worth items.
+
+When intermediate tie orders are not observed (e.g. ties of order 2 and
+order 4 are observed, but no ties of order 3), the maximum likelihood
+estimate of the corresponding tie prevalence parameters is zero, so
+these parameters are excluded from the model.
+
+## Pseudo-rankings
+
+In order for the maximum likelihood estimate of an object's worth to be
+defined, the network of rankings must be strongly connected. This means
+that in every possible partition of the objects into two nonempty
+subsets, some object in the second set is ranked higher than some object
+in the first set at least once.
+
+If the network of rankings is not strongly connected then
+pseudo-rankings may be used to connect the network. This approach posits
+a hypothetical object with log-worth 0 and adds `npseudo` wins and
+`npseudo` losses to the set of rankings.
+
+The parameter `npseudo` is the prior strength. With `npseudo = 0` the
+MLE is the posterior mode. As `npseudo` approaches infinity the
+log-worth estimates all shrink towards 0. The default, `npseudo = 0.5`,
+is sufficient to connect the network and has a weak shrinkage effect.
+Even for networks that are already connected, adding pseudo-rankings
+typically reduces both the bias and variance of the estimators of the
+worth parameters.
+
+## Incorporating prior information on log-worths
+
+Prior information can be incorporated by using `normal` to specify a
+multivariate normal prior on the *log*-worths. The log-worths are then
+estimated by maximum a posteriori (MAP) estimation. Model summaries
+(deviance, AIC, standard errors) are based on the log-likelihood
+evaluated at the MAP estimates, resulting in a finite sample bias that
+should disappear as the number of rankings increases. Inference based on
+these model summaries is valid as long as the prior is considered fixed
+and not tuned as part of the model.
+
+Incorporating a prior is an alternative method of penalization,
+therefore `npseudo` is set to zero when a prior is specified.
+
+## Incorporating ranker adherence parameters
+
+When rankings come from different rankers, the model can be extended to
+allow for varying reliability of the rankers, as proposed by Raman and
+Joachims (2014). In particular, replacing \\f(S)\\ by \$\$h(S) =
+\delta\_{\|S\|} \left(\prod\_{i \in S} \alpha_i
+\right)^\frac{\eta_g}{\|S\|}\$\$ where \\\eta_g \> 0\\ is the adherence
+parameter for ranker \\g\\. In the standard model, all rankers are
+assumed to have equal reliability, so \\\eta_g = 1\\ for all rankers.
+Higher \\\eta_g = 1\\ increases the distance between item worths, giving
+greater weight' to the ranker's choice. Conversely, lower \\\eta_g = 1\\
+shrinks the item worths towards equality so the ranker's choice is less
+relevant.
+
+The adherence parameters are not estimable by maximum likelihood, since
+for given item worths the maximum likelihood estimate of adherence would
+be infinity for rankers that give rankings consistent with the items
+ordered by worth and zero for all other rankers. Therefore it is
+essential to include a prior on the adherence parameters when these are
+estimated rather than fixed. Setting `gamma = TRUE` specifies the
+default \\\Gamma(10,10)\\ prior, which has a mean of 1 and a probability
+of 0.99 that the adherence is between 0.37 and 2. Alternative parameters
+can be specified by a list with elements `shape` and `rate`. Setting
+scale and rate to a common value \\\theta\\ specifies a mean of 1;
+\\\theta \ge\\ 2 will give low prior probability to near-zero adherence;
+as \\\theta\\ increases the density becomes more concentrated (and more
+symmetrical) about 1.
+
+Since the number of adherence parameters will typically be large and it
+is assumed the worth and tie parameters are of primary interest, the
+adherence parameters are not included in model summaries, but are
+included in the returned object.
+
+## Controlling the fit
+
+For models without priors, using `nspseudo = 0` will use standard
+maximum likelihood, if the network is connected (and throw an error
+otherwise).
+
+The fitting algorithm is set by the `method` argument. The default
+method `"iterative scaling"` is a slow but reliable approach. In
+addition, this has the most control on the accuracy of the final fit,
+since convergence is determined by direct comparison of the observed and
+expected values of the sufficient statistics for the worth parameters,
+rather than a tolerance on change in the log-likelihood.
+
+The `"iterative scaling"` algorithm is slow because it is a first order
+method (does not use derivatives of the likelihood). From a set of
+starting values that are 'close enough' to the final solution, the
+algorithm can be accelerated using [Steffensen's
+method](https://en.wikipedia.org/wiki/Steffensen%27s_method).
+`PlackettLuce` attempts to apply Steffensen's acceleration when all
+differences between the observed and expected values of the sufficient
+statistics are less than `steffensen`. This is an ad-hoc rule defining
+'close enough' and in some cases the acceleration may produce negative
+worth parameters or decrease the log-likelihood. `PlackettLuce` will
+only apply the update when it makes an improvement.
+
+The `"BFGS"` and `"L-BFGS"` algorithms are second order methods,
+therefore can be quicker than the default method. Control parameters can
+be passed on to [`optim`](https://rdrr.io/r/stats/optim.html) or
+[`lbfgs`](https://rdrr.io/pkg/lbfgs/man/lbfgs.html).
+
+For models with priors, the iterative scaling method cannot be used, so
+BFGS is used by default.
+
+## References
+
+Raman, K. and Joachims, T. (2014) Methods for Ordinal Peer Grading.
+[arXiv:1404.3656](https://arxiv.org/abs/1404.3656).
+
+## See also
+
+Handling rankings:
+[`rankings`](https://hturner.github.io/PlackettLuce/reference/rankings.md),
+[`aggregate`](https://hturner.github.io/PlackettLuce/reference/aggregate.md),
+[`group`](https://hturner.github.io/PlackettLuce/reference/group.md),
+[`choices`](https://hturner.github.io/PlackettLuce/reference/choices.md),
+[`adjacency`](https://hturner.github.io/PlackettLuce/reference/adjacency.md),
+[`connectivity`](https://hturner.github.io/PlackettLuce/reference/connectivity.md).
+
+Inspect fitted Plackett-Luce models:
+[`coef`](https://rdrr.io/r/stats/coef.html), `deviance`,
+[`fitted`](https://rdrr.io/r/stats/fitted.values.html),
+[`itempar`](https://rdrr.io/pkg/psychotools/man/itempar.html), `logLik`,
+`print`,
+[`qvcalc`](https://davidfirth.github.io/qvcalc/reference/qvcalc.html),
+[`summary`](https://rdrr.io/r/base/summary.html),
+[`vcov`](https://rdrr.io/r/stats/vcov.html).
+
+Fit Plackett-Luce tree: `pltree`.
+
+Example data sets:
+[`beans`](https://hturner.github.io/PlackettLuce/reference/beans.md),
+[`nascar`](https://hturner.github.io/PlackettLuce/reference/nascar.md),
+[`pudding`](https://hturner.github.io/PlackettLuce/reference/pudding.md),
+[`preflib`](https://hturner.github.io/PlackettLuce/reference/preflib.md).
+
+Vignette:
+[`vignette("Overview", package = "PlackettLuce")`](https://hturner.github.io/PlackettLuce/articles/Overview.md).
+
+## Examples
+
+``` r
+# Six partial rankings of four objects, 1 is top rank, e.g
+# first ranking: item 1, item 2
+# second ranking: item 2, item 3, item 4, item 1
+# third ranking: items 2, 3, 4 tie for first place, item 1 second
+R <- matrix(c(1, 2, 0, 0,
+              4, 1, 2, 3,
+              2, 1, 1, 1,
+              1, 2, 3, 0,
+              2, 1, 1, 0,
+              1, 0, 3, 2), nrow = 6, byrow = TRUE)
+colnames(R) <- c("apple", "banana", "orange", "pear")
+
+# create rankings object
+R <- as.rankings(R)
+
+# Standard maximum likelihood estimates
+mod_mle <- PlackettLuce(R, npseudo = 0)
+coef(mod_mle)
+#>      apple     banana     orange       pear       tie2       tie3 
+#>  0.0000000  0.2942875 -0.7335113 -0.1190960 -1.8619467 -0.7369735 
+
+# Fit with default settings
+mod <- PlackettLuce(R)
+# log-worths are shrunk towards zero
+coef(mod)
+#>       apple      banana      orange        pear        tie2        tie3 
+#>  0.00000000  0.25287379 -0.61350684 -0.08688475 -2.15068111 -0.79245358 
+
+# independent N(0, 9) priors on log-worths, as in Raman and Joachims
+prior <- list(mu = rep(0, ncol(R)),
+              Sigma = diag(rep(9, ncol(R))))
+mod_normal <- PlackettLuce(rankings = R, normal = prior)
+# slightly weaker shrinkage effect vs pseudo-rankings,
+# with less effect on tie parameters (but note small number of rankings here)
+coef(mod_normal)
+#>      apple     banana     orange       pear       tie2       tie3 
+#>  0.0000000  0.2753696 -0.6772960 -0.1030173 -1.8679502 -0.7453151 
+
+# estimate adherence assuming every ranking is from a separate ranker
+mod_separate <- PlackettLuce(rankings = R, normal = prior, gamma = TRUE)
+coef(mod_separate)
+#>      apple     banana     orange       pear       tie2       tie3 
+#>  0.0000000  0.2310944 -0.8436801 -0.1654011 -1.8637839 -0.7405627 
+# gives more weight to rankers 4 & 6 which rank apple first,
+# so worth of apple increased relative to banana
+mod_separate$adherence
+#> [1] 0.8889778 0.8732159 0.8876840 0.9431440 0.8818594 0.9506536
+
+# estimate adherence based on grouped rankings
+#  - assume two rankings from each ranker
+G <- group(R, rep(1:3, each = 2))
+mod_grouped <- PlackettLuce(rankings = G, normal = prior, gamma = TRUE)
+coef(mod_grouped)
+#>      apple     banana     orange       pear       tie2       tie3 
+#>  0.0000000  0.2855958 -0.7611189 -0.1201862 -1.8678374 -0.7453447 
+# first ranker is least consistent so down-weighted
+mod_grouped$adherence
+#> [1] 0.8834957 0.9137346 0.9144347
+```
